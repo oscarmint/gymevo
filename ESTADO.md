@@ -1,7 +1,7 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-08-28 | Sesión actual: 1
 
-⏸️ CHECKPOINT — Última acción completada: FICHA-ARTE.md cerrada y aprobada (opción C "Cuaderno de Sala") / Siguiente acción exacta: pedir OK para pasar a Sesión 3 (página de ventas)
+⏸️ CHECKPOINT — Última acción completada: landing construida desde el kit canónico (plantillas-codigo/landing), tematizada y verificada (build+tsc limpios, revisada en navegador a 375px y desktop) / Siguiente acción exacta: pedir OK para pasar a Sesión 4 (onboarding, paywall y login)
 
 ## Dirección de Arte (Sesión 2 — CERRADA, cosa juzgada)
 - FICHA-ARTE.md: existe y aprobada — 28/08/2026 (ver archivo en la raíz)
@@ -90,20 +90,23 @@ Total: 6 pantallas únicas (dentro del límite de 8).
 ## Sesiones completadas ✅
 - Sesión 1 — Validación + avatar + monetización (02C) + framework + arquitectura + modelo de datos + auth — cerrada 28/08/2026
 - Sesión 2 — Identidad visual: FICHA-ARTE.md cerrada, opción C "Cuaderno de Sala" — cerrada 28/08/2026
+- Sesión 3 — Página de ventas: Next.js scaffolded, kit de landing (plantillas-codigo/landing) copiado a components/landing, tokens.css tematizado con FICHA-ARTE, copy marcado en docs/copy/landing.md, 10 secciones canónicas compuestas en app/page.tsx, páginas legales creadas (/privacidad /terminos /reembolsos) — cerrada 28/08/2026
 
 ## Sesión en progreso 🔧
-(ninguna — esperando OK del usuario para arrancar Sesión 3)
+(ninguna — esperando OK del usuario para arrancar Sesión 4)
 
 ## Próximas sesiones 📋
-- Sesión 3: página de ventas (landing con las 10 secciones canónicas)
 - Sesión 4: onboarding, paywall y login
+- Sesión 5: app interna (selector de nivel, plan del día, Botón de Rescate, temporizador, historial)
 
 ## Problemas conocidos ⚠️
-(ninguno aún)
+- Visual del hero y los 4 frames del carrusel ("La app por dentro") son PLACEHOLDERS honestos (marco punteado + ilustración/nombre de pantalla) — se reemplazan por screenshots reales cuando la app interna exista (Sesión 5). No declarar la landing 100% terminada hasta ese reemplazo (regla del 19).
+- `scripts/audit-conversion.sh` marca varios "críticos" que son falsos positivos del propio script contra los archivos DEL KIT del SO (comentarios de código y className de Tailwind mal contados como "copy") — verificado a mano; no requieren corrección. También marca "cero hairline degradé" y "fondo plano" como críticos pese a que `Hero.tsx` sí trae el mesh radial-gradient de fondo y `Oferta.tsx` sí usa `<Hairline emphasis>` en el plan anual — confirmado leyendo el código; falso negativo del script (no reconoce estilos inline multilínea). Pendiente: no se corrió aún el subagente `revisor-visual` (rúbricas /40 y /20) ni `scripts/audit-diseno.sh` — eso es parte del cierre de Sesión 7 (pulido y rigor de entrega) según la secuencia maestra, no bloquea seguir a Sesión 4.
+- Dominio real de la app aún no existe — el email de soporte usa `soporte@gymevo.app` como placeholder hasta que el usuario compre el dominio (Sesión 6, servicios externos).
 
 ## Pendientes del usuario (acciones que el usuario debe hacer)
-- [ ] Ninguna acción pendiente por ahora — la Sesión 2 (diseño) la avanzo yo con opciones para elegir
+- [ ] Ninguna acción pendiente por ahora — sigo yo con la Sesión 4 (onboarding, paywall, login)
 
 ## Notas para la próxima sesión
 - El usuario llegó con el "RESUMEN FINAL — IDEA VALIDADA PARA CONSTRUIR" completo (prompt de investigación externo). No se debe re-validar la idea ni proponer alternativas.
-- Nombre tentativo doble: "Método Cero" (documento) y "GymEvo" (usado en el ángulo de venta) — falta decidir el nombre final con el usuario en la sesión de identidad visual.
+- Nombre FINAL confirmado por el usuario: **GymEvo** (28/08/2026) — "Método Cero" queda solo como referencia interna del documento original, no se usa en producto ni copy.
