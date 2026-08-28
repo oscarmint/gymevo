@@ -4,10 +4,12 @@
 ⏸️ CHECKPOINT — Última acción completada: RESUMEN FINAL — IDEA VALIDADA leído y guardado como reporte de validación / Siguiente acción exacta: preguntar referencias visuales (B4) y luego presentar Plan Maestro (B5)
 
 ## Qué es esta app (3 líneas máximo)
-Programa cerrado de 90 días que le dice a un principiante de gimnasio comercial (Smart Fit/Bodytech) exactamente qué ejercicio hacer cada día, con alternativas de un toque cuando la máquina está ocupada. Monetización por suscripción (Freemium: semana 1 gratis, semanas 2-12 de pago).
+App con dos rutas de nivel: Ruta Principiante (programa fijo de 90 días que dice exactamente qué hacer cada día) y Ruta Intermedio (rutinas efectivas con progresión para salir del estancamiento), ambas en gimnasios comerciales (Smart Fit/Bodytech), con alternativas de un toque cuando la máquina está ocupada. Monetización por suscripción (Freemium: semana 1 gratis, luego de pago).
+
+> ⚠️ Corrección del usuario (28/08/2026): NO es un programa cerrado solo de 90 días para principiantes. Debe servir también a nivel intermedio que ya no es novato pero quiere rutinas efectivas y romper el estancamiento. Esto deja de ser un "desbloqueo automático al día 90" y pasa a ser una ruta propia desde el día 1 (el usuario elige su nivel al entrar).
 
 ## Promesa central
-"GymEvo ayuda al joven principiante de gimnasio comercial en LATAM a construir un físico atlético y entrenar con la seguridad de un experto, sin depender de entrenadores que lo ignoran ni perder tiempo cuando las máquinas están ocupadas, mediante un mapa táctico fijo de 90 días con un botón de alternativa en tiempo real."
+"GymEvo ayuda al joven de gimnasio comercial en LATAM —sea principiante o nivel intermedio— a construir un físico atlético y entrenar con la seguridad de un experto, sin depender de entrenadores que lo ignoran ni perder tiempo cuando las máquinas están ocupadas, mediante un mapa táctico (fijo de 90 días para principiantes, o de progresión para nivel intermedio) con un botón de alternativa en tiempo real."
 
 ## Reporte de validación (Sesión 1) — ya investigado por el usuario, no se repite
 - Veredicto: Excelente oportunidad (validación ya hecha por el usuario con su propio prompt de investigación)
@@ -31,14 +33,16 @@ Programa cerrado de 90 días que le dice a un principiante de gimnasio comercial
 - Pricing propuesto: $4.99 USD/mes o $29.99 USD/año (benchmark Hevy $23.99/año)
 - Riesgo de churn identificado: día 90 (fin del programa) — mitigación propuesta: desbloqueo automático de "Nivel Intermedio"
 
-## MVP — funciones núcleo (ya definidas por el usuario, Sesión 1)
-1. Selector de ruta metabólica (Músculo / Pérdida de grasa)
-2. Plan diario fijo e inalterable de 90 días con ilustraciones biomecánicas simples
-3. Botón "Alternativa de ejercicio" (Botón de Rescate) para sustituir máquinas ocupadas al instante
+## MVP — funciones núcleo (ajustado con la corrección del usuario, Sesión 1)
+0. Selector de NIVEL al entrar: Principiante (plan fijo 90 días) vs Intermedio (rutina de progresión anti-estancamiento) — antes del selector de meta metabólica
+1. Selector de ruta metabólica (Músculo / Pérdida de grasa) — aplica a ambos niveles
+2. Plan diario con ilustraciones biomecánicas simples: fijo e inalterable en Principiante; con progresión de carga/variación en Intermedio
+3. Botón "Alternativa de ejercicio" (Botón de Rescate) para sustituir máquinas ocupadas al instante — ambos niveles
 4. Temporizador de descanso integrado entre series
-5. Registro histórico de pesos/cargas
+5. Registro histórico de pesos/cargas — clave en Intermedio para medir progresión y romper estancamiento
 - NO construir en el MVP: integraciones con redes sociales, IA generativa de rutinas, sincronización con smartwatches
-- Primera victoria (<5 min): elegir meta metabólica y ver la rutina exacta del día, lista para iniciar cronómetro
+- Primera victoria (<5 min): elegir nivel + meta metabólica y ver la rutina exacta del día, lista para iniciar cronómetro
+- Pendiente de definir con el usuario más adelante (no bloquea el plan maestro): cómo pasa un Principiante a Intermedio (¿automático al día 90, o el usuario elige entrar directo a Intermedio si ya no es novato?)
 
 ## Secuencia maestra de construcción (NO saltar)
 - Estado de la secuencia: pendiente de iniciar — próximo paso: referencias visuales (B4) y Plan Maestro (B5)
