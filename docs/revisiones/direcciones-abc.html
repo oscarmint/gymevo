@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>GymEvo — Direcciones visuales</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;900&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --page-bg-0:#0a0c0f;
+    --page-bg-1:#12161b;
+    --page-ink:#eef1f2;
+    --page-ink-2:#9aa4a8;
+    --page-line:rgba(255,255,255,.08);
+    --page-accent:#c6ff3d;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1100px 620px at 18% -8%, rgba(198,255,61,.10), transparent 60%),
+      radial-gradient(900px 700px at 85% 8%, rgba(255,138,61,.07), transparent 55%),
+      linear-gradient(180deg, var(--page-bg-0), var(--page-bg-1) 60%, var(--page-bg-0));
+    color:var(--page-ink);
+    font-family:'Instrument Sans', system-ui, sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1280px;margin:0 auto;padding:56px 24px 96px;}
+  header.top{max-width:720px;margin:0 auto 64px;text-align:center;}
+  header.top .eyebrow{
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--page-accent);
+    font-weight:700;margin-bottom:14px;
+  }
+  header.top h1{
+    font-family:'Figtree',sans-serif;font-weight:900;font-size:clamp(28px,4vw,42px);
+    line-height:1.08;margin:0 0 14px;text-wrap:balance;letter-spacing:-.01em;
+  }
+  header.top p{color:var(--page-ink-2);font-size:16px;line-height:1.6;margin:0 auto;max-width:520px;}
+  .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:28px;}
+  .actions span{
+    font-size:13px;padding:8px 14px;border-radius:100px;border:1px solid var(--page-line);
+    background:rgba(255,255,255,.03);color:var(--page-ink-2);
+  }
+  .actions b{color:var(--page-ink);font-weight:600;}
+
+  .grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:32px;align-items:start;
+  }
+  @media (max-width:980px){ .grid{grid-template-columns:1fr;max-width:420px;margin:0 auto;} }
+
+  .col{display:flex;flex-direction:column;gap:20px;}
+
+  /* ---- phone chassis ---- */
+  .chassis{
+    position:relative;border-radius:44px;padding:14px;
+    background:linear-gradient(160deg,#2b2f33,#101214);
+    box-shadow:0 1px 0 rgba(255,255,255,.06) inset, 0 30px 60px -20px rgba(0,0,0,.6), 0 10px 24px -8px rgba(0,0,0,.5);
+  }
+  .screen{
+    position:relative;border-radius:32px;overflow:hidden;aspect-ratio:375/780;
+    display:flex;flex-direction:column;
+  }
+  .notch{
+    position:absolute;top:14px;left:50%;transform:translateX(-50%);
+    width:84px;height:22px;background:#0a0a0a;border-radius:100px;z-index:5;
+  }
+  .statusbar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:16px 26px 4px;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;
+  }
+  .statusbar .icons{display:flex;gap:6px;align-items:center;}
+  .statusbar .icons svg{display:block;}
+  .flame{display:inline-flex;vertical-align:-3px;margin-right:2px;}
+
+  /* ===================== OPTION A — Placa de Hierro ===================== */
+  .A .screen{background:#0b0f0e;color:#ecf2ef;font-family:'Figtree',monospace;}
+  .A .statusbar{color:#ecf2ef;}
+  .A .content{padding:14px 20px 24px;display:flex;flex-direction:column;gap:18px;flex:1;}
+  .A .tag{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#8a9a94;font-weight:700;}
+  .A .day-hero{display:flex;align-items:baseline;gap:10px;}
+  .A .day-hero .num{font-family:'Figtree',monospace;font-weight:900;font-size:56px;line-height:1;letter-spacing:-.02em;color:#c6ff3d;}
+  .A .day-hero .of{font-size:14px;color:#8a9a94;font-weight:600;}
+  .A .streak{display:flex;align-items:center;gap:6px;font-size:12px;color:#8a9a94;font-weight:600;}
+  .A .streak b{color:#ecf2ef;}
+  .A .ring-card{
+    background:#141a18;border:1px solid rgba(255,255,255,.06);border-radius:20px;padding:18px;
+    display:flex;align-items:center;gap:16px;
+  }
+  .A .plate-ring{position:relative;width:74px;height:74px;flex:none;}
+  .A .plate-ring svg{width:100%;height:100%;}
+  .A .plate-ring .t{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-family:'Figtree',monospace;font-weight:800;font-size:15px;color:#ecf2ef;font-variant-numeric:tabular-nums;}
+  .A .ex-name{font-weight:800;font-size:16px;letter-spacing:-.01em;}
+  .A .ex-meta{font-size:12.5px;color:#8a9a94;margin-top:4px;font-variant-numeric:tabular-nums;}
+  .A .list{display:flex;flex-direction:column;gap:10px;}
+  .A .row{
+    display:flex;align-items:center;justify-content:space-between;background:#141a18;
+    border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:12px 14px;
+  }
+  .A .row .name{font-size:13.5px;font-weight:700;}
+  .A .row .sets{font-size:12px;color:#8a9a94;font-variant-numeric:tabular-nums;}
+  .A .rescue{
+    margin-top:auto;display:flex;align-items:center;justify-content:center;gap:8px;
+    background:#1b2320;border:1px solid #2a3a33;color:#c6ff3d;font-weight:800;font-size:13.5px;
+    padding:14px;border-radius:16px;letter-spacing:.01em;
+  }
+
+  /* ===================== OPTION B — Modo Bento ===================== */
+  .B .screen{background:#12100c;color:#f2ece3;font-family:'Instrument Sans',monospace;}
+  .B .statusbar{color:#f2ece3;}
+  .B .content{padding:14px 16px 20px;display:flex;flex-direction:column;gap:12px;flex:1;}
+  .B .headline{font-family:'Bricolage Grotesque',monospace;font-weight:800;font-size:22px;letter-spacing:-.01em;padding:2px 4px 4px;}
+  .B .bento{display:grid;grid-template-columns:1.3fr 1fr;grid-template-rows:auto auto;gap:10px;}
+  .B .card{
+    background:linear-gradient(160deg,#1e1912,#171310);
+    border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:14px;position:relative;overflow:hidden;
+  }
+  .B .card.big{grid-row:span 2;display:flex;flex-direction:column;gap:10px;}
+  .B .card .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:#a89a86;font-weight:700;}
+  .B .card .v{font-family:'Bricolage Grotesque',monospace;font-weight:800;font-size:26px;margin-top:6px;letter-spacing:-.01em;}
+  .B .card .sub{font-size:11.5px;color:#a89a86;margin-top:4px;}
+  .B .exercise-name{font-weight:700;font-size:16px;margin-top:2px;font-family:'Instrument Sans',monospace;}
+  .B .exercise-sets{font-size:12.5px;color:#c9a37a;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px;}
+  .B .hazard{
+    margin-top:auto;position:relative;border-radius:16px;padding:14px;overflow:hidden;
+    background:#241d15;border:1px solid #3a2c1a;
+    display:flex;align-items:center;justify-content:center;gap:8px;font-weight:800;font-size:13.5px;color:#ff8a3d;
+  }
+  .B .hazard::before{
+    content:"";position:absolute;inset:0;opacity:.16;
+    background:repeating-linear-gradient(135deg,#ff8a3d 0 10px,transparent 10px 20px);
+  }
+  .B .hazard span{position:relative;}
+
+  /* ===================== OPTION C — Cuaderno de Sala ===================== */
+  .C .screen{
+    background:#f5f1ea;color:#211d17;font-family:'Instrument Sans',monospace;
+    background-image:
+      radial-gradient(circle at 30% 8%, rgba(0,0,0,.025) 0, transparent 45%),
+      radial-gradient(circle at 80% 60%, rgba(0,0,0,.02) 0, transparent 50%);
+  }
+  .C .statusbar{color:#211d17;}
+  .C .content{padding:16px 22px 22px;display:flex;flex-direction:column;gap:16px;flex:1;}
+  .C .eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8a7f6a;font-weight:700;}
+  .C .lead{font-family:'Instrument Sans',monospace;font-weight:700;font-size:24px;line-height:1.15;margin-top:4px;letter-spacing:-.01em;}
+  .C .lead b{color:#5c7a1f;}
+  .C .timeline{display:flex;flex-direction:column;margin-top:4px;}
+  .C .tl-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(0,0,0,.08);}
+  .C .tl-item:first-child{padding-top:0;}
+  .C .dot{width:26px;height:26px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+    border:2px solid #5c7a1f;margin-top:2px;}
+  .C .dot.done{background:#5c7a1f;}
+  .C .dot.done svg{stroke:#f5f1ea;}
+  .C .tl-item.current .dot{border-color:#211d17;box-shadow:0 0 0 3px rgba(33,29,23,.08);}
+  .C .tl-name{font-weight:700;font-size:14.5px;}
+  .C .tl-name.chalk{position:relative;}
+  .C .tl-item.done .tl-name{color:#8a7f6a;text-decoration:line-through;text-decoration-color:#5c7a1f;text-decoration-thickness:2px;}
+  .C .tl-meta{font-size:12px;color:#8a7f6a;margin-top:2px;font-variant-numeric:tabular-nums;}
+  .C .rescue-line{
+    margin-top:auto;display:flex;align-items:center;justify-content:space-between;
+    border:1.5px dashed #a89a7e;border-radius:14px;padding:13px 16px;font-size:13px;font-weight:700;color:#211d17;
+  }
+  .C .rescue-line span.tag{background:#5c7a1f;color:#f5f1ea;font-size:10.5px;padding:3px 8px;border-radius:100px;letter-spacing:.04em;text-transform:uppercase;font-weight:800;}
+
+  /* ---- caption block under each phone ---- */
+  .card-info{padding:4px 6px;}
+  .card-info .opt{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--page-accent);}
+  .card-info h3{font-family:'Figtree',sans-serif;font-weight:800;font-size:20px;margin:6px 0 8px;letter-spacing:-.01em;}
+  .card-info p{color:var(--page-ink-2);font-size:14px;line-height:1.55;margin:0 0 16px;}
+  .swatches{display:flex;gap:8px;margin-bottom:14px;}
+  .swatch{width:28px;height:28px;border-radius:9px;border:1px solid rgba(255,255,255,.12);}
+  .specimen{display:flex;flex-direction:column;gap:4px;padding-top:12px;border-top:1px solid var(--page-line);}
+  .specimen .fname{font-size:11px;color:var(--page-ink-2);letter-spacing:.04em;text-transform:uppercase;}
+  .specimen .fdemo{font-size:19px;font-weight:700;}
+
+  footer.note{max-width:720px;margin:64px auto 0;text-align:center;color:var(--page-ink-2);font-size:13px;line-height:1.7;}
+  footer.note b{color:var(--page-ink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="eyebrow">GymEvo — Sesión 2</div>
+    <h1>Elige la dirección visual de tu app</h1>
+    <p>Las 3 vienen de fusionar lo que ya funciona en Hevy, Fitbod y Strong — no son inventadas. Ábrela, míralas y dime: A, B, C, una combinación de las tres, o pides otras 3.</p>
+    <div class="actions">
+      <span>Elegir <b>A</b>, <b>B</b> o <b>C</b></span>
+      <span><b>Combinar</b> lo mejor de cada una</span>
+      <span>Pedir <b>otras 3</b></span>
+      <span><b>Ajustar</b> un detalle puntual</span>
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <!-- ============ OPTION A ============ -->
+    <div class="col">
+      <div class="chassis A">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar">
+            <span>9:41</span>
+            <span class="icons">
+              <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx=".5"/><rect x="4.5" y="4.5" width="3" height="6.5" rx=".5"/><rect x="9" y="2" width="3" height="9" rx=".5"/><rect x="13.5" y="0" width="3" height="11" rx=".5"/></svg>
+              <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x=".75" y=".75" width="18.5" height="9.5" rx="2.5" stroke="currentColor" stroke-opacity=".5"/><rect x="2" y="2" width="16" height="7" rx="1.4" fill="currentColor"/><rect x="20" y="3.5" width="1.5" height="4" rx=".6" fill="currentColor" fill-opacity=".5"/></svg>
+            </span>
+          </div>
+          <div class="content">
+            <div class="tag">Ruta Principiante · Hipertrofia</div>
+            <div class="day-hero">
+              <span class="num">12</span>
+              <span class="of">/ 90 días</span>
+            </div>
+            <div class="streak"><svg class="flame" width="13" height="13" viewBox="0 0 24 24" fill="#c6ff3d"><path d="M12 2c1 3-3 4-3 8a3 3 0 006 0c0-1-.5-2-1-2 1.5 1 3 3 3 5.5A5.5 5.5 0 0111.5 19 5.5 5.5 0 016 13.5C6 8 12 6 12 2z"/></svg><b>5 días</b>&nbsp;seguidos</div>
+
+            <div class="ring-card">
+              <div class="plate-ring">
+                <svg viewBox="0 0 74 74">
+                  <circle cx="37" cy="37" r="32" fill="none" stroke="#20302a" stroke-width="7"/>
+                  <circle cx="37" cy="37" r="32" fill="none" stroke="#c6ff3d" stroke-width="7" stroke-linecap="round"
+                    stroke-dasharray="201" stroke-dashoffset="60" transform="rotate(-90 37 37)"/>
+                  <circle cx="37" cy="20" r="2.4" fill="#0b0f0e"/>
+                  <circle cx="37" cy="54" r="2.4" fill="#0b0f0e"/>
+                  <circle cx="20" cy="37" r="2.4" fill="#0b0f0e"/>
+                  <circle cx="54" cy="37" r="2.4" fill="#0b0f0e"/>
+                </svg>
+                <div class="t">1:12</div>
+              </div>
+              <div>
+                <div class="ex-name">Press de banca</div>
+                <div class="ex-meta">Serie 3 de 4 · 8 reps · 40&nbsp;kg</div>
+              </div>
+            </div>
+
+            <div class="list">
+              <div class="row"><span class="name">Press de banca</span><span class="sets">4×8</span></div>
+              <div class="row"><span class="name">Remo con barra</span><span class="sets">4×10</span></div>
+              <div class="row"><span class="name">Press militar</span><span class="sets">3×10</span></div>
+              <div class="row"><span class="name">Curl de bíceps</span><span class="sets">3×12</span></div>
+            </div>
+
+            <div class="rescue"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg>Botón de Rescate</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="opt">Opción A</div>
+        <h3>Placa de Hierro</h3>
+        <p>Todo gira en torno al número del día — como el contador de Hevy — con el ejercicio de ahora arriba y el resto de la sesión en una lista simple, fácil de escanear entre serie y serie.</p>
+        <div class="swatches">
+          <div class="swatch" style="background:#0b0f0e"></div>
+          <div class="swatch" style="background:#141a18"></div>
+          <div class="swatch" style="background:#c6ff3d"></div>
+          <div class="swatch" style="background:#ecf2ef"></div>
+          <div class="swatch" style="background:#ff4d4d"></div>
+        </div>
+        <div class="specimen">
+          <div class="fname">Figtree — una sola familia, pesos extremos</div>
+          <div class="fdemo" style="font-family:'Figtree',monospace;font-weight:900;">Método Cero</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ OPTION B ============ -->
+    <div class="col">
+      <div class="chassis B">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar">
+            <span>9:41</span>
+            <span class="icons">
+              <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx=".5"/><rect x="4.5" y="4.5" width="3" height="6.5" rx=".5"/><rect x="9" y="2" width="3" height="9" rx=".5"/><rect x="13.5" y="0" width="3" height="11" rx=".5"/></svg>
+              <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x=".75" y=".75" width="18.5" height="9.5" rx="2.5" stroke="currentColor" stroke-opacity=".5"/><rect x="2" y="2" width="16" height="7" rx="1.4" fill="currentColor"/><rect x="20" y="3.5" width="1.5" height="4" rx=".6" fill="currentColor" fill-opacity=".5"/></svg>
+            </span>
+          </div>
+          <div class="content">
+            <div class="headline">Hoy toca empuje</div>
+            <div class="bento">
+              <div class="card big">
+                <div class="k">Ejercicio actual</div>
+                <div class="exercise-name">Press inclinado con mancuernas</div>
+                <div class="exercise-sets">Serie 2 de 4 · 10 reps</div>
+                <div class="v" style="font-size:30px;margin-top:auto;">32<span style="font-size:15px;color:#a89a86;font-weight:600;"> kg</span></div>
+                <div class="sub">Descanso sugerido: 75 s</div>
+              </div>
+              <div class="card">
+                <div class="k">Racha</div>
+                <div class="v" style="display:flex;align-items:center;gap:6px;">5<svg width="16" height="16" viewBox="0 0 24 24" fill="#ff8a3d"><path d="M12 2c1 3-3 4-3 8a3 3 0 006 0c0-1-.5-2-1-2 1.5 1 3 3 3 5.5A5.5 5.5 0 0111.5 19 5.5 5.5 0 016 13.5C6 8 12 6 12 2z"/></svg></div>
+              </div>
+              <div class="card">
+                <div class="k">Nivel</div>
+                <div class="v" style="font-size:18px;">Intermedio</div>
+                <div class="sub">Ruta hipertrofia</div>
+              </div>
+            </div>
+            <div class="hazard"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg><span>Cambiar ejercicio</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="opt">Opción B</div>
+        <h3>Modo Bento</h3>
+        <p>Cards compactas al estilo Fitbod: ves tu ejercicio, tu racha y tu nivel de un vistazo. El botón de rescate lleva la franja de precaución de un gimnasio real — se nota que es para una emergencia.</p>
+        <div class="swatches">
+          <div class="swatch" style="background:#12100c"></div>
+          <div class="swatch" style="background:#1e1912"></div>
+          <div class="swatch" style="background:#ff8a3d"></div>
+          <div class="swatch" style="background:#f2ece3"></div>
+          <div class="swatch" style="background:#c9a37a"></div>
+        </div>
+        <div class="specimen">
+          <div class="fname">Bricolage Grotesque (display) + Instrument Sans (cuerpo)</div>
+          <div class="fdemo" style="font-family:'Bricolage Grotesque',monospace;font-weight:800;">Método Cero</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ OPTION C ============ -->
+    <div class="col">
+      <div class="chassis C">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="statusbar">
+            <span>9:41</span>
+            <span class="icons">
+              <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx=".5"/><rect x="4.5" y="4.5" width="3" height="6.5" rx=".5"/><rect x="9" y="2" width="3" height="9" rx=".5"/><rect x="13.5" y="0" width="3" height="11" rx=".5"/></svg>
+              <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x=".75" y=".75" width="18.5" height="9.5" rx="2.5" stroke="currentColor" stroke-opacity=".5"/><rect x="2" y="2" width="16" height="7" rx="1.4" fill="currentColor"/><rect x="20" y="3.5" width="1.5" height="4" rx=".6" fill="currentColor" fill-opacity=".5"/></svg>
+            </span>
+          </div>
+          <div class="content">
+            <div class="eyebrow">Día 12 · Ruta Principiante</div>
+            <div class="lead">Toca <b>espalda</b> y bíceps hoy.</div>
+
+            <div class="timeline">
+              <div class="tl-item done">
+                <div class="dot done"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg></div>
+                <div>
+                  <div class="tl-name">Calentamiento — remo</div>
+                  <div class="tl-meta">5 min</div>
+                </div>
+              </div>
+              <div class="tl-item current">
+                <div class="dot"></div>
+                <div>
+                  <div class="tl-name">Jalón al pecho</div>
+                  <div class="tl-meta">4×10 · 34 kg</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="dot"></div>
+                <div>
+                  <div class="tl-name">Remo sentado en polea</div>
+                  <div class="tl-meta">4×10</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="dot"></div>
+                <div>
+                  <div class="tl-name">Curl con barra Z</div>
+                  <div class="tl-meta">3×12</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="rescue-line">
+              <span>¿Máquina ocupada?</span>
+              <span class="tag">Rescate</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="opt">Opción C</div>
+        <h3>Cuaderno de Sala</h3>
+        <p>Modo claro, como la libreta donde de verdad se anota una rutina — cada ejercicio hecho se tacha con un trazo verde. Se siente calmado y ordenado, no un gimnasio de neón.</p>
+        <div class="swatches">
+          <div class="swatch" style="background:#f5f1ea"></div>
+          <div class="swatch" style="background:#211d17"></div>
+          <div class="swatch" style="background:#5c7a1f"></div>
+          <div class="swatch" style="background:#a89a7e"></div>
+          <div class="swatch" style="background:#ffffff;border-color:rgba(0,0,0,.12);"></div>
+        </div>
+        <div class="specimen">
+          <div class="fname">Instrument Sans — una sola familia, editorial</div>
+          <div class="fdemo" style="font-family:'Instrument Sans',monospace;font-weight:700;">Método Cero</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="note">
+    Fusión desde 3 líderes reales: <b>Hevy</b> (número del día, celebración de récords), <b>Fitbod</b> (cards de datos, acento de alta energía) y <b>Strong</b> (registro de series sin fricción). Ninguna paleta ni combinación tipográfica fue inventada — las tres están confirmadas contra apps que ya funcionan en el nicho.
+  </footer>
+
+</div>
+</body>
+</html>

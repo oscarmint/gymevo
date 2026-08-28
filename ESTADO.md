@@ -1,7 +1,16 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-08-28 | Sesión actual: 1
 
-⏸️ CHECKPOINT — Última acción completada: cerrada la parte técnica de Sesión 1 (arquitectura, modelo de datos, auth) / Siguiente acción exacta: pedir OK al usuario para pasar a Sesión 2 (identidad visual)
+⏸️ CHECKPOINT — Última acción completada: publicadas las 3 direcciones visuales A/B/C (docs/revisiones/direcciones-abc.html) / Siguiente acción exacta: esperar que el usuario elija A, B, C, combine o pida otras 3
+
+## Dirección de Arte (Sesión 2 — EN CURSO, ficha aún no cerrada)
+- FICHA-ARTE.md: NO existe todavía — se crea al cerrar con la opción elegida
+- ¿Hubo referencia visual del usuario?: NO → REFERENCIA-INVESTIGACIÓN, se investigó por líderes del nicho (16, PASO 0.2bis)
+- TABLA DE LÍDERES: Hevy (número del día + celebración de PRs, dark, azul/lima, tabs) · Fitbod (cards de datos tipo bento, acento alta energía, mapa de calor muscular) · Strong (registro de series sin fricción, minimalista)
+- Arquetipo: Héroe (audaz, energía, protector) — keywords: directo, capaz, sin-rodeos, protector
+- Mundo del sujeto (gym real): disco de pesas (plate) → anillo de temporizador · cinta de precaución → botón de Rescate · tiza de magnesio → marca de "hecho"
+- 3 opciones publicadas en `docs/revisiones/direcciones-abc.html` (también como Artifact): A "Placa de Hierro" (dark frío, lima #C6FF3D, Figtree, hero numérico+lista) · B "Modo Bento" (dark cálido, ámbar #FF8A3D, Bricolage+Instrument Sans, bento cards) · C "Cuaderno de Sala" (claro cálido, verde oscurecido #5C7A1F, Instrument Sans, timeline editorial)
+- Pendiente: elección del usuario (elegir/combinar/otras 3/ajustar)
 
 ## Qué es esta app (3 líneas máximo)
 App con dos rutas de nivel: Ruta Principiante (programa fijo de 90 días que dice exactamente qué hacer cada día) y Ruta Intermedio (rutinas efectivas con progresión para salir del estancamiento), ambas en gimnasios comerciales (Smart Fit/Bodytech), con alternativas de un toque cuando la máquina está ocupada. Monetización por suscripción (Freemium: semana 1 gratis, luego de pago).
