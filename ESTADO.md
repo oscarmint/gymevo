@@ -1,7 +1,7 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-08-28 | Sesión actual: 1
 
-⏸️ CHECKPOINT — Última acción completada: RESUMEN FINAL — IDEA VALIDADA leído y guardado como reporte de validación / Siguiente acción exacta: preguntar referencias visuales (B4) y luego presentar Plan Maestro (B5)
+⏸️ CHECKPOINT — Última acción completada: cerrada la parte técnica de Sesión 1 (arquitectura, modelo de datos, auth) / Siguiente acción exacta: pedir OK al usuario para pasar a Sesión 2 (identidad visual)
 
 ## Qué es esta app (3 líneas máximo)
 App con dos rutas de nivel: Ruta Principiante (programa fijo de 90 días que dice exactamente qué hacer cada día) y Ruta Intermedio (rutinas efectivas con progresión para salir del estancamiento), ambas en gimnasios comerciales (Smart Fit/Bodytech), con alternativas de un toque cuando la máquina está ocupada. Monetización por suscripción (Freemium: semana 1 gratis, luego de pago).
@@ -52,24 +52,45 @@ App con dos rutas de nivel: Ruta Principiante (programa fijo de 90 días que dic
 
 ## Decisiones técnicas (NO re-discutir sin pedirlo el usuario)
 - Framework: **Next.js App Router** (decidido el 28/08/2026) — el default del stack pineado (51): necesitamos SEO en la landing de ventas, API routes para el webhook de Hotmart, y auth. Vite queda descartado porque es solo para herramientas puras post-login sin landing pública.
-- Arquitectura offline-first a evaluar en Sesión 1 (04-ARQUITECTURA) por el riesgo de mala señal en sótanos de gimnasio (riesgo #3 del reporte del usuario)
-- [pendiente de completar en el resto de Sesión 1: base de datos, auth]
+- Offline-first ligero: el contenido del día (rutina + ilustraciones) se cachea localmente (localStorage/IndexedDB vía Service Worker simple) tras la primera carga, para que funcione aunque el sótano del gimnasio tenga mala señal (riesgo #3 del reporte). El registro de pesos se guarda local y sincroniza al recuperar conexión. No es una PWA offline completa — es cache-first del contenido estático del día.
+- Auth: **Supabase Auth con magic link (sin contraseña)** — encaja con el modelo onboarding-first: el usuario hace todo el onboarding y ve su plan del Día 1 SIN cuenta; la cuenta se crea recién en el paywall/checkout (evita fricción temprana, responde a la objeción de "otra app que pide mis datos de una"). Sesión larga (30-90 días, default de Supabase) porque es una app de consumo diario.
+- Base de datos: Supabase (Postgres) con RLS. Tablas propias del usuario (`profiles`, `workout_logs`, `user_progress`) llevan `user_id` + RLS estricta (cada quien ve solo lo suyo). El contenido de las rutinas (`exercises`, `routine_days`, `exercise_alternatives`) es catálogo fijo de solo-lectura pública, sin datos personales — no necesita RLS por usuario.
+
+### Mapa de pantallas
+```
+/                    → Landing (venta)
+/onboarding          → Selector de nivel (Principiante/Intermedio) + meta (Músculo/Grasa) — sin cuenta
+/paywall             → Trial 7 días + oferta $4.99/mes o $29.99/año
+/login               → Magic link (se crea la cuenta aquí, tras decidir pagar)
+/app                 → Plan del día (protagonista) + botón de Rescate + temporizador
+/app/historial       → Registro de pesos/cargas por ejercicio
+/app/perfil          → Nivel actual, meta, plan, cerrar sesión
+```
+Total: 6 pantallas únicas (dentro del límite de 8).
+
+### Modelo de datos (resumen — el SQL exacto se escribe en Sesión 6/Deploy)
+- `profiles`: id (FK auth.users), nivel (principiante/intermedio), meta (musculo/grasa), dia_actual, fecha_inicio, racha
+- `exercises` (catálogo): id, nombre, grupo_muscular, ilustracion_url, tipo (máquina/peso libre)
+- `exercise_alternatives` (catálogo): exercise_id → alternative_exercise_id (para el Botón de Rescate)
+- `routine_days` (catálogo, contenido curado por nosotros): nivel, meta, numero_dia, lista de ejercicios+series+reps+descanso
+- `workout_logs` (usuario): user_id, exercise_id, fecha, peso, reps, series
+- `user_progress` (usuario): user_id, racha_actual, ultimo_dia_completado, hitos desbloqueados
 
 ## Sesiones completadas ✅
-(ninguna aún)
+- Sesión 1 — Validación (del usuario) + avatar + monetización (02C) + framework + arquitectura + modelo de datos + auth — cerrada 28/08/2026
 
 ## Sesión en progreso 🔧
-- Sesión 1 — Validación ya recibida del usuario. Falta: referencias visuales, avatar/monetización formal (02C), arquitectura (04), base de datos (25), auth (26)
+(ninguna — esperando OK del usuario para arrancar Sesión 2)
 
 ## Próximas sesiones 📋
-- Sesión 1 (continuar): referencias visuales + Plan Maestro completo
-- Sesión 2: identidad visual y sistema de diseño
+- Sesión 2: identidad visual y sistema de diseño (3 opciones A/B/C)
+- Sesión 3: página de ventas
 
 ## Problemas conocidos ⚠️
 (ninguno aún)
 
 ## Pendientes del usuario (acciones que el usuario debe hacer)
-- [ ] Elegir referencias visuales (B4) — ver siguiente mensaje
+- [ ] Ninguna acción pendiente por ahora — la Sesión 2 (diseño) la avanzo yo con opciones para elegir
 
 ## Notas para la próxima sesión
 - El usuario llegó con el "RESUMEN FINAL — IDEA VALIDADA PARA CONSTRUIR" completo (prompt de investigación externo). No se debe re-validar la idea ni proponer alternativas.
