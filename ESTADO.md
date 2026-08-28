@@ -30,6 +30,8 @@ App con dos rutas de nivel: Ruta Principiante (programa fijo de 90 días que dic
 - Precio de referencia del mercado: Hevy $23.99 USD/año; propuesta propia $4.99/mes o $29.99/año
 
 ## Avatar y venta (Sesión 1)
+- FICHA-AVATAR.md: existe y aprobada — 28/08/2026 (ver archivo en la raíz; todo el copy de venta se traza a ella)
+- FICHA-MERCADO.md: existe — 28/08/2026 (ver archivo en la raíz; precio y trial documentados, plazos de garantía de Hotmart marcados como pendientes de verificar contra la pasarela real en Sesión 6)
 - Avatar: Mateo, 26 años, oficinista, va a Smart Fit a las 6:30 PM (hora pico), paraliza frente a las máquinas, se avergüenza, termina haciendo caminadora y se va frustrado.
 - Nivel de consciencia: 4/5 — Consciente de la Solución, quemado y escéptico (ya probó apps de IA, influencers, y fue estafado por apps de cobros ocultos)
 - Dolor #1: terror a lesionarse por mala técnica + vergüenza de no saber qué hacer frente a las máquinas
@@ -117,6 +119,8 @@ Total: 6 pantallas únicas (dentro del límite de 8).
 - App interna (Sesión 5) sin backend todavía: el progreso (racha, día, historial de pesos) vive en localStorage del navegador, se pierde si el usuario cambia de dispositivo o borra datos. Sesión 6 lo mueve a las tablas `workout_logs`/`user_progress` de Supabase.
 - Las ilustraciones de ejercicios son solo texto (nombre + series/reps), sin dibujo biomecánico — el documento original de la idea pedía "ilustraciones anatómicas sencillas". Pendiente de diseño gráfico si se quiere esa capa visual; no es un placeholder deshonesto (no finge tener algo que no tiene), pero es una reducción de alcance visual a anotar.
 - Corregido durante la Sesión 5: un bug real de condición de carrera si el usuario tocaba "Registrar" en dos ejercicios muy rápido (el segundo tap sobrescribía el primero) — se arregló usando actualización funcional de estado (setState con función, no valor directo). Verificado con clics simultáneos simulados.
+- **veredicto:paywall** — falta el veredicto independiente del subagente `revisor-visual` (docs/revisiones/paywall-veredicto.md + screenshot docs/revisiones/paywall-375.png, rúbricas Usabilidad ≥36/40 y Craft ≥16/20). Autoevaluarse no cuenta como evidencia (Regla de Oro 7). Mismo pendiente aplica a landing y onboarding — las 3 pantallas del dinero. Se resuelve en Sesión 7 (testing, pulido y rigor de entrega), que es donde la secuencia maestra ubica esta revisión.
+- **garantía / FICHA-MERCADO** — FICHA-MERCADO.md ya existe (creada 28/08/2026) con Prueba elegida: 7 días y Garantía elegida: 14 días (14>7, cumple la regla dura). PERO los plazos reales de garantía de Hotmart (desde cuándo cuenta, máximo configurable) siguen **sin verificar contra la pasarela real**, porque la cuenta de Hotmart todavía no existe (creación de cuenta es tarea del usuario en Sesión 6). El copy publicado (landing/paywall/FAQ) usa estos plazos como el PLAN a implementar, no como algo ya confirmado en el panel — antes de lanzar de verdad, hay que crear la cuenta, configurar el producto con estos plazos exactos, y volver a llenar los campos "NO ENCONTRADO" de FICHA-MERCADO.md con el dato real.
 
 ## Pendientes del usuario (acciones que el usuario debe hacer)
 - [ ] Ninguna acción pendiente por ahora — sigo yo con la Sesión 4 (onboarding, paywall, login)
