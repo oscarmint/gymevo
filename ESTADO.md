@@ -1,7 +1,7 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-08-28 | Sesión actual: 1
 
-⏸️ CHECKPOINT — Última acción completada: landing construida desde el kit canónico (plantillas-codigo/landing), tematizada y verificada (build+tsc limpios, revisada en navegador a 375px y desktop) / Siguiente acción exacta: pedir OK para pasar a Sesión 4 (onboarding, paywall y login)
+⏸️ CHECKPOINT — Última acción completada: onboarding + paywall + login construidos y probados de punta a punta en el navegador (build+tsc limpios) / Siguiente acción exacta: pedir OK para pasar a Sesión 5 (app interna)
 
 ## Dirección de Arte (Sesión 2 — CERRADA, cosa juzgada)
 - FICHA-ARTE.md: existe y aprobada — 28/08/2026 (ver archivo en la raíz)
@@ -91,18 +91,21 @@ Total: 6 pantallas únicas (dentro del límite de 8).
 - Sesión 1 — Validación + avatar + monetización (02C) + framework + arquitectura + modelo de datos + auth — cerrada 28/08/2026
 - Sesión 2 — Identidad visual: FICHA-ARTE.md cerrada, opción C "Cuaderno de Sala" — cerrada 28/08/2026
 - Sesión 3 — Página de ventas: Next.js scaffolded, kit de landing (plantillas-codigo/landing) copiado a components/landing, tokens.css tematizado con FICHA-ARTE, copy marcado en docs/copy/landing.md, 10 secciones canónicas compuestas en app/page.tsx, páginas legales creadas (/privacidad /terminos /reembolsos) — cerrada 28/08/2026
+- Sesión 4 — Onboarding + Paywall + Login: `/onboarding` (6 pasos: nivel, meta, frustración con eco de dolores reales, reconocimiento personalizado por objeción, horario, compromiso de días/semana con slider) → `/onboarding/generando` (loading persuasivo 4.8s con líneas reales) → `/paywall` (timeline de trial Hoy/Día 6/Día 7, planes anual+mensual, CTA, trust row) → `/login` (magic link mock con estados enviando/enviado/error). Probado de punta a punta en navegador — cerrada 28/08/2026
 
 ## Sesión en progreso 🔧
-(ninguna — esperando OK del usuario para arrancar Sesión 4)
+(ninguna — esperando OK del usuario para arrancar Sesión 5)
 
 ## Próximas sesiones 📋
-- Sesión 4: onboarding, paywall y login
 - Sesión 5: app interna (selector de nivel, plan del día, Botón de Rescate, temporizador, historial)
+- Sesión 6: integraciones reales (Supabase, Hotmart, dominio) y seguridad
 
 ## Problemas conocidos ⚠️
 - Visual del hero y los 4 frames del carrusel ("La app por dentro") son PLACEHOLDERS honestos (marco punteado + ilustración/nombre de pantalla) — se reemplazan por screenshots reales cuando la app interna exista (Sesión 5). No declarar la landing 100% terminada hasta ese reemplazo (regla del 19).
 - `scripts/audit-conversion.sh` marca varios "críticos" que son falsos positivos del propio script contra los archivos DEL KIT del SO (comentarios de código y className de Tailwind mal contados como "copy") — verificado a mano; no requieren corrección. También marca "cero hairline degradé" y "fondo plano" como críticos pese a que `Hero.tsx` sí trae el mesh radial-gradient de fondo y `Oferta.tsx` sí usa `<Hairline emphasis>` en el plan anual — confirmado leyendo el código; falso negativo del script (no reconoce estilos inline multilínea). Pendiente: no se corrió aún el subagente `revisor-visual` (rúbricas /40 y /20) ni `scripts/audit-diseno.sh` — eso es parte del cierre de Sesión 7 (pulido y rigor de entrega) según la secuencia maestra, no bloquea seguir a Sesión 4.
 - Dominio real de la app aún no existe — el email de soporte usa `soporte@gymevo.app` como placeholder hasta que el usuario compre el dominio (Sesión 6, servicios externos).
+- Onboarding/paywall/login (Sesión 4) son UI real y funcional pero sin backend: las respuestas viven en sessionStorage (no hay cuenta todavía, según el modelo onboarding-first), el botón de pago del paywall navega a /login en vez de abrir el checkout real de Hotmart, y el login no envía emails de verdad. Todo esto se conecta a Supabase Auth + Hotmart real en la Sesión 6 — está señalado con comentarios "Sesión 6" en el código (lib/onboarding.ts, app/paywall/page.tsx, app/login/page.tsx).
+- Paywall construido como página única (no la secuencia de 3 pantallas que recomienda 50 §C0 para +37% de conversión) — decisión de alcance para esta sesión; se puede partir en 3 pasos más adelante si los datos lo justifican.
 
 ## Pendientes del usuario (acciones que el usuario debe hacer)
 - [ ] Ninguna acción pendiente por ahora — sigo yo con la Sesión 4 (onboarding, paywall, login)

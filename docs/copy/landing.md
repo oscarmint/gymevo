@@ -7,16 +7,16 @@
 > da un plan fijo y un ejercicio alternativo al instante cuando el tuyo está ocupado."
 
 ## 1. HERO
-- H1: Sabes exactamente qué hacer en el gym, [acento]incluso si la máquina está ocupada[/acento]
+- H1: Sabes qué hacer en el gym con [acento]la máquina ocupada[/acento]
 - Subtítulo: El Botón de Rescate te da otro ejercicio [b]al instante[/b] sin pensar ni improvisar
 - CTA: Crear mi plan de mañana gratis → /onboarding
 - Prueba social (día 1, honesta): Garantía Hotmart de 7 días — sin preguntas
 
 ## 2. PROBLEMA
-1. ¿Te da miedo hacer mal un ejercicio y lesionarte por no saber la técnica?
-2. ¿Los entrenadores de tu gimnasio están más pendientes de comadrear que de ti?
-3. ¿Una app de IA te cambia la rutina cada día y sientes que no avanzas?
-4. ¿Te da vergüenza quedarte parado sin saber qué hacer con la máquina ocupada?
+1. ¿Te da miedo lesionarte por no saber la técnica?
+2. ¿Los entrenadores de tu gimnasio están más pendientes de comadrear?
+3. ¿Una app de IA te cambia la rutina cada día?
+4. ¿Te da vergüenza quedarte parado sin saber qué hacer?
 5. ¿Te preocupa que te claven una suscripción con cobros ocultos?
 
 ## 3. AGITACIÓN
@@ -43,7 +43,7 @@
 - Historial de pesos: Ves tu progreso real
 
 ## 6. OFERTA
-- Título: Empieza gratis. Sigue por [acento]menos de $0.09 al día[/acento]
+- Título: Empieza gratis. Sigue por [acento]menos de $0.09/día[/acento]
 - Trial: 7 días
 - Stack: GymEvo Pro con el Botón de Rescate 12 meses ($60) · Ruta Intermedio anti-estancamiento ($29) · Guía de nutrición sin fórmulas ($19) — total $108, hoy $2.50/mes ($29.99/año)
 - Anual (recomendado): $2.50/mes, se cobra $29.99/año, 6 meses gratis

@@ -25,7 +25,7 @@ export default function LandingGymEvo() {
       <Hero
         appName="GymEvo"
         loginHref="/login"
-        h1Marked="Sabes exactamente qué hacer en el gym, [acento]incluso si la máquina está ocupada[/acento]"
+        h1Marked="Sabes qué hacer en el gym con [acento]la máquina ocupada[/acento]"
         subtitleMarked="El Botón de Rescate te da otro ejercicio [b]al instante[/b] sin pensar ni improvisar"
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
@@ -37,10 +37,10 @@ export default function LandingGymEvo() {
       <Problema
         titulo="¿Te suena?"
         preguntas={[
-          { icon: ShieldAlert, textoMarked: '¿Te da miedo hacer mal un ejercicio y [b]lesionarte[/b] por no saber la técnica?' },
-          { icon: Users, textoMarked: '¿Los entrenadores de tu gimnasio están más pendientes de comadrear que de ti?' },
-          { icon: RefreshCcw, textoMarked: '¿Una app de IA te cambia la rutina cada día y sientes que no avanzas?' },
-          { icon: Frown, textoMarked: '¿Te da vergüenza quedarte parado sin saber qué hacer con la máquina ocupada?' },
+          { icon: ShieldAlert, textoMarked: '¿Te da miedo [b]lesionarte[/b] por no saber la técnica?' },
+          { icon: Users, textoMarked: '¿Los entrenadores de tu gimnasio están más pendientes de comadrear?' },
+          { icon: RefreshCcw, textoMarked: '¿Una app de IA te cambia la rutina cada día?' },
+          { icon: Frown, textoMarked: '¿Te da vergüenza quedarte parado sin saber qué hacer?' },
           { icon: CreditCard, textoMarked: '¿Te preocupa que te claven una suscripción con cobros ocultos?' },
         ]}
       />
@@ -93,7 +93,7 @@ export default function LandingGymEvo() {
 
       {/* 6. OFERTA — anual primero, trial 7 días en ambas (02C) */}
       <Oferta
-        tituloMarked="Empieza gratis. Sigue por [acento]menos de $0.09 al día[/acento]"
+        tituloMarked="Empieza gratis. Sigue por [acento]menos de $0.09/día[/acento]"
         trialDias={7}
         stack={{
           lineas: [
