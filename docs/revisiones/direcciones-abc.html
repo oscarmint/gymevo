@@ -147,8 +147,13 @@
   .C .eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8a7f6a;font-weight:700;}
   .C .lead{font-family:'Instrument Sans',monospace;font-weight:700;font-size:24px;line-height:1.15;margin-top:4px;letter-spacing:-.01em;}
   .C .lead b{color:#5c7a1f;}
-  .C .timeline{display:flex;flex-direction:column;margin-top:4px;}
-  .C .tl-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(0,0,0,.08);}
+  .C .meta-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;}
+  .C .meta-chips span{
+    font-size:11.5px;font-weight:700;color:#5c7a1f;background:rgba(92,122,31,.1);
+    border:1px solid rgba(92,122,31,.25);padding:5px 10px;border-radius:100px;
+  }
+  .C .timeline{display:flex;flex-direction:column;justify-content:space-evenly;flex:1;margin-top:2px;}
+  .C .tl-item{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid rgba(0,0,0,.08);}
   .C .tl-item:first-child{padding-top:0;}
   .C .dot{width:26px;height:26px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
     border:2px solid #5c7a1f;margin-top:2px;}
@@ -335,12 +340,25 @@
             <div class="eyebrow">Día 12 · Ruta Principiante</div>
             <div class="lead">Toca <b>espalda</b> y bíceps hoy.</div>
 
+            <div class="meta-chips">
+              <span>45–55 min</span>
+              <span>6 ejercicios</span>
+              <span>Hipertrofia</span>
+            </div>
+
             <div class="timeline">
               <div class="tl-item done">
                 <div class="dot done"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg></div>
                 <div>
                   <div class="tl-name">Calentamiento — remo</div>
                   <div class="tl-meta">5 min</div>
+                </div>
+              </div>
+              <div class="tl-item done">
+                <div class="dot done"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg></div>
+                <div>
+                  <div class="tl-name">Dominadas asistidas</div>
+                  <div class="tl-meta">3×8</div>
                 </div>
               </div>
               <div class="tl-item current">
@@ -361,6 +379,13 @@
                 <div class="dot"></div>
                 <div>
                   <div class="tl-name">Curl con barra Z</div>
+                  <div class="tl-meta">3×12</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="dot"></div>
+                <div>
+                  <div class="tl-name">Curl martillo</div>
                   <div class="tl-meta">3×12</div>
                 </div>
               </div>

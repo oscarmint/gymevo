@@ -1,16 +1,18 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-08-28 | Sesión actual: 1
 
-⏸️ CHECKPOINT — Última acción completada: publicadas las 3 direcciones visuales A/B/C (docs/revisiones/direcciones-abc.html) / Siguiente acción exacta: esperar que el usuario elija A, B, C, combine o pida otras 3
+⏸️ CHECKPOINT — Última acción completada: FICHA-ARTE.md cerrada y aprobada (opción C "Cuaderno de Sala") / Siguiente acción exacta: pedir OK para pasar a Sesión 3 (página de ventas)
 
-## Dirección de Arte (Sesión 2 — EN CURSO, ficha aún no cerrada)
-- FICHA-ARTE.md: NO existe todavía — se crea al cerrar con la opción elegida
-- ¿Hubo referencia visual del usuario?: NO → REFERENCIA-INVESTIGACIÓN, se investigó por líderes del nicho (16, PASO 0.2bis)
-- TABLA DE LÍDERES: Hevy (número del día + celebración de PRs, dark, azul/lima, tabs) · Fitbod (cards de datos tipo bento, acento alta energía, mapa de calor muscular) · Strong (registro de series sin fricción, minimalista)
-- Arquetipo: Héroe (audaz, energía, protector) — keywords: directo, capaz, sin-rodeos, protector
-- Mundo del sujeto (gym real): disco de pesas (plate) → anillo de temporizador · cinta de precaución → botón de Rescate · tiza de magnesio → marca de "hecho"
-- 3 opciones publicadas en `docs/revisiones/direcciones-abc.html` (también como Artifact): A "Placa de Hierro" (dark frío, lima #C6FF3D, Figtree, hero numérico+lista) · B "Modo Bento" (dark cálido, ámbar #FF8A3D, Bricolage+Instrument Sans, bento cards) · C "Cuaderno de Sala" (claro cálido, verde oscurecido #5C7A1F, Instrument Sans, timeline editorial)
-- Pendiente: elección del usuario (elegir/combinar/otras 3/ajustar)
+## Dirección de Arte (Sesión 2 — CERRADA, cosa juzgada)
+- FICHA-ARTE.md: existe y aprobada — 28/08/2026 (ver archivo en la raíz)
+- ¿Hubo referencia visual del usuario?: NO → REFERENCIA-INVESTIGACIÓN (fusión Hevy/Fitbod/Strong, 16 PASO 0.2bis)
+- Opción elegida: **C — "Cuaderno de Sala"** (el usuario detectó un bug de layout en el primer render — hueco vacío antes del botón de Rescate — ya corregido y reverificado)
+- Resumen: fondo `#F5F1EA` · superficie `#FFFFFF` · texto `#211D17`/`#8A7F6A` · acento `#5C7A1F` (verde tinta, solo en progreso/CTA/check) · Display y Body: **Instrument Sans** única familia · radio 14-16px cards, 100px pills
+- Personalidad: Sobrio (dominante) · Técnico · Cálido — voz: experto sobrio con calidez cercana
+- Dispositivo ownable: tachado verde sobre ejercicio completado (estilo cuaderno real) + chips de meta con borde fino
+- Modo: claro — derivado porque el avatar busca calma/certeza, no adrenalina (evita el reflejo "fitness = oscuro + neón")
+- REGISTRO ANTI-REPETICIÓN: verde `#5C7A1F` + Instrument Sans vetados para el próximo proyecto del SO
+- Página comparativa (evidencia, incluye las descartadas A/B): `docs/revisiones/direcciones-abc.html`
 
 ## Qué es esta app (3 líneas máximo)
 App con dos rutas de nivel: Ruta Principiante (programa fijo de 90 días que dice exactamente qué hacer cada día) y Ruta Intermedio (rutinas efectivas con progresión para salir del estancamiento), ambas en gimnasios comerciales (Smart Fit/Bodytech), con alternativas de un toque cuando la máquina está ocupada. Monetización por suscripción (Freemium: semana 1 gratis, luego de pago).
@@ -86,14 +88,15 @@ Total: 6 pantallas únicas (dentro del límite de 8).
 - `user_progress` (usuario): user_id, racha_actual, ultimo_dia_completado, hitos desbloqueados
 
 ## Sesiones completadas ✅
-- Sesión 1 — Validación (del usuario) + avatar + monetización (02C) + framework + arquitectura + modelo de datos + auth — cerrada 28/08/2026
+- Sesión 1 — Validación + avatar + monetización (02C) + framework + arquitectura + modelo de datos + auth — cerrada 28/08/2026
+- Sesión 2 — Identidad visual: FICHA-ARTE.md cerrada, opción C "Cuaderno de Sala" — cerrada 28/08/2026
 
 ## Sesión en progreso 🔧
-(ninguna — esperando OK del usuario para arrancar Sesión 2)
+(ninguna — esperando OK del usuario para arrancar Sesión 3)
 
 ## Próximas sesiones 📋
-- Sesión 2: identidad visual y sistema de diseño (3 opciones A/B/C)
-- Sesión 3: página de ventas
+- Sesión 3: página de ventas (landing con las 10 secciones canónicas)
+- Sesión 4: onboarding, paywall y login
 
 ## Problemas conocidos ⚠️
 (ninguno aún)
