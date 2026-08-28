@@ -31,6 +31,11 @@
   --accent: #5c7a1f;
   --accent-2: #5c7a1f; /* sin 2ª nota todavía (ver FICHA-ARTE) */
 
+  /* ── SEMÁNTICOS (FICHA-ARTE.md → Brand kit final) ── */
+  --status-success: #5c7a1f;
+  --status-error: #c0392b;
+  --status-warning: #b8860b;
+
   /* ── FORMA ── */
   --radius-card: 16px;
   --radius-button: 14px;

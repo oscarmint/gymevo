@@ -38,4 +38,5 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+.tsbuildinfo-hook
 next-env.d.ts

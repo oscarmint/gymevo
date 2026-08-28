@@ -1,7 +1,7 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-08-28 | Sesión actual: 1
 
-⏸️ CHECKPOINT — Última acción completada: onboarding + paywall + login construidos y probados de punta a punta en el navegador (build+tsc limpios) / Siguiente acción exacta: pedir OK para pasar a Sesión 5 (app interna)
+⏸️ CHECKPOINT — Última acción completada: app interna (Plan del día + Historial + Perfil) construida, probada en el navegador y con un bug de concurrencia real corregido (ver Problemas conocidos) / Siguiente acción exacta: pedir OK para pasar a Sesión 6 (integraciones reales y seguridad)
 
 ## Dirección de Arte (Sesión 2 — CERRADA, cosa juzgada)
 - FICHA-ARTE.md: existe y aprobada — 28/08/2026 (ver archivo en la raíz)
@@ -57,8 +57,15 @@ App con dos rutas de nivel: Ruta Principiante (programa fijo de 90 días que dic
 - Primera victoria (<5 min): elegir nivel + meta metabólica y ver la rutina exacta del día, lista para iniciar cronómetro
 - Pendiente de definir con el usuario más adelante (no bloquea el plan maestro): cómo pasa un Principiante a Intermedio (¿automático al día 90, o el usuario elige entrar directo a Intermedio si ya no es novato?)
 
+## Gamificación y retención (loop implementado en Sesión 5)
+- Loop del hábito (Hooked): Gatillo [hora de entreno que eligió en el onboarding] → Acción [marcar cada ejercicio de hoy como hecho] → Recompensa [tachado verde + racha que sube] → Inversión [historial de pesos acumulado — cuesta más abandonar mientras más tiene registrado]
+- Mecánica elegida: racha diaria (sin XP ni ligas — el nicho y la personalidad "Sobria" de FICHA-ARTE no piden más capas)
+- Primera victoria que celebra el onboarding (<60s): ver el plan del Día 1 generado con su meta real (ya construida en Sesión 4)
+- Momentos emocionales (56) implementados: M0 ritual diario (pantalla `/app`) · M4 racha en riesgo (llama apagada, sin pánico ni rojo) · hito de racha 7/30/100 días (número que cuenta, sin confetti — coherente con el compilador de personalidad "Sobrio" de FICHA-ARTE)
+- Notificaciones push: NO implementadas todavía (requieren backend/servicio push — Sesión 6)
+
 ## Secuencia maestra de construcción (NO saltar)
-- Estado de la secuencia: pendiente de iniciar — próximo paso: referencias visuales (B4) y Plan Maestro (B5)
+- Estado de la secuencia: Landing ✅ construida · Onboarding ✅ construido · Paywall ✅ construido · Login ✅ construido (mock) · App interna ✅ construida (sin backend) · Servicios externos: pendiente (Sesión 6)
 - Ruta aprobada: `/` → `/onboarding` → `/paywall` → `/login` → `/app`
 
 ## Decisiones técnicas (NO re-discutir sin pedirlo el usuario)
@@ -92,13 +99,14 @@ Total: 6 pantallas únicas (dentro del límite de 8).
 - Sesión 2 — Identidad visual: FICHA-ARTE.md cerrada, opción C "Cuaderno de Sala" — cerrada 28/08/2026
 - Sesión 3 — Página de ventas: Next.js scaffolded, kit de landing (plantillas-codigo/landing) copiado a components/landing, tokens.css tematizado con FICHA-ARTE, copy marcado en docs/copy/landing.md, 10 secciones canónicas compuestas en app/page.tsx, páginas legales creadas (/privacidad /terminos /reembolsos) — cerrada 28/08/2026
 - Sesión 4 — Onboarding + Paywall + Login: `/onboarding` (6 pasos: nivel, meta, frustración con eco de dolores reales, reconocimiento personalizado por objeción, horario, compromiso de días/semana con slider) → `/onboarding/generando` (loading persuasivo 4.8s con líneas reales) → `/paywall` (timeline de trial Hoy/Día 6/Día 7, planes anual+mensual, CTA, trust row) → `/login` (magic link mock con estados enviando/enviado/error). Probado de punta a punta en navegador — cerrada 28/08/2026
+- Sesión 5 — App interna: shell de 3 secciones (`/app` Plan del día, `/app/historial`, `/app/perfil`) con tab bar inferior. Plan del día = M0 "ritual diario" (56): split de 4 días (Empuje/Tirón/Piernas/Full) según catálogo de 20 ejercicios con alternativas, registro de peso por serie, Botón de Rescate (swap a alternativa), temporizador de descanso, tachado verde al completar (dispositivo ownable de FICHA-ARTE), estado M4 "racha en riesgo" (llama apagada, sin pánico) y celebración de hito de racha (7/30/100 días, estilo sobrio sin confetti). Progreso en localStorage (`lib/routine.ts`) — cerrada 28/08/2026
 
 ## Sesión en progreso 🔧
-(ninguna — esperando OK del usuario para arrancar Sesión 5)
+(ninguna — esperando OK del usuario para arrancar Sesión 6)
 
 ## Próximas sesiones 📋
-- Sesión 5: app interna (selector de nivel, plan del día, Botón de Rescate, temporizador, historial)
 - Sesión 6: integraciones reales (Supabase, Hotmart, dominio) y seguridad
+- Sesión 7: testing, animaciones, pulido y rigor de entrega
 
 ## Problemas conocidos ⚠️
 - Visual del hero y los 4 frames del carrusel ("La app por dentro") son PLACEHOLDERS honestos (marco punteado + ilustración/nombre de pantalla) — se reemplazan por screenshots reales cuando la app interna exista (Sesión 5). No declarar la landing 100% terminada hasta ese reemplazo (regla del 19).
@@ -106,6 +114,9 @@ Total: 6 pantallas únicas (dentro del límite de 8).
 - Dominio real de la app aún no existe — el email de soporte usa `soporte@gymevo.app` como placeholder hasta que el usuario compre el dominio (Sesión 6, servicios externos).
 - Onboarding/paywall/login (Sesión 4) son UI real y funcional pero sin backend: las respuestas viven en sessionStorage (no hay cuenta todavía, según el modelo onboarding-first), el botón de pago del paywall navega a /login en vez de abrir el checkout real de Hotmart, y el login no envía emails de verdad. Todo esto se conecta a Supabase Auth + Hotmart real en la Sesión 6 — está señalado con comentarios "Sesión 6" en el código (lib/onboarding.ts, app/paywall/page.tsx, app/login/page.tsx).
 - Paywall construido como página única (no la secuencia de 3 pantallas que recomienda 50 §C0 para +37% de conversión) — decisión de alcance para esta sesión; se puede partir en 3 pasos más adelante si los datos lo justifican.
+- App interna (Sesión 5) sin backend todavía: el progreso (racha, día, historial de pesos) vive en localStorage del navegador, se pierde si el usuario cambia de dispositivo o borra datos. Sesión 6 lo mueve a las tablas `workout_logs`/`user_progress` de Supabase.
+- Las ilustraciones de ejercicios son solo texto (nombre + series/reps), sin dibujo biomecánico — el documento original de la idea pedía "ilustraciones anatómicas sencillas". Pendiente de diseño gráfico si se quiere esa capa visual; no es un placeholder deshonesto (no finge tener algo que no tiene), pero es una reducción de alcance visual a anotar.
+- Corregido durante la Sesión 5: un bug real de condición de carrera si el usuario tocaba "Registrar" en dos ejercicios muy rápido (el segundo tap sobrescribía el primero) — se arregló usando actualización funcional de estado (setState con función, no valor directo). Verificado con clics simultáneos simulados.
 
 ## Pendientes del usuario (acciones que el usuario debe hacer)
 - [ ] Ninguna acción pendiente por ahora — sigo yo con la Sesión 4 (onboarding, paywall, login)
