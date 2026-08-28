@@ -29,9 +29,11 @@ App con dos rutas de nivel: Ruta Principiante (programa fijo de 90 días que dic
 - Frases literales del cliente (para copy): "Se la pasan comadreando o coqueteando" · "El exceso de personas hace que sea imposible usar las máquinas" · "Sigue cambiándome de rutina casi a diario" · "Llevo meses y me veo igual" · "Entrenar sin estrategia"
 
 ## Estrategia de monetización (Sesión 1 — NO cambiar sin validar)
-- Modelo: Freemium con trial de semana 1 completa gratis, semanas 2-12 bajo muro de pago (definido por el propio reporte del usuario; se valida contra la matriz A-F de 02C antes de construir el paywall)
-- Pricing propuesto: $4.99 USD/mes o $29.99 USD/año (benchmark Hevy $23.99/año)
-- Riesgo de churn identificado: día 90 (fin del programa) — mitigación propuesta: desbloqueo automático de "Nivel Intermedio"
+- Modelo: **Modelo 2 — Onboarding + Paywall de prueba** (decidido por el SO, matriz A-F de 02C: fitness/wellness B2C, uso diario, necesita HÁBITO). Reemplaza el "Freemium" que proponía el documento del usuario — el freemium puro es el modelo de PEOR conversión (2.1%) según 02C; el onboarding+trial es el que usan Duolingo/Cal AI/Noom con hasta +234% de conversión.
+  Flujo: Onboarding personalizado (elige nivel + meta metabólica) → ve su plan del Día 1 generado para él → Paywall → trial de 7 días con acceso completo → pago.
+- Trial: 7 días (equivalente a la "semana 1 gratis" del reporte, pero como trial estructurado con tarjeta, no como freemium indefinido) — aviso claro antes del cobro en el Día 6 (transparencia radical, responde directo a la objeción #2 del avatar: "¿cobro oculto?")
+- Pricing: $4.99 USD/mes o $29.99 USD/año ≈ $2.49/mes mostrado como "2 meses gratis" (benchmark Hevy $23.99/año) — mantiene el precio que ya validó el usuario
+- Riesgo de churn identificado: día 90 (fin del programa Principiante) — mitigación: transición fluida a la Ruta Intermedio (no es "desbloqueo especial", es la ruta que ya existe para seguir progresando)
 
 ## MVP — funciones núcleo (ajustado con la corrección del usuario, Sesión 1)
 0. Selector de NIVEL al entrar: Principiante (plan fijo 90 días) vs Intermedio (rutina de progresión anti-estancamiento) — antes del selector de meta metabólica
@@ -49,8 +51,9 @@ App con dos rutas de nivel: Ruta Principiante (programa fijo de 90 días que dic
 - Ruta aprobada: `/` → `/onboarding` → `/paywall` → `/login` → `/app`
 
 ## Decisiones técnicas (NO re-discutir sin pedirlo el usuario)
-- Framework: por decidir en Sesión 1 (arquitectura) — se evaluará offline-first por el riesgo de mala señal en sótanos de gimnasio (riesgo #3 del reporte)
-- [pendiente de completar en el resto de Sesión 1]
+- Framework: **Next.js App Router** (decidido el 28/08/2026) — el default del stack pineado (51): necesitamos SEO en la landing de ventas, API routes para el webhook de Hotmart, y auth. Vite queda descartado porque es solo para herramientas puras post-login sin landing pública.
+- Arquitectura offline-first a evaluar en Sesión 1 (04-ARQUITECTURA) por el riesgo de mala señal en sótanos de gimnasio (riesgo #3 del reporte del usuario)
+- [pendiente de completar en el resto de Sesión 1: base de datos, auth]
 
 ## Sesiones completadas ✅
 (ninguna aún)
