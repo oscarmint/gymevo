@@ -33,7 +33,7 @@ export default function PaywallPage() {
 
   return (
     <div className="flex min-h-dvh flex-col bg-[var(--bg)] px-5 py-6 [font-family:var(--font-body)]">
-      <div className="mx-auto flex w-full max-w-[420px] flex-1 flex-col">
+      <div className="mx-auto flex w-full max-w-md flex-1 flex-col">
         {/* (1) Cierre — SIEMPRE visible, nunca con delay */}
         <button
           type="button"
@@ -46,7 +46,7 @@ export default function PaywallPage() {
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
           {/* (2) Headline con la META real del usuario */}
-          <h1 className="mt-2 text-balance text-[28px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+          <h1 className="mt-2 text-balance text-3xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
             Tu plan para <span className="text-[var(--accent)]">{meta}</span> está listo
           </h1>
           <p className="mt-2 text-[14.5px] text-[var(--text-secondary)]">
@@ -96,14 +96,31 @@ export default function PaywallPage() {
         </motion.button>
 
         {/* (4bis) La verdad del puente del trial — 3 bullets obligatorios */}
-        <ul className="mt-4 flex flex-col gap-1.5 text-center text-[13px] text-[var(--text-secondary)]">
+        <ul className="mt-4 flex flex-col gap-1.5 text-center text-xs text-[var(--text-secondary)]">
           <li>✓ Hoy no pagas nada</li>
           <li>✓ Te avisamos 1 día antes del cobro</li>
           <li>✓ Cancela en 1 tap</li>
         </ul>
 
+        {/* Mini-FAQ de transparencia — responde de frente la objeción #1 de Mateo
+            (miedo al cobro oculto), en formato pregunta-respuesta explícito. */}
+        <div className="mt-6 flex flex-col gap-3 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-4">
+          <div>
+            <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Me cobrarán hoy?</p>
+            <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+              No. Tienes 7 días gratis. Te avisamos por correo antes de que termine tu prueba.
+            </p>
+          </div>
+          <div>
+            <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Puedo cancelar fácil?</p>
+            <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+              Sí, cuando quieras, con un toque desde tu perfil — sin llamadas ni trámites.
+            </p>
+          </div>
+        </div>
+
         {/* (8) Salida limpia */}
-        <div className="mt-5 flex items-center justify-center gap-1 text-[14px] text-[var(--text-tertiary)]">
+        <div className="mt-5 flex items-center justify-center gap-1 text-sm text-[var(--text-tertiary)]">
           <button type="button" onClick={() => router.push('/')} className="px-2 py-3">
             Ahora no
           </button>
@@ -143,11 +160,11 @@ function TimelineTrial() {
                 n.estado === 'lleno' ? 'bg-[var(--accent)]' : 'border-2 border-[var(--accent)] bg-transparent'
               }`}
             />
-            {i < nodos.length - 1 && <span className="w-[2px] flex-1 bg-[var(--accent)]" />}
+            {i < nodos.length - 1 && <span className="w-px flex-1 bg-[var(--accent)]" />}
           </div>
           <div className="pb-5">
-            <p className="text-[15px] font-semibold text-[var(--text-primary)]">{n.titulo}</p>
-            <p className="text-[13px] text-[var(--text-secondary)]">{n.sub}</p>
+            <p className="text-base font-semibold text-[var(--text-primary)]">{n.titulo}</p>
+            <p className="text-xs text-[var(--text-secondary)]">{n.sub}</p>
           </div>
         </div>
       ))}
@@ -192,9 +209,9 @@ function PlanCard({
       </div>
       <div className="flex items-center gap-3">
         <div className="text-right">
-          <p className="text-[22px] font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+          <p className="text-2xl font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
             {precioMes}
-            <span className="text-[13px] font-normal text-[var(--text-secondary)]">/mes</span>
+            <span className="text-xs font-normal text-[var(--text-secondary)]">/mes</span>
           </p>
         </div>
         <span
