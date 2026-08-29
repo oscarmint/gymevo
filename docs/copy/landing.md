@@ -7,10 +7,11 @@
 > da un plan fijo y un ejercicio alternativo al instante cuando el tuyo está ocupado."
 
 ## 1. HERO
-- H1: Sabes qué hacer en el gym con [acento]la máquina ocupada[/acento]
+- H1: Nunca más [acento]sin saber qué hacer[/acento] en el gym (9 palabras, 4U's: útil+urgente+específico+único vía el eco literal del dolor #1 de FICHA-AVATAR.md — "vergüenza de quedarme parado sin saber qué más hacer")
 - Subtítulo: El Botón de Rescate te da otro ejercicio [b]al instante[/b] sin pensar ni improvisar
 - CTA: Crear mi plan de mañana gratis → /onboarding
 - Prueba social (día 1, honesta): Garantía Hotmart de 7 días — sin preguntas
+- CTA repetido: tras la Solución (mecanismo) y tras la Garantía — mismo label/destino, para que quien ya está convencido no tenga que volver a buscar el botón
 
 ## 2. PROBLEMA
 1. ¿Te da miedo lesionarte por no saber la técnica?
@@ -49,10 +50,10 @@
 - Anual (recomendado): $2.50/mes, se cobra $29.99/año, 6 meses gratis
 - Mensual: $4.99/mes
 
-## 7. GARANTÍA
+## 7. GARANTÍA (FICHA-MERCADO.md: Prueba 7 días · Garantía 14 días · 14>7 ✓)
 - Nombre: la Garantía del Primer Plan Claro
-- Condición: Si en 7 días no sabes exactamente qué hacer cada vez que entras al gimnasio, escribes un correo y te devolvemos todo. [b]Sin preguntas.[/b]
-- Piso legal: garantía Hotmart de 7 días
+- Condición: 7 días de prueba sin que se te cobre nada. Si igual pagas y no sabes qué hacer, tienes [b]7 días más[/b] para pedir tu dinero de vuelta. Sin preguntas.
+- Piso legal: garantía Hotmart
 
 ## 8. FAQ (objeciones reales de la ficha)
 1. ¿Esto de verdad me enseña a entrenar, o es un PDF con dibujitos? → No: cada día ves el ejercicio exacto con ilustración simple, series, peso y descanso — [b]nada que armar tú mismo[/b].

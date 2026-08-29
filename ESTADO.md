@@ -1,7 +1,7 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-08-28 | Sesión actual: 1
 
-⏸️ CHECKPOINT — Última acción completada: app interna (Plan del día + Historial + Perfil) construida, probada en el navegador y con un bug de concurrencia real corregido (ver Problemas conocidos) / Siguiente acción exacta: pedir OK para pasar a Sesión 6 (integraciones reales y seguridad)
+⏸️ CHECKPOINT — Última acción completada: landing elevada (headline nuevo con eco literal del dolor #1, CTA repetido tras mecanismo y garantía, garantía corregida a 7+7 días) y auditada a 375px contra las reglas de escaneabilidad / Siguiente acción exacta: pedir OK para pasar a Sesión 6 (integraciones reales y seguridad)
 
 ## Dirección de Arte (Sesión 2 — CERRADA, cosa juzgada)
 - FICHA-ARTE.md: existe y aprobada — 28/08/2026 (ver archivo en la raíz)
@@ -101,6 +101,7 @@ Total: 6 pantallas únicas (dentro del límite de 8).
 - Sesión 2 — Identidad visual: FICHA-ARTE.md cerrada, opción C "Cuaderno de Sala" — cerrada 28/08/2026
 - Sesión 3 — Página de ventas: Next.js scaffolded, kit de landing (plantillas-codigo/landing) copiado a components/landing, tokens.css tematizado con FICHA-ARTE, copy marcado en docs/copy/landing.md, 10 secciones canónicas compuestas en app/page.tsx, páginas legales creadas (/privacidad /terminos /reembolsos) — cerrada 28/08/2026
 - Sesión 4 — Onboarding + Paywall + Login: `/onboarding` (6 pasos: nivel, meta, frustración con eco de dolores reales, reconocimiento personalizado por objeción, horario, compromiso de días/semana con slider) → `/onboarding/generando` (loading persuasivo 4.8s con líneas reales) → `/paywall` (timeline de trial Hoy/Día 6/Día 7, planes anual+mensual, CTA, trust row) → `/login` (magic link mock con estados enviando/enviado/error). Probado de punta a punta en navegador — cerrada 28/08/2026
+- Sesión 3bis (29/08/2026) — Elevación de la landing para conversión/escaneabilidad: headline nuevo ("Nunca más sin saber qué hacer en el gym", eco literal del dolor #1 de FICHA-AVATAR) · CTA repetido tras la Solución y tras la Garantía (antes solo estaba en hero/mid-page/oferta) · garantía corregida para reflejar los 14 días reales (7 trial + 7 Hotmart, FICHA-MERCADO.md) en vez de decir "7 días" de forma ambigua. Auditoría de escaneabilidad a 375px pasada — ver tabla abajo.
 - Sesión 5 — App interna: shell de 3 secciones (`/app` Plan del día, `/app/historial`, `/app/perfil`) con tab bar inferior. Plan del día = M0 "ritual diario" (56): split de 4 días (Empuje/Tirón/Piernas/Full) según catálogo de 20 ejercicios con alternativas, registro de peso por serie, Botón de Rescate (swap a alternativa), temporizador de descanso, tachado verde al completar (dispositivo ownable de FICHA-ARTE), estado M4 "racha en riesgo" (llama apagada, sin pánico) y celebración de hito de racha (7/30/100 días, estilo sobrio sin confetti). Progreso en localStorage (`lib/routine.ts`) — cerrada 28/08/2026
 
 ## Sesión en progreso 🔧

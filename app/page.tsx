@@ -11,7 +11,7 @@ import { Garantia } from '@/components/landing/Garantia';
 import { Faq } from '@/components/landing/Faq';
 import { CtaFinal } from '@/components/landing/CtaFinal';
 import { FooterLegal } from '@/components/landing/FooterLegal';
-import { StickyCtaMobile } from '@/components/landing/ui';
+import { CtaButton, StickyCtaMobile } from '@/components/landing/ui';
 
 // Modelo 2 (onboarding-first, decidido en Sesión 1 — ver ESTADO.md): el CTA
 // lleva a /onboarding, nunca al checkout directo desde el hero.
@@ -25,7 +25,7 @@ export default function LandingGymEvo() {
       <Hero
         appName="GymEvo"
         loginHref="/login"
-        h1Marked="Sabes qué hacer en el gym con [acento]la máquina ocupada[/acento]"
+        h1Marked="Nunca más [acento]sin saber qué hacer[/acento] en el gym"
         subtitleMarked="El Botón de Rescate te da otro ejercicio [b]al instante[/b] sin pensar ni improvisar"
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
@@ -77,6 +77,13 @@ export default function LandingGymEvo() {
           despues: 'Ejecutas tu plan sin pensar, con alternativa siempre lista.',
         }}
       />
+
+      {/* CTA repetido tras el mecanismo — para quien ya está convencido no tiene que buscar el botón */}
+      <div className="bg-[var(--bg)] px-5 pb-12 text-center">
+        <CtaButton href={CTA_HREF} fullMobile={false}>
+          {CTA_LABEL}
+        </CtaButton>
+      </div>
 
       {/* 5. LA APP POR DENTRO — placeholders honestos (app interna: Sesión 5) */}
       <AppPorDentro
@@ -134,12 +141,19 @@ export default function LandingGymEvo() {
         }}
       />
 
-      {/* 7. GARANTÍA */}
+      {/* 7. GARANTÍA — 7 días de prueba sin cobro + 7 días más de devolución tras el cobro (FICHA-MERCADO.md: 14 > 7) */}
       <Garantia
         nombre="la Garantía del Primer Plan Claro"
-        condicionMarked="Si en 7 días no sabes exactamente qué hacer cada vez que entras al gimnasio, escribes un correo y te devolvemos todo. [b]Sin preguntas.[/b]"
-        pisoLegal="Respaldada por la garantía Hotmart de 7 días"
+        condicionMarked="7 días de prueba sin que se te cobre nada. Si igual pagas y no sabes qué hacer, tienes [b]7 días más[/b] para pedir tu dinero de vuelta. Sin preguntas."
+        pisoLegal="Respaldada por la garantía Hotmart"
       />
+
+      {/* CTA repetido tras la garantía — ya no queda ninguna objeción sin responder */}
+      <div className="bg-[var(--surface)] px-5 pb-12 text-center">
+        <CtaButton href={CTA_HREF} fullMobile={false}>
+          {CTA_LABEL}
+        </CtaButton>
+      </div>
 
       {/* 8. FAQ */}
       <Faq
