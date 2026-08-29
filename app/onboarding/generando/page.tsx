@@ -27,7 +27,8 @@ export default function GenerandoPlanPage() {
   const lineas = [
     `Analizando tu nivel: ${nivel.toLowerCase()}`,
     `Ajustando a tu meta: ${meta}`,
-    `Calculando tu plan de ${dias} días/semana`,
+    'Calculando el tiempo bajo tensión de cada ejercicio',
+    `Armando tu plan de ${dias} días/semana`,
     `Preparando tu Botón de Rescate para ${horario}`,
   ];
 
@@ -46,7 +47,7 @@ export default function GenerandoPlanPage() {
         }, pasoMs * (i + 1))
       );
     });
-    timers.push(setTimeout(() => router.push('/paywall'), DURACION_TOTAL_MS + 500));
+    timers.push(setTimeout(() => router.push('/onboarding/plan'), DURACION_TOTAL_MS + 500));
     return () => timers.forEach(clearTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -59,7 +60,7 @@ export default function GenerandoPlanPage() {
       aria-live="polite"
       aria-busy={pct < 100}
     >
-      <div className="relative flex size-[120px] items-center justify-center">
+      <div className="relative flex size-32 items-center justify-center">
         <svg width="120" height="120" viewBox="0 0 120 120" className="-rotate-90">
           <circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface-2)" strokeWidth="9" />
           <motion.circle
@@ -80,11 +81,11 @@ export default function GenerandoPlanPage() {
         </span>
       </div>
 
-      <h1 className="mt-8 text-[23px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">
+      <h1 className="mt-8 text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">
         Construyendo tu plan…
       </h1>
 
-      <ul className="mt-8 flex w-full max-w-[320px] flex-col gap-4">
+      <ul className="mt-8 flex w-full max-w-xs flex-col gap-4">
         {lineas.map((texto, i) => {
           const estado = i < lineaActiva ? 'hecha' : i === lineaActiva ? 'activa' : 'pendiente';
           return (
@@ -93,7 +94,7 @@ export default function GenerandoPlanPage() {
               initial={{ opacity: 0, y: reduce ? 0 : 8 }}
               animate={{ opacity: estado === 'pendiente' ? 0.4 : 1, y: 0 }}
               transition={{ duration: 0.2 }}
-              className="flex items-start gap-3 text-[15px] text-[var(--text-primary)]"
+              className="flex items-start gap-3 text-sm text-[var(--text-primary)]"
             >
               <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center">
                 {estado === 'hecha' ? (

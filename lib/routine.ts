@@ -12,37 +12,41 @@ export interface Ejercicio {
   series: number;
   reps: string;
   descansoSeg: number;
+  /** Tempo de ejecución: bajada-pausa-subida en segundos (ej. "3-1-1") — el
+   * detalle de técnica que responde al dolor #1 de FICHA-AVATAR (miedo a
+   * lesionarse por mala técnica). Compuestos van más lentos que aislados. */
+  tempo: string;
   alternativaId: string;
 }
 
 type TipoDia = 'empuje' | 'tiron' | 'piernas' | 'full';
 
 const CATALOGO: Record<string, Ejercicio> = {
-  press_banca: { id: 'press_banca', nombre: 'Press de banca', grupo: 'Pecho', series: 4, reps: '8', descansoSeg: 90, alternativaId: 'press_mancuernas' },
-  press_mancuernas: { id: 'press_mancuernas', nombre: 'Press con mancuernas', grupo: 'Pecho', series: 4, reps: '10', descansoSeg: 75, alternativaId: 'press_banca' },
-  press_militar: { id: 'press_militar', nombre: 'Press militar', grupo: 'Hombro', series: 3, reps: '10', descansoSeg: 75, alternativaId: 'press_arnold' },
-  press_arnold: { id: 'press_arnold', nombre: 'Press Arnold', grupo: 'Hombro', series: 3, reps: '10', descansoSeg: 75, alternativaId: 'press_militar' },
-  fondos: { id: 'fondos', nombre: 'Fondos en banco', grupo: 'Tríceps', series: 3, reps: '12', descansoSeg: 60, alternativaId: 'triceps_polea' },
-  triceps_polea: { id: 'triceps_polea', nombre: 'Extensión de tríceps en polea', grupo: 'Tríceps', series: 3, reps: '12', descansoSeg: 60, alternativaId: 'fondos' },
+  press_banca: { id: 'press_banca', nombre: 'Press de banca', grupo: 'Pecho', series: 4, reps: '8', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_mancuernas' },
+  press_mancuernas: { id: 'press_mancuernas', nombre: 'Press con mancuernas', grupo: 'Pecho', series: 4, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'press_banca' },
+  press_militar: { id: 'press_militar', nombre: 'Press militar', grupo: 'Hombro', series: 3, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'press_arnold' },
+  press_arnold: { id: 'press_arnold', nombre: 'Press Arnold', grupo: 'Hombro', series: 3, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'press_militar' },
+  fondos: { id: 'fondos', nombre: 'Fondos en banco', grupo: 'Tríceps', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'triceps_polea' },
+  triceps_polea: { id: 'triceps_polea', nombre: 'Extensión de tríceps en polea', grupo: 'Tríceps', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'fondos' },
 
-  remo_barra: { id: 'remo_barra', nombre: 'Remo con barra', grupo: 'Espalda', series: 4, reps: '10', descansoSeg: 90, alternativaId: 'remo_maquina' },
-  remo_maquina: { id: 'remo_maquina', nombre: 'Remo en máquina', grupo: 'Espalda', series: 4, reps: '10', descansoSeg: 75, alternativaId: 'remo_barra' },
-  jalon_pecho: { id: 'jalon_pecho', nombre: 'Jalón al pecho', grupo: 'Espalda', series: 4, reps: '10', descansoSeg: 75, alternativaId: 'dominadas_asistidas' },
-  dominadas_asistidas: { id: 'dominadas_asistidas', nombre: 'Dominadas asistidas', grupo: 'Espalda', series: 3, reps: '8', descansoSeg: 90, alternativaId: 'jalon_pecho' },
-  curl_biceps: { id: 'curl_biceps', nombre: 'Curl de bíceps', grupo: 'Bíceps', series: 3, reps: '12', descansoSeg: 60, alternativaId: 'curl_martillo' },
-  curl_martillo: { id: 'curl_martillo', nombre: 'Curl martillo', grupo: 'Bíceps', series: 3, reps: '12', descansoSeg: 60, alternativaId: 'curl_biceps' },
+  remo_barra: { id: 'remo_barra', nombre: 'Remo con barra', grupo: 'Espalda', series: 4, reps: '10', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'remo_maquina' },
+  remo_maquina: { id: 'remo_maquina', nombre: 'Remo en máquina', grupo: 'Espalda', series: 4, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_barra' },
+  jalon_pecho: { id: 'jalon_pecho', nombre: 'Jalón al pecho', grupo: 'Espalda', series: 4, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'dominadas_asistidas' },
+  dominadas_asistidas: { id: 'dominadas_asistidas', nombre: 'Dominadas asistidas', grupo: 'Espalda', series: 3, reps: '8', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'jalon_pecho' },
+  curl_biceps: { id: 'curl_biceps', nombre: 'Curl de bíceps', grupo: 'Bíceps', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_martillo' },
+  curl_martillo: { id: 'curl_martillo', nombre: 'Curl martillo', grupo: 'Bíceps', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_biceps' },
 
-  sentadilla: { id: 'sentadilla', nombre: 'Sentadilla', grupo: 'Piernas', series: 4, reps: '8', descansoSeg: 120, alternativaId: 'prensa' },
-  prensa: { id: 'prensa', nombre: 'Prensa de piernas', grupo: 'Piernas', series: 4, reps: '10', descansoSeg: 90, alternativaId: 'sentadilla' },
-  peso_muerto_rumano: { id: 'peso_muerto_rumano', nombre: 'Peso muerto rumano', grupo: 'Isquiotibiales', series: 3, reps: '10', descansoSeg: 90, alternativaId: 'curl_femoral' },
-  curl_femoral: { id: 'curl_femoral', nombre: 'Curl femoral', grupo: 'Isquiotibiales', series: 3, reps: '12', descansoSeg: 75, alternativaId: 'peso_muerto_rumano' },
-  zancadas: { id: 'zancadas', nombre: 'Zancadas', grupo: 'Piernas', series: 3, reps: '12', descansoSeg: 75, alternativaId: 'extension_cuadriceps' },
-  extension_cuadriceps: { id: 'extension_cuadriceps', nombre: 'Extensión de cuádriceps', grupo: 'Piernas', series: 3, reps: '12', descansoSeg: 60, alternativaId: 'zancadas' },
+  sentadilla: { id: 'sentadilla', nombre: 'Sentadilla', grupo: 'Piernas', series: 4, reps: '8', descansoSeg: 120, tempo: '3-1-1', alternativaId: 'prensa' },
+  prensa: { id: 'prensa', nombre: 'Prensa de piernas', grupo: 'Piernas', series: 4, reps: '10', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'sentadilla' },
+  peso_muerto_rumano: { id: 'peso_muerto_rumano', nombre: 'Peso muerto rumano', grupo: 'Isquiotibiales', series: 3, reps: '10', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'curl_femoral' },
+  curl_femoral: { id: 'curl_femoral', nombre: 'Curl femoral', grupo: 'Isquiotibiales', series: 3, reps: '12', descansoSeg: 75, tempo: '2-1-1', alternativaId: 'peso_muerto_rumano' },
+  zancadas: { id: 'zancadas', nombre: 'Zancadas', grupo: 'Piernas', series: 3, reps: '12', descansoSeg: 75, tempo: '2-1-1', alternativaId: 'extension_cuadriceps' },
+  extension_cuadriceps: { id: 'extension_cuadriceps', nombre: 'Extensión de cuádriceps', grupo: 'Piernas', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'zancadas' },
 
-  press_hombros_mancuerna: { id: 'press_hombros_mancuerna', nombre: 'Press de hombros con mancuernas', grupo: 'Hombro', series: 3, reps: '10', descansoSeg: 75, alternativaId: 'press_militar' },
-  remo_un_brazo: { id: 'remo_un_brazo', nombre: 'Remo a un brazo', grupo: 'Espalda', series: 3, reps: '10', descansoSeg: 75, alternativaId: 'remo_maquina' },
-  plancha: { id: 'plancha', nombre: 'Plancha abdominal', grupo: 'Core', series: 3, reps: '40 seg', descansoSeg: 45, alternativaId: 'crunch_polea' },
-  crunch_polea: { id: 'crunch_polea', nombre: 'Crunch en polea', grupo: 'Core', series: 3, reps: '15', descansoSeg: 45, alternativaId: 'plancha' },
+  press_hombros_mancuerna: { id: 'press_hombros_mancuerna', nombre: 'Press de hombros con mancuernas', grupo: 'Hombro', series: 3, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'press_militar' },
+  remo_un_brazo: { id: 'remo_un_brazo', nombre: 'Remo a un brazo', grupo: 'Espalda', series: 3, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_maquina' },
+  plancha: { id: 'plancha', nombre: 'Plancha abdominal', grupo: 'Core', series: 3, reps: '40 seg', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_polea' },
+  crunch_polea: { id: 'crunch_polea', nombre: 'Crunch en polea', grupo: 'Core', series: 3, reps: '15', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha' },
 };
 
 const SPLIT: Record<TipoDia, string[]> = {
