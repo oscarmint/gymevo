@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Kit canónico del SO: se copia tal cual a components/landing/, no se
+    // lintea aquí (mismo criterio que tsconfig.json).
+    "plantillas-codigo/**",
+    "docs/**",
   ]),
 ]);
 

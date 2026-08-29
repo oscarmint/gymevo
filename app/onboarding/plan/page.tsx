@@ -19,17 +19,22 @@ const NOMBRES_RESTO_SEMANA = ['Tirón', 'Piernas', 'Full body'];
 export default function VistaPreviaDiaUnoPage() {
   const router = useRouter();
   const [respuestas, setRespuestas] = useState<RespuestasOnboarding | null>(null);
+  const [cargado, setCargado] = useState(false);
 
+  // sessionStorage no existe en el servidor: leerlo en el initializer de
+  // useState causa mismatch de hydration. Este efecto es la forma correcta.
   useEffect(() => {
     const r = leerRespuestas();
     if (!r) {
       router.replace('/onboarding');
       return;
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRespuestas(r);
+    setCargado(true);
   }, [router]);
 
-  if (!respuestas) return null;
+  if (!cargado || !respuestas) return null;
 
   const ejercicios = ejerciciosDeHoy(1);
   const nombreDia1 = nombreDeHoy(1);

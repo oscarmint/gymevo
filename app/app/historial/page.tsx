@@ -10,7 +10,10 @@ import { leerProgreso, obtenerEjercicio, type Progreso } from '@/lib/routine';
 export default function HistorialPage() {
   const [progreso, setProgreso] = useState<Progreso | null>(null);
 
+  // localStorage no existe en el servidor: leerlo en el initializer de
+  // useState causa mismatch de hydration. Este efecto es la forma correcta.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setProgreso(leerProgreso());
   }, []);
 

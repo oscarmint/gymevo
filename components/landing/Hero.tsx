@@ -7,6 +7,7 @@
 // fondo YA incluido · carga inmediata (fade simple, nada que compita con el LCP).
 
 import type { ReactNode } from 'react';
+import Link from 'next/link';
 import { motion } from 'motion/react';
 import { Camera } from 'lucide-react';
 import { CtaButton } from './ui';
@@ -66,15 +67,15 @@ export function Hero({
         }}
       />
 
-      <div className="mx-auto w-full max-w-[1140px] px-5">
+      <div className="mx-auto w-full max-w-6xl px-5">
         {/* Header 64px: marca a la izquierda, SOLO "Entrar" terciario a la derecha (19) */}
         <header className="flex h-16 items-center justify-between">
-          <a href="/" className="flex items-center gap-2 text-[16px] font-semibold text-[var(--text-primary)]">
-            {logo ?? <span aria-hidden="true" className="size-6 rounded-[8px] bg-[var(--accent)]" />}
+          <Link href="/" className="flex items-center gap-2 text-base font-semibold text-[var(--text-primary)]">
+            {logo ?? <span aria-hidden="true" className="size-6 rounded-lg bg-[var(--accent)]" />}
             {appName}
-          </a>
+          </Link>
           {loginHref && (
-            <a href={loginHref} className="px-2 py-3 text-[14px] font-medium text-[var(--text-tertiary)]">
+            <a href={loginHref} className="px-2 py-3 text-sm font-medium text-[var(--text-tertiary)]">
               {loginLabel}
             </a>
           )}
@@ -85,14 +86,14 @@ export function Hero({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
-          className="mx-auto flex max-w-[820px] flex-col items-center pt-10 text-center md:pt-16"
+          className="mx-auto flex max-w-3xl flex-col items-center pt-10 text-center md:pt-16"
         >
           {/* H1: bold completo por defecto; el acento lo pone el [acento] del copy */}
-          <h1 className="text-balance text-[40px] font-bold leading-[1.08] tracking-[-0.01em] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[60px]">
+          <h1 className="text-balance text-4xl font-bold leading-[1.08] tracking-[-0.01em] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-6xl">
             <MarkedCopy text={h1Marked} />
           </h1>
 
-          <p className="mt-4 max-w-[560px] text-[17px] leading-relaxed text-[var(--text-secondary)] md:text-[18px]">
+          <p className="mt-4 max-w-xl text-lg leading-relaxed text-[var(--text-secondary)]">
             <MarkedCopy text={subtitulo} />
           </p>
 
@@ -102,11 +103,11 @@ export function Hero({
 
           {/* Franja de prueba social: 8-12px bajo el CTA — SOLO números reales */}
           {socialProof && (
-            <div className="mt-3 text-[13px] text-[var(--text-secondary)]">{socialProof}</div>
+            <div className="mt-3 text-xs text-[var(--text-secondary)]">{socialProof}</div>
           )}
 
           {/* Visual del producto: asoma en el primer viewport e invita al scroll */}
-          <div className="mt-10 w-full max-w-[720px]">
+          <div className="mt-10 w-full max-w-2xl">
             {visual ? (
               <div className="overflow-hidden rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_18%,transparent)] shadow-[var(--shadow-2)]">
                 {visual}
@@ -116,7 +117,7 @@ export function Hero({
                  Queda anotado como pendiente en ESTADO.md hasta montar el visual real. */
               <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 rounded-[var(--radius-card)] border-2 border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_45%,transparent)] bg-[color-mix(in_oklab,var(--accent)_5%,transparent)] px-8">
                 <Camera size={20} color="var(--text-secondary)" aria-hidden="true" />
-                <p className="max-w-[36ch] text-center text-[14px] font-medium leading-snug text-[var(--text-secondary)]">
+                <p className="max-w-[36ch] text-center text-sm font-medium leading-snug text-[var(--text-secondary)]">
                   Sugerencia: {visualPlaceholderSugerencia}
                 </p>
               </div>

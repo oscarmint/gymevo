@@ -5,6 +5,7 @@
 // por ahora los tres estados (enviando/enviado/error) son UI honesta sin backend.
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Lock, Mail } from 'lucide-react';
 
 type Estado = 'idle' | 'enviando' | 'enviado' | 'error';
@@ -37,10 +38,10 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-[var(--bg)] px-6 [font-family:var(--font-body)]">
       <div className="w-full max-w-sm">
-        <a href="/" className="mb-8 flex items-center gap-2 text-base font-semibold text-[var(--text-primary)]">
+        <Link href="/" className="mb-8 flex items-center gap-2 text-base font-semibold text-[var(--text-primary)]">
           <span aria-hidden="true" className="size-6 rounded-lg bg-[var(--accent)]" />
           GymEvo
-        </a>
+        </Link>
 
         {estado !== 'enviado' ? (
           <>

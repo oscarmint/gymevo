@@ -26,7 +26,13 @@ export default function PlanDelDiaPage() {
   const [respuestas, setRespuestas] = useState<RespuestasOnboarding | null>(null);
   const [progreso, setProgreso] = useState<Progreso | null>(null);
 
+  // localStorage/sessionStorage no existen en el servidor: leerlos en el
+  // initializer de useState (en vez de en este efecto) causa un mismatch de
+  // hydration real (probado — rompía la app). Este efecto SÍ es la forma
+  // correcta: solo corre en el cliente, después de que la hydration ya
+  // coincidió con el HTML del servidor.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRespuestas(leerRespuestas());
     setProgreso(leerProgreso());
   }, []);

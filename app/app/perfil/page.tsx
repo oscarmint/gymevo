@@ -14,10 +14,15 @@ export default function PerfilPage() {
   const [respuestas, setRespuestas] = useState<RespuestasOnboarding | null>(null);
   const [progreso, setProgreso] = useState<Progreso | null>(null);
 
+  // localStorage/sessionStorage no existen en el servidor: leerlos en el
+  // initializer de useState causa mismatch de hydration. Este efecto es la
+  // forma correcta (solo corre en el cliente, tras la hydration).
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setRespuestas(leerRespuestas());
     setProgreso(leerProgreso());
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   if (!progreso) return null;
 

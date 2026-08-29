@@ -1,7 +1,7 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
-Última actualización: 2026-08-28 | Sesión actual: 1
+Última actualización: 2026-08-29 | Sesión actual: 6
 
-⏸️ CHECKPOINT — Última acción completada: landing elevada (headline nuevo con eco literal del dolor #1, CTA repetido tras mecanismo y garantía, garantía corregida a 7+7 días) y auditada a 375px contra las reglas de escaneabilidad / Siguiente acción exacta: pedir OK para pasar a Sesión 6 (integraciones reales y seguridad)
+⏸️ CHECKPOINT — Última acción completada: pre-flight de Sesión 6 (62-PUBLICACION-SEGURA-Y-CONTINUA.md P1) pasado limpio — `npx eslint .` 0 errores, `tsc --noEmit` limpio, `next build` exitoso, y verificado en navegador sin errores de hydration en /app, /app/historial, /app/perfil, /paywall, /onboarding/plan. Rama ya es `main` (sin remoto todavía). Usuario mandó un mockup de referencia para el muñequito (personal trainer, clipart) — se le dieron ajustes de paleta/estilo para que case con FICHA-ARTE cuando genere sus propios bocetos. / Siguiente acción exacta: pedir al usuario crear el repositorio de GitHub (primer paso de integración de Sesión 6) y continuar la secuencia GitHub → Vercel → Supabase → dominio → Hotmart → Resend, un pedido a la vez.
 
 ## Dirección de Arte (Sesión 2 — CERRADA, cosa juzgada)
 - FICHA-ARTE.md: existe y aprobada — 28/08/2026 (ver archivo en la raíz)
@@ -64,6 +64,7 @@ App con dos rutas de nivel: Ruta Principiante (programa fijo de 90 días que dic
 - Enlace "¿Cómo se hace?" en cada ejercicio: abre una búsqueda de YouTube (`[ejercicio] técnica correcta`) en pestaña nueva. Resuelve la duda de técnica sin producir contenido propio.
 - Evaluadas y decididas explícitamente: (a) NO se agregó texto de técnica por ejercicio (el usuario solo pidió el interruptor + el enlace) — pendiente si se quiere más adelante; (b) NO se adapta nada por género — ninguna pantalla pregunta género hoy y la técnica correcta de un ejercicio no depende de eso; (c) ilustraciones/video PROPIOS por ejercicio quedan pendientes de decisión explícita del usuario — implican costo/tiempo real (diseño o licencias), no se construyen sin su OK.
 - **Mascota — decidido con el usuario (29/08/2026), arte PENDIENTE**: sí lleva personaje ("muñequito con personalidad propia", no solo un ícono minimalista). El usuario genera los bocetos con IA de imagen por su cuenta; el brief que se le dio: personaje humano tipo "entrenador confiable" (NO animal, NO infantil/tierno — Mateo no quiere sentirse tratado como niño), paleta limitada a los tokens ya aprobados (fondo #F5F1EA, acento #5C7A1F, tinta #211D17), con el logo en la ropa, 4 poses: reposo/inicio, aviso de fin de descanso, inicio de ejercicio, fin de entrenamiento (celebración CONTENIDA, sin saltos ni confeti — coherente con la personalidad "Sobria" ya compilada). Pendiente: que el usuario traiga los bocetos para elegir uno antes de implementar nada en código.
+- Mockup de referencia recibido (29/08/2026): clipart genérico de "Personal Trainer" (camiseta negra, tabla, silbato). Sirve de referencia de pose/personalidad, NO de paleta/estilo — se le indicó al usuario ajustar antes de generar sus bocetos: ropa en tono papel/crudo (no negro) con el acento #5C7A1F como único detalle, línea plana/editorial (no clipart 3D con degradados) para no chocar con la UI flat existente, y el logo de GymEvo en vez de texto "PERSONAL TRAINER".
 
 ## Gamificación y retención (loop implementado en Sesión 5)
 - Loop del hábito (Hooked): Gatillo [hora de entreno que eligió en el onboarding] → Acción [marcar cada ejercicio de hoy como hecho] → Recompensa [tachado verde + racha que sube] → Inversión [historial de pesos acumulado — cuesta más abandonar mientras más tiene registrado]
@@ -112,7 +113,11 @@ Total: 6 pantallas únicas (dentro del límite de 8).
 - Sesión 5 — App interna: shell de 3 secciones (`/app` Plan del día, `/app/historial`, `/app/perfil`) con tab bar inferior. Plan del día = M0 "ritual diario" (56): split de 4 días (Empuje/Tirón/Piernas/Full) según catálogo de 20 ejercicios con alternativas, registro de peso por serie, Botón de Rescate (swap a alternativa), temporizador de descanso, tachado verde al completar (dispositivo ownable de FICHA-ARTE), estado M4 "racha en riesgo" (llama apagada, sin pánico) y celebración de hito de racha (7/30/100 días, estilo sobrio sin confetti). Progreso en localStorage (`lib/routine.ts`) — cerrada 28/08/2026
 
 ## Sesión en progreso 🔧
-(ninguna — esperando OK del usuario para arrancar Sesión 6)
+Sesión 6 (integraciones reales y seguridad) — en curso.
+- Pre-flight P1 completado: se encontraron y corrigieron 2 bugs reales que el proyecto arrastraba sin que el usuario lo pidiera (no se buscaban, los sacó a la luz `npx eslint .` que no se había corrido explícito antes): (a) `<a href="/">` en vez de `<Link>` en app/login y Hero.tsx (regla next/next), (b) un bug de hydration que YO MISMO introduje al intentar arreglar el lint `react-hooks/set-state-in-effect` (cambié `useState(null)+useEffect` a `useState(() => leerX())` en 5 archivos — pasaba el lint pero rompía en runtime porque sessionStorage/localStorage no existen en el server). Revertido a `useState(null)+useEffect` + comentario `eslint-disable-next-line` puesto justo encima de la línea exacta del `setState`. Verificado en navegador: 0 errores de hydration en las 5 pantallas afectadas.
+- `eslint.config.mjs`: se agregó `plantillas-codigo/**` y `docs/**` a `globalIgnores` (el kit vendored del SO no debe lintearse, igual que ya excluía tsconfig.json).
+- `components/landing/Hero.tsx`: primera vez que se toca este archivo del kit → el lint de diseño exigió convertir valores de píxel arbitrarios a clases Tailwind por defecto (max-w-*, text-*) — hecho.
+- Pendiente de esta sesión: pedir al usuario crear cuenta/repo de GitHub, luego Vercel, Supabase, dominio, Hotmart, Resend (un pedido a la vez, Protocolo Cero Secretos en Chat — nunca pedir que pegue valores secretos en el chat).
 
 ## Próximas sesiones 📋
 - Sesión 6: integraciones reales (Supabase, Hotmart, dominio) y seguridad

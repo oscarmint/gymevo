@@ -18,7 +18,10 @@ export default function PaywallPage() {
   const [respuestas, setRespuestas] = useState<RespuestasOnboarding | null>(null);
   const [plan, setPlan] = useState<PlanId>('anual');
 
+  // sessionStorage no existe en el servidor: leerlo en el initializer de
+  // useState causa mismatch de hydration. Este efecto es la forma correcta.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRespuestas(leerRespuestas());
   }, []);
 
