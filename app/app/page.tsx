@@ -5,7 +5,7 @@
 
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Check, Flame, RefreshCcw, X } from 'lucide-react';
+import { Check, Flame, PlayCircle, RefreshCcw, X } from 'lucide-react';
 import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import {
   completarEntrenamiento,
@@ -89,11 +89,20 @@ function PlanDelDia({
     const pesoTexto = pesos[ejercicioId];
     const peso = pesoTexto ? Number(pesoTexto) : 0;
     actualizar((p) => marcarHecho(registrarSerie(p, { ejercicioId, peso, reps: Number(ej.reps) || 0, series: ej.series }), ejercicioId));
-    setDescanso({ ejercicioId, restante: ej.descansoSeg });
+    if (progreso.descansoAutomatico) setDescanso({ ejercicioId, restante: ej.descansoSeg });
   }
 
   function rescatar(ejercicioId: string) {
     actualizar((p) => reemplazarEjercicio(p, ejercicioId));
+  }
+
+  function alternarDescansoAutomatico() {
+    actualizar((p) => ({ ...p, descansoAutomatico: !p.descansoAutomatico }));
+  }
+
+  function urlComoSeHace(nombreEjercicio: string): string {
+    const q = encodeURIComponent(`${nombreEjercicio} técnica correcta`);
+    return `https://www.youtube.com/results?search_query=${q}`;
   }
 
   function finalizarEntrenamiento() {
@@ -133,8 +142,29 @@ function PlanDelDia({
         </div>
       </div>
 
+      {/* Interruptor: el usuario decide si el descanso arranca solo o no */}
+      <button
+        type="button"
+        onClick={alternarDescansoAutomatico}
+        className="mt-4 flex w-full items-center justify-between rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] px-4 py-3"
+      >
+        <span className="text-sm font-medium text-[var(--text-primary)]">Descanso automático entre series</span>
+        <span
+          aria-hidden="true"
+          className={`relative flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
+            progreso.descansoAutomatico ? 'bg-[var(--accent)]' : 'bg-[var(--surface-2)]'
+          }`}
+        >
+          <span
+            className={`absolute size-5 rounded-full bg-[var(--bg)] shadow-[var(--shadow-1)] transition-transform ${
+              progreso.descansoAutomatico ? 'translate-x-5' : 'translate-x-0.5'
+            }`}
+          />
+        </span>
+      </button>
+
       {/* (2) LA ACCIÓN DE 1 TAP — la lista de ejercicios de hoy */}
-      <div className="mt-6 flex flex-col gap-3 pb-28">
+      <div className="mt-4 flex flex-col gap-3 pb-28">
         {idsHoy.map((ej, i) => {
           const hecho = progreso.hechosHoy.includes(ej.id);
           return (
@@ -157,6 +187,16 @@ function PlanDelDia({
                   <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
                     {ej.series}×{ej.reps} · tempo {ej.tempo} · descanso {ej.descansoSeg}s
                   </p>
+                  {!hecho && (
+                    <a
+                      href={urlComoSeHace(ej.nombre)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-[var(--accent)]"
+                    >
+                      <PlayCircle size={13} /> ¿Cómo se hace?
+                    </a>
+                  )}
                 </div>
                 {!hecho && (
                   <button
@@ -185,7 +225,7 @@ function PlanDelDia({
                     onClick={() => registrar(ej.id)}
                     className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
                   >
-                    <Check size={16} /> Registrar y descansar
+                    <Check size={16} /> {progreso.descansoAutomatico ? 'Registrar y descansar' : 'Registrar'}
                   </button>
                 </div>
               ) : (

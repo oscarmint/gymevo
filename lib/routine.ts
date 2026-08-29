@@ -105,6 +105,9 @@ export interface Progreso {
   hechosHoy: string[]; // ids de ejercicios marcados hoy
   reemplazosHoy: Record<string, string>; // ejercicioOriginal → alternativa activa
   logs: RegistroLog[];
+  /** Si el temporizador de descanso arranca solo al registrar una serie.
+   * El usuario lo decide antes de entrenar; default true. */
+  descansoAutomatico: boolean;
 }
 
 const KEY = 'gymevo_progreso';
@@ -120,15 +123,17 @@ function diasEntre(a: string, b: string): number {
 
 export function leerProgreso(): Progreso {
   if (typeof window === 'undefined') {
-    return { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [] };
+    return { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true };
   }
   const raw = localStorage.getItem(KEY);
   if (!raw) {
-    const inicial: Progreso = { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [] };
+    const inicial: Progreso = { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true };
     localStorage.setItem(KEY, JSON.stringify(inicial));
     return inicial;
   }
   const p = JSON.parse(raw) as Progreso;
+  // Compatibilidad con progreso guardado antes de este campo.
+  if (p.descansoAutomatico === undefined) p.descansoAutomatico = true;
   // Si cambió el día calendario desde el último completado y ya se había marcado
   // "hechosHoy", se limpia para el nuevo día (pero SIN romper la racha: eso solo
   // pasa si pasan ≥2 días sin completar, ver `racha en riesgo/rota` abajo).

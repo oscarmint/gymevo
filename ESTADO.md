@@ -59,6 +59,12 @@ App con dos rutas de nivel: Ruta Principiante (programa fijo de 90 días que dic
 - Primera victoria (<5 min): elegir nivel + meta metabólica y ver la rutina exacta del día, lista para iniciar cronómetro
 - Pendiente de definir con el usuario más adelante (no bloquea el plan maestro): cómo pasa un Principiante a Intermedio (¿automático al día 90, o el usuario elige entrar directo a Intermedio si ya no es novato?)
 
+## Sesión 5bis (29/08/2026) — Pulido de la app interna a pedido del usuario
+- Interruptor "Descanso automático entre series" en `/app`: el usuario decide antes de entrenar si el temporizador arranca solo al registrar una serie, o si prefiere descansar a su ritmo (campo `descansoAutomatico` en `lib/routine.ts`, default true, retrocompatible con progreso guardado antes de este campo).
+- Enlace "¿Cómo se hace?" en cada ejercicio: abre una búsqueda de YouTube (`[ejercicio] técnica correcta`) en pestaña nueva. Resuelve la duda de técnica sin producir contenido propio.
+- Evaluadas y decididas explícitamente: (a) NO se agregó texto de técnica por ejercicio (el usuario solo pidió el interruptor + el enlace) — pendiente si se quiere más adelante; (b) NO se adapta nada por género — ninguna pantalla pregunta género hoy y la técnica correcta de un ejercicio no depende de eso; (c) ilustraciones/video PROPIOS por ejercicio quedan pendientes de decisión explícita del usuario — implican costo/tiempo real (diseño o licencias), no se construyen sin su OK.
+- **Pendiente de definir con el usuario**: un personaje/mascota ilustrado (varias poses a elegir, aparece en momentos puntuales — descanso, inicio/fin de ejercicio, fin de entrenamiento — con el logo en su ropa). Es una decisión de identidad visual que hoy tensiona con la dirección ya aprobada en FICHA-ARTE.md ("Cuaderno de Sala": sobria, editorial, sin mascota) — se retoma con preguntas concretas antes de diseñar nada.
+
 ## Gamificación y retención (loop implementado en Sesión 5)
 - Loop del hábito (Hooked): Gatillo [hora de entreno que eligió en el onboarding] → Acción [marcar cada ejercicio de hoy como hecho] → Recompensa [tachado verde + racha que sube] → Inversión [historial de pesos acumulado — cuesta más abandonar mientras más tiene registrado]
 - Mecánica elegida: racha diaria (sin XP ni ligas — el nicho y la personalidad "Sobria" de FICHA-ARTE no piden más capas)
