@@ -34,6 +34,10 @@ export interface HeroProps {
   visual?: ReactNode;
   /** Sugerencia CONCRETA de qué imagen poner en el placeholder — nunca "imagen aquí". */
   visualPlaceholderSugerencia?: string;
+  /** Video de fondo del hero (mp4, silencioso, en loop) — atmósfera, no producto real.
+   * Se atenúa con un scrim del propio `--bg` para que el texto siga legible, y se
+   * oculta con `prefers-reduced-motion` (queda el degradé de fondo como respaldo). */
+  backgroundVideoSrc?: string;
   id?: string;
 }
 
@@ -49,6 +53,7 @@ export function Hero({
   socialProof,
   visual,
   visualPlaceholderSugerencia = 'captura de la pantalla principal con datos reales',
+  backgroundVideoSrc,
   id = 'hero',
 }: HeroProps) {
   warnCopy('Hero → h1', h1Marked, 10);
@@ -57,16 +62,44 @@ export function Hero({
 
   return (
     <section id={id} className="relative overflow-hidden">
-      {/* Fondo con profundidad: mesh/radial sutil del acento — nunca fill plano */}
+      {/* Fondo con profundidad: mesh/radial sutil del acento — nunca fill plano.
+          Sirve de respaldo SIN video y de base bajo el scrim CON video. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10"
+        className="pointer-events-none absolute inset-0 -z-20"
         style={{
           background:
             'radial-gradient(900px 480px at 50% -10%, color-mix(in oklab, var(--accent) 8%, transparent) 0%, transparent 60%), ' +
             'radial-gradient(640px 420px at 100% 0%, color-mix(in oklab, var(--accent-2) 6%, transparent) 0%, transparent 55%)',
         }}
       />
+
+      {backgroundVideoSrc && (
+        <>
+          {/* Atmósfera, no producto real — silenciosa, decorativa, sin controles.
+              motion-reduce la oculta: sin movimiento, queda solo el degradé de arriba. */}
+          <video
+            aria-hidden="true"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className="pointer-events-none absolute inset-0 -z-20 size-full object-cover motion-reduce:hidden"
+          >
+            <source src={backgroundVideoSrc} type="video/mp4" />
+          </video>
+          {/* Scrim del propio --bg: el texto oscuro de la marca sigue legible encima */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 -z-10"
+            style={{
+              background:
+                'linear-gradient(180deg, color-mix(in oklab, var(--bg) 58%, transparent) 0%, color-mix(in oklab, var(--bg) 76%, transparent) 42%, var(--bg) 92%)',
+            }}
+          />
+        </>
+      )}
 
       <div className="mx-auto w-full max-w-6xl px-5">
         {/* Header 64px: marca a la izquierda, SOLO "Entrar" terciario a la derecha (19) */}

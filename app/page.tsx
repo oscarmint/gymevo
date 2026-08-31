@@ -31,6 +31,7 @@ export default function LandingGymEvo() {
         ctaHref={CTA_HREF}
         socialProof={<span>Garantía Hotmart de 7 días — sin preguntas</span>}
         visualPlaceholderSugerencia="captura del plan del día con el ejercicio de hoy y el Botón de Rescate"
+        backgroundVideoSrc="/videos/hero-gimnasio.mp4"
       />
 
       {/* 2. PROBLEMA */}
