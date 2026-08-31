@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { Flame, LogOut } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { leerProgreso, tituloRuta, type Progreso } from '@/lib/routine';
+import { crearClienteSupabase } from '@/lib/supabase/client';
 
 export default function PerfilPage() {
   const router = useRouter();
@@ -29,7 +30,9 @@ export default function PerfilPage() {
   const nivel = respuestas?.nivel ?? 'principiante';
   const meta = respuestas?.meta ?? 'musculo';
 
-  function cerrarSesion() {
+  async function cerrarSesion() {
+    const supabase = crearClienteSupabase();
+    await supabase.auth.signOut();
     sessionStorage.clear();
     localStorage.removeItem('gymevo_progreso');
     router.push('/');

@@ -21,6 +21,7 @@ import {
   tituloRuta,
   type Progreso,
 } from '@/lib/routine';
+import { guardarLogRemoto, guardarProgresoRemoto, leerProgresoRemoto, sincronizarPerfilInicial } from '@/lib/supabase/sync';
 
 export default function PlanDelDiaPage() {
   const [respuestas, setRespuestas] = useState<RespuestasOnboarding | null>(null);
@@ -32,9 +33,22 @@ export default function PlanDelDiaPage() {
   // correcta: solo corre en el cliente, después de que la hydration ya
   // coincidió con el HTML del servidor.
   useEffect(() => {
+    const r = leerRespuestas();
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setRespuestas(leerRespuestas());
+    setRespuestas(r);
     setProgreso(leerProgreso());
+
+    // Si hay sesión de Supabase: crea el perfil remoto la primera vez (con las
+    // respuestas del onboarding) y si ya existía progreso remoto, ese manda
+    // sobre el local (es el que sobrevive a cambiar de celular).
+    sincronizarPerfilInicial(r).then(() => {
+      leerProgresoRemoto().then((remoto) => {
+        if (remoto) {
+          guardarProgreso(remoto);
+          setProgreso(remoto);
+        }
+      });
+    });
   }, []);
 
   if (!progreso) return null; // loading: evita parpadeo antes de leer localStorage
@@ -94,7 +108,9 @@ function PlanDelDia({
     const ej = obtenerEjercicio(ejercicioId);
     const pesoTexto = pesos[ejercicioId];
     const peso = pesoTexto ? Number(pesoTexto) : 0;
-    actualizar((p) => marcarHecho(registrarSerie(p, { ejercicioId, peso, reps: Number(ej.reps) || 0, series: ej.series }), ejercicioId));
+    const log = { ejercicioId, peso, reps: Number(ej.reps) || 0, series: ej.series };
+    actualizar((p) => marcarHecho(registrarSerie(p, log), ejercicioId));
+    guardarLogRemoto({ ...log, fecha: new Date().toISOString().slice(0, 10) });
     if (progreso.descansoAutomatico) setDescanso({ ejercicioId, restante: ej.descansoSeg });
   }
 
@@ -103,7 +119,11 @@ function PlanDelDia({
   }
 
   function alternarDescansoAutomatico() {
-    actualizar((p) => ({ ...p, descansoAutomatico: !p.descansoAutomatico }));
+    actualizar((p) => {
+      const next = { ...p, descansoAutomatico: !p.descansoAutomatico };
+      guardarProgresoRemoto(next);
+      return next;
+    });
   }
 
   function urlComoSeHace(nombreEjercicio: string): string {
@@ -112,7 +132,11 @@ function PlanDelDia({
   }
 
   function finalizarEntrenamiento() {
-    actualizar(completarEntrenamiento);
+    actualizar((p) => {
+      const next = completarEntrenamiento(p);
+      guardarProgresoRemoto(next);
+      return next;
+    });
   }
 
   const idsHoy = ejercicios.map((e) => obtenerEjercicio(progreso.reemplazosHoy[e.id] ?? e.id));

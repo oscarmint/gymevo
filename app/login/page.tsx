@@ -1,12 +1,14 @@
 'use client';
 
-// LOGIN — Sesión 4 (50 §E + 26). Magic link sin contraseña, el ÚLTIMO paso del
-// funnel (después del paywall). Sesión 6 conecta esto a Supabase Auth real —
-// por ahora los tres estados (enviando/enviado/error) son UI honesta sin backend.
+// LOGIN — Sesión 4 (50 §E + 26), conectado a Supabase Auth real en Sesión 6.
+// Magic link sin contraseña, el ÚLTIMO paso del funnel (después del paywall).
+// La sesión se abre desde el enlace del correo (app/auth/callback/route.ts),
+// no desde este formulario — este solo pide el email y dispara el envío.
 
 import { useState } from 'react';
 import Link from 'next/link';
 import { Lock, Mail } from 'lucide-react';
+import { crearClienteSupabase } from '@/lib/supabase/client';
 
 type Estado = 'idle' | 'enviando' | 'enviado' | 'error';
 
@@ -15,24 +17,43 @@ export default function LoginPage() {
   const [estado, setEstado] = useState<Estado>('idle');
   const [countdown, setCountdown] = useState(0);
 
-  function enviar(e: React.FormEvent) {
+  async function enviar(e: React.FormEvent) {
     e.preventDefault();
     if (!email.includes('@') || estado === 'enviando') return;
     setEstado('enviando');
-    // Mock: Sesión 6 llama a supabase.auth.signInWithOtp({ email }) aquí.
-    setTimeout(() => {
-      setEstado('enviado');
-      setCountdown(60);
-      const tick = setInterval(() => {
-        setCountdown((c) => {
-          if (c <= 1) {
-            clearInterval(tick);
-            return 0;
-          }
-          return c - 1;
-        });
-      }, 1000);
-    }, 900);
+
+    const supabase = crearClienteSupabase();
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/app` },
+    });
+
+    if (error) {
+      setEstado('error');
+      return;
+    }
+
+    setEstado('enviado');
+    setCountdown(60);
+    const tick = setInterval(() => {
+      setCountdown((c) => {
+        if (c <= 1) {
+          clearInterval(tick);
+          return 0;
+        }
+        return c - 1;
+      });
+    }, 1000);
+  }
+
+  async function reenviar() {
+    if (countdown > 0) return;
+    const supabase = crearClienteSupabase();
+    await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/app` },
+    });
+    setCountdown(60);
   }
 
   return (
@@ -97,22 +118,11 @@ export default function LoginPage() {
             <button
               type="button"
               disabled={countdown > 0}
-              onClick={() => setCountdown(60)}
+              onClick={reenviar}
               className="mt-6 text-sm font-medium text-[var(--accent)] disabled:text-[var(--text-tertiary)]"
             >
               {countdown > 0 ? `Reenviar en ${countdown}s` : 'Reenviar enlace'}
             </button>
-
-            {/* Mock de Sesión 4: sin backend todavía, este botón simula el tap en
-                el enlace del correo. Sesión 6 lo reemplaza por la verificación real
-                del magic link de Supabase (la sesión se abre desde ese enlace, no
-                desde un botón aquí). */}
-            <a
-              href="/app"
-              className="mt-8 flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
-            >
-              (Demo) Abrir como si hubiera tocado el enlace
-            </a>
           </>
         )}
       </div>

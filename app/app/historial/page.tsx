@@ -6,6 +6,7 @@
 import { useEffect, useState } from 'react';
 import { History } from 'lucide-react';
 import { leerProgreso, obtenerEjercicio, type Progreso } from '@/lib/routine';
+import { leerProgresoRemoto } from '@/lib/supabase/sync';
 
 export default function HistorialPage() {
   const [progreso, setProgreso] = useState<Progreso | null>(null);
@@ -15,6 +16,11 @@ export default function HistorialPage() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setProgreso(leerProgreso());
+    // Si hay sesión, el historial remoto (Supabase) manda sobre el local —
+    // es el que tiene los registros de todos los dispositivos.
+    leerProgresoRemoto().then((remoto) => {
+      if (remoto) setProgreso(remoto);
+    });
   }, []);
 
   if (!progreso) return null;
