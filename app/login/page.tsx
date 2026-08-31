@@ -9,6 +9,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Lock, Mail } from 'lucide-react';
 import { crearClienteSupabase } from '@/lib/supabase/client';
+import { Logo } from '@/components/Logo';
 
 type Estado = 'idle' | 'enviando' | 'enviado' | 'error';
 
@@ -60,7 +61,7 @@ export default function LoginPage() {
     <div className="flex min-h-dvh flex-col items-center justify-center bg-[var(--bg)] px-6 [font-family:var(--font-body)]">
       <div className="w-full max-w-sm">
         <Link href="/" className="mb-8 flex items-center gap-2 text-base font-semibold text-[var(--text-primary)]">
-          <span aria-hidden="true" className="size-6 rounded-lg bg-[var(--accent)]" />
+          <Logo className="size-7 text-[var(--accent)]" />
           GymEvo
         </Link>
 

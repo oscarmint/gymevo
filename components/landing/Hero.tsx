@@ -10,6 +10,7 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import { Camera } from 'lucide-react';
+import { Logo } from '@/components/Logo';
 import { CtaButton } from './ui';
 import { MarkedCopy, truncarMarcado, warnCopy } from './MarkedCopy';
 
@@ -71,7 +72,7 @@ export function Hero({
         {/* Header 64px: marca a la izquierda, SOLO "Entrar" terciario a la derecha (19) */}
         <header className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2 text-base font-semibold text-[var(--text-primary)]">
-            {logo ?? <span aria-hidden="true" className="size-6 rounded-lg bg-[var(--accent)]" />}
+            {logo ?? <Logo className="size-7 text-[var(--accent)]" />}
             {appName}
           </Link>
           {loginHref && (
