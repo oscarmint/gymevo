@@ -61,7 +61,7 @@ export default function LoginPage() {
     <div className="flex min-h-dvh flex-col items-center justify-center bg-[var(--bg)] px-6 [font-family:var(--font-body)]">
       <div className="w-full max-w-sm">
         <Link href="/" className="mb-8 flex items-center gap-2 text-base font-semibold text-[var(--text-primary)]">
-          <Logo className="size-7 text-[var(--accent)]" />
+          <Logo className="size-9 text-[var(--accent)]" />
           GymEvo
         </Link>
 

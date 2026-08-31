@@ -72,7 +72,7 @@ export function Hero({
         {/* Header 64px: marca a la izquierda, SOLO "Entrar" terciario a la derecha (19) */}
         <header className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2 text-base font-semibold text-[var(--text-primary)]">
-            {logo ?? <Logo className="size-7 text-[var(--accent)]" />}
+            {logo ?? <Logo className="size-9 text-[var(--accent)]" />}
             {appName}
           </Link>
           {loginHref && (
