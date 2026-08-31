@@ -2,7 +2,9 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 // Refresca la sesión de Supabase en cada visita (26-AUTH-MODERNO: rotación de
-// tokens transparente para el usuario, sin que tenga que volver a iniciar sesión).
+// tokens transparente para el usuario) Y protege /app: sin sesión real, no se
+// entra a la app interna — antes de esto, cualquiera con el link veía /app sin
+// haber iniciado sesión, porque esas pantallas nunca revisaban si había usuario.
 export default async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -23,7 +25,16 @@ export default async function proxy(request: NextRequest) {
     },
   );
 
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user && request.nextUrl.pathname.startsWith('/app')) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/login';
+    url.searchParams.set('desde', 'app');
+    return NextResponse.redirect(url);
+  }
 
   return response;
 }
