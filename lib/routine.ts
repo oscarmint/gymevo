@@ -108,6 +108,9 @@ export interface Progreso {
   /** Si el temporizador de descanso arranca solo al registrar una serie.
    * El usuario lo decide antes de entrenar; default true. */
   descansoAutomatico: boolean;
+  /** Cuánto dura ese temporizador (30/60/120/180s) — el usuario lo elige al
+   * empezar el plan del día, es el mismo para todos los ejercicios de hoy. */
+  descansoDuracionSeg: number;
 }
 
 const KEY = 'gymevo_progreso';
@@ -123,17 +126,18 @@ function diasEntre(a: string, b: string): number {
 
 export function leerProgreso(): Progreso {
   if (typeof window === 'undefined') {
-    return { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true };
+    return { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60 };
   }
   const raw = localStorage.getItem(KEY);
   if (!raw) {
-    const inicial: Progreso = { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true };
+    const inicial: Progreso = { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60 };
     localStorage.setItem(KEY, JSON.stringify(inicial));
     return inicial;
   }
   const p = JSON.parse(raw) as Progreso;
   // Compatibilidad con progreso guardado antes de este campo.
   if (p.descansoAutomatico === undefined) p.descansoAutomatico = true;
+  if (p.descansoDuracionSeg === undefined) p.descansoDuracionSeg = 60;
   // Si cambió el día calendario desde el último completado y ya se había marcado
   // "hechosHoy", se limpia para el nuevo día (pero SIN romper la racha: eso solo
   // pasa si pasan ≥2 días sin completar, ver `racha en riesgo/rota` abajo).

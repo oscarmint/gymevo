@@ -26,6 +26,14 @@ import {
 } from '@/lib/routine';
 import { guardarLogRemoto, guardarProgresoRemoto, leerProgresoRemoto, sincronizarPerfilInicial } from '@/lib/supabase/sync';
 
+/** Opciones de duración del descanso — el usuario elige una al empezar el
+ * plan del día (no por ejercicio: un solo cronómetro para todo hoy). */
+const DURACIONES_DESCANSO = [30, 60, 120, 180];
+
+function etiquetaDuracion(seg: number): string {
+  return seg < 60 ? `${seg}s` : `${seg / 60} min`;
+}
+
 export default function PlanDelDiaPage() {
   const [respuestas, setRespuestas] = useState<RespuestasOnboarding | null>(null);
   const [progreso, setProgreso] = useState<Progreso | null>(null);
@@ -71,7 +79,7 @@ function PlanDelDia({
   setProgreso: Dispatch<SetStateAction<Progreso>>;
   respuestas: RespuestasOnboarding | null;
 }) {
-  const [descanso, setDescanso] = useState<{ ejercicioId: string; restante: number } | null>(null);
+  const [descanso, setDescanso] = useState<{ ejercicioId: string; restante: number; total: number } | null>(null);
   const [pesos, setPesos] = useState<Record<string, string>>({});
   const [celebrarHito, setCelebrarHito] = useState<number | null>(null);
   const [errorSync, setErrorSync] = useState(false);
@@ -81,6 +89,15 @@ function PlanDelDia({
   useEffect(() => {
     if (!descanso || descanso.restante <= 0) return;
     const t = setTimeout(() => setDescanso((d) => (d ? { ...d, restante: d.restante - 1 } : d)), 1000);
+    return () => clearTimeout(t);
+  }, [descanso]);
+
+  // Aviso de "ya puedes seguir": vibra (si el celular lo soporta) y cierra el
+  // banner solo unos segundos después, para que se alcance a leer/sentir.
+  useEffect(() => {
+    if (!descanso || descanso.restante > 0) return;
+    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(200);
+    const t = setTimeout(() => setDescanso(null), 1800);
     return () => clearTimeout(t);
   }, [descanso]);
 
@@ -133,7 +150,9 @@ function PlanDelDia({
     const log = { ejercicioId, peso, reps: Number(ej.reps) || 0, series: ej.series };
     actualizar((p) => marcarHecho(registrarSerie(p, log), ejercicioId));
     guardarLogRemoto({ ...log, fecha: new Date().toISOString().slice(0, 10) }, () => setErrorSync(true));
-    if (progreso.descansoAutomatico) setDescanso({ ejercicioId, restante: ej.descansoSeg });
+    if (progreso.descansoAutomatico) {
+      setDescanso({ ejercicioId, restante: progreso.descansoDuracionSeg, total: progreso.descansoDuracionSeg });
+    }
   }
 
   function deshacer(ejercicioId: string) {
@@ -147,6 +166,14 @@ function PlanDelDia({
   function alternarDescansoAutomatico() {
     actualizar((p) => {
       const next = { ...p, descansoAutomatico: !p.descansoAutomatico };
+      guardarProgresoRemoto(next, () => setErrorSync(true));
+      return next;
+    });
+  }
+
+  function elegirDuracionDescanso(seg: number) {
+    actualizar((p) => {
+      const next = { ...p, descansoDuracionSeg: seg };
       guardarProgresoRemoto(next, () => setErrorSync(true));
       return next;
     });
@@ -250,6 +277,40 @@ function PlanDelDia({
           />
         </span>
       </motion.button>
+
+      {/* Duración del cronómetro de descanso — una sola vez, para todo hoy */}
+      <AnimatePresence>
+        {progreso.descansoAutomatico && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="mt-2 flex gap-2">
+              {DURACIONES_DESCANSO.map((seg) => {
+                const activa = progreso.descansoDuracionSeg === seg;
+                return (
+                  <motion.button
+                    key={seg}
+                    type="button"
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => elegirDuracionDescanso(seg)}
+                    aria-pressed={activa}
+                    className={`flex h-9 flex-1 items-center justify-center rounded-xl text-xs font-semibold ${
+                      activa
+                        ? 'bg-[var(--accent)] text-[var(--bg)]'
+                        : 'border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
+                    }`}
+                  >
+                    {etiquetaDuracion(seg)}
+                  </motion.button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* (2) LA ACCIÓN DE 1 TAP — la lista de ejercicios de hoy */}
       <div className="mt-4 flex flex-col gap-3 pb-28">
@@ -355,19 +416,25 @@ function PlanDelDia({
         </motion.button>
       </div>
 
-      {/* Temporizador de descanso — banner fijo */}
+      {/* Temporizador de descanso — banner fijo con anillo que se va consumiendo */}
       <AnimatePresence>
         {descanso && (
           <motion.div
             initial={{ y: 80, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 80, opacity: 0 }}
-            className="fixed inset-x-0 bottom-20 z-30 mx-auto flex w-full max-w-md items-center justify-between gap-3 bg-[var(--text-primary)] px-5 py-3.5"
+            className="fixed inset-x-0 bottom-20 z-30 mx-auto flex w-full max-w-md items-center gap-3 bg-[var(--text-primary)] px-5 py-3"
           >
-            <p className="text-sm font-semibold tabular-nums text-[var(--bg)]">
-              Descanso: {Math.floor(descanso.restante / 60)}:{String(descanso.restante % 60).padStart(2, '0')}
-            </p>
-            <button type="button" onClick={() => setDescanso(null)} className="text-xs font-medium text-[var(--bg)] opacity-80">
+            <AnilloDescanso restante={descanso.restante} total={descanso.total} />
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-[var(--bg)]">
+                {descanso.restante === 0 ? '¡Listo! Sigue con tu próxima serie' : 'Descansando…'}
+              </p>
+              <p className="text-xs tabular-nums text-[var(--bg)] opacity-70">
+                {Math.floor(descanso.restante / 60)}:{String(descanso.restante % 60).padStart(2, '0')} restantes
+              </p>
+            </div>
+            <button type="button" onClick={() => setDescanso(null)} className="shrink-0 text-xs font-medium text-[var(--bg)] opacity-80">
               Saltar
             </button>
           </motion.div>
@@ -411,6 +478,37 @@ function PlanDelDia({
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+/** Anillo que se va "consumiendo" a medida que pasa el descanso — animación
+ * base obligatoria (17/22: gráficos que se dibujan, no estáticos). El trazo
+ * completo es el tiempo total; se vacía en sentido de las agujas del reloj. */
+function AnilloDescanso({ restante, total }: { restante: number; total: number }) {
+  const radio = 17;
+  const circunferencia = 2 * Math.PI * radio;
+  const fraccionRestante = total > 0 ? restante / total : 0;
+  const completo = restante === 0;
+
+  return (
+    <div className={`relative flex size-11 shrink-0 items-center justify-center ${completo ? 'animate-pulse' : ''}`}>
+      <svg viewBox="0 0 44 44" className="size-11 -rotate-90">
+        <circle cx="22" cy="22" r={radio} fill="none" stroke="var(--bg)" strokeOpacity={0.2} strokeWidth={4} />
+        <circle
+          cx="22"
+          cy="22"
+          r={radio}
+          fill="none"
+          stroke="var(--accent)"
+          strokeWidth={4}
+          strokeLinecap="round"
+          strokeDasharray={circunferencia}
+          strokeDashoffset={circunferencia * (1 - fraccionRestante)}
+          style={{ transition: 'stroke-dashoffset 1s linear' }}
+        />
+      </svg>
+      <span className="absolute text-xs font-bold tabular-nums text-[var(--bg)]">{restante}</span>
     </div>
   );
 }

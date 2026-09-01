@@ -46,7 +46,7 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
 
   const { data: perfil } = await supabase
     .from('profiles')
-    .select('dia_actual, racha, ultimo_dia_completado, descanso_automatico')
+    .select('dia_actual, racha, ultimo_dia_completado, descanso_automatico, descanso_duracion_seg')
     .eq('id', user.id)
     .maybeSingle();
   if (!perfil) return null;
@@ -73,6 +73,7 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
     reemplazosHoy: {},
     logs,
     descansoAutomatico: perfil.descanso_automatico,
+    descansoDuracionSeg: perfil.descanso_duracion_seg,
   };
 }
 
@@ -91,6 +92,7 @@ export function guardarProgresoRemoto(p: Progreso, onError?: () => void) {
         racha: p.racha,
         ultimo_dia_completado: p.ultimaFecha,
         descanso_automatico: p.descansoAutomatico,
+        descanso_duracion_seg: p.descansoDuracionSeg,
       })
       .eq('id', user.id)
       .then(({ error }) => {
