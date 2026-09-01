@@ -50,6 +50,14 @@
 
   /* ── DERIVADOS (no se tocan) ── */
   --chip-bg: color-mix(in oklab, var(--accent) 10%, transparent);
+
+  /* ── CONFETI (única excepción a la regla 60-30-10: celebración puntual de
+     "entrenamiento de hoy terminado", no es parte de la paleta de UI) ── */
+  --confetti-1: #8b5cf6;
+  --confetti-2: #14b8a6;
+  --confetti-3: #ec4899;
+  --confetti-4: #eab308;
+  --confetti-5: #22d3ee;
 }
 
 /* ============================================================================

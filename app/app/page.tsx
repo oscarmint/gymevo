@@ -34,6 +34,32 @@ function etiquetaDuracion(seg: number): string {
   return seg < 60 ? `${seg}s` : `${seg / 60} min`;
 }
 
+// Colores del confeti de cierre — definidos en tokens.css, no en la paleta de
+// UI (única excepción a 60-30-10: es una celebración puntual, no chrome).
+const COLORES_CONFETI = ['var(--confetti-1)', 'var(--confetti-2)', 'var(--confetti-3)', 'var(--confetti-4)', 'var(--confetti-5)'];
+
+interface PiezaConfeti {
+  izquierda: number;
+  tamano: number;
+  color: string;
+  giroInicial: number;
+  giroTotal: number;
+  duracion: number;
+  retraso: number;
+}
+
+function generarConfeti(cantidad: number): PiezaConfeti[] {
+  return Array.from({ length: cantidad }, () => ({
+    izquierda: Math.random() * 100,
+    tamano: 6 + Math.random() * 8,
+    color: COLORES_CONFETI[Math.floor(Math.random() * COLORES_CONFETI.length)],
+    giroInicial: Math.random() * 360,
+    giroTotal: 180 + Math.random() * 360,
+    duracion: 2.2 + Math.random() * 1.4,
+    retraso: Math.random() * 0.6,
+  }));
+}
+
 // Safari viejo solo expone el AudioContext bajo el prefijo `webkit`.
 type VentanaConAudioLegado = Window & { webkitAudioContext?: typeof AudioContext };
 
@@ -107,6 +133,11 @@ function PlanDelDia({
   const [descanso, setDescanso] = useState<{ ejercicioId: string; restante: number; total: number } | null>(null);
   const [pesos, setPesos] = useState<Record<string, string>>({});
   const [celebrarHito, setCelebrarHito] = useState<number | null>(null);
+  const [celebrarFin, setCelebrarFin] = useState(false);
+  // celebrarFin como dependencia es intencional: regenera las posiciones del
+  // confeti cada vez que se abre la celebración, no solo la primera vez.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const piezasConfeti = useMemo(() => generarConfeti(28), [celebrarFin]);
   const [errorSync, setErrorSync] = useState(false);
   const rachaAnteriorRef = useRef(progreso.racha);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -245,6 +276,7 @@ function PlanDelDia({
       guardarProgresoRemoto(next, () => setErrorSync(true));
       return next;
     });
+    setCelebrarFin(true);
   }
 
   const idsHoy = ejercicios.map((e) => obtenerEjercicio(progreso.reemplazosHoy[e.id] ?? e.id));
@@ -539,6 +571,56 @@ function PlanDelDia({
             >
               Seguir
             </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Cierre del entrenamiento de hoy — confeti cayendo + "¡Muy bien!" */}
+      <AnimatePresence>
+        {celebrarFin && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-[var(--bg)] px-6"
+          >
+            {!reduce &&
+              piezasConfeti.map((pieza, i) => (
+                <motion.span
+                  key={i}
+                  aria-hidden="true"
+                  className="absolute top-0 rounded-sm"
+                  style={{ left: `${pieza.izquierda}%`, width: pieza.tamano, height: pieza.tamano, backgroundColor: pieza.color }}
+                  initial={{ y: -20, rotate: pieza.giroInicial, opacity: 0 }}
+                  animate={{ y: '110vh', rotate: pieza.giroInicial + pieza.giroTotal, opacity: [0, 1, 1, 0.8] }}
+                  transition={{ duration: pieza.duracion, delay: pieza.retraso, ease: 'linear' }}
+                />
+              ))}
+
+            <button
+              type="button"
+              aria-label="Cerrar"
+              onClick={() => setCelebrarFin(false)}
+              className="absolute top-6 right-6 z-10 flex size-11 items-center justify-center text-[var(--text-secondary)]"
+            >
+              <X size={22} />
+            </button>
+            <div className="relative z-10 flex flex-col items-center">
+              <h2 className="text-4xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Muy bien!</h2>
+              <span className="mt-2 text-6xl" aria-hidden="true">
+                😅
+              </span>
+              <p className="mt-4 max-w-xs text-center text-sm text-[var(--text-secondary)]">
+                Terminaste el entrenamiento de hoy. Descansa — mañana seguimos.
+              </p>
+              <button
+                type="button"
+                onClick={() => setCelebrarFin(false)}
+                className="mt-8 flex h-12 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
+              >
+                Seguir
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
