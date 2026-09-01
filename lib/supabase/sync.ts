@@ -99,6 +99,33 @@ export function guardarProgresoRemoto(p: Progreso, onError?: () => void) {
   });
 }
 
+/** Nombre que el usuario eligió para que le llamemos (Perfil). Separado de
+ * `Progreso`: no es progreso de entrenamiento, es identidad. */
+export async function leerNombreRemoto(): Promise<string | null> {
+  const supabase = crearClienteSupabase();
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData.user;
+  if (!user) return null;
+
+  const { data: perfil } = await supabase.from('profiles').select('nombre').eq('id', user.id).maybeSingle();
+  return perfil?.nombre ?? null;
+}
+
+export function guardarNombreRemoto(nombre: string, onError?: () => void) {
+  const supabase = crearClienteSupabase();
+  supabase.auth.getUser().then(({ data }) => {
+    const user = data.user;
+    if (!user) return;
+    supabase
+      .from('profiles')
+      .update({ nombre })
+      .eq('id', user.id)
+      .then(({ error }) => {
+        if (error) onError?.();
+      });
+  });
+}
+
 export function guardarLogRemoto(log: RegistroLog, onError?: () => void) {
   const supabase = crearClienteSupabase();
   supabase.auth.getUser().then(({ data }) => {

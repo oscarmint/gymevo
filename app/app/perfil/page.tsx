@@ -5,15 +5,20 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Flame, LogOut } from 'lucide-react';
+import { Check, Flame, LogOut, Pencil } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { leerProgreso, tituloRuta, type Progreso } from '@/lib/routine';
+import { leerNombreLocal, guardarNombreLocal } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
+import { guardarNombreRemoto, leerNombreRemoto } from '@/lib/supabase/sync';
 
 export default function PerfilPage() {
   const router = useRouter();
   const [respuestas, setRespuestas] = useState<RespuestasOnboarding | null>(null);
   const [progreso, setProgreso] = useState<Progreso | null>(null);
+  const [nombre, setNombre] = useState<string | null>(null);
+  const [editando, setEditando] = useState(false);
+  const [borrador, setBorrador] = useState('');
 
   // localStorage/sessionStorage no existen en el servidor: leerlos en el
   // initializer de useState causa mismatch de hydration. Este efecto es la
@@ -22,6 +27,13 @@ export default function PerfilPage() {
   useEffect(() => {
     setRespuestas(leerRespuestas());
     setProgreso(leerProgreso());
+    setNombre(leerNombreLocal());
+    leerNombreRemoto().then((remoto) => {
+      if (remoto) {
+        setNombre(remoto);
+        guardarNombreLocal(remoto);
+      }
+    });
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 
@@ -29,6 +41,20 @@ export default function PerfilPage() {
 
   const nivel = respuestas?.nivel ?? 'principiante';
   const meta = respuestas?.meta ?? 'musculo';
+
+  function empezarEdicion() {
+    setBorrador(nombre ?? '');
+    setEditando(true);
+  }
+
+  function guardarNombre() {
+    const limpio = borrador.trim();
+    if (!limpio) return;
+    setNombre(limpio);
+    guardarNombreLocal(limpio);
+    guardarNombreRemoto(limpio);
+    setEditando(false);
+  }
 
   async function cerrarSesion() {
     const supabase = crearClienteSupabase();
@@ -41,7 +67,35 @@ export default function PerfilPage() {
   return (
     <div className="px-5 pt-6">
       <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">Tu cuenta</p>
-      <h1 className="mt-1 text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Perfil</h1>
+      {editando ? (
+        <div className="mt-1 flex items-center gap-2">
+          <input
+            autoFocus
+            type="text"
+            value={borrador}
+            onChange={(e) => setBorrador(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && guardarNombre()}
+            placeholder="¿Cómo quieres que te llamemos?"
+            maxLength={30}
+            className="h-11 flex-1 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] px-3 text-2xl font-bold text-[var(--text-primary)] outline-none focus:border-[var(--accent)] [font-family:var(--font-display)]"
+          />
+          <button
+            type="button"
+            aria-label="Guardar nombre"
+            onClick={guardarNombre}
+            className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)] text-[var(--bg)]"
+          >
+            <Check size={18} />
+          </button>
+        </div>
+      ) : (
+        <button type="button" onClick={empezarEdicion} className="mt-1 flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">
+            Hola, {nombre ?? 'ponte un nombre'}
+          </h1>
+          <Pencil size={15} color="var(--text-tertiary)" />
+        </button>
+      )}
 
       <div className="mt-6 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
         <p className="text-lg font-semibold text-[var(--text-primary)]">{tituloRuta(nivel, meta)}</p>
