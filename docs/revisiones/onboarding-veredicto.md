@@ -1,14 +1,14 @@
 # VEREDICTO revisor-visual — onboarding
 Fecha: 2026-09-01 00:00
 Screenshot: docs/revisiones/onboarding-375.png
-Usabilidad: 34/40
-Craft: 11/20
+Usabilidad: 33/40
+Craft: 15/20
 Copy (si vende): N-A
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 Top defectos:
-1. [Todo el layout — paleta y concepto] Coincide con el patrón vetado "Capítulo" (papel cálido #F5F1EA + tinta verde #5C7A1F + motivo de cuaderno/libreta con tachado) — solo difiere la familia tipográfica exacta (Instrument Sans en vez de Petrona/Karla), pero el ADN visual completo (fondo papel, acento verde, lenguaje de "libreta que se llena") es el mismo archetype → EJE identidad = 0. FIX: no es retoque — requiere decidir si se re-deriva la identidad visual desde otro mundo/arquetipo (16, PASO 0.45) o se acepta el riesgo de clon como decisión de producto explícita, documentada como tal.
-2. [Debajo de la tarjeta "Tu ruta se está armando", pasos con 2 chips: nivel/meta] Queda un vacío muerto de ~200-250px sin contenido ni centrado vertical → viola "nunca vacío muerto abajo". FIX: centrar el bloque pregunta+chips+tarjeta en el alto disponible, o agregar un elemento de contexto que llene el espacio en pasos cortos.
-3. [Fondo completo de la pantalla] Los 3 gradientes radiales de accent/accent-2 (12-18% opacidad) definidos en el código son imperceptibles en el render real — la pantalla se ve como un fill plano de cream. FIX: subir la opacidad o acercar el radio del gradiente a la zona del héroe para que la profundidad se perciba de verdad.
-4. [Paso "compromiso", código — no visible en el screenshot capturado] El número de días salta instantáneo al mover el slider, sin conteo/transición animada — falta 1 de las 7 baseline de movimiento (conteo animado de número héroe). FIX: animar el número con motion (spring/tween) en cada cambio de valor.
-5. [Chips de opción, todos los pasos] El radio de los chips en el screenshot se ve como rectángulo medio-redondeado (~14-16px), no como pill completo (100px) que documenta FICHA-ARTE para botones/pills. FIX: verificar si --radius-button coincide con el valor real deseado o corregir la ficha para reflejar el valor efectivo, evitando el desvío entre documento y código.
+1. [zona bajo la tarjeta "Tu ruta se está armando"] Queda ~40-45% de la pantalla vacío (solo renglones de fondo, sin contenido) → agregar un bloque de valor real ahí (ej. mini-preview de lo que se está armando) o centrar verticalmente todo el bloque de pregunta+tarjeta para que el vacío deje de leerse como espacio sin usar; texturizar el fondo no resuelve la falta de contenido.
+2. [tarjeta "Tu ruta se está armando"] Sigue leyéndose como tappable: ícono + etiqueta en mayúsculas dentro de una card redondeada con borde completo es el mismo patrón visual de un ítem de lista accionable, y no tiene onClick → quitar el patrón de "header de botón" (mover el ícono en línea junto al texto, sin badge superior) o cambiar el tratamiento visual (solo separador/línea superior, no card con borde perimetral) para que no compita visualmente con los chips reales.
+3. [Chips, app/onboarding/page.tsx líneas ~454-456] La animación de entrada de los chips (`initial={{opacity:0,y:10}}`) no está gateada por `useReducedMotion()` a diferencia del resto del archivo → envolver con el mismo patrón `reduce ? {} : {...}` usado en PantallaPregunta y en el número de "compromiso".
+4. [TarjetaRuta, línea ~349] Padding horizontal asimétrico (`pl-9` vs `pr-6`) por la espiral de encuadernación → igualar el padding de contenido y resolver el espacio de la espiral con un margen/offset interno separado del padding.
+5. [paleta general] Papel cálido + tinta verde sigue en la vecindad de la combinación vetada "Capítulo" (aunque la tipografía difiere, así que no dispara el gate automático de EJE 3=0) → riesgo conocido, no accionable esta sesión por decisión ya tomada del usuario.

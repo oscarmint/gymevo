@@ -1,17 +1,9 @@
 # VEREDICTO revisor-visual — landing
 Fecha: 2026-09-01 00:00
 Screenshot: docs/revisiones/landing-375.png
-Usabilidad: 34/40
-Craft: 13/20
-Copy (si vende): 20/20
+Usabilidad: 36/40
+Craft: 19/20
+Copy (si vende): 19/20
 Fidelidad (si hubo referencia): N-A
-Veredicto: NO LISTA
-
-Top defectos:
-1. [Paleta global — toda la pantalla] Papel cálido `#F5F1EA` + tinta verde `#5C7A1F` coincide en 2 de 3 rasgos con la paleta vetada "Capítulo" (papel+verde+Petrona/Karla) de los ejemplos canónicos del 53; el único dispositivo ownable real (tachado verde) aparece UNA vez en toda la página (Solución → antes/después) → fix: repetir el tachado/dispositivo ownable en al menos 2 lugares más (p.ej. sobre el "$108" tachado de Oferta, que hoy es un tachado genérico de Tailwind en vez del tachado de marca) o activar una textura de grano/cuaderno real para que la identidad no dependa solo de hue+papel.
-2. [Problema, Agitación, Garantía] Estas 3 secciones corren en solo 2 planos tipográficos (título + cuerpo), sin el eyebrow/label de 11-12px que sí tienen Oferta/AppPorDentro/Faq/Solución → fix: añadir un Kicker a Problema y Agitación (Garantía puede usar el nombre propio en Accent como 3er plano, hoy funciona parcialmente) para una jerarquía de 4 niveles uniforme en toda la página.
-3. [Oferta → tarjeta Mensual, CTA] "Elegir mensual" no usa `<CtaButton variant="outline">` del kit sino un `<motion.a>` inline duplicado con el mismo patrón visual → fix: extraer una variante `outline` dentro de `CtaButton` (ui.tsx) en vez de mantener una segunda implementación del mismo componente.
-4. [AppPorDentro — los 4 frames] La sección depende de 4 screenshots reales en `/public/screenshots/*`; si falta alguno, el placeholder gris rompe la promesa visual justo en la sección que más vende el mecanismo → fix: confirmar en el repo que las 4 imágenes existen y muestran datos semilla reales (no se pudo verificar disponibilidad de archivo en esta revisión, solo el componente).
-5. [CtaFinal — recap y PS] `recap` usa `color-mix(in oklab, var(--bg) 65%, transparent)` sobre fondo invertido `--text-primary`, a 13px — riesgo de caer bajo 4.5:1 (AA) al ser el texto más apagado del bloque de mayor contraste de la página → fix: medir el contraste real y subir la opacidad del recap si no cumple AA.
-
-Nota de cierre de ronda: los defectos #1 y #2 son los mismos de la ronda 3 (paleta cercana al ejemplo vetado, planos tipográficos incompletos) — no se tocaron esta ronda por decisión de alcance, y siguen bloqueando el gate de craft (13/20, umbral 16/20) pese a que usabilidad (34/40) y copy (20/20) están cerca o por encima del umbral.
+Veredicto: LISTA
+Top defectos: 1. [flotante inferior-derecho, toda la página] <BotonVolverArriba> no tiene una zona de exclusión cerca de #cta-final/FAQ — al pasar por esas secciones puede pisar momentáneamente el chevron de la última pregunta o el borde del PS; fix: bajar su umbral de aparición o añadir un pequeño padding-right al contenido cuando esté visible. 2. [paleta global] papel cálido (#F5F1EA) + tinta verde (#5C7A1F) coincide en 2 de 3 ejes con el combo vetado "Capítulo" del banco canónico (falta la tercera pieza, Petrona/Karla, aquí es Instrument Sans) — no es clon pero es el eje más cercano al límite; fix: si se repite este patrón en otro proyecto del SO, está vetado (ya anotado en FICHA-ARTE), aquí se mantiene por ser la dirección aprobada. 3. [heurística 3, toda la página] sigue sin existir una marca/header persistente durante el scroll (solo aparece en el tramo del hero y en el footer) — el botón de volver arriba mitiga el problema pero un header sticky mínimo sería el óptimo; no bloqueante, nota para una futura iteración.
