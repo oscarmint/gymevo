@@ -8,7 +8,7 @@
 
 import { useEffect, useState, type ReactNode } from 'react';
 import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
-import { Check } from 'lucide-react';
+import { ArrowUp, Check } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 /* ── <Accent> — la palabra que vende, en el acento del kit ─────────────────── */
@@ -239,6 +239,40 @@ export function StickyCtaMobile({
             {ofertaVista ? labelComercial : labelPre}
           </motion.a>
         </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+/* ── <BotonVolverArriba> — heurística 3 (control y libertad): en una página
+   larga (~8000px) hace falta una forma de reorientarse sin scrollear a mano.
+   Aparece tras bajar un tramo, encima de <StickyCtaMobile> (nunca la tapa). ── */
+export function BotonVolverArriba() {
+  const [visible, setVisible] = useState(false);
+  const reduce = useReducedMotion();
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 800);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.button
+          type="button"
+          aria-label="Volver arriba"
+          onClick={() => window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+          whileTap={{ scale: 0.92 }}
+          className="fixed right-4 bottom-24 z-40 flex size-11 items-center justify-center rounded-full border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow-2)] [touch-action:manipulation]"
+        >
+          <ArrowUp size={18} aria-hidden="true" />
+        </motion.button>
       )}
     </AnimatePresence>
   );

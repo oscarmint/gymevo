@@ -12,7 +12,7 @@ import { Garantia } from '@/components/landing/Garantia';
 import { Faq } from '@/components/landing/Faq';
 import { CtaFinal } from '@/components/landing/CtaFinal';
 import { FooterLegal } from '@/components/landing/FooterLegal';
-import { CtaButton, StickyCtaMobile } from '@/components/landing/ui';
+import { BotonVolverArriba, CtaButton, StickyCtaMobile } from '@/components/landing/ui';
 
 // Modelo 2 (onboarding-first, decidido en Sesión 1 — ver ESTADO.md): el CTA
 // lleva a /onboarding, nunca al checkout directo desde el hero.
@@ -216,6 +216,7 @@ export default function LandingGymEvo() {
       />
 
       <StickyCtaMobile labelComercial={CTA_LABEL} href={CTA_HREF} />
+      <BotonVolverArriba />
     </div>
   );
 }

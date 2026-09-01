@@ -346,12 +346,13 @@ function TarjetaRuta({
   ];
 
   return (
-    <div className="relative mt-10 overflow-hidden rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent-2)_30%,transparent)] bg-[var(--surface)] py-6 pr-6 pl-9">
-      {/* Borde SÓLIDO (no punteado): los chips no-seleccionados también usan
-          borde punteado — con el mismo estilo aquí, la tarjeta se leía como
-          "tocable" sin serlo (hallazgo revisor-visual). El ámbar (2ª nota de
-          FICHA-ARTE) vive aquí de forma REAL y visible, no solo en un
-          degradé de fondo casi imperceptible. */}
+    <div className="relative mt-10 overflow-hidden rounded-[var(--radius-card)] border-t-2 border-t-[color-mix(in_oklab,var(--accent-2)_40%,transparent)] bg-[var(--surface)] py-6 pr-9 pl-9">
+      {/* Solo hairline SUPERIOR (no un borde completo): un borde entero + ícono
+          + etiqueta en mayúsculas se leía como un ítem tocable, igual que los
+          chips reales, sin tener onClick (hallazgo revisor-visual). Un
+          separador arriba basta para distinguirla del fondo sin fingir que
+          responde al tap. El ámbar (2ª nota de FICHA-ARTE) vive en ese
+          hairline + el ícono/etiqueta, de forma REAL y visible. */}
       {/* Espiral de encuadernación (mundo del sujeto: la tarjeta ES una hoja
           de cuaderno) — dispositivo ownable reforzado, distinto del grano del
           ejemplo vetado del banco canónico. */}
@@ -420,6 +421,8 @@ function Chips<T extends string>({
   valor: T | null;
   onSelect: (v: T) => void;
 }) {
+  const reduce = useReducedMotion();
+
   // Navegación por flechas entre chips (a11y — el tab nativo solo avanza de a
   // uno; ↑/↓ deben moverse dentro del grupo, como un radiogroup real).
   function moverFoco(desde: number, delta: 1 | -1) {
@@ -451,9 +454,9 @@ function Chips<T extends string>({
               }
             }}
             whileTap={{ scale: 0.97 }}
-            initial={{ opacity: 0, y: 10 }}
+            initial={reduce ? false : { opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05, duration: 0.25 }}
+            transition={{ delay: reduce ? 0 : i * 0.05, duration: reduce ? 0 : 0.25 }}
             className={`flex min-h-14 items-center gap-3 rounded-[var(--radius-button)] border px-4 py-3.5 text-left text-base font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
               seleccionado
                 ? 'border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--text-primary)]'
