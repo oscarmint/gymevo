@@ -5,10 +5,46 @@
 
 import type { Meta, Nivel } from './onboarding';
 
+/** Grupo muscular estandarizado — independiente del `grupo` de texto libre
+ * (que es la etiqueta que ve el usuario). Este es el que decide qué
+ * ilustración de "Explicación del ejercicio" se muestra (ver
+ * components/CuerpoMuscular.tsx). Al agregar un ejercicio nuevo, siempre se
+ * le asigna uno de estos — así la ilustración sale sola, sin pasos extra. */
+export type GrupoMuscular =
+  | 'pecho'
+  | 'hombro'
+  | 'biceps'
+  | 'triceps'
+  | 'trapecio'
+  | 'femoral'
+  | 'cuadriceps'
+  | 'pantorrilla'
+  | 'dorsal'
+  | 'gluteo'
+  | 'espalda'
+  | 'core';
+
+export const MUSCULO_LABEL: Record<GrupoMuscular, string> = {
+  pecho: 'Pecho',
+  hombro: 'Hombro',
+  biceps: 'Bíceps',
+  triceps: 'Tríceps',
+  trapecio: 'Trapecio',
+  femoral: 'Femoral',
+  cuadriceps: 'Cuádriceps',
+  pantorrilla: 'Pantorrilla',
+  dorsal: 'Dorsal (lateral de espalda)',
+  gluteo: 'Glúteo',
+  espalda: 'Espalda',
+  core: 'Core / Abdomen',
+};
+
 export interface Ejercicio {
   id: string;
   nombre: string;
   grupo: string;
+  /** Para la ilustración de "Explicación del ejercicio" — ver MUSCULO_LABEL. */
+  grupoMuscular: GrupoMuscular;
   series: number;
   reps: string;
   descansoSeg: number;
@@ -22,32 +58,41 @@ export interface Ejercicio {
 type TipoDia = 'empuje' | 'tiron' | 'piernas' | 'full';
 
 const CATALOGO: Record<string, Ejercicio> = {
-  press_banca: { id: 'press_banca', nombre: 'Press de banca', grupo: 'Pecho', series: 4, reps: '8', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_mancuernas' },
-  press_mancuernas: { id: 'press_mancuernas', nombre: 'Press con mancuernas', grupo: 'Pecho', series: 4, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'press_banca' },
-  press_militar: { id: 'press_militar', nombre: 'Press militar', grupo: 'Hombro', series: 3, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'press_arnold' },
-  press_arnold: { id: 'press_arnold', nombre: 'Press Arnold', grupo: 'Hombro', series: 3, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'press_militar' },
-  fondos: { id: 'fondos', nombre: 'Fondos en banco', grupo: 'Tríceps', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'triceps_polea' },
-  triceps_polea: { id: 'triceps_polea', nombre: 'Extensión de tríceps en polea', grupo: 'Tríceps', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'fondos' },
+  press_banca: { id: 'press_banca', nombre: 'Press de banca', grupo: 'Pecho', grupoMuscular: 'pecho', series: 4, reps: '8', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_mancuernas' },
+  press_mancuernas: { id: 'press_mancuernas', nombre: 'Press con mancuernas', grupo: 'Pecho', grupoMuscular: 'pecho', series: 4, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'press_banca' },
+  press_militar: { id: 'press_militar', nombre: 'Press militar', grupo: 'Hombro', grupoMuscular: 'hombro', series: 3, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'press_arnold' },
+  press_arnold: { id: 'press_arnold', nombre: 'Press Arnold', grupo: 'Hombro', grupoMuscular: 'hombro', series: 3, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'press_militar' },
+  fondos: { id: 'fondos', nombre: 'Fondos en banco', grupo: 'Tríceps', grupoMuscular: 'triceps', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'triceps_polea' },
+  triceps_polea: { id: 'triceps_polea', nombre: 'Extensión de tríceps en polea', grupo: 'Tríceps', grupoMuscular: 'triceps', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'fondos' },
 
-  remo_barra: { id: 'remo_barra', nombre: 'Remo con barra', grupo: 'Espalda', series: 4, reps: '10', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'remo_maquina' },
-  remo_maquina: { id: 'remo_maquina', nombre: 'Remo en máquina', grupo: 'Espalda', series: 4, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_barra' },
-  jalon_pecho: { id: 'jalon_pecho', nombre: 'Jalón al pecho', grupo: 'Espalda', series: 4, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'dominadas_asistidas' },
-  dominadas_asistidas: { id: 'dominadas_asistidas', nombre: 'Dominadas asistidas', grupo: 'Espalda', series: 3, reps: '8', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'jalon_pecho' },
-  curl_biceps: { id: 'curl_biceps', nombre: 'Curl de bíceps', grupo: 'Bíceps', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_martillo' },
-  curl_martillo: { id: 'curl_martillo', nombre: 'Curl martillo', grupo: 'Bíceps', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_biceps' },
+  remo_barra: { id: 'remo_barra', nombre: 'Remo con barra', grupo: 'Espalda', grupoMuscular: 'espalda', series: 4, reps: '10', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'remo_maquina' },
+  remo_maquina: { id: 'remo_maquina', nombre: 'Remo en máquina', grupo: 'Espalda', grupoMuscular: 'espalda', series: 4, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_barra' },
+  jalon_pecho: { id: 'jalon_pecho', nombre: 'Jalón al pecho', grupo: 'Espalda', grupoMuscular: 'dorsal', series: 4, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'dominadas_asistidas' },
+  dominadas_asistidas: { id: 'dominadas_asistidas', nombre: 'Dominadas asistidas', grupo: 'Espalda', grupoMuscular: 'dorsal', series: 3, reps: '8', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'jalon_pecho' },
+  curl_biceps: { id: 'curl_biceps', nombre: 'Curl de bíceps', grupo: 'Bíceps', grupoMuscular: 'biceps', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_martillo' },
+  curl_martillo: { id: 'curl_martillo', nombre: 'Curl martillo', grupo: 'Bíceps', grupoMuscular: 'biceps', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_biceps' },
 
-  sentadilla: { id: 'sentadilla', nombre: 'Sentadilla', grupo: 'Piernas', series: 4, reps: '8', descansoSeg: 120, tempo: '3-1-1', alternativaId: 'prensa' },
-  prensa: { id: 'prensa', nombre: 'Prensa de piernas', grupo: 'Piernas', series: 4, reps: '10', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'sentadilla' },
-  peso_muerto_rumano: { id: 'peso_muerto_rumano', nombre: 'Peso muerto rumano', grupo: 'Isquiotibiales', series: 3, reps: '10', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'curl_femoral' },
-  curl_femoral: { id: 'curl_femoral', nombre: 'Curl femoral', grupo: 'Isquiotibiales', series: 3, reps: '12', descansoSeg: 75, tempo: '2-1-1', alternativaId: 'peso_muerto_rumano' },
-  zancadas: { id: 'zancadas', nombre: 'Zancadas', grupo: 'Piernas', series: 3, reps: '12', descansoSeg: 75, tempo: '2-1-1', alternativaId: 'extension_cuadriceps' },
-  extension_cuadriceps: { id: 'extension_cuadriceps', nombre: 'Extensión de cuádriceps', grupo: 'Piernas', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'zancadas' },
+  sentadilla: { id: 'sentadilla', nombre: 'Sentadilla', grupo: 'Piernas', grupoMuscular: 'cuadriceps', series: 4, reps: '8', descansoSeg: 120, tempo: '3-1-1', alternativaId: 'prensa' },
+  prensa: { id: 'prensa', nombre: 'Prensa de piernas', grupo: 'Piernas', grupoMuscular: 'cuadriceps', series: 4, reps: '10', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'sentadilla' },
+  peso_muerto_rumano: { id: 'peso_muerto_rumano', nombre: 'Peso muerto rumano', grupo: 'Isquiotibiales', grupoMuscular: 'femoral', series: 3, reps: '10', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'curl_femoral' },
+  curl_femoral: { id: 'curl_femoral', nombre: 'Curl femoral', grupo: 'Isquiotibiales', grupoMuscular: 'femoral', series: 3, reps: '12', descansoSeg: 75, tempo: '2-1-1', alternativaId: 'peso_muerto_rumano' },
+  zancadas: { id: 'zancadas', nombre: 'Zancadas', grupo: 'Piernas', grupoMuscular: 'cuadriceps', series: 3, reps: '12', descansoSeg: 75, tempo: '2-1-1', alternativaId: 'extension_cuadriceps' },
+  extension_cuadriceps: { id: 'extension_cuadriceps', nombre: 'Extensión de cuádriceps', grupo: 'Piernas', grupoMuscular: 'cuadriceps', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'zancadas' },
 
-  press_hombros_mancuerna: { id: 'press_hombros_mancuerna', nombre: 'Press de hombros con mancuernas', grupo: 'Hombro', series: 3, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'press_militar' },
-  remo_un_brazo: { id: 'remo_un_brazo', nombre: 'Remo a un brazo', grupo: 'Espalda', series: 3, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_maquina' },
-  plancha: { id: 'plancha', nombre: 'Plancha abdominal', grupo: 'Core', series: 3, reps: '40 seg', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_polea' },
-  crunch_polea: { id: 'crunch_polea', nombre: 'Crunch en polea', grupo: 'Core', series: 3, reps: '15', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha' },
+  press_hombros_mancuerna: { id: 'press_hombros_mancuerna', nombre: 'Press de hombros con mancuernas', grupo: 'Hombro', grupoMuscular: 'hombro', series: 3, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'press_militar' },
+  remo_un_brazo: { id: 'remo_un_brazo', nombre: 'Remo a un brazo', grupo: 'Espalda', grupoMuscular: 'espalda', series: 3, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_maquina' },
+  plancha: { id: 'plancha', nombre: 'Plancha abdominal', grupo: 'Core', grupoMuscular: 'core', series: 3, reps: '40 seg', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_polea' },
+  crunch_polea: { id: 'crunch_polea', nombre: 'Crunch en polea', grupo: 'Core', grupoMuscular: 'core', series: 3, reps: '15', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha' },
 };
+
+/** Alterna hombre/mujer entre ejercicios de forma ESTABLE (nunca al azar: el
+ * mismo ejercicio siempre muestra el mismo género) — a pedido explícito del
+ * usuario ("alternando... hombre, luego mujer, luego hombre..."). Se basa en
+ * la posición del ejercicio dentro del catálogo completo. */
+export function generoIlustracion(id: string): 'masculino' | 'femenino' {
+  const indice = Object.keys(CATALOGO).indexOf(id);
+  return indice % 2 === 0 ? 'masculino' : 'femenino';
+}
 
 const SPLIT: Record<TipoDia, string[]> = {
   empuje: ['press_banca', 'press_militar', 'fondos'],

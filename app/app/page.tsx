@@ -6,16 +6,19 @@
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { Lottie } from 'lottie-react';
 import { motion, AnimatePresence, useReducedMotion, animate } from 'motion/react';
-import { Check, Flame, PlayCircle, RefreshCcw, Undo2, Volume2, VolumeX, WifiOff, X } from 'lucide-react';
+import { Check, Dumbbell, Flame, PlayCircle, RefreshCcw, Undo2, Volume2, VolumeX, WifiOff, X } from 'lucide-react';
 import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import animacionFitness from '@/public/animaciones/fitness.json';
+import { CuerpoMuscular } from '@/components/CuerpoMuscular';
 import {
   completarEntrenamiento,
   deshacerHecho,
   ejerciciosDeHoy,
+  generoIlustracion,
   guardarProgreso,
   leerProgreso,
   marcarHecho,
+  MUSCULO_LABEL,
   nombreDeHoy,
   obtenerEjercicio,
   rachaEnRiesgo,
@@ -139,6 +142,7 @@ function PlanDelDia({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const piezasConfeti = useMemo(() => generarConfeti(28), [celebrarFin]);
   const [errorSync, setErrorSync] = useState(false);
+  const [explicando, setExplicando] = useState<string | null>(null);
   const rachaAnteriorRef = useRef(progreso.racha);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const reduce = useReducedMotion();
@@ -436,14 +440,23 @@ function PlanDelDia({
                     {ej.series}×{ej.reps} · tempo {ej.tempo} · descanso {ej.descansoSeg}s
                   </p>
                   {!hecho && (
-                    <a
-                      href={urlComoSeHace(ej.nombre)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-[var(--accent)]"
-                    >
-                      <PlayCircle size={13} /> ¿Cómo se hace?
-                    </a>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
+                      <a
+                        href={urlComoSeHace(ej.nombre)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs font-medium text-[var(--accent)]"
+                      >
+                        <PlayCircle size={13} /> ¿Cómo se hace?
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => setExplicando(ej.id)}
+                        className="inline-flex items-center gap-1 text-xs font-medium text-[var(--accent-2)]"
+                      >
+                        <Dumbbell size={13} /> Explicación del ejercicio
+                      </button>
+                    </div>
                   )}
                 </div>
                 {!hecho && (
@@ -625,6 +638,54 @@ function PlanDelDia({
             </div>
           </motion.div>
         )}
+      </AnimatePresence>
+
+      {/* "Explicación del ejercicio" — silueta propia con el músculo
+          resaltado (nunca fotos de terceros con licencia ajena). */}
+      <AnimatePresence>
+        {explicando &&
+          (() => {
+            const ej = obtenerEjercicio(explicando);
+            return (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-end justify-center bg-[color-mix(in_oklab,var(--text-primary)_35%,transparent)]"
+                onClick={() => setExplicando(null)}
+              >
+                <motion.div
+                  initial={{ y: '100%' }}
+                  animate={{ y: 0 }}
+                  exit={{ y: '100%' }}
+                  transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full max-w-md rounded-t-[var(--radius-card)] bg-[var(--surface)] px-5 pt-4 pb-8"
+                >
+                  <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)]" />
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent-2)]">
+                        {MUSCULO_LABEL[ej.grupoMuscular]}
+                      </p>
+                      <h2 className="text-lg font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">{ej.nombre}</h2>
+                    </div>
+                    <button
+                      type="button"
+                      aria-label="Cerrar"
+                      onClick={() => setExplicando(null)}
+                      className="flex size-9 shrink-0 items-center justify-center rounded-full text-[var(--text-secondary)]"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+                  <div className="mt-2 flex justify-center">
+                    <CuerpoMuscular musculo={ej.grupoMuscular} genero={generoIlustracion(ej.id)} />
+                  </div>
+                </motion.div>
+              </motion.div>
+            );
+          })()}
       </AnimatePresence>
     </div>
   );
