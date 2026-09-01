@@ -4,9 +4,12 @@
 // UNA misión: completar el entrenamiento de hoy. Protagonista de la Sesión 5.
 
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
+import { Lottie } from 'lottie-react';
 import { motion, AnimatePresence, useReducedMotion, animate } from 'motion/react';
 import { Check, Flame, PlayCircle, RefreshCcw, Undo2, WifiOff, X } from 'lucide-react';
 import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
+import { leerNombreLocal } from '@/lib/perfil';
+import animacionFitness from '@/public/animaciones/fitness.json';
 import {
   completarEntrenamiento,
   deshacerHecho,
@@ -27,6 +30,7 @@ import { guardarLogRemoto, guardarProgresoRemoto, leerProgresoRemoto, sincroniza
 export default function PlanDelDiaPage() {
   const [respuestas, setRespuestas] = useState<RespuestasOnboarding | null>(null);
   const [progreso, setProgreso] = useState<Progreso | null>(null);
+  const [nombre, setNombre] = useState<string | null>(null);
 
   // localStorage/sessionStorage no existen en el servidor: leerlos en el
   // initializer de useState (en vez de en este efecto) causa un mismatch de
@@ -38,6 +42,7 @@ export default function PlanDelDiaPage() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setRespuestas(r);
     setProgreso(leerProgreso());
+    setNombre(leerNombreLocal());
 
     // Si hay sesión de Supabase: crea el perfil remoto la primera vez (con las
     // respuestas del onboarding) y si ya existía progreso remoto, ese manda
@@ -57,15 +62,17 @@ export default function PlanDelDiaPage() {
   const actualizarProgreso: Dispatch<SetStateAction<Progreso>> = (accion) =>
     setProgreso((prev) => (typeof accion === 'function' ? (accion as (p: Progreso) => Progreso)(prev as Progreso) : accion));
 
-  return <PlanDelDia progreso={progreso} setProgreso={actualizarProgreso} respuestas={respuestas} />;
+  return <PlanDelDia progreso={progreso} setProgreso={actualizarProgreso} respuestas={respuestas} nombre={nombre} />;
 }
 
 function PlanDelDia({
   progreso,
   setProgreso,
   respuestas,
+  nombre,
 }: {
   progreso: Progreso;
+  nombre: string | null;
   setProgreso: Dispatch<SetStateAction<Progreso>>;
   respuestas: RespuestasOnboarding | null;
 }) {
@@ -169,12 +176,22 @@ function PlanDelDia({
 
   return (
     <div className="px-5 pt-6">
-      {/* (1) EL DATO DE HOY */}
+      {/* (1) EL DATO DE HOY — saludo con nombre + la parte de hoy en una sola
+          frase, con la animación de cierre (Lottie) coronando la misión del día. */}
       <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">
         Día {progreso.diaActual} · {tituloRuta(nivel, meta)}
       </p>
-      <h1 className="mt-1 text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
-        Hoy toca {nombreDeHoy(progreso.diaActual)}
+      <h1 className="mt-1 flex flex-wrap items-center gap-1 text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+        <span>
+          Hola, {nombre ?? 'campeón'}, hoy toca {nombreDeHoy(progreso.diaActual)}
+        </span>
+        <Lottie
+          src={animacionFitness}
+          autoplay
+          loop
+          className="shrink-0"
+          style={{ width: 36, height: 36 }}
+        />
       </h1>
 
       {/* Aviso si la sincronización remota falla — nunca en silencio (heurística 9),
