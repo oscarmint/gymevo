@@ -611,7 +611,9 @@ function PlanDelDia({
                 😅
               </span>
               <p className="mt-4 max-w-xs text-center text-sm text-[var(--text-secondary)]">
-                Terminaste el entrenamiento de hoy. Descansa — mañana seguimos.
+                Terminaste el entrenamiento de hoy.
+                <br />
+                Descansa, mañana continuaremos.
               </p>
               <button
                 type="button"
