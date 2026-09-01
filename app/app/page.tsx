@@ -168,31 +168,7 @@ function PlanDelDia({
   const enRiesgo = rachaEnRiesgo(progreso);
 
   return (
-    <div className="relative px-5 pt-6">
-      {/* Video de fondo (mismo de la landing) — fixed para que se sienta como
-          ambiente detrás de las cards al hacer scroll, no como una imagen que
-          se desplaza con el contenido. Scrim fuerte: las cards son opacas, el
-          video solo asoma en los márgenes/arriba, nunca compite con el texto. */}
-      <video
-        aria-hidden="true"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        className="pointer-events-none fixed inset-0 -z-20 size-full object-cover motion-reduce:hidden"
-      >
-        <source src="/videos/hero-gimnasio.mp4" type="video/mp4" />
-      </video>
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-0 -z-10"
-        style={{
-          background:
-            'linear-gradient(180deg, color-mix(in oklab, var(--bg) 62%, transparent) 0%, color-mix(in oklab, var(--bg) 82%, transparent) 20%, var(--bg) 38%)',
-        }}
-      />
-
+    <div className="px-5 pt-6">
       {/* (1) EL DATO DE HOY */}
       <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">
         Día {progreso.diaActual} · {tituloRuta(nivel, meta)}
