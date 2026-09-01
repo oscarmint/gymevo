@@ -6,7 +6,7 @@
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { Lottie } from 'lottie-react';
 import { motion, AnimatePresence, useReducedMotion, animate } from 'motion/react';
-import { Check, Flame, PlayCircle, RefreshCcw, Undo2, WifiOff, X } from 'lucide-react';
+import { Check, Flame, PlayCircle, RefreshCcw, Undo2, Volume2, VolumeX, WifiOff, X } from 'lucide-react';
 import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import animacionFitness from '@/public/animaciones/fitness.json';
 import {
@@ -32,6 +32,31 @@ const DURACIONES_DESCANSO = [30, 60, 120, 180];
 
 function etiquetaDuracion(seg: number): string {
   return seg < 60 ? `${seg}s` : `${seg / 60} min`;
+}
+
+// Safari viejo solo expone el AudioContext bajo el prefijo `webkit`.
+type VentanaConAudioLegado = Window & { webkitAudioContext?: typeof AudioContext };
+
+/** Campanita sintetizada (dos tonos cortos) — sin archivo de audio que
+ * descargar ni licencia que pagar. El contexto se crea/retoma DENTRO del tap
+ * de "Registrar" (más abajo) para cumplir la política de autoplay de los
+ * navegadores; aquí solo se programa el sonido sobre ese contexto ya vivo. */
+function reproducirCampanita(ctx: AudioContext) {
+  const ahora = ctx.currentTime;
+  [880, 1175].forEach((frecuencia, i) => {
+    const inicio = ahora + i * 0.18;
+    const osc = ctx.createOscillator();
+    const ganancia = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = frecuencia;
+    ganancia.gain.setValueAtTime(0.0001, inicio);
+    ganancia.gain.exponentialRampToValueAtTime(0.25, inicio + 0.02);
+    ganancia.gain.exponentialRampToValueAtTime(0.0001, inicio + 0.16);
+    osc.connect(ganancia);
+    ganancia.connect(ctx.destination);
+    osc.start(inicio);
+    osc.stop(inicio + 0.18);
+  });
 }
 
 export default function PlanDelDiaPage() {
@@ -84,6 +109,7 @@ function PlanDelDia({
   const [celebrarHito, setCelebrarHito] = useState<number | null>(null);
   const [errorSync, setErrorSync] = useState(false);
   const rachaAnteriorRef = useRef(progreso.racha);
+  const audioCtxRef = useRef<AudioContext | null>(null);
   const reduce = useReducedMotion();
 
   useEffect(() => {
@@ -97,9 +123,16 @@ function PlanDelDia({
   useEffect(() => {
     if (!descanso || descanso.restante > 0) return;
     if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(200);
+    if (progreso.sonidoDescanso && audioCtxRef.current) {
+      try {
+        reproducirCampanita(audioCtxRef.current);
+      } catch {
+        // Web Audio bloqueado por el navegador — la vibración/aviso visual siguen.
+      }
+    }
     const t = setTimeout(() => setDescanso(null), 1800);
     return () => clearTimeout(t);
-  }, [descanso]);
+  }, [descanso, progreso.sonidoDescanso]);
 
   // Número héroe de la racha: cuenta desde 0 al montar (baseline obligatoria de
   // movimiento, 14/22) — se salta la animación con prefers-reduced-motion.
@@ -151,6 +184,20 @@ function PlanDelDia({
     actualizar((p) => marcarHecho(registrarSerie(p, log), ejercicioId));
     guardarLogRemoto({ ...log, fecha: new Date().toISOString().slice(0, 10) }, () => setErrorSync(true));
     if (progreso.descansoAutomatico) {
+      // El AudioContext se crea/retoma AQUÍ, dentro del tap real del usuario:
+      // los navegadores solo permiten reproducir sonido si nace de un gesto
+      // directo — crearlo más tarde (cuando el descanso llega a 0) no suena.
+      if (progreso.sonidoDescanso) {
+        try {
+          const ConstructorAudio = window.AudioContext ?? (window as VentanaConAudioLegado).webkitAudioContext;
+          if (ConstructorAudio) {
+            if (!audioCtxRef.current) audioCtxRef.current = new ConstructorAudio();
+            audioCtxRef.current.resume();
+          }
+        } catch {
+          // Sin Web Audio: el descanso sigue funcionando, solo sin campanita.
+        }
+      }
       setDescanso({ ejercicioId, restante: progreso.descansoDuracionSeg, total: progreso.descansoDuracionSeg });
     }
   }
@@ -174,6 +221,14 @@ function PlanDelDia({
   function elegirDuracionDescanso(seg: number) {
     actualizar((p) => {
       const next = { ...p, descansoDuracionSeg: seg };
+      guardarProgresoRemoto(next, () => setErrorSync(true));
+      return next;
+    });
+  }
+
+  function alternarSonidoDescanso() {
+    actualizar((p) => {
+      const next = { ...p, sonidoDescanso: !p.sonidoDescanso };
       guardarProgresoRemoto(next, () => setErrorSync(true));
       return next;
     });
@@ -308,6 +363,15 @@ function PlanDelDia({
                 );
               })}
             </div>
+            <button
+              type="button"
+              onClick={alternarSonidoDescanso}
+              aria-pressed={progreso.sonidoDescanso}
+              className="mt-2 flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)]"
+            >
+              {progreso.sonidoDescanso ? <Volume2 size={14} /> : <VolumeX size={14} />}
+              Sonido al terminar el descanso
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
