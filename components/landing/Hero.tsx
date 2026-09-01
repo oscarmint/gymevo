@@ -89,13 +89,15 @@ export function Hero({
           >
             <source src={backgroundVideoSrc} type="video/mp4" />
           </video>
-          {/* Scrim del propio --bg: el texto oscuro de la marca sigue legible encima */}
+          {/* Scrim del propio --bg: alto desde el primer pixel (el texto oscuro
+              vive justo ahí: header, H1, subtítulo, CTA) y sólido antes de llegar
+              a la captura del producto, que ya trae su propio fondo opaco. */}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 -z-10"
             style={{
               background:
-                'linear-gradient(180deg, color-mix(in oklab, var(--bg) 58%, transparent) 0%, color-mix(in oklab, var(--bg) 76%, transparent) 42%, var(--bg) 92%)',
+                'linear-gradient(180deg, color-mix(in oklab, var(--bg) 85%, transparent) 0%, color-mix(in oklab, var(--bg) 92%, transparent) 55%, var(--bg) 82%)',
             }}
           />
         </>
