@@ -125,7 +125,7 @@ export default function OnboardingPage() {
                vetado "Capítulo" del banco canónico: mismo concepto, device
                visual distinto. */
             'repeating-linear-gradient(to bottom, color-mix(in oklab, var(--text-tertiary) 22%, transparent) 0px, color-mix(in oklab, var(--text-tertiary) 22%, transparent) 1px, transparent 1px, transparent 28px), ' +
-            'radial-gradient(700px 420px at 15% -10%, color-mix(in oklab, var(--accent) 18%, transparent) 0%, transparent 60%), ' +
+            'radial-gradient(700px 420px at 15% -10%, color-mix(in oklab, var(--accent) 26%, transparent) 0%, transparent 60%), ' +
             'radial-gradient(620px 460px at 100% 55%, color-mix(in oklab, var(--accent-2) 16%, transparent) 0%, transparent 60%), ' +
             'radial-gradient(560px 380px at 100% 100%, color-mix(in oklab, var(--accent-2) 12%, transparent) 0%, transparent 55%)',
         }}
@@ -247,9 +247,22 @@ export default function OnboardingPage() {
             <PantallaPregunta key="compromiso" dir={dir} variants={variants}>
               <Pregunta titulo="¿Cuántos días entrenarás por semana?" />
               <div className="mt-8 flex flex-col items-center gap-2">
-                <span className="text-5xl font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-                  {dias}
-                </span>
+                {/* Baseline de movimiento: el número reacciona al slider con un
+                    "tick" (no queda estático de golpe) — respeta reduced-motion. */}
+                <div className="relative h-14 overflow-hidden">
+                  <AnimatePresence mode="popLayout" initial={false}>
+                    <motion.span
+                      key={dias}
+                      initial={reduce ? {} : { y: -10, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={reduce ? {} : { y: 10, opacity: 0 }}
+                      transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                      className="block text-5xl font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]"
+                    >
+                      {dias}
+                    </motion.span>
+                  </AnimatePresence>
+                </div>
                 <span className="text-sm text-[var(--text-secondary)]">días/semana</span>
               </div>
               <input

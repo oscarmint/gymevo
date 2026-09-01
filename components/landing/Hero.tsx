@@ -103,7 +103,7 @@ export function Hero({
                    PROPIA, distinta del grano feTurbulence del ejemplo vetado "Capítulo"
                    del banco canónico: líneas rectas espaciadas, no ruido aleatorio. */
                 'repeating-linear-gradient(to bottom, color-mix(in oklab, var(--text-tertiary) 22%, transparent) 0px, color-mix(in oklab, var(--text-tertiary) 22%, transparent) 1px, transparent 1px, transparent 28px), ' +
-                'linear-gradient(180deg, color-mix(in oklab, var(--bg) 85%, transparent) 0%, color-mix(in oklab, var(--bg) 92%, transparent) 55%, var(--bg) 82%)',
+                'linear-gradient(180deg, color-mix(in oklab, var(--bg) 62%, transparent) 0%, color-mix(in oklab, var(--bg) 80%, transparent) 50%, var(--bg) 80%)',
             }}
           />
         </>

@@ -91,9 +91,7 @@ export default function LandingGymEvo() {
           pb corto: AppPorDentro (SectionShell) ya trae su propio pt-16/24; sumar ambos dejaba
           ~110-140px de vacío muerto entre el botón y el siguiente título (hallazgo revisor-visual). */}
       <div className="bg-[var(--bg)] px-5 pb-4 text-center">
-        <CtaButton href={CTA_HREF} fullMobile={false}>
-          {CTA_LABEL}
-        </CtaButton>
+        <CtaButton href={CTA_HREF}>{CTA_LABEL}</CtaButton>
       </div>
 
       {/* 5. LA APP POR DENTRO — placeholders honestos (app interna: Sesión 5) */}
@@ -161,9 +159,7 @@ export default function LandingGymEvo() {
 
       {/* CTA repetido tras la garantía — ya no queda ninguna objeción sin responder */}
       <div className="bg-[var(--surface)] px-5 pb-12 text-center">
-        <CtaButton href={CTA_HREF} fullMobile={false}>
-          {CTA_LABEL}
-        </CtaButton>
+        <CtaButton href={CTA_HREF}>{CTA_LABEL}</CtaButton>
       </div>
 
       {/* 8. FAQ */}
