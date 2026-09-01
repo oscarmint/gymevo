@@ -1,14 +1,14 @@
 # VEREDICTO revisor-visual — onboarding
-Fecha: 2026-08-31 00:00
+Fecha: 2026-09-01 00:00
 Screenshot: docs/revisiones/onboarding-375.png
-Usabilidad: 32/40
-Craft: 10/20
+Usabilidad: 34/40
+Craft: 11/20
 Copy (si vende): N-A
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 Top defectos:
-1. [Composición general] Hueco muerto masivo arriba (~300px) y abajo (~140px) del bloque de pregunta — `justify-center` en `PantallaPregunta` (app/onboarding/page.tsx) centra verticalmente el contenido en el `flex-1`, dejando más vacío que contenido → anclar el bloque arriba (justify-start + margen fijo) y llenar el resto con valor real, no con aire.
-2. [Fondo completo] El gradiente radial de profundidad (14%/12% de acento) sigue siendo imperceptible en el render — la pantalla se lee como un fill plano de un solo color → subir la opacidad efectiva (probar 20-24% o un stop más saturado antes del transparent) y reverificar a 375px, no solo el valor en código.
-3. [Paleta de toda la app] Papel cálido + tinta verde (#F5F1EA + #5C7A1F) queda peligrosamente cerca de la combinación vetada "Capítulo" (papel cálido + tinta verde + Petrona/Karla) — solo la tipografía (Instrument Sans) diferencia el kit → reforzar el dispositivo ownable (tachado verde, chips punteados) en más puntos de contacto de la app para que la paleta no lea como el ejemplo canónico del sistema.
-4. [Chips de opción] Sin nivel "elevado" real: sobre un fondo casi plano, los chips blancos no muestran una superficie claramente distinta (sin sombra ni contraste tonal con el fondo) → aplicar el nivel elevado de la ficha (sombra sutil o mayor contraste con `--surface`) para que lean como tarjetas y no como recuadros con borde.
-5. [Heurística 7 — flexibilidad] No hay atajo de teclado (flechas + Enter) para elegir opción desde escritorio, solo tap — agregar navegación por teclado en el componente `Chips` para no penalizar a quien llega sin touch.
+1. [Todo el layout — paleta y concepto] Coincide con el patrón vetado "Capítulo" (papel cálido #F5F1EA + tinta verde #5C7A1F + motivo de cuaderno/libreta con tachado) — solo difiere la familia tipográfica exacta (Instrument Sans en vez de Petrona/Karla), pero el ADN visual completo (fondo papel, acento verde, lenguaje de "libreta que se llena") es el mismo archetype → EJE identidad = 0. FIX: no es retoque — requiere decidir si se re-deriva la identidad visual desde otro mundo/arquetipo (16, PASO 0.45) o se acepta el riesgo de clon como decisión de producto explícita, documentada como tal.
+2. [Debajo de la tarjeta "Tu ruta se está armando", pasos con 2 chips: nivel/meta] Queda un vacío muerto de ~200-250px sin contenido ni centrado vertical → viola "nunca vacío muerto abajo". FIX: centrar el bloque pregunta+chips+tarjeta en el alto disponible, o agregar un elemento de contexto que llene el espacio en pasos cortos.
+3. [Fondo completo de la pantalla] Los 3 gradientes radiales de accent/accent-2 (12-18% opacidad) definidos en el código son imperceptibles en el render real — la pantalla se ve como un fill plano de cream. FIX: subir la opacidad o acercar el radio del gradiente a la zona del héroe para que la profundidad se perciba de verdad.
+4. [Paso "compromiso", código — no visible en el screenshot capturado] El número de días salta instantáneo al mover el slider, sin conteo/transición animada — falta 1 de las 7 baseline de movimiento (conteo animado de número héroe). FIX: animar el número con motion (spring/tween) en cada cambio de valor.
+5. [Chips de opción, todos los pasos] El radio de los chips en el screenshot se ve como rectángulo medio-redondeado (~14-16px), no como pill completo (100px) que documenta FICHA-ARTE para botones/pills. FIX: verificar si --radius-button coincide con el valor real deseado o corregir la ficha para reflejar el valor efectivo, evitando el desvío entre documento y código.
