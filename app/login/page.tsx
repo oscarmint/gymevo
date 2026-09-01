@@ -6,6 +6,7 @@
 // no desde este formulario — este solo pide el email y dispara el envío.
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Lock, Mail } from 'lucide-react';
 import { crearClienteSupabase } from '@/lib/supabase/client';
@@ -14,9 +15,13 @@ import { Logo } from '@/components/Logo';
 type Estado = 'idle' | 'enviando' | 'enviado' | 'error';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [estado, setEstado] = useState<Estado>('idle');
   const [countdown, setCountdown] = useState(0);
+  const [codigo, setCodigo] = useState('');
+  const [errorCodigo, setErrorCodigo] = useState(false);
+  const [verificando, setVerificando] = useState(false);
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
@@ -55,6 +60,27 @@ export default function LoginPage() {
       options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/app` },
     });
     setCountdown(60);
+  }
+
+  // Respaldo del enlace: algunos correos (Gmail, Outlook) "abren" el enlace
+  // solos para escanearlo por seguridad, y como es de un solo uso, lo gastan
+  // antes de que la persona lo toque — el código de 6 dígitos no se puede
+  // gastar así (26-AUTH-MODERNO: "el combo" enlace + código, siempre juntos).
+  async function confirmarCodigo(e: React.FormEvent) {
+    e.preventDefault();
+    if (codigo.length !== 6 || verificando) return;
+    setVerificando(true);
+    setErrorCodigo(false);
+
+    const supabase = crearClienteSupabase();
+    const { error } = await supabase.auth.verifyOtp({ email, token: codigo, type: 'email' });
+
+    if (error) {
+      setErrorCodigo(true);
+      setVerificando(false);
+      return;
+    }
+    router.push('/app');
   }
 
   return (
@@ -124,6 +150,35 @@ export default function LoginPage() {
             >
               {countdown > 0 ? `Reenviar en ${countdown}s` : 'Reenviar enlace'}
             </button>
+
+            {/* Respaldo: si el enlace "ya expiró" sin que lo hayas tocado (tu
+                correo lo escaneó solo), el mismo correo trae este código. */}
+            <div className="mt-8 border-t border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] pt-6">
+              <p className="text-xs text-[var(--text-secondary)]">
+                ¿El enlace te dice &quot;expirado&quot; sin que lo hayas tocado? Usa el código de 6 dígitos del mismo correo.
+              </p>
+              <form onSubmit={confirmarCodigo} className="mt-3 flex items-center gap-2">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  placeholder="000000"
+                  value={codigo}
+                  onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ''))}
+                  className="h-12 w-28 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] px-3 text-center text-lg tracking-[0.2em] tabular-nums text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+                />
+                <button
+                  type="submit"
+                  disabled={codigo.length !== 6 || verificando}
+                  className="flex h-12 flex-1 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)] disabled:opacity-40"
+                >
+                  {verificando ? 'Confirmando…' : 'Confirmar código'}
+                </button>
+              </form>
+              {errorCodigo && (
+                <p className="mt-2 text-xs text-[var(--status-error)]">Ese código no es válido o ya venció. Pide uno nuevo.</p>
+              )}
+            </div>
           </>
         )}
       </div>
