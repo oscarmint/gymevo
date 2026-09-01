@@ -117,15 +117,25 @@ export default function OnboardingPage() {
       {/* Profundidad sutil (DESIGN-CORE): nunca un fill plano, ni en pantallas cortas */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10"
+        className="pointer-events-none absolute inset-0 z-0"
         style={{
           background:
+            /* Renglones de cuaderno (mundo del sujeto, FICHA-ARTE) — textura
+               PROPIA (líneas rectas), no el grano feTurbulence del ejemplo
+               vetado "Capítulo" del banco canónico: mismo concepto, device
+               visual distinto. */
+            'repeating-linear-gradient(to bottom, color-mix(in oklab, var(--text-tertiary) 22%, transparent) 0px, color-mix(in oklab, var(--text-tertiary) 22%, transparent) 1px, transparent 1px, transparent 28px), ' +
             'radial-gradient(700px 420px at 15% -10%, color-mix(in oklab, var(--accent) 18%, transparent) 0%, transparent 60%), ' +
             'radial-gradient(620px 460px at 100% 55%, color-mix(in oklab, var(--accent-2) 16%, transparent) 0%, transparent 60%), ' +
             'radial-gradient(560px 380px at 100% 100%, color-mix(in oklab, var(--accent-2) 12%, transparent) 0%, transparent 55%)',
         }}
       />
 
+      {/* Contenido real en su propia capa z-10: un ancestro con fondo opaco
+          puede pintar ENCIMA de un hijo con z-index negativo (patrón ya visto
+          en app/app/perfil/page.tsx) — aquí el fondo de renglones se volvía
+          invisible por lo mismo hasta envolver el contenido así. */}
+      <div className="relative z-10 flex flex-1 flex-col">
       {/* Barra superior: atrás + progreso + salir — SIEMPRE visible (02B regla 3).
           "Salir" existe siempre (no solo cuando Atrás está deshabilitado): control
           y libertad real, sin obligar a devolverse paso a paso para abandonar. */}
@@ -269,6 +279,7 @@ export default function OnboardingPage() {
           )}
         </AnimatePresence>
       </div>
+      </div>
     </div>
   );
 }
@@ -322,12 +333,20 @@ function TarjetaRuta({
   ];
 
   return (
-    <div className="mt-10 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent-2)_30%,transparent)] bg-[var(--surface)] p-6">
+    <div className="relative mt-10 overflow-hidden rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent-2)_30%,transparent)] bg-[var(--surface)] py-6 pr-6 pl-9">
       {/* Borde SÓLIDO (no punteado): los chips no-seleccionados también usan
           borde punteado — con el mismo estilo aquí, la tarjeta se leía como
           "tocable" sin serlo (hallazgo revisor-visual). El ámbar (2ª nota de
           FICHA-ARTE) vive aquí de forma REAL y visible, no solo en un
           degradé de fondo casi imperceptible. */}
+      {/* Espiral de encuadernación (mundo del sujeto: la tarjeta ES una hoja
+          de cuaderno) — dispositivo ownable reforzado, distinto del grano del
+          ejemplo vetado del banco canónico. */}
+      <div aria-hidden="true" className="absolute inset-y-4 left-3 flex flex-col justify-between">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <span key={i} className="size-1.5 rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)]" />
+        ))}
+      </div>
       <div className="flex items-center gap-2">
         <NotebookPen size={16} color="var(--accent-2)" aria-hidden="true" />
         <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent-2)]">Tu ruta se está armando</p>

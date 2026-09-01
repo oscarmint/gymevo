@@ -66,7 +66,7 @@ export function Hero({
           Sirve de respaldo SIN video y de base bajo el scrim CON video. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-20"
+        className="pointer-events-none absolute inset-0 z-0"
         style={{
           background:
             'radial-gradient(900px 480px at 50% -10%, color-mix(in oklab, var(--accent) 8%, transparent) 0%, transparent 60%), ' +
@@ -77,7 +77,9 @@ export function Hero({
       {backgroundVideoSrc && (
         <>
           {/* Atmósfera, no producto real — silenciosa, decorativa, sin controles.
-              motion-reduce la oculta: sin movimiento, queda solo el degradé de arriba. */}
+              motion-reduce la oculta: sin movimiento, queda solo el degradé de arriba.
+              z-index NO negativo (patrón de app/app/perfil/page.tsx): un hijo con
+              z negativo puede quedar pintado DETRÁS del fondo de un ancestro. */}
           <video
             aria-hidden="true"
             autoPlay
@@ -85,7 +87,7 @@ export function Hero({
             loop
             playsInline
             preload="auto"
-            className="pointer-events-none absolute inset-0 -z-20 size-full object-cover motion-reduce:hidden"
+            className="pointer-events-none absolute inset-0 z-0 size-full object-cover motion-reduce:hidden"
           >
             <source src={backgroundVideoSrc} type="video/mp4" />
           </video>
@@ -94,16 +96,20 @@ export function Hero({
               a la captura del producto, que ya trae su propio fondo opaco. */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 -z-10"
+            className="pointer-events-none absolute inset-0 z-0"
             style={{
               background:
+                /* Renglones de cuaderno (mundo del sujeto de FICHA-ARTE) — textura
+                   PROPIA, distinta del grano feTurbulence del ejemplo vetado "Capítulo"
+                   del banco canónico: líneas rectas espaciadas, no ruido aleatorio. */
+                'repeating-linear-gradient(to bottom, color-mix(in oklab, var(--text-tertiary) 22%, transparent) 0px, color-mix(in oklab, var(--text-tertiary) 22%, transparent) 1px, transparent 1px, transparent 28px), ' +
                 'linear-gradient(180deg, color-mix(in oklab, var(--bg) 85%, transparent) 0%, color-mix(in oklab, var(--bg) 92%, transparent) 55%, var(--bg) 82%)',
             }}
           />
         </>
       )}
 
-      <div className="mx-auto w-full max-w-6xl px-5">
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-5">
         {/* Header 64px: marca a la izquierda, SOLO "Entrar" terciario a la derecha (19) */}
         <header className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2 text-base font-semibold text-[var(--text-primary)]">
