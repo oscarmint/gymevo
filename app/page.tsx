@@ -26,7 +26,7 @@ export default function LandingGymEvo() {
       <Hero
         appName="GymEvo"
         loginHref="/login"
-        h1Marked="Nunca más [acento]sin saber qué hacer[/acento] en el gym"
+        h1Marked="Nunca más [acento]sin saber[/acento] qué hacer en el gym"
         subtitleMarked="El Botón de Rescate te da otro ejercicio [b]al instante[/b] sin pensar ni improvisar"
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
@@ -71,7 +71,7 @@ export default function LandingGymEvo() {
 
       {/* 4. SOLUCIÓN — el Botón de Rescate */}
       <Solucion
-        tituloMarked="Tu rutina de hoy, [acento]decidida antes de entrar[/acento]"
+        tituloMarked="Tu rutina de hoy, decidida [acento]antes de entrar[/acento]"
         mecanismo="el Botón de Rescate"
         bigIdeaMarked="No te falta disciplina, te falta un plan que no te abandone en el gimnasio. El Botón de Rescate te da [b]otro ejercicio al instante[/b] si el tuyo está ocupado."
         pasos={[
@@ -98,7 +98,7 @@ export default function LandingGymEvo() {
 
       {/* 5. LA APP POR DENTRO — placeholders honestos (app interna: Sesión 5) */}
       <AppPorDentro
-        tituloMarked="Tu gimnasio, [acento]por fin bajo control[/acento]"
+        tituloMarked="Tu gimnasio, por fin [acento]bajo control[/acento]"
         frames={[
           { label: 'Eliges tu nivel y tu meta', src: '/screenshots/frame-onboarding.png', alt: 'Onboarding: elige tu meta' },
           { label: 'Tu ejercicio de hoy, listo', src: '/screenshots/frame-plan-del-dia.png', alt: 'Plan del día con ejercicios y racha' },
@@ -111,7 +111,7 @@ export default function LandingGymEvo() {
 
       {/* 6. OFERTA — anual primero, trial 7 días en ambas (02C) */}
       <Oferta
-        tituloMarked="Empieza gratis. Sigue por [acento]menos de $0.09/día[/acento]"
+        tituloMarked="Empieza gratis. Sigue por menos de [acento]$0.09/día[/acento]"
         trialDias={7}
         stack={{
           lineas: [
@@ -199,7 +199,7 @@ export default function LandingGymEvo() {
 
       {/* 9. CTA FINAL */}
       <CtaFinal
-        h2Marked="Imagina entrar [acento]sin dudar ni un segundo[/acento]"
+        h2Marked="Imagina entrar [acento]sin dudar[/acento] ni un segundo"
         futurePacingMarked="Llegas a tu gimnasio, abres GymEvo, ves tu ejercicio de hoy y empiezas — sin buscar al entrenador, sin improvisar."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}

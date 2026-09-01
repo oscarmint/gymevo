@@ -8,7 +8,7 @@
 // escalonados (whileInView + stagger, reduced-motion respetado).
 
 import { motion } from 'motion/react';
-import { Accent, Hairline, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
+import { Accent, CheckCustom, Hairline, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy, warnCopy } from './MarkedCopy';
 
 export interface PasoMecanismo {
@@ -102,18 +102,26 @@ export function Solucion({
 
         {antesDespues && (
           <motion.div variants={item} className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {/* "antes" lleva el TACHADO ownable de FICHA-ARTE — igual que en la
+                app, donde el nombre del ejercicio se tacha al marcarlo hecho:
+                aquí se tacha la vieja frustración, como si ya hubiera pasado. */}
             <div className="rounded-[var(--radius-card)] bg-[var(--surface-2)] p-5">
               <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
                 {antesDespues.labelAntes}
               </p>
-              <p className="mt-2 text-[15px] leading-snug text-[var(--text-secondary)]">{antesDespues.antes}</p>
+              <p className="mt-2 text-[15px] leading-snug text-[var(--text-tertiary)] line-through decoration-[var(--accent)] decoration-2">
+                {antesDespues.antes}
+              </p>
             </div>
-            {/* El "después" con acento sutil de fondo (4-6%) */}
-            <div className="rounded-[var(--radius-card)] bg-[color-mix(in_oklab,var(--accent)_6%,transparent)] p-5">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">
+            {/* El "después" lleva la 2ª nota de color (ámbar tierra, FICHA-ARTE)
+                + el <CheckCustom> del kit (mismo componente que Oferta.tsx —
+                nunca un ✓ suelto distinto en la misma página). */}
+            <div className="rounded-[var(--radius-card)] bg-[color-mix(in_oklab,var(--accent-2)_10%,transparent)] p-5">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent-2)]">
                 {antesDespues.labelDespues}
               </p>
-              <p className="mt-2 text-[15px] font-medium leading-snug text-[var(--text-primary)]">
+              <p className="mt-2 flex items-start gap-2 text-[15px] font-medium leading-snug text-[var(--text-primary)]">
+                <CheckCustom />
                 {antesDespues.despues}
               </p>
             </div>

@@ -22,7 +22,7 @@
 
 ## Brand kit final (valores para globals.css)
 - Fondo: `#F5F1EA` (papel cálido) · Superficie: `#FFFFFF` · Hundido: `#EFE9DE` · Texto 1º/2º: `#211D17` / `#8A7F6A`
-- Acento: `#5C7A1F` (verde tinta, SOLO en: progreso, CTA principal, check de completado) · 2ª nota: N/A por ahora (se evalúa un ámbar tierra para hitos en Sesión 5)
+- Acento: `#5C7A1F` (verde tinta, SOLO en: progreso, CTA principal, check de completado) · 2ª nota: `#9C5F1C` (ámbar tierra, activada Sesión 7 — hitos y momentos puntuales: trial/"días gratis", tarjeta de progreso del onboarding, contraste "después" de la landing; nunca en CTA principal ni en progreso/completado, eso sigue siendo verde)
 - Semánticos: éxito `#5C7A1F` · error `#C0392B` (siempre con ícono) · aviso `#B8860B`
 - Display/Body: **Instrument Sans** única familia (pesos 400 body / 500 labels / 700 display-lead) · Escala: lead ~24px / body ~14.5px / meta ~12px / eyebrow ~11px
 - Radio: 14-16px cards · 100px pills · Profundidad: hairlines finos (borde `rgba(0,0,0,.08)`), sin sombras duras — el "cuaderno" no flota, se apoya en líneas · Espaciado base: escala 4·8·12·16·24·32·48·64

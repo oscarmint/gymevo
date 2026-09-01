@@ -9,6 +9,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
+import { ChevronRight } from 'lucide-react';
 import { CtaButton, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy, warnCopy, warnRango } from './MarkedCopy';
 
@@ -87,6 +88,19 @@ export function AppPorDentro({
           <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px]">
             <MarkedCopy text={tituloMarked} />
           </h2>
+          {/* Affordance del carrusel: sin esto, un frame centrado con solo un
+              borrón de fondo no se lee como "deslizable" (hallazgo revisor-visual). */}
+          <p className="mt-2 flex items-center justify-center gap-1 text-[13px] font-medium text-[var(--text-tertiary)]">
+            Desliza para ver el resto
+            <motion.span
+              aria-hidden="true"
+              className="flex items-center"
+              animate={reduce ? undefined : { x: [0, 4, 0] }}
+              transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <ChevronRight size={14} />
+            </motion.span>
+          </p>
         </motion.div>
 
         {/* Pista con scroll-snap + fade en ambos bordes (mask-image) */}

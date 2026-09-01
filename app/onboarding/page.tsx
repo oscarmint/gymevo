@@ -7,9 +7,9 @@
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
-import { Check, ChevronLeft, RefreshCcw, ShieldAlert, Users, X, Zap } from 'lucide-react';
+import { Check, ChevronLeft, NotebookPen, RefreshCcw, ShieldAlert, Users, X, Zap } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { guardarRespuestas, type Horario, type Meta, type Nivel } from '@/lib/onboarding';
+import { guardarRespuestas, HORARIO_LABEL, META_LABEL, NIVEL_LABEL, type Horario, type Meta, type Nivel } from '@/lib/onboarding';
 
 type PasoId = 'nivel' | 'meta' | 'frustracion' | 'reconocimiento' | 'horario' | 'compromiso';
 
@@ -120,7 +120,8 @@ export default function OnboardingPage() {
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            'radial-gradient(700px 420px at 15% -10%, color-mix(in oklab, var(--accent) 14%, transparent) 0%, transparent 60%), ' +
+            'radial-gradient(700px 420px at 15% -10%, color-mix(in oklab, var(--accent) 18%, transparent) 0%, transparent 60%), ' +
+            'radial-gradient(620px 460px at 100% 55%, color-mix(in oklab, var(--accent-2) 16%, transparent) 0%, transparent 60%), ' +
             'radial-gradient(560px 380px at 100% 100%, color-mix(in oklab, var(--accent-2) 12%, transparent) 0%, transparent 55%)',
         }}
       />
@@ -161,6 +162,7 @@ export default function OnboardingPage() {
             <PantallaPregunta key="nivel" dir={dir} variants={variants}>
               <Pregunta titulo="¿Cuál es tu situación hoy?" micro="Esto decide tu ruta: Principiante o Intermedio" />
               <Chips opciones={OPCIONES_NIVEL} valor={nivel} onSelect={(v) => seleccionarYAvanzar(setNivel, v)} />
+              <TarjetaRuta nivel={nivel} meta={meta} horario={horario} dias={null} />
             </PantallaPregunta>
           )}
 
@@ -168,6 +170,7 @@ export default function OnboardingPage() {
             <PantallaPregunta key="meta" dir={dir} variants={variants}>
               <Pregunta titulo="¿Cuál es tu meta ahora?" micro="Esto define el enfoque de tu plan" />
               <Chips opciones={OPCIONES_META} valor={meta} onSelect={(v) => seleccionarYAvanzar(setMeta, v)} />
+              <TarjetaRuta nivel={nivel} meta={meta} horario={horario} dias={null} />
             </PantallaPregunta>
           )}
 
@@ -179,6 +182,7 @@ export default function OnboardingPage() {
                 valor={frustracion}
                 onSelect={(v) => seleccionarYAvanzar(setFrustracion, v)}
               />
+              <TarjetaRuta nivel={nivel} meta={meta} horario={horario} dias={null} />
             </PantallaPregunta>
           )}
 
@@ -189,7 +193,20 @@ export default function OnboardingPage() {
                   aria-hidden="true"
                   className="mb-6 flex size-16 items-center justify-center rounded-full bg-[var(--chip-bg)]"
                 >
-                  <Check size={28} color="var(--accent)" strokeWidth={2.5} />
+                  {/* Celebración N1 de FICHA-ARTE: "trazo verde" que se dibuja,
+                      no un ícono estático — único momento emocional del flujo. */}
+                  <motion.svg width={28} height={28} viewBox="0 0 28 28" fill="none">
+                    <motion.path
+                      d="M6 14.5l5.5 5.5L22 9"
+                      stroke="var(--accent)"
+                      strokeWidth={2.5}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      initial={{ pathLength: reduce ? 1 : 0 }}
+                      animate={{ pathLength: 1 }}
+                      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+                    />
+                  </motion.svg>
                 </span>
                 <h1 className="text-balance text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
                   Te entendemos
@@ -212,6 +229,7 @@ export default function OnboardingPage() {
             <PantallaPregunta key="horario" dir={dir} variants={variants}>
               <Pregunta titulo="¿A qué hora entrenas normalmente?" micro="Así te avisamos a la hora que sí revisas la app" />
               <Chips opciones={OPCIONES_HORARIO} valor={horario} onSelect={(v) => seleccionarYAvanzar(setHorario, v)} />
+              <TarjetaRuta nivel={nivel} meta={meta} horario={horario} dias={null} />
             </PantallaPregunta>
           )}
 
@@ -246,6 +264,7 @@ export default function OnboardingPage() {
               >
                 Fijar mi meta
               </button>
+              <TarjetaRuta nivel={nivel} meta={meta} horario={horario} dias={dias} />
             </PantallaPregunta>
           )}
         </AnimatePresence>
@@ -271,10 +290,81 @@ function PantallaPregunta({
       animate="center"
       exit="exit"
       transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-      className="flex flex-1 flex-col justify-center"
+      className="flex flex-1 flex-col justify-start"
     >
       {children}
     </motion.div>
+  );
+}
+
+/** "Tu ruta se está armando" — llena con VALOR real el espacio que dejaban
+ * vacío los pasos cortos (2-4 chips): no es relleno decorativo, es la vista
+ * previa de lo que se está personalizando, con el mismo lenguaje de "cuaderno
+ * que se va llenando" del dispositivo ownable de FICHA-ARTE (check = tachado). */
+function TarjetaRuta({
+  nivel,
+  meta,
+  horario,
+  dias,
+}: {
+  nivel: Nivel | null;
+  meta: Meta | null;
+  horario: Horario | null;
+  dias: number | null;
+}) {
+  const capitalizar = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+  const hayAlgunaRespuesta = nivel !== null || meta !== null || horario !== null;
+  const filas: { label: string; valor: string | null }[] = [
+    { label: 'Nivel', valor: nivel ? NIVEL_LABEL[nivel] : null },
+    { label: 'Meta', valor: meta ? capitalizar(META_LABEL[meta]) : null },
+    { label: 'Horario', valor: horario ? capitalizar(HORARIO_LABEL[horario]) : null },
+    { label: 'Días/semana', valor: dias ? String(dias) : null },
+  ];
+
+  return (
+    <div className="mt-10 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent-2)_30%,transparent)] bg-[var(--surface)] p-6">
+      {/* Borde SÓLIDO (no punteado): los chips no-seleccionados también usan
+          borde punteado — con el mismo estilo aquí, la tarjeta se leía como
+          "tocable" sin serlo (hallazgo revisor-visual). El ámbar (2ª nota de
+          FICHA-ARTE) vive aquí de forma REAL y visible, no solo en un
+          degradé de fondo casi imperceptible. */}
+      <div className="flex items-center gap-2">
+        <NotebookPen size={16} color="var(--accent-2)" aria-hidden="true" />
+        <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent-2)]">Tu ruta se está armando</p>
+      </div>
+
+      {!hayAlgunaRespuesta ? (
+        // Arranque honesto: nunca las 4 filas en "—" a la vez (se lee como
+        // widget roto) — un mensaje de bienvenida mientras no hay nada que mostrar.
+        <p className="mt-3 text-sm leading-relaxed text-[var(--text-secondary)]">
+          Cada respuesta se va guardando aquí, como en una libreta — vas a verla llenarse en un momento.
+        </p>
+      ) : (
+        <div className="mt-3 flex flex-col gap-3">
+          {filas.map((fila, i) => (
+            <div
+              key={fila.label}
+              className={`flex items-center justify-between ${
+                i < filas.length - 1 ? 'border-b border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] pb-3' : ''
+              }`}
+            >
+              <span className="text-sm text-[var(--text-secondary)]">{fila.label}</span>
+              {fila.valor ? (
+                <motion.span
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-1.5 text-sm font-semibold text-[var(--text-primary)]"
+                >
+                  <Check size={14} color="var(--accent)" strokeWidth={3} /> {fila.valor}
+                </motion.span>
+              ) : (
+                <span className="text-sm text-[var(--text-tertiary)]">—</span>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -298,16 +388,36 @@ function Chips<T extends string>({
   valor: T | null;
   onSelect: (v: T) => void;
 }) {
+  // Navegación por flechas entre chips (a11y — el tab nativo solo avanza de a
+  // uno; ↑/↓ deben moverse dentro del grupo, como un radiogroup real).
+  function moverFoco(desde: number, delta: 1 | -1) {
+    const siguiente = (desde + delta + opciones.length) % opciones.length;
+    const el = document.getElementById(`chip-${opciones[siguiente].value}`);
+    el?.focus();
+  }
+
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3" role="radiogroup">
       {opciones.map((o, i) => {
         const seleccionado = valor === o.value;
         const Icono = o.icon;
         return (
           <motion.button
             key={o.value}
+            id={`chip-${o.value}`}
             type="button"
+            role="radio"
+            aria-checked={seleccionado}
             onClick={() => onSelect(o.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                moverFoco(i, 1);
+              } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                moverFoco(i, -1);
+              }
+            }}
             whileTap={{ scale: 0.97 }}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
