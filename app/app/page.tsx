@@ -241,9 +241,12 @@ function PlanDelDia({
 
       {/* (2) LA ACCIÓN DE 1 TAP — la lista de ejercicios de hoy */}
       <div className="mt-4 flex flex-col gap-3 pb-28">
-        {idsHoy.map((ej, i) => {
-          const hecho = progreso.hechosHoy.includes(ej.id);
-          return (
+        {(() => {
+          const proximaId = idsHoy.find((e) => !progreso.hechosHoy.includes(e.id))?.id;
+          return idsHoy.map((ej, i) => {
+            const hecho = progreso.hechosHoy.includes(ej.id);
+            const esProxima = ej.id === proximaId;
+            return (
             <motion.div
               key={ej.id}
               initial={{ opacity: 0, y: 10 }}
@@ -295,13 +298,17 @@ function PlanDelDia({
                     placeholder="kg"
                     value={pesos[ej.id] ?? ''}
                     onChange={(e) => setPesos((p) => ({ ...p, [ej.id]: e.target.value }))}
-                    className="h-11 w-20 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-3 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+                    className="h-12 w-20 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-3 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
                   />
                   <motion.button
                     type="button"
                     whileTap={{ scale: 0.97 }}
                     onClick={() => registrar(ej.id)}
-                    className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
+                    className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-semibold ${
+                      esProxima
+                        ? 'bg-[var(--accent)] text-[var(--bg)]'
+                        : 'border border-[var(--accent)] text-[var(--accent)]'
+                    }`}
                   >
                     <Check size={16} /> {progreso.descansoAutomatico ? 'Registrar y descansar' : 'Registrar'}
                   </motion.button>
@@ -322,7 +329,8 @@ function PlanDelDia({
               )}
             </motion.div>
           );
-        })}
+        });
+        })()}
 
         <motion.button
           type="button"
