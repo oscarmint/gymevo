@@ -8,7 +8,6 @@ import { Lottie } from 'lottie-react';
 import { motion, AnimatePresence, useReducedMotion, animate } from 'motion/react';
 import { Check, Flame, PlayCircle, RefreshCcw, Undo2, WifiOff, X } from 'lucide-react';
 import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
-import { leerNombreLocal } from '@/lib/perfil';
 import animacionFitness from '@/public/animaciones/fitness.json';
 import {
   completarEntrenamiento,
@@ -30,7 +29,6 @@ import { guardarLogRemoto, guardarProgresoRemoto, leerProgresoRemoto, sincroniza
 export default function PlanDelDiaPage() {
   const [respuestas, setRespuestas] = useState<RespuestasOnboarding | null>(null);
   const [progreso, setProgreso] = useState<Progreso | null>(null);
-  const [nombre, setNombre] = useState<string | null>(null);
 
   // localStorage/sessionStorage no existen en el servidor: leerlos en el
   // initializer de useState (en vez de en este efecto) causa un mismatch de
@@ -42,7 +40,6 @@ export default function PlanDelDiaPage() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setRespuestas(r);
     setProgreso(leerProgreso());
-    setNombre(leerNombreLocal());
 
     // Si hay sesión de Supabase: crea el perfil remoto la primera vez (con las
     // respuestas del onboarding) y si ya existía progreso remoto, ese manda
@@ -62,17 +59,15 @@ export default function PlanDelDiaPage() {
   const actualizarProgreso: Dispatch<SetStateAction<Progreso>> = (accion) =>
     setProgreso((prev) => (typeof accion === 'function' ? (accion as (p: Progreso) => Progreso)(prev as Progreso) : accion));
 
-  return <PlanDelDia progreso={progreso} setProgreso={actualizarProgreso} respuestas={respuestas} nombre={nombre} />;
+  return <PlanDelDia progreso={progreso} setProgreso={actualizarProgreso} respuestas={respuestas} />;
 }
 
 function PlanDelDia({
   progreso,
   setProgreso,
   respuestas,
-  nombre,
 }: {
   progreso: Progreso;
-  nombre: string | null;
   setProgreso: Dispatch<SetStateAction<Progreso>>;
   respuestas: RespuestasOnboarding | null;
 }) {
@@ -183,7 +178,7 @@ function PlanDelDia({
       </p>
       <h1 className="mt-1 flex flex-wrap items-center gap-1 text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <span>
-          Hola, {nombre ?? 'campeón'}, hoy toca {nombreDeHoy(progreso.diaActual)}
+          Hola, hoy toca {nombreDeHoy(progreso.diaActual)}
         </span>
         <Lottie
           src={animacionFitness}
