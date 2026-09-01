@@ -65,9 +65,13 @@ export default function PerfilPage() {
   }
 
   return (
-    <div className="relative px-5 pt-6">
+    <div className="relative min-h-[calc(100dvh-5rem)] overflow-hidden px-5 pt-6">
       {/* Video de fondo, sin capa de color encima — a pedido explícito del
-          usuario: se ve moviéndose de verdad, sin nada que lo tape. */}
+          usuario: se ve moviéndose de verdad, sin nada que lo tape.
+          z-index NO negativo + el contenido real en su propio z-10: un
+          ancestro con fondo opaco (el shell de /app) puede pintar ENCIMA
+          de un hijo `fixed`/`absolute` con z-index negativo (así se
+          descubrió que no se veía en un iPhone real). */}
       <video
         aria-hidden="true"
         autoPlay
@@ -75,11 +79,12 @@ export default function PerfilPage() {
         loop
         playsInline
         preload="auto"
-        className="pointer-events-none fixed inset-0 -z-10 size-full object-cover motion-reduce:hidden"
+        className="pointer-events-none absolute inset-0 z-0 size-full object-cover motion-reduce:hidden"
       >
         <source src="/videos/hero-gimnasio.mp4" type="video/mp4" />
       </video>
 
+      <div className="relative z-10">
       <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">Tu cuenta</p>
       {editando ? (
         <div className="mt-1 flex items-center gap-2">
@@ -140,6 +145,7 @@ export default function PerfilPage() {
       >
         <LogOut size={16} /> Cerrar sesión
       </button>
+      </div>
     </div>
   );
 }
