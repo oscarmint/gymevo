@@ -66,8 +66,8 @@ export default function PerfilPage() {
 
   return (
     <div className="relative px-5 pt-6">
-      {/* Video de fondo — Perfil tiene mucho más espacio abierto que Plan del
-          día (2 cards cortas vs. una lista larga), así que se nota mejor aquí. */}
+      {/* Video de fondo, sin capa de color encima — a pedido explícito del
+          usuario: se ve moviéndose de verdad, sin nada que lo tape. */}
       <video
         aria-hidden="true"
         autoPlay
@@ -75,18 +75,10 @@ export default function PerfilPage() {
         loop
         playsInline
         preload="auto"
-        className="pointer-events-none fixed inset-0 -z-20 size-full object-cover motion-reduce:hidden"
+        className="pointer-events-none fixed inset-0 -z-10 size-full object-cover motion-reduce:hidden"
       >
         <source src="/videos/hero-gimnasio.mp4" type="video/mp4" />
       </video>
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-0 -z-10"
-        style={{
-          background:
-            'linear-gradient(180deg, color-mix(in oklab, var(--bg) 62%, transparent) 0%, color-mix(in oklab, var(--bg) 82%, transparent) 20%, var(--bg) 38%)',
-        }}
-      />
 
       <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">Tu cuenta</p>
       {editando ? (
