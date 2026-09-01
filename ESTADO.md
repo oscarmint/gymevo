@@ -8,6 +8,27 @@
 - Ya reemplaza el placeholder verde genérico en: header de la landing (`Hero.tsx`) y `/login`. También es el favicon nuevo (`app/icon.svg`, se borró el `app/favicon.ico` genérico de Next.js).
 - Pendiente: si el usuario quiere ajustar el diseño del isotipo (proporciones, grosor), se edita `components/Logo.tsx` y `app/icon.svg` (mismo path, duplicado a propósito porque el favicon no puede usar variables CSS).
 
+## Video de fondo del hero (31/08/2026)
+- El usuario pidió agregar un video propio (`Personas_entrenando_en_gimnasio...mp4`, IA) como fondo de la sección Hero de la landing. Copiado a `public/videos/hero-gimnasio.mp4`. `Hero.tsx` ganó un prop `backgroundVideoSrc` opcional: video absoluto detrás del contenido + scrim en degradé del propio `--bg` (58%→92%) para que el texto siga legible, oculto con `prefers-reduced-motion` (motion-reduce:hidden). Verificado por código/DOM/canvas que decodifica frames reales con color; la herramienta de screenshot remota que uso no logra capturar el video en movimiento (limitación de la herramienta, no del código) — el usuario debe confirmarlo en su propio navegador.
+
+## Sesión 7 (31/08/2026) — en curso: revisor-visual de las 4 pantallas del dinero
+- Se instaló Playwright (`npm i -D playwright` + `npx playwright install chromium`) para generar screenshots REALES a 375px (antes no había manera de generarlos sin pedirle capturas al usuario). Script: `scripts/capturar-screenshots.mjs` (sembra sessionStorage/localStorage con datos de ejemplo realistas antes de capturar).
+- Se corrigió de paso: Next.js 16 le apendizaba su propio bloque a `AGENTS.md` en cada `next dev` (pisando la copia intencional del SO) — se agregó `agentRules: false` en `next.config.ts`.
+- Capturas generadas (página completa a 375px): `docs/revisiones/{landing,onboarding,paywall,pantalla-principal}-375.png`.
+- El subagente `revisor-visual` NO aparece en la lista de subagent_type disponibles del harness de esta sesión — se invocó como `general-purpose` con la instrucción explícita de leer y seguir `.claude/agents/revisor-visual.md` al pie de la letra (mismo efecto: contexto limpio, sin conocer las intenciones de quien construyó).
+- Los 4 veredictos llegaron: **ninguno pasó el gate** (≥36/40 usabilidad y ≥16/20 craft). Se detectó que el screenshot de landing salió CASI EN BLANCO (solo Hero y Footer) — causa raíz: bug del SCRIPT de captura, no de la página real (las secciones usan `whileInView` de framer-motion, que no dispara sin scroll real; Playwright no scrollea antes del `fullPage` screenshot). Corregido en `scripts/capturar-screenshots.mjs` (scrollea la página en pasos de 400px antes de capturar) y se recapturó. También se ajustaron los datos de ejemplo de pantalla-principal (racha activa + 1 ejercicio tachado, antes salía sin nada marcado). Se relanzó el revisor para landing y pantalla-principal con las capturas corregidas; onboarding y paywall ya tenían capturas válidas, sus veredictos se mantienen.
+
+### Resultados (primera pasada, antes del pulido de esta sesión)
+- **onboarding** (paso 1): NO LISTA — Usabilidad 31/40, Craft 11/20. Defectos: vacío muerto bajo las 2 opciones (fondo plano sin profundidad), cero dispositivo ownable, sin salida/cancelar visible.
+- **paywall**: NO LISTA — Usabilidad 30/40, Craft 12/20, Copy 18/20 (el copy SÍ pasa). Defectos: "Restaurar compra" sin onClick (parece interactivo, no hace nada), checkmarks del sistema "✓" en vez de custom, sin dispositivo ownable, garantía lejos del CTA, falta stagger en la mitad de los bloques.
+- **landing / pantalla-principal**: veredicto inicial inválido por el bug del script — repetido, resultado pendiente de la notificación.
+
+## Pendientes de pulido detectados por revisor-visual (Sesión 7, antes de declarar listas las 4 pantallas del dinero)
+- [ ] onboarding: llenar el vacío bajo las opciones (centrar o agregar contenido), dar profundidad al fondo (mesh/tinte sutil), aplicar el tachado verde/chip de FICHA-ARTE como guiño de identidad, agregar salida/cancelar visible.
+- [ ] paywall: conectar o quitar "Restaurar compra" (botón sin función hoy), cambiar los "✓" del sistema por checkmarks custom (círculo acento 12% + Check de Lucide), agregar el dispositivo ownable, repetir la garantía cerca del CTA principal, envolver los bloques restantes en stagger de entrada.
+- [ ] pantalla-principal (primera pasada, a confirmar en la repetición): verificar en código el color del ícono de flama en el estado "racha en riesgo" (una revisión sospechó inconsistencia con el texto), agregar `whileTap` a los botones de registrar, validar el peso antes de habilitar el registro, animar el conteo de la racha, avisar visiblemente si falla la sincronización con Supabase.
+- [ ] landing: pendiente de la repetición (el primer veredicto no es válido, screenshot roto por el bug del script).
+
 ## Dirección de Arte (Sesión 2 — CERRADA, cosa juzgada)
 - FICHA-ARTE.md: existe y aprobada — 28/08/2026 (ver archivo en la raíz)
 - ¿Hubo referencia visual del usuario?: NO → REFERENCIA-INVESTIGACIÓN (fusión Hevy/Fitbod/Strong, 16 PASO 0.2bis)
