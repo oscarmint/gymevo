@@ -10,7 +10,6 @@ import { Check, Dumbbell, Flame, PlayCircle, RefreshCcw, Undo2, Volume2, VolumeX
 import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import animacionFitness from '@/public/animaciones/fitness.json';
 import { CuerpoMuscular } from '@/components/CuerpoMuscular';
-import { CorteAnatomico, hayCorteAnatomico } from '@/components/CorteAnatomico';
 import {
   completarEntrenamiento,
   deshacerHecho,
@@ -681,8 +680,13 @@ function PlanDelDia({
                     </button>
                   </div>
                   <div className="mt-2 flex justify-center">
-                    {hayCorteAnatomico(ej.patronMovimiento) ? (
-                      <CorteAnatomico patron={ej.patronMovimiento} />
+                    {ej.imagenExplicacion ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- ver AppPorDentro.tsx: <img> mantiene el kit portable
+                      <img
+                        src={ej.imagenExplicacion}
+                        alt={`Explicación del ejercicio ${ej.nombre}`}
+                        className="max-h-56 w-auto rounded-[var(--radius-card)]"
+                      />
                     ) : (
                       <CuerpoMuscular musculo={ej.grupoMuscular} genero={generoIlustracion(ej.id)} />
                     )}

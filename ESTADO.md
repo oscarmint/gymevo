@@ -1,6 +1,15 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-01 | Sesión actual: 7 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (01/09/2026): **"Explicación del ejercicio" simplificada — queda lista para recibir imágenes reales que el usuario va a enviar más adelante.** Decisión del usuario: no seguir dibujando cortes anatómicos a mano (se descartó el intento de "flexión de codo" de la ronda anterior) — en su lugar, cuando arme cada rutina va a mandar la imagen ya hecha por ejercicio.
+- `lib/routine.ts`: se quitó el tipo `PatronMovimiento` y el campo `patronMovimiento` (ya no hace falta agrupar por patrón de movimiento). Se agregó `imagenExplicacion?: string` a `Ejercicio` — ruta opcional dentro de `public/` a la imagen real del ejercicio.
+- `components/CorteAnatomico.tsx`: eliminado (era el dibujo a mano, ya no se usa).
+- `app/app/page.tsx`: el modal de "Explicación del ejercicio" muestra `ej.imagenExplicacion` si existe; si no, sigue cayendo de vuelta a la silueta de cuerpo (`CuerpoMuscular`, ya construida para los 12 grupos musculares) — nunca queda roto ni vacío mientras faltan imágenes.
+- `public/explicaciones/README.md` (nuevo): instrucciones para el propio usuario — dónde poner la imagen, cómo nombrarla, y qué línea agregar en `lib/routine.ts` para conectarla. Así puede agregar imágenes él mismo sin depender de mí para cada una, si quiere.
+- `components/landing/tokens.css`: se quitaron los 3 tokens de color de anatomía que ya no se usan (piel/hueso/tendón).
+- tsc ✓ · eslint ✓ · build ✓.
+/ Siguiente acción exacta: esperar a que el usuario mande las imágenes de cada ejercicio (por rutina) y agregarlas una por una con `imagenExplicacion` en `lib/routine.ts` — el trabajo restante es solo de datos, no de código.
+
 ⏸️ CHECKPOINT — Última acción completada (01/09/2026): **Corte anatómico (hueso+tendón+músculo) — primer patrón de movimiento, en revisión con el usuario.** El usuario mandó una referencia distinta a la silueta de cuerpo completo que ya existía: un corte transversal de una extremidad (hueso, tendón, vientre muscular, mancuerna, flecha de movimiento) tipo "Contracción excéntrica: el músculo se alarga". Decisión: NO reemplaza la silueta de cuerpo — se agrega como una segunda ilustración, más detallada, que se usa cuando existe para el PATRÓN DE MOVIMIENTO del ejercicio (no por grupo muscular: varios ejercicios comparten patrón, ej. curl de bíceps y curl martillo son ambos "flexión de codo").
 - `lib/routine.ts`: nuevo tipo `PatronMovimiento` (9 patrones: flexión de codo, extensión de codo, empuje horizontal, empuje vertical, tirón horizontal, tirón vertical, extensión de rodilla, bisagra de cadera, flexión de tronco) + campo `patronMovimiento` en cada ejercicio del catálogo existente.
 - `components/CorteAnatomico.tsx` (nuevo): por ahora SOLO tiene dibujado "flexión de codo" (curl de bíceps/martillo) — los otros 8 patrones quedan pendientes de que el usuario apruebe el estilo antes de invertir el tiempo de dibujarlos todos. `hayCorteAnatomico(patron)` le dice al llamador si ya existe o si debe caer de vuelta a la silueta de cuerpo completo.

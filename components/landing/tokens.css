@@ -58,13 +58,6 @@
   --confetti-3: #ec4899;
   --confetti-4: #eab308;
   --confetti-5: #22d3ee;
-
-  /* ── CORTE ANATÓMICO ("Explicación del ejercicio") — colores de contenido
-     educativo (piel/hueso/tendón), no de marca. Otra excepción a 60-30-10
-     por el mismo motivo que el confeti: no es chrome de UI. ── */
-  --anatomia-piel: #efc9a6;
-  --anatomia-hueso: #f4e8d8;
-  --anatomia-tendon: #bee6e8;
 }
 
 /* ============================================================================
