@@ -85,7 +85,13 @@ export default function PerfilPage() {
       </video>
 
       <div className="relative z-10">
-      <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">Tu cuenta</p>
+      {/* Chip propio opaco (no un scrim de toda la pantalla, a pedido del
+          usuario: el video se ve completo) para que el saludo se lea sobre
+          cualquier fotograma del video, sin depender de qué tan claro/oscuro
+          salga. Sin glass/blur (regla anti-IA de FICHA-ARTE): superficie
+          sólida, igual que el resto de las cards de esta misma pantalla. */}
+      <div className="inline-block rounded-2xl bg-[var(--surface)] px-4 py-3 shadow-[var(--shadow-1)]">
+        <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">Tu cuenta</p>
       {editando ? (
         <div className="mt-1 flex items-center gap-2">
           <input
@@ -115,6 +121,7 @@ export default function PerfilPage() {
           <Pencil size={15} color="var(--text-tertiary)" />
         </button>
       )}
+      </div>
 
       <div className="mt-6 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
         <p className="text-lg font-semibold text-[var(--text-primary)]">{tituloRuta(nivel, meta)}</p>
@@ -141,7 +148,7 @@ export default function PerfilPage() {
       <button
         type="button"
         onClick={cerrarSesion}
-        className="mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-sm font-semibold text-[var(--text-secondary)]"
+        className="mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] text-sm font-semibold text-[var(--text-secondary)]"
       >
         <LogOut size={16} /> Cerrar sesión
       </button>
