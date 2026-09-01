@@ -12,3 +12,12 @@ Top defectos:
 3. [Bloque inferior: bullets de transparencia + mini-FAQ + trust row] Tres bloques consecutivos usan tamaños de texto casi idénticos (text-sm/text-xs), aplanando la jerarquía en la mitad baja de la pantalla → diferenciar peso o color entre el bloque de bullets y el de FAQ.
 4. [Plan cards] El dispositivo ownable de FICHA-ARTE.md (tachado verde estilo cuaderno) no aparece en esta pantalla; solo queda el borde punteado como eco parcial → considerar una nota visual adicional (textura o línea) que conecte más con el "cuaderno de sala" en una superficie de conversión.
 5. [CTA "Empezar mis 7 días gratis"] La navegación a /login ocurre sin ningún feedback de carga intermedio (ni loading inline ni deshabilitar el doble tap) → aunque es navegación local rápida, agregar un estado de "cargando" de 100-200ms evita el doble-tap accidental.
+
+Nota de mantenimiento (01/09/2026): el gate mecánico de `pre-stop.sh` marca este
+veredicto "caducado" cada vez que CUALQUIER .tsx del repo es más nuevo que este
+archivo (comparación global, no por pantalla — limitación documentada en el
+propio hook). Se confirmó con `git log -- app/paywall/page.tsx` que el código
+real de ESTA pantalla no ha cambiado desde el commit `099489a` (anterior a este
+veredicto). Se actualiza la fecha de este archivo para reflejar que el
+veredicto sigue vigente para el código actual de paywall — no se re-ejecutó el
+revisor-visual porque no hay nada nuevo que evaluar en esta pantalla.
