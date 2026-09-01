@@ -189,7 +189,7 @@ function PlanDelDia({
         className="pointer-events-none fixed inset-0 -z-10"
         style={{
           background:
-            'linear-gradient(180deg, color-mix(in oklab, var(--bg) 85%, transparent) 0%, color-mix(in oklab, var(--bg) 92%, transparent) 30%, var(--bg) 55%)',
+            'linear-gradient(180deg, color-mix(in oklab, var(--bg) 62%, transparent) 0%, color-mix(in oklab, var(--bg) 82%, transparent) 20%, var(--bg) 38%)',
         }}
       />
 
