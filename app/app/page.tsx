@@ -4,11 +4,12 @@
 // UNA misión: completar el entrenamiento de hoy. Protagonista de la Sesión 5.
 
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Check, Flame, PlayCircle, RefreshCcw, X } from 'lucide-react';
+import { motion, AnimatePresence, useReducedMotion, animate } from 'motion/react';
+import { Check, Flame, PlayCircle, RefreshCcw, Undo2, WifiOff, X } from 'lucide-react';
 import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import {
   completarEntrenamiento,
+  deshacerHecho,
   ejerciciosDeHoy,
   guardarProgreso,
   leerProgreso,
@@ -71,13 +72,32 @@ function PlanDelDia({
   const [descanso, setDescanso] = useState<{ ejercicioId: string; restante: number } | null>(null);
   const [pesos, setPesos] = useState<Record<string, string>>({});
   const [celebrarHito, setCelebrarHito] = useState<number | null>(null);
+  const [errorSync, setErrorSync] = useState(false);
   const rachaAnteriorRef = useRef(progreso.racha);
+  const reduce = useReducedMotion();
 
   useEffect(() => {
     if (!descanso || descanso.restante <= 0) return;
     const t = setTimeout(() => setDescanso((d) => (d ? { ...d, restante: d.restante - 1 } : d)), 1000);
     return () => clearTimeout(t);
   }, [descanso]);
+
+  // Número héroe de la racha: cuenta desde 0 al montar (baseline obligatoria de
+  // movimiento, 14/22) — se salta la animación con prefers-reduced-motion.
+  const [rachaMostrada, setRachaMostrada] = useState(reduce ? progreso.racha : 0);
+  useEffect(() => {
+    if (reduce) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setRachaMostrada(progreso.racha);
+      return;
+    }
+    const controls = animate(0, progreso.racha, {
+      duration: 0.6,
+      ease: [0.16, 1, 0.3, 1],
+      onUpdate: (v) => setRachaMostrada(Math.round(v)),
+    });
+    return () => controls.stop();
+  }, [progreso.racha, reduce]);
 
   // Hito de racha (M2, compilador sobrio): se detecta por CAMBIO de estado,
   // nunca dentro del updater — así una doble actualización rápida no lo dispara dos veces.
@@ -110,8 +130,12 @@ function PlanDelDia({
     const peso = pesoTexto ? Number(pesoTexto) : 0;
     const log = { ejercicioId, peso, reps: Number(ej.reps) || 0, series: ej.series };
     actualizar((p) => marcarHecho(registrarSerie(p, log), ejercicioId));
-    guardarLogRemoto({ ...log, fecha: new Date().toISOString().slice(0, 10) });
+    guardarLogRemoto({ ...log, fecha: new Date().toISOString().slice(0, 10) }, () => setErrorSync(true));
     if (progreso.descansoAutomatico) setDescanso({ ejercicioId, restante: ej.descansoSeg });
+  }
+
+  function deshacer(ejercicioId: string) {
+    actualizar((p) => deshacerHecho(p, ejercicioId));
   }
 
   function rescatar(ejercicioId: string) {
@@ -121,7 +145,7 @@ function PlanDelDia({
   function alternarDescansoAutomatico() {
     actualizar((p) => {
       const next = { ...p, descansoAutomatico: !p.descansoAutomatico };
-      guardarProgresoRemoto(next);
+      guardarProgresoRemoto(next, () => setErrorSync(true));
       return next;
     });
   }
@@ -134,7 +158,7 @@ function PlanDelDia({
   function finalizarEntrenamiento() {
     actualizar((p) => {
       const next = completarEntrenamiento(p);
-      guardarProgresoRemoto(next);
+      guardarProgresoRemoto(next, () => setErrorSync(true));
       return next;
     });
   }
@@ -153,18 +177,39 @@ function PlanDelDia({
         Hoy toca {nombreDeHoy(progreso.diaActual)}
       </h1>
 
-      {/* (3) ESTADO DE LA RACHA — M4 racha en riesgo si aplica */}
+      {/* Aviso si la sincronización remota falla — nunca en silencio (heurística 9),
+          con "Reintentar" real (control y libertad, heurística 3) */}
+      {errorSync && (
+        <div className="mt-4 flex items-center justify-between gap-2 rounded-xl border border-[color-mix(in_oklab,var(--status-warning)_35%,transparent)] bg-[color-mix(in_oklab,var(--status-warning)_10%,transparent)] px-4 py-2.5 text-xs font-medium text-[var(--status-warning)]">
+          <span className="flex items-center gap-2">
+            <WifiOff size={14} /> No pudimos guardar en la nube.
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              setErrorSync(false);
+              guardarProgresoRemoto(progreso, () => setErrorSync(true));
+            }}
+            className="underline underline-offset-2"
+          >
+            Reintentar
+          </button>
+        </div>
+      )}
+
+      {/* (3) ESTADO DE LA RACHA — M4 racha en riesgo si aplica (color de aviso
+          real de FICHA-ARTE, no un gris tenue — la alerta debe leerse como tal) */}
       <div
         className={`mt-4 flex items-center gap-3 rounded-2xl border p-4 ${
           enRiesgo
-            ? 'border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)]'
+            ? 'border-[color-mix(in_oklab,var(--status-warning)_30%,transparent)] bg-[color-mix(in_oklab,var(--status-warning)_6%,transparent)]'
             : 'border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[var(--chip-bg)]'
         }`}
       >
-        <Flame size={22} color={enRiesgo ? 'var(--text-tertiary)' : 'var(--accent)'} fill={enRiesgo ? 'none' : 'var(--accent)'} />
+        <Flame size={22} color={enRiesgo ? 'var(--status-warning)' : 'var(--accent)'} fill={enRiesgo ? 'none' : 'var(--accent)'} />
         <div>
-          <p className={`text-sm font-semibold ${enRiesgo ? 'text-[var(--text-secondary)]' : 'text-[var(--text-primary)]'}`}>
-            Racha: {progreso.racha} {progreso.racha === 1 ? 'día' : 'días'}
+          <p className={`text-sm font-semibold ${enRiesgo ? 'text-[var(--status-warning)]' : 'text-[var(--text-primary)]'}`}>
+            Racha: {rachaMostrada} {progreso.racha === 1 ? 'día' : 'días'}
           </p>
           <p className="text-xs text-[var(--text-secondary)]">
             {enRiesgo ? 'Falta el registro de hoy.' : 'Tu registro de hoy la mantiene viva.'}
@@ -173,8 +218,9 @@ function PlanDelDia({
       </div>
 
       {/* Interruptor: el usuario decide si el descanso arranca solo o no */}
-      <button
+      <motion.button
         type="button"
+        whileTap={{ scale: 0.97 }}
         onClick={alternarDescansoAutomatico}
         className="mt-4 flex w-full items-center justify-between rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] px-4 py-3"
       >
@@ -191,7 +237,7 @@ function PlanDelDia({
             }`}
           />
         </span>
-      </button>
+      </motion.button>
 
       {/* (2) LA ACCIÓN DE 1 TAP — la lista de ejercicios de hoy */}
       <div className="mt-4 flex flex-col gap-3 pb-28">
@@ -229,14 +275,15 @@ function PlanDelDia({
                   )}
                 </div>
                 {!hecho && (
-                  <button
+                  <motion.button
                     type="button"
+                    whileTap={{ scale: 0.9 }}
                     aria-label={`Cambiar ${ej.nombre} por una alternativa`}
                     onClick={() => rescatar(ej.id)}
                     className="flex size-9 shrink-0 items-center justify-center rounded-full border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]"
                   >
                     <RefreshCcw size={16} />
-                  </button>
+                  </motion.button>
                 )}
               </div>
 
@@ -250,31 +297,42 @@ function PlanDelDia({
                     onChange={(e) => setPesos((p) => ({ ...p, [ej.id]: e.target.value }))}
                     className="h-11 w-20 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-3 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
                   />
-                  <button
+                  <motion.button
                     type="button"
+                    whileTap={{ scale: 0.97 }}
                     onClick={() => registrar(ej.id)}
                     className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
                   >
                     <Check size={16} /> {progreso.descansoAutomatico ? 'Registrar y descansar' : 'Registrar'}
-                  </button>
+                  </motion.button>
                 </div>
               ) : (
-                <p className="mt-2 flex items-center gap-1.5 text-xs font-medium text-[var(--accent)]">
-                  <Check size={15} /> Hecho
-                </p>
+                <div className="mt-2 flex items-center justify-between">
+                  <p className="flex items-center gap-1.5 text-xs font-medium text-[var(--accent)]">
+                    <Check size={15} /> Hecho
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => deshacer(ej.id)}
+                    className="flex items-center gap-1 text-xs font-medium text-[var(--text-tertiary)]"
+                  >
+                    <Undo2 size={13} /> Deshacer
+                  </button>
+                </div>
               )}
             </motion.div>
           );
         })}
 
-        <button
+        <motion.button
           type="button"
+          whileTap={todosHechos ? { scale: 0.97 } : undefined}
           disabled={!todosHechos}
           onClick={finalizarEntrenamiento}
           className="mt-2 flex h-14 w-full items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)] disabled:opacity-35"
         >
           Terminar entrenamiento de hoy
-        </button>
+        </motion.button>
       </div>
 
       {/* Temporizador de descanso — banner fijo */}

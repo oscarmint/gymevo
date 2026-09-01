@@ -1,6 +1,7 @@
 'use client';
 
 import { CreditCard, Frown, RefreshCcw, ShieldAlert, Users } from 'lucide-react';
+import { Logo } from '@/components/Logo';
 import { Hero } from '@/components/landing/Hero';
 import { Problema } from '@/components/landing/Problema';
 import { Agitacion } from '@/components/landing/Agitacion';
@@ -30,7 +31,14 @@ export default function LandingGymEvo() {
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
         socialProof={<span>Garantía Hotmart de 7 días — sin preguntas</span>}
-        visualPlaceholderSugerencia="captura del plan del día con el ejercicio de hoy y el Botón de Rescate"
+        visual={
+          // eslint-disable-next-line @next/next/no-img-element -- Hero.tsx del kit usa <img> a propósito (portable, ver su comentario)
+          <img
+            src="/screenshots/frame-plan-del-dia.png"
+            alt="Plan del día en GymEvo: ejercicios de hoy, racha y Botón de Rescate"
+            className="w-full"
+          />
+        }
         backgroundVideoSrc="/videos/hero-gimnasio.mp4"
       />
 
@@ -79,8 +87,10 @@ export default function LandingGymEvo() {
         }}
       />
 
-      {/* CTA repetido tras el mecanismo — para quien ya está convencido no tiene que buscar el botón */}
-      <div className="bg-[var(--bg)] px-5 pb-12 text-center">
+      {/* CTA repetido tras el mecanismo — para quien ya está convencido no tiene que buscar el botón.
+          pb corto: AppPorDentro (SectionShell) ya trae su propio pt-16/24; sumar ambos dejaba
+          ~110-140px de vacío muerto entre el botón y el siguiente título (hallazgo revisor-visual). */}
+      <div className="bg-[var(--bg)] px-5 pb-4 text-center">
         <CtaButton href={CTA_HREF} fullMobile={false}>
           {CTA_LABEL}
         </CtaButton>
@@ -90,10 +100,10 @@ export default function LandingGymEvo() {
       <AppPorDentro
         tituloMarked="Tu gimnasio, [acento]por fin bajo control[/acento]"
         frames={[
-          { label: 'Eliges tu nivel y tu meta', nombrePantalla: 'Onboarding' },
-          { label: 'Tu ejercicio de hoy, listo', nombrePantalla: 'Plan del día' },
-          { label: '¿Ocupada? Cambias al instante', nombrePantalla: 'Botón de Rescate' },
-          { label: 'Ves tu progreso real', nombrePantalla: 'Historial de pesos' },
+          { label: 'Eliges tu nivel y tu meta', src: '/screenshots/frame-onboarding.png', alt: 'Onboarding: elige tu meta' },
+          { label: 'Tu ejercicio de hoy, listo', src: '/screenshots/frame-plan-del-dia.png', alt: 'Plan del día con ejercicios y racha' },
+          { label: '¿Ocupada? Cambias al instante', src: '/screenshots/frame-rescate.png', alt: 'Botón de Rescate en tu plan del Día 1' },
+          { label: 'Ves tu progreso real', src: '/screenshots/frame-historial.png', alt: 'Historial de pesos registrados' },
         ]}
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
@@ -200,6 +210,7 @@ export default function LandingGymEvo() {
       {/* 10. FOOTER LEGAL */}
       <FooterLegal
         appName="GymEvo"
+        logo={<Logo className="size-5 text-[var(--accent)]" />}
         soporteEmail="soporte@gymevo.app"
         enlaces={[
           { label: 'Privacidad', href: '/privacidad' },

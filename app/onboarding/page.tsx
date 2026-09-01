@@ -7,7 +7,7 @@
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
-import { Check, ChevronLeft, RefreshCcw, ShieldAlert, Users, Zap } from 'lucide-react';
+import { Check, ChevronLeft, RefreshCcw, ShieldAlert, Users, X, Zap } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { guardarRespuestas, type Horario, type Meta, type Nivel } from '@/lib/onboarding';
 
@@ -113,9 +113,22 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[var(--bg)] px-5 pt-4 pb-8 [font-family:var(--font-body)]">
-      {/* Barra superior: atrás + progreso — SIEMPRE visible (02B regla 3) */}
-      <div className="mx-auto flex w-full max-w-[420px] items-center gap-3">
+    <div className="relative flex min-h-dvh flex-col overflow-hidden bg-[var(--bg)] px-5 pt-4 pb-8 [font-family:var(--font-body)]">
+      {/* Profundidad sutil (DESIGN-CORE): nunca un fill plano, ni en pantallas cortas */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          background:
+            'radial-gradient(700px 420px at 15% -10%, color-mix(in oklab, var(--accent) 14%, transparent) 0%, transparent 60%), ' +
+            'radial-gradient(560px 380px at 100% 100%, color-mix(in oklab, var(--accent-2) 12%, transparent) 0%, transparent 55%)',
+        }}
+      />
+
+      {/* Barra superior: atrás + progreso + salir — SIEMPRE visible (02B regla 3).
+          "Salir" existe siempre (no solo cuando Atrás está deshabilitado): control
+          y libertad real, sin obligar a devolverse paso a paso para abandonar. */}
+      <div className="mx-auto flex w-full max-w-md items-center gap-3">
         <button
           type="button"
           aria-label="Atrás"
@@ -125,16 +138,24 @@ export default function OnboardingPage() {
         >
           <ChevronLeft size={22} />
         </button>
-        <div className="h-[3px] flex-1 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)]">
+        <div className="h-1 flex-1 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)]">
           <motion.div
             className="h-full rounded-full bg-[var(--accent)]"
             animate={{ width: `${progresoMostrado}%` }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           />
         </div>
+        <button
+          type="button"
+          aria-label="Salir del cuestionario"
+          onClick={() => router.push('/')}
+          className="flex size-11 shrink-0 items-center justify-center rounded-full text-[var(--text-tertiary)]"
+        >
+          <X size={20} />
+        </button>
       </div>
 
-      <div className="mx-auto mt-10 flex w-full max-w-[420px] flex-1 flex-col">
+      <div className="mx-auto mt-10 flex w-full max-w-md flex-1 flex-col">
         <AnimatePresence mode="wait" custom={dir} initial={false}>
           {paso === 'nivel' && (
             <PantallaPregunta key="nivel" dir={dir} variants={variants}>
@@ -170,17 +191,17 @@ export default function OnboardingPage() {
                 >
                   <Check size={28} color="var(--accent)" strokeWidth={2.5} />
                 </span>
-                <h1 className="text-balance text-[26px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+                <h1 className="text-balance text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
                   Te entendemos
                 </h1>
-                <p className="mt-4 max-w-[320px] text-[15.5px] leading-relaxed text-[var(--text-secondary)]">
+                <p className="mt-4 max-w-xs text-base leading-relaxed text-[var(--text-secondary)]">
                   {RECONOCIMIENTO_POR_FRUSTRACION[frustracion ?? 'apps']}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => ir(pasoIdx + 1)}
-                className="mt-6 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)]"
+                className="mt-6 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
               >
                 Continuar
               </button>
@@ -198,10 +219,10 @@ export default function OnboardingPage() {
             <PantallaPregunta key="compromiso" dir={dir} variants={variants}>
               <Pregunta titulo="¿Cuántos días entrenarás por semana?" />
               <div className="mt-8 flex flex-col items-center gap-2">
-                <span className="text-[48px] font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                <span className="text-5xl font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                   {dias}
                 </span>
-                <span className="text-[14px] text-[var(--text-secondary)]">días/semana</span>
+                <span className="text-sm text-[var(--text-secondary)]">días/semana</span>
               </div>
               <input
                 type="range"
@@ -213,15 +234,15 @@ export default function OnboardingPage() {
                 className="mt-8 w-full accent-[var(--accent)]"
                 aria-label="Días de entrenamiento por semana"
               />
-              <div className="flex justify-between text-[12px] text-[var(--text-tertiary)]">
+              <div className="flex justify-between text-xs text-[var(--text-tertiary)]">
                 <span>1</span>
                 <span>7</span>
               </div>
-              <p className="mt-4 text-center text-[14px] font-medium text-[var(--accent)]">{feedbackDias(dias)}</p>
+              <p className="mt-4 text-center text-sm font-medium text-[var(--accent)]">{feedbackDias(dias)}</p>
               <button
                 type="button"
                 onClick={terminar}
-                className="mt-8 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)]"
+                className="mt-8 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
               >
                 Fijar mi meta
               </button>
@@ -250,7 +271,7 @@ function PantallaPregunta({
       animate="center"
       exit="exit"
       transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-      className="flex flex-1 flex-col"
+      className="flex flex-1 flex-col justify-center"
     >
       {children}
     </motion.div>
@@ -260,10 +281,10 @@ function PantallaPregunta({
 function Pregunta({ titulo, micro }: { titulo: string; micro?: string }) {
   return (
     <div className="mb-6">
-      <h1 className="text-balance text-[28px] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--text-primary)] [font-family:var(--font-display)]">
+      <h1 className="text-balance text-3xl font-bold leading-[1.1] tracking-[-0.02em] text-[var(--text-primary)] [font-family:var(--font-display)]">
         {titulo}
       </h1>
-      {micro && <p className="mt-2 text-[14.5px] text-[var(--text-secondary)]">{micro}</p>}
+      {micro && <p className="mt-2 text-sm text-[var(--text-secondary)]">{micro}</p>}
     </div>
   );
 }
@@ -291,14 +312,14 @@ function Chips<T extends string>({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05, duration: 0.25 }}
-            className={`flex min-h-14 items-center gap-3 rounded-[var(--radius-button)] border px-4 py-3.5 text-left text-[16px] font-medium transition-colors ${
+            className={`flex min-h-14 items-center gap-3 rounded-[var(--radius-button)] border px-4 py-3.5 text-left text-base font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
               seleccionado
                 ? 'border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--text-primary)]'
-                : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] text-[var(--text-primary)]'
+                : 'border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] bg-[var(--surface)] text-[var(--text-primary)]'
             }`}
           >
             {Icono && (
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-[color-mix(in_oklab,var(--text-tertiary)_10%,transparent)]">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_oklab,var(--text-tertiary)_10%,transparent)]">
                 <Icono size={18} color="var(--text-secondary)" />
               </span>
             )}

@@ -154,6 +154,16 @@ export function marcarHecho(p: Progreso, ejercicioId: string): Progreso {
   return { ...p, hechosHoy: [...p.hechosHoy, ejercicioId] };
 }
 
+/** Deshace un registro de hoy (control y libertad — heurística 3): quita la
+ * marca de "hecho" y el último log de ese ejercicio con fecha de hoy, para
+ * poder corregir el peso sin arrastrar un dato erróneo al historial. */
+export function deshacerHecho(p: Progreso, ejercicioId: string): Progreso {
+  const hoy = hoyISO();
+  const idxUltimo = p.logs.findLastIndex((l) => l.ejercicioId === ejercicioId && l.fecha === hoy);
+  const logs = idxUltimo >= 0 ? [...p.logs.slice(0, idxUltimo), ...p.logs.slice(idxUltimo + 1)] : p.logs;
+  return { ...p, hechosHoy: p.hechosHoy.filter((id) => id !== ejercicioId), logs };
+}
+
 export function reemplazarEjercicio(p: Progreso, originalId: string): Progreso {
   const alt = obtenerEjercicio(originalId).alternativaId;
   return { ...p, reemplazosHoy: { ...p.reemplazosHoy, [originalId]: alt } };

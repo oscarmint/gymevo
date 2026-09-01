@@ -68,7 +68,12 @@ export default function PaywallPage() {
         </motion.div>
 
         {/* (4)(5) Plan cards — ANUAL primero, pre-seleccionado */}
-        <div className="mt-6 flex flex-col gap-3">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.16, duration: 0.3 }}
+          className="mt-6 flex flex-col gap-3"
+        >
           <PlanCard
             id="anual"
             seleccionado={plan === 'anual'}
@@ -86,28 +91,57 @@ export default function PaywallPage() {
             precioMes="$4.99"
             detalle="Se cobra cada mes"
           />
-        </div>
+        </motion.div>
 
         {/* (6) CTA con beneficio, 1ª persona */}
         <motion.button
           type="button"
           onClick={empezarTrial}
           whileTap={{ scale: 0.97 }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.24, duration: 0.3 }}
           className="mt-6 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16.5px] font-semibold text-[var(--bg)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_25%,transparent)]"
         >
           Empezar mis 7 días gratis
         </motion.button>
 
-        {/* (4bis) La verdad del puente del trial — 3 bullets obligatorios */}
-        <ul className="mt-4 flex flex-col gap-1.5 text-center text-xs text-[var(--text-secondary)]">
-          <li>✓ Hoy no pagas nada</li>
-          <li>✓ Te avisamos 1 día antes del cobro</li>
-          <li>✓ Cancela en 1 tap</li>
-        </ul>
+        {/* Garantía nombrada junto al CTA (antes solo vivía en el trust row, lejos) */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.3 }}
+          className="mt-2 flex items-center justify-center gap-1.5 text-center text-xs text-[var(--text-secondary)]"
+        >
+          <ShieldCheck size={13} /> Garantía Hotmart de 7 días — sin preguntas
+        </motion.p>
+
+        {/* (4bis) La verdad del puente del trial — 3 bullets obligatorios, con
+            checkmark custom (círculo acento 12%) en vez del "✓" del sistema */}
+        <motion.ul
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.32, duration: 0.3 }}
+          className="mt-4 flex flex-col items-center gap-2 text-sm text-[var(--text-secondary)]"
+        >
+          {['Hoy no pagas nada', 'Te avisamos 1 día antes del cobro', 'Cancela en 1 tap'].map((texto) => (
+            <li key={texto} className="flex items-center gap-2">
+              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
+                <Check size={12} color="var(--accent)" strokeWidth={3} />
+              </span>
+              {texto}
+            </li>
+          ))}
+        </motion.ul>
 
         {/* Mini-FAQ de transparencia — responde de frente la objeción #1 de Mateo
             (miedo al cobro oculto), en formato pregunta-respuesta explícito. */}
-        <div className="mt-6 flex flex-col gap-3 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-4">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.3 }}
+          className="mt-6 flex flex-col gap-3 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-4"
+        >
           <div>
             <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Me cobrarán hoy?</p>
             <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
@@ -120,28 +154,35 @@ export default function PaywallPage() {
               Sí, cuando quieras, con un toque desde tu perfil — sin llamadas ni trámites.
             </p>
           </div>
-        </div>
+        </motion.div>
 
-        {/* (8) Salida limpia */}
-        <div className="mt-5 flex items-center justify-center gap-1 text-sm text-[var(--text-tertiary)]">
+        {/* (8) Salida limpia — "Restaurar compra" abre soporte real (todavía no
+            hay checkout de Hotmart conectado, Sesión 6, para restaurar de verdad) */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.48, duration: 0.3 }}
+          className="mt-5 flex items-center justify-center gap-1 text-sm text-[var(--text-tertiary)]"
+        >
           <button type="button" onClick={() => router.push('/')} className="px-2 py-3">
             Ahora no
           </button>
           <span aria-hidden="true">·</span>
-          <button type="button" className="px-2 py-3">
+          <a href="mailto:soporte@gymevo.app?subject=Restaurar%20mi%20compra" className="px-2 py-3">
             Restaurar compra
-          </button>
-        </div>
+          </a>
+        </motion.div>
 
-        {/* (9) Trust row */}
-        <div className="mt-2 flex items-center justify-center gap-4 text-[12px] text-[var(--text-tertiary)]">
-          <span className="flex items-center gap-1.5">
-            <Lock size={14} /> Pago seguro
-          </span>
-          <span className="flex items-center gap-1.5">
-            <ShieldCheck size={14} /> Garantía Hotmart 7 días
-          </span>
-        </div>
+        {/* (9) Trust row — solo "Pago seguro" (la garantía ya se dijo junto al
+            CTA; repetirla aquí de nuevo no sumaba información nueva) */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.56, duration: 0.3 }}
+          className="mt-2 flex items-center justify-center gap-1.5 text-xs text-[var(--text-tertiary)]"
+        >
+          <Lock size={14} /> Pago seguro
+        </motion.div>
       </div>
     </div>
   );
@@ -192,19 +233,27 @@ function PlanCard({
   detalle: string;
 }) {
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onSelect}
+      whileTap={{ scale: 0.98 }}
       className={`relative flex items-center justify-between rounded-[var(--radius-card)] border px-5 py-4 text-left transition-colors ${
         seleccionado
           ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_6%,transparent)]'
-          : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)]'
+          : 'border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] bg-[var(--surface)]'
       }`}
     >
       {badge && (
         <span className="absolute -top-2.5 left-4 rounded-full bg-[var(--accent)] px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--bg)]">
           {badge}
         </span>
+      )}
+      {seleccionado && (
+        <span
+          aria-hidden="true"
+          className="absolute inset-x-4 top-0 h-px"
+          style={{ background: 'linear-gradient(90deg, transparent, var(--accent), transparent)' }}
+        />
       )}
       <div>
         <p className="text-[16px] font-semibold text-[var(--text-primary)]">{nombre}</p>
@@ -225,6 +274,6 @@ function PlanCard({
           {seleccionado && <Check size={13} color="var(--bg)" strokeWidth={3} />}
         </span>
       </div>
-    </button>
+    </motion.button>
   );
 }

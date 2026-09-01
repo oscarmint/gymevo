@@ -77,8 +77,9 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
 }
 
 /** Guarda en segundo plano (fire-and-forget): la UI ya actualizó localStorage
- * y no debe esperar la red para sentirse rápida. */
-export function guardarProgresoRemoto(p: Progreso) {
+ * y no debe esperar la red para sentirse rápida. `onError` avisa a quien llama
+ * si la sincronización falla (heurística 9: nunca fallar en silencio). */
+export function guardarProgresoRemoto(p: Progreso, onError?: () => void) {
   const supabase = crearClienteSupabase();
   supabase.auth.getUser().then(({ data }) => {
     const user = data.user;
@@ -92,11 +93,13 @@ export function guardarProgresoRemoto(p: Progreso) {
         descanso_automatico: p.descansoAutomatico,
       })
       .eq('id', user.id)
-      .then(() => {});
+      .then(({ error }) => {
+        if (error) onError?.();
+      });
   });
 }
 
-export function guardarLogRemoto(log: RegistroLog) {
+export function guardarLogRemoto(log: RegistroLog, onError?: () => void) {
   const supabase = crearClienteSupabase();
   supabase.auth.getUser().then(({ data }) => {
     const user = data.user;
@@ -111,6 +114,8 @@ export function guardarLogRemoto(log: RegistroLog) {
         reps: log.reps,
         peso: log.peso,
       })
-      .then(() => {});
+      .then(({ error }) => {
+        if (error) onError?.();
+      });
   });
 }
