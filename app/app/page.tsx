@@ -10,6 +10,7 @@ import { Check, Dumbbell, Flame, PlayCircle, RefreshCcw, Undo2, Volume2, VolumeX
 import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import animacionFitness from '@/public/animaciones/fitness.json';
 import { CuerpoMuscular } from '@/components/CuerpoMuscular';
+import { CorteAnatomico, hayCorteAnatomico } from '@/components/CorteAnatomico';
 import {
   completarEntrenamiento,
   deshacerHecho,
@@ -680,7 +681,11 @@ function PlanDelDia({
                     </button>
                   </div>
                   <div className="mt-2 flex justify-center">
-                    <CuerpoMuscular musculo={ej.grupoMuscular} genero={generoIlustracion(ej.id)} />
+                    {hayCorteAnatomico(ej.patronMovimiento) ? (
+                      <CorteAnatomico patron={ej.patronMovimiento} />
+                    ) : (
+                      <CuerpoMuscular musculo={ej.grupoMuscular} genero={generoIlustracion(ej.id)} />
+                    )}
                   </div>
                 </motion.div>
               </motion.div>
