@@ -1,14 +1,14 @@
 # VEREDICTO revisor-visual — onboarding
-Fecha: 2026-09-01 00:00
-Screenshot: docs/revisiones/onboarding-375.png
-Usabilidad: 33/40
-Craft: 15/20
+Fecha: 2026-09-02 00:00
+Screenshot: docs/revisiones/onboarding-375.png (paso "nivel") + docs/revisiones/onboarding-meta-375.png (paso "meta")
+Usabilidad: 34/40
+Craft: 17/20
 Copy (si vende): N-A
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 Top defectos:
-1. [zona bajo la tarjeta "Tu ruta se está armando"] Queda ~40-45% de la pantalla vacío (solo renglones de fondo, sin contenido) → agregar un bloque de valor real ahí (ej. mini-preview de lo que se está armando) o centrar verticalmente todo el bloque de pregunta+tarjeta para que el vacío deje de leerse como espacio sin usar; texturizar el fondo no resuelve la falta de contenido.
-2. [tarjeta "Tu ruta se está armando"] Sigue leyéndose como tappable: ícono + etiqueta en mayúsculas dentro de una card redondeada con borde completo es el mismo patrón visual de un ítem de lista accionable, y no tiene onClick → quitar el patrón de "header de botón" (mover el ícono en línea junto al texto, sin badge superior) o cambiar el tratamiento visual (solo separador/línea superior, no card con borde perimetral) para que no compita visualmente con los chips reales.
-3. [Chips, app/onboarding/page.tsx líneas ~454-456] La animación de entrada de los chips (`initial={{opacity:0,y:10}}`) no está gateada por `useReducedMotion()` a diferencia del resto del archivo → envolver con el mismo patrón `reduce ? {} : {...}` usado en PantallaPregunta y en el número de "compromiso".
-4. [TarjetaRuta, línea ~349] Padding horizontal asimétrico (`pl-9` vs `pr-6`) por la espiral de encuadernación → igualar el padding de contenido y resolver el espacio de la espiral con un margen/offset interno separado del padding.
-5. [paleta general] Papel cálido + tinta verde sigue en la vecindad de la combinación vetada "Capítulo" (aunque la tipografía difiere, así que no dispara el gate automático de EJE 3=0) → riesgo conocido, no accionable esta sesión por decisión ya tomada del usuario.
+1. [botón X "Salir", esquina superior derecha, header] Al tocar Salir con respuestas ya dadas (visibles en "Tu ruta se está armando") se navega a "/" sin ninguna confirmación — el usuario pierde nivel/meta/horario/días sin aviso. Fix: agregar confirmación breve ("¿Salir? Perderás tus respuestas") antes de navegar, o persistir el progreso en localStorage para retomarlo.
+2. [pasos "frustracion" y "horario", debajo de los chips] Estos dos pasos NO llevan `TarjetaBeneficio` (solo nivel/meta la tienen) — la plantilla de pantalla-pregunta cambia de estructura entre pasos cortos y largos sin razón visible para el usuario, rompe la heurística de consistencia. Fix: decidir con un criterio único y aplicado a los 4 pasos con opciones (ej. "toda pantalla con ≤2 chips lleva TarjetaBeneficio"), documentarlo, y si "frustracion"/"horario" ya llenan el espacio con 4 chips, aclarar en comentario de código que la ausencia es deliberada por densidad, no un olvido.
+3. [pasos "nivel"/"meta", entre los chips y "Tu ruta se está armando"] Apilar TarjetaBeneficio + TarjetaRuta debajo de una decisión binaria de 2 chips es bastante contenido para una sola micro-decisión — funciona, pero un ojo entrenado nota que la pantalla ya no es "una decisión, aire alrededor" sino "una decisión + 2 bloques informativos". Fix: si se repite en más rondas, considerar reducir el padding vertical de TarjetaBeneficio o fusionar visualmente con TarjetaRuta en un solo bloque para bajar la carga.
+4. [paso "compromiso", slider de días] El input range nativo del navegador no lleva el mismo tratamiento visual (color de thumb/track) que el resto del kit más allá de `accent-[var(--accent)]` — en algunos motores de render el thumb no hereda el radio/sombra del sistema de componentes. Fix: verificar en el screenshot real de este paso (no fue entregado en esta ronda) que el slider se vea con el mismo nivel de pulido que chips y botones.
+5. [header, barra de progreso] `progresoMostrado` fuerza un mínimo de 8% incluso en el primer paso — correcto como truco de arranque, pero al ser el primer paso "nivel" (1 de 6 ≈ 17%) ya casi no se nota el truco; verificar que no quede una barra que parezca "atascada" cerca del 15-17% durante dos pasos seguidos (nivel y meta) antes de dar el salto visible en "frustracion".

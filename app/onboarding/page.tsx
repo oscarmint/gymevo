@@ -72,8 +72,22 @@ export default function OnboardingPage() {
   const [frustracion, setFrustracion] = useState<string | null>(null);
   const [horario, setHorario] = useState<Horario | null>(null);
   const [dias, setDias] = useState(4);
+  const [confirmandoSalida, setConfirmandoSalida] = useState(false);
 
   const avanzando = useRef(false);
+
+  // Hallazgo revisor-visual: "Salir" borraba las respuestas ya dadas sin
+  // avisar. Si todavía no respondió nada (pasoIdx===0), salir directo — no
+  // hay nada que perder. Si ya avanzó, confirmar antes (no guardamos
+  // progreso a mitad del cuestionario: son 6 pasos, ~1 minuto, no vale la
+  // pena la complejidad de persistir un estado a medio completar).
+  function pedirSalir() {
+    if (pasoIdx === 0) {
+      router.push('/');
+      return;
+    }
+    setConfirmandoSalida(true);
+  }
 
   const paso = PASOS[pasoIdx];
   const progreso = Math.round(((pasoIdx + 1) / PASOS.length) * 100);
@@ -159,12 +173,53 @@ export default function OnboardingPage() {
         <button
           type="button"
           aria-label="Salir del cuestionario"
-          onClick={() => router.push('/')}
+          onClick={pedirSalir}
           className="flex size-11 shrink-0 items-center justify-center rounded-full text-[var(--text-tertiary)]"
         >
           <X size={20} />
         </button>
       </div>
+
+      <AnimatePresence>
+        {confirmandoSalida && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-[color-mix(in_oklab,var(--text-primary)_35%,transparent)] px-6"
+            onClick={() => setConfirmandoSalida(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm rounded-[var(--radius-card)] bg-[var(--surface)] p-6"
+            >
+              <h2 className="text-lg font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¿Salir sin terminar?</h2>
+              <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                Vas a perder lo que respondiste hasta ahora — la próxima vez empiezas desde cero.
+              </p>
+              <div className="mt-5 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setConfirmandoSalida(false)}
+                  className="flex h-12 flex-1 items-center justify-center rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-sm font-semibold text-[var(--text-primary)]"
+                >
+                  Seguir aquí
+                </button>
+                <button
+                  type="button"
+                  onClick={() => router.push('/')}
+                  className="flex h-12 flex-1 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
+                >
+                  Salir
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="mx-auto mt-10 flex w-full max-w-md flex-1 flex-col">
         <AnimatePresence mode="wait" custom={dir} initial={false}>
