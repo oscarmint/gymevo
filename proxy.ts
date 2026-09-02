@@ -29,11 +29,25 @@ export default async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user && request.nextUrl.pathname.startsWith('/app')) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/login';
-    url.searchParams.set('desde', 'app');
-    return NextResponse.redirect(url);
+  if (request.nextUrl.pathname.startsWith('/app')) {
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/login';
+      url.searchParams.set('desde', 'app');
+      return NextResponse.redirect(url);
+    }
+
+    // Hallazgo crítico de la auditoría de Sesión 7: antes de esto, cualquier
+    // cuenta creada por magic link entraba a /app gratis para siempre — el
+    // paywall no verificaba nada. `plan` lo fija reconciliar_membresia()
+    // (ver lib/supabase/sync.ts y app/auth/callback/route.ts) según lo que
+    // el webhook de Hotmart haya recibido para este correo.
+    const { data: perfil } = await supabase.from('profiles').select('plan').eq('id', user.id).maybeSingle();
+    if (perfil?.plan !== 'pro') {
+      const url = request.nextUrl.clone();
+      url.pathname = '/paywall';
+      return NextResponse.redirect(url);
+    }
   }
 
   return response;

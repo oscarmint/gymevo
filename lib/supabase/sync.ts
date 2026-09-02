@@ -14,25 +14,34 @@ export async function usuarioActual() {
   return data.user;
 }
 
-/** Se llama una vez al entrar a /app tras iniciar sesión: si el usuario no
- * tiene fila en `profiles` todavía, la crea con lo que contestó en el
- * onboarding (que hasta ese momento solo vivía en sessionStorage). */
+/** Se llama al entrar a /app tras iniciar sesión. Dos cosas, en este orden:
+ * (1) `reconciliar_membresia` — SIEMPRE, crea la fila en `profiles` si no
+ *     existe y fija su plan real según lo que haya pagado en Hotmart (si el
+ *     webhook llegó antes de que la cuenta existiera). Idempotente, segura
+ *     de llamar en cada login. Ver supabase/migrations/0007_*.
+ * (2) Si HAY respuestas de onboarding frescas (recién completado, todavía en
+ *     sessionStorage), las guarda — pero solo entonces: si `respuestas` es
+ *     null (usuario que vuelve y ya cerró el tab del onboarding), NUNCA
+ *     pisa su nivel/meta ya guardados con los valores por defecto. */
 export async function sincronizarPerfilInicial(respuestas: RespuestasOnboarding | null) {
   const supabase = crearClienteSupabase();
   const { data: userData } = await supabase.auth.getUser();
   const user = userData.user;
   if (!user) return;
 
-  const { data: existente } = await supabase.from('profiles').select('id').eq('id', user.id).maybeSingle();
-  if (existente) return;
+  await supabase.rpc('reconciliar_membresia');
 
-  await supabase.from('profiles').insert({
-    id: user.id,
-    nivel: respuestas?.nivel ?? 'principiante',
-    meta: respuestas?.meta ?? 'musculo',
-    horario: respuestas?.horario ?? null,
-    dias_semana: respuestas?.diasSemana ?? 4,
-  });
+  if (respuestas) {
+    await supabase
+      .from('profiles')
+      .update({
+        nivel: respuestas.nivel,
+        meta: respuestas.meta,
+        horario: respuestas.horario,
+        dias_semana: respuestas.diasSemana,
+      })
+      .eq('id', user.id);
+  }
 }
 
 /** Trae el progreso remoto (perfil + historial de series). Si el usuario no
@@ -101,6 +110,20 @@ export function guardarProgresoRemoto(p: Progreso, onError?: () => void) {
         if (error) onError?.();
       });
   });
+}
+
+/** Estado real de la membresía — Perfil lo usa para mostrar "Tu plan" y el
+ * enlace de gestionar/cancelar (hallazgo de la auditoría: el paywall promete
+ * "cancela cuando quieras" pero la app no mostraba dónde hacerlo). */
+export async function leerMembresiaRemota(): Promise<{ plan: string; estado: string | null } | null> {
+  const supabase = crearClienteSupabase();
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData.user;
+  if (!user) return null;
+
+  const { data: perfil } = await supabase.from('profiles').select('plan, membership_status').eq('id', user.id).maybeSingle();
+  if (!perfil) return null;
+  return { plan: perfil.plan, estado: perfil.membership_status };
 }
 
 /** Nombre que el usuario eligió para que le llamemos (Perfil). Separado de

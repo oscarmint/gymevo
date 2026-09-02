@@ -2,8 +2,11 @@
 
 // PAYWALL — Sesión 4 (02B §C + 50 §C). El precio nunca aparece sin el timeline
 // de trial (C4) ni sin el desbloqueo nombrado (el mecanismo: el Botón de Rescate).
-// C3ter: sin Hotmart conectado todavía (Sesión 6), el CTA navega a /login —
-// simula el flujo con estado local, nunca un checkout falso.
+// Sesión 7 (auditoría): el CTA ya abre el checkout REAL de Hotmart si las
+// variables NEXT_PUBLIC_HOTMART_CHECKOUT_{MENSUAL,ANUAL} están configuradas
+// (son públicas, no secretas — son la URL del link de pago). Sin ellas
+// todavía (el usuario no las ha puesto en Vercel), cae de vuelta al mock
+// anterior (/login) para no romper nada mientras se conectan.
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -29,8 +32,21 @@ export default function PaywallPage() {
   const horario = respuestas ? HORARIO_LABEL[respuestas.horario] : 'en la tarde';
 
   function empezarTrial() {
-    // Sesión 6: aquí se abre el checkout real de Hotmart (off/showOnlyTrial=1/sck).
-    // Por ahora, mock: pasa directo al login (magic link) para "guardar" el plan.
+    const checkoutUrl =
+      plan === 'anual'
+        ? process.env.NEXT_PUBLIC_HOTMART_CHECKOUT_ANUAL
+        : process.env.NEXT_PUBLIC_HOTMART_CHECKOUT_MENSUAL;
+
+    if (checkoutUrl) {
+      // El webhook conecta la compra a la cuenta por CORREO (ver
+      // app/api/webhooks/hotmart/route.ts) — no hace falta pasar nada más
+      // acá. Después de pagar, Hotmart lleva al comprador a /login.
+      window.location.href = checkoutUrl;
+      return;
+    }
+
+    // Checkout todavía no configurado (faltan las variables de entorno) —
+    // mock: pasa directo al login para no romper nada mientras se conecta.
     router.push('/login?desde=paywall');
   }
 

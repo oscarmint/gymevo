@@ -5,12 +5,19 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, Flame, LogOut, Pencil } from 'lucide-react';
+import { Check, ExternalLink, Flame, LogOut, Pencil } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { leerProgreso, tituloRuta, type Progreso } from '@/lib/routine';
 import { leerNombreLocal, guardarNombreLocal } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
-import { guardarNombreRemoto, leerNombreRemoto } from '@/lib/supabase/sync';
+import { guardarNombreRemoto, leerMembresiaRemota, leerNombreRemoto } from '@/lib/supabase/sync';
+
+const ESTADO_MEMBRESIA_LABEL: Record<string, string> = {
+  trialing: 'En prueba gratis',
+  active: 'Activa',
+  past_due: 'Pago pendiente',
+  cancelled: 'Cancelada (activa hasta el fin del período)',
+};
 
 export default function PerfilPage() {
   const router = useRouter();
@@ -19,6 +26,7 @@ export default function PerfilPage() {
   const [nombre, setNombre] = useState<string | null>(null);
   const [editando, setEditando] = useState(false);
   const [borrador, setBorrador] = useState('');
+  const [membresia, setMembresia] = useState<{ plan: string; estado: string | null } | null>(null);
 
   // localStorage/sessionStorage no existen en el servidor: leerlos en el
   // initializer de useState causa mismatch de hydration. Este efecto es la
@@ -34,6 +42,7 @@ export default function PerfilPage() {
         guardarNombreLocal(remoto);
       }
     });
+    leerMembresiaRemota().then(setMembresia);
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 
@@ -136,6 +145,23 @@ export default function PerfilPage() {
           </span>
         </div>
       </div>
+
+      {membresia?.plan === 'pro' && (
+        <div className="mt-4 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
+          <p className="text-sm font-semibold text-[var(--text-primary)]">Tu plan</p>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+            {membresia.estado ? (ESTADO_MEMBRESIA_LABEL[membresia.estado] ?? membresia.estado) : 'Activo'}
+          </p>
+          <a
+            href="https://purchases.hotmart.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--accent)]"
+          >
+            Gestionar o cancelar mi suscripción <ExternalLink size={13} />
+          </a>
+        </div>
+      )}
 
       <div className="mt-4 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
         <p className="text-sm font-semibold text-[var(--text-primary)]">Detalles del onboarding</p>

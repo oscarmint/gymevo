@@ -64,11 +64,14 @@ export default function LoginPage() {
 
   // Respaldo del enlace: algunos correos (Gmail, Outlook) "abren" el enlace
   // solos para escanearlo por seguridad, y como es de un solo uso, lo gastan
-  // antes de que la persona lo toque — el código de 6 dígitos no se puede
-  // gastar así (26-AUTH-MODERNO: "el combo" enlace + código, siempre juntos).
+  // antes de que la persona lo toque — el código no se puede gastar así
+  // (26-AUTH-MODERNO: "el combo" enlace + código, siempre juntos).
+  // El largo del código lo decide la config de Supabase del proyecto (probado
+  // en vivo: este proyecto manda 8 dígitos, no 6) — nunca asumir un número
+  // fijo aquí; que decida el servidor si el código es válido.
   async function confirmarCodigo(e: React.FormEvent) {
     e.preventDefault();
-    if (codigo.length !== 6 || verificando) return;
+    if (codigo.length < 6 || verificando) return;
     setVerificando(true);
     setErrorCodigo(false);
 
@@ -155,21 +158,21 @@ export default function LoginPage() {
                 correo lo escaneó solo), el mismo correo trae este código. */}
             <div className="mt-8 border-t border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] pt-6">
               <p className="text-xs text-[var(--text-secondary)]">
-                ¿El enlace te dice &quot;expirado&quot; sin que lo hayas tocado? Usa el código de 6 dígitos del mismo correo.
+                ¿El enlace te dice &quot;expirado&quot; sin que lo hayas tocado? Usa el código del mismo correo.
               </p>
               <form onSubmit={confirmarCodigo} className="mt-3 flex items-center gap-2">
                 <input
                   type="text"
                   inputMode="numeric"
-                  maxLength={6}
-                  placeholder="000000"
+                  maxLength={10}
+                  placeholder="00000000"
                   value={codigo}
                   onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ''))}
-                  className="h-12 w-28 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] px-3 text-center text-lg tracking-[0.2em] tabular-nums text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+                  className="h-12 w-32 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] px-3 text-center text-lg tracking-[0.2em] tabular-nums text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
                 />
                 <button
                   type="submit"
-                  disabled={codigo.length !== 6 || verificando}
+                  disabled={codigo.length < 6 || verificando}
                   className="flex h-12 flex-1 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)] disabled:opacity-40"
                 >
                   {verificando ? 'Confirmando…' : 'Confirmar código'}
