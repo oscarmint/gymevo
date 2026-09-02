@@ -50,6 +50,11 @@ function repsPorDefecto(reps: string): string {
   return numeros ? numeros[numeros.length - 1] : '';
 }
 
+/** Repeticiones como lista desplegable (1-15) en vez de un input de texto
+ * libre — más rápido de tocar en el gimnasio y evita números fuera de rango
+ * (a pedido del usuario). */
+const OPCIONES_REPS = Array.from({ length: 15 }, (_, i) => String(i + 1));
+
 // Colores del confeti de cierre — definidos en tokens.css, no en la paleta de
 // UI (única excepción a 60-30-10: es una celebración puntual, no chrome).
 const COLORES_CONFETI = ['var(--confetti-1)', 'var(--confetti-2)', 'var(--confetti-3)', 'var(--confetti-4)', 'var(--confetti-5)'];
@@ -495,6 +500,13 @@ function PlanDelDia({
             const seriesHechas = seriesHechasHoy(progreso, ej.id);
             const serieActual = Math.min(seriesHechas + 1, ej.series);
             const esUltimaSerie = seriesHechas + 1 >= ej.series;
+            // Algunos ejercicios (ej. plancha, "30-60 seg") tienen un objetivo
+            // fuera de 1-15 — se agrega esa opción a la lista en vez de
+            // perderla, para no dejar el desplegable sin la opción correcta.
+            const defaultReps = repsPorDefecto(ej.reps);
+            const opcionesReps = OPCIONES_REPS.includes(defaultReps)
+              ? OPCIONES_REPS
+              : [...OPCIONES_REPS, defaultReps].sort((a, b) => Number(a) - Number(b));
             return (
             <motion.div
               key={ej.id}
@@ -578,16 +590,19 @@ function PlanDelDia({
                     <label htmlFor={`reps-${ej.id}`} className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
                       Reps
                     </label>
-                    <input
+                    <select
                       id={`reps-${ej.id}`}
-                      type="number"
-                      inputMode="numeric"
-                      placeholder="reps"
                       aria-label={`Repeticiones hechas en ${ej.nombre}`}
                       value={repsHechas[ej.id] ?? repsPorDefecto(ej.reps)}
                       onChange={(e) => setRepsHechas((p) => ({ ...p, [ej.id]: e.target.value }))}
                       className="h-12 w-16 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
-                    />
+                    >
+                      {opcionesReps.map((n) => (
+                        <option key={n} value={n}>
+                          {n}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <motion.button
                     type="button"
