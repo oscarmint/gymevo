@@ -554,25 +554,41 @@ function PlanDelDia({
               </div>
 
               {!hecho ? (
-                <div className="mt-3 flex items-center gap-2">
-                  <input
-                    type="number"
-                    inputMode="decimal"
-                    placeholder={progreso.unidadPeso}
-                    aria-label={`Peso usado en ${ej.nombre}, en ${progreso.unidadPeso === 'kg' ? 'kilogramos' : 'libras'}`}
-                    value={pesos[ej.id] ?? ''}
-                    onChange={(e) => setPesos((p) => ({ ...p, [ej.id]: e.target.value }))}
-                    className="h-12 w-16 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
-                  />
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    placeholder="reps"
-                    aria-label={`Repeticiones hechas en ${ej.nombre}`}
-                    value={repsHechas[ej.id] ?? repsPorDefecto(ej.reps)}
-                    onChange={(e) => setRepsHechas((p) => ({ ...p, [ej.id]: e.target.value }))}
-                    className="h-12 w-16 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
-                  />
+                <div className="mt-3 flex items-end gap-2">
+                  {/* Etiqueta SIEMPRE visible arriba de cada campo — el reps
+                      viene prellenado con la meta, así que su placeholder
+                      nunca se ve; sin esta etiqueta no se distinguía de qué
+                      campo se trataba (hallazgo del usuario). */}
+                  <div className="flex w-16 flex-col gap-1">
+                    <label htmlFor={`peso-${ej.id}`} className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+                      Peso ({progreso.unidadPeso})
+                    </label>
+                    <input
+                      id={`peso-${ej.id}`}
+                      type="number"
+                      inputMode="decimal"
+                      placeholder={progreso.unidadPeso}
+                      aria-label={`Peso usado en ${ej.nombre}, en ${progreso.unidadPeso === 'kg' ? 'kilogramos' : 'libras'}`}
+                      value={pesos[ej.id] ?? ''}
+                      onChange={(e) => setPesos((p) => ({ ...p, [ej.id]: e.target.value }))}
+                      className="h-12 w-16 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+                    />
+                  </div>
+                  <div className="flex w-16 flex-col gap-1">
+                    <label htmlFor={`reps-${ej.id}`} className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+                      Reps
+                    </label>
+                    <input
+                      id={`reps-${ej.id}`}
+                      type="number"
+                      inputMode="numeric"
+                      placeholder="reps"
+                      aria-label={`Repeticiones hechas en ${ej.nombre}`}
+                      value={repsHechas[ej.id] ?? repsPorDefecto(ej.reps)}
+                      onChange={(e) => setRepsHechas((p) => ({ ...p, [ej.id]: e.target.value }))}
+                      className="h-12 w-16 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+                    />
+                  </div>
                   <motion.button
                     type="button"
                     whileTap={{ scale: 0.97 }}
