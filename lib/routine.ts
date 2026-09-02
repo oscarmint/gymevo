@@ -221,8 +221,27 @@ export function ejerciciosDeHoy(diaActual: number): Ejercicio[] {
   return SPLIT[dia].map((id) => CATALOGO[id]);
 }
 
+/** Ejercicio de respaldo para ids que ya no existen en el catálogo actual —
+ * pasa esto SIEMPRE que el catálogo cambie (como en la Sesión 8, al
+ * reemplazar el catálogo de relleno por la rutina real): un usuario con
+ * historial de antes tiene logs con ids viejos (ej. 'press_banca',
+ * 'sentadilla'), y sin este respaldo `obtenerEjercicio` devolvía `undefined`
+ * — Historial explotaba con "Cannot read properties of undefined" al
+ * intentar leer `.nombre` de un ejercicio que ya no está. */
+const EJERCICIO_DESCONOCIDO: Ejercicio = {
+  id: '_desconocido',
+  nombre: 'Ejercicio anterior',
+  grupo: '—',
+  grupoMuscular: 'core',
+  series: 0,
+  reps: '—',
+  descansoSeg: 0,
+  tempo: '—',
+  alternativaId: '_desconocido',
+};
+
 export function obtenerEjercicio(id: string): Ejercicio {
-  return CATALOGO[id];
+  return CATALOGO[id] ?? EJERCICIO_DESCONOCIDO;
 }
 
 export function tituloRuta(nivel: Nivel, meta: Meta): string {
