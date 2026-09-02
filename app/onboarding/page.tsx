@@ -4,7 +4,7 @@
 // responde SIN cuenta y ve su plan antes de que se le pida pagar. Las preguntas
 // ecoan los dolores de FICHA-AVATAR.md (57) y el ESTADO.md → "Avatar y venta".
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
 import { Check, ChevronLeft, NotebookPen, PlayCircle, RefreshCcw, ShieldAlert, Users, X, Zap } from 'lucide-react';
@@ -75,6 +75,8 @@ export default function OnboardingPage() {
   const [confirmandoSalida, setConfirmandoSalida] = useState(false);
 
   const avanzando = useRef(false);
+  const botonSalirRef = useRef<HTMLButtonElement>(null);
+  const seguirAquiRef = useRef<HTMLButtonElement>(null);
 
   // Hallazgo revisor-visual: "Salir" borraba las respuestas ya dadas sin
   // avisar. Si todavía no respondió nada (pasoIdx===0), salir directo — no
@@ -88,6 +90,23 @@ export default function OnboardingPage() {
     }
     setConfirmandoSalida(true);
   }
+
+  // Accesibilidad del modal (hallazgo revisor-visual): foco al botón seguro
+  // ("Seguir aquí", no "Salir" — el default no debe ser la acción destructiva)
+  // al abrir, Escape para cerrar, y el foco vuelve al botón que lo abrió.
+  useEffect(() => {
+    if (!confirmandoSalida) return;
+    const botonQueAbrio = botonSalirRef.current;
+    seguirAquiRef.current?.focus();
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setConfirmandoSalida(false);
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      botonQueAbrio?.focus();
+    };
+  }, [confirmandoSalida]);
 
   const paso = PASOS[pasoIdx];
   const progreso = Math.round(((pasoIdx + 1) / PASOS.length) * 100);
@@ -171,6 +190,7 @@ export default function OnboardingPage() {
           />
         </div>
         <button
+          ref={botonSalirRef}
           type="button"
           aria-label="Salir del cuestionario"
           onClick={pedirSalir}
@@ -194,14 +214,20 @@ export default function OnboardingPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="titulo-confirmar-salida"
               className="w-full max-w-sm rounded-[var(--radius-card)] bg-[var(--surface)] p-6"
             >
-              <h2 className="text-lg font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¿Salir sin terminar?</h2>
+              <h2 id="titulo-confirmar-salida" className="text-lg font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">
+                ¿Salir sin terminar?
+              </h2>
               <p className="mt-2 text-sm text-[var(--text-secondary)]">
                 Vas a perder lo que respondiste hasta ahora — la próxima vez empiezas desde cero.
               </p>
               <div className="mt-5 flex gap-3">
                 <button
+                  ref={seguirAquiRef}
                   type="button"
                   onClick={() => setConfirmandoSalida(false)}
                   className="flex h-12 flex-1 items-center justify-center rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-sm font-semibold text-[var(--text-primary)]"
@@ -337,6 +363,7 @@ export default function OnboardingPage() {
                 onChange={(e) => setDias(Number(e.target.value))}
                 className="mt-8 w-full accent-[var(--accent)]"
                 aria-label="Días de entrenamiento por semana"
+                aria-valuetext={`${dias} ${dias === 1 ? 'día' : 'días'} por semana`}
               />
               <div className="flex justify-between text-xs text-[var(--text-tertiary)]">
                 <span>1</span>
@@ -522,7 +549,10 @@ function Chips<T extends string>({
             type="button"
             role="radio"
             aria-checked={seleccionado}
-            onClick={() => onSelect(o.value)}
+            onClick={() => {
+              if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+              onSelect(o.value);
+            }}
             onKeyDown={(e) => {
               if (e.key === 'ArrowDown') {
                 e.preventDefault();
