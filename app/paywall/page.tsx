@@ -10,16 +10,18 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'motion/react';
-import { Check, Lock, ShieldCheck, X } from 'lucide-react';
+import { motion, useReducedMotion } from 'motion/react';
+import { Check, Loader2, Lock, ShieldCheck, X } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 
 type PlanId = 'anual' | 'mensual';
 
 export default function PaywallPage() {
   const router = useRouter();
+  const reduce = useReducedMotion();
   const [respuestas, setRespuestas] = useState<RespuestasOnboarding | null>(null);
   const [plan, setPlan] = useState<PlanId>('anual');
+  const [redirigiendo, setRedirigiendo] = useState(false);
 
   // sessionStorage no existe en el servidor: leerlo en el initializer de
   // useState causa mismatch de hydration. Este efecto es la forma correcta.
@@ -38,10 +40,17 @@ export default function PaywallPage() {
         : process.env.NEXT_PUBLIC_HOTMART_CHECKOUT_MENSUAL;
 
     if (checkoutUrl) {
-      // El webhook conecta la compra a la cuenta por CORREO (ver
-      // app/api/webhooks/hotmart/route.ts) — no hace falta pasar nada más
-      // acá. Después de pagar, Hotmart lleva al comprador a /login.
-      window.location.href = checkoutUrl;
+      // Hallazgo revisor-visual: saltar en silencio a un dominio externo en
+      // el momento del pago es justo lo que teme el avatar ("¿es otra app
+      // con cobros ocultos?"). Un aviso breve antes de salir da confianza
+      // sin agregar fricción real (300ms, no un loader eterno).
+      setRedirigiendo(true);
+      setTimeout(() => {
+        // El webhook conecta la compra a la cuenta por CORREO (ver
+        // app/api/webhooks/hotmart/route.ts) — no hace falta pasar nada más
+        // acá. Después de pagar, Hotmart lleva al comprador a /login.
+        window.location.href = checkoutUrl;
+      }, 200);
       return;
     }
 
@@ -63,9 +72,14 @@ export default function PaywallPage() {
           <X size={22} />
         </button>
 
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+        <motion.div initial={reduce ? {} : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+          {/* Eyebrow que reconoce el dolor real antes del alivio (FICHA-AVATAR:
+              terror a lesionarse + vergüenza de no saber qué hacer frente a las
+              máquinas) — hallazgo revisor-visual: el headline saltaba directo
+              a la solución sin agitar la objeción que trae al avatar hasta acá. */}
+          <p className="text-sm font-semibold text-[var(--text-tertiary)]">Se acabó adivinar qué máquina usar</p>
           {/* (2) Headline con la META real del usuario */}
-          <h1 className="mt-2 text-balance text-3xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+          <h1 className="mt-1 text-balance text-3xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
             Tu plan para <span className="text-[var(--accent)]">{meta}</span> está listo
           </h1>
           <p className="mt-2 text-[14.5px] text-[var(--text-secondary)]">
@@ -75,7 +89,7 @@ export default function PaywallPage() {
 
         {/* (3) Visual del valor: timeline del trial — el default con trial (C4) */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
+          initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08, duration: 0.3 }}
           className="mt-6 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-5"
@@ -85,7 +99,7 @@ export default function PaywallPage() {
 
         {/* (4)(5) Plan cards — ANUAL primero, pre-seleccionado */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
+          initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16, duration: 0.3 }}
           className="mt-6 flex flex-col gap-3"
@@ -113,18 +127,25 @@ export default function PaywallPage() {
         <motion.button
           type="button"
           onClick={empezarTrial}
-          whileTap={{ scale: 0.97 }}
-          initial={{ opacity: 0, y: 12 }}
+          disabled={redirigiendo}
+          whileTap={redirigiendo ? undefined : { scale: 0.97 }}
+          initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.24, duration: 0.3 }}
-          className="mt-6 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16.5px] font-semibold text-[var(--bg)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_25%,transparent)]"
+          className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16.5px] font-semibold text-[var(--bg)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_25%,transparent)] disabled:opacity-80"
         >
-          Empezar mis 7 días gratis
+          {redirigiendo ? (
+            <>
+              <Loader2 size={18} className="animate-spin motion-reduce:animate-none" /> Te llevamos a Hotmart, pago seguro…
+            </>
+          ) : (
+            'Empezar mis 7 días gratis'
+          )}
         </motion.button>
 
         {/* Garantía nombrada junto al CTA (antes solo vivía en el trust row, lejos) */}
         <motion.p
-          initial={{ opacity: 0 }}
+          initial={reduce ? {} : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.3 }}
           className="mt-2 flex items-center justify-center gap-1.5 text-center text-xs text-[var(--text-secondary)]"
@@ -135,12 +156,12 @@ export default function PaywallPage() {
         {/* (4bis) La verdad del puente del trial — 3 bullets obligatorios, con
             checkmark custom (círculo acento 12%) en vez del "✓" del sistema */}
         <motion.ul
-          initial={{ opacity: 0, y: 12 }}
+          initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.32, duration: 0.3 }}
           className="mt-4 flex flex-col items-center gap-2 text-sm text-[var(--text-secondary)]"
         >
-          {['Hoy no pagas nada', 'Te avisamos 1 día antes del cobro', 'Cancela en 1 tap'].map((texto) => (
+          {['Hoy no pagas nada', 'Te avisamos 1 día antes del cobro', 'Cancela con un toque'].map((texto) => (
             <li key={texto} className="flex items-center gap-2">
               <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
                 <Check size={12} color="var(--accent)" strokeWidth={3} />
@@ -153,7 +174,7 @@ export default function PaywallPage() {
         {/* Mini-FAQ de transparencia — responde de frente la objeción #1 de Mateo
             (miedo al cobro oculto), en formato pregunta-respuesta explícito. */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
+          initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.3 }}
           className="mt-6 flex flex-col gap-3 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-4"
@@ -172,10 +193,14 @@ export default function PaywallPage() {
           </div>
         </motion.div>
 
-        {/* (8) Salida limpia — "Restaurar compra" abre soporte real (todavía no
-            hay checkout de Hotmart conectado, Sesión 6, para restaurar de verdad) */}
+        {/* (8) Salida limpia — el enlace es un correo a soporte real, no una
+            restauración automática (todavía no hay checkout de Hotmart
+            conectado para verificarla sola) — el texto lo dice tal cual es,
+            nunca promete algo que el botón no hace (hallazgo revisor-visual:
+            "Restaurar compra" sonaba a acción automática para un avatar que
+            ya teme los cobros ocultos). */}
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={reduce ? {} : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.48, duration: 0.3 }}
           className="mt-5 flex items-center justify-center gap-1 text-sm text-[var(--text-tertiary)]"
@@ -185,14 +210,14 @@ export default function PaywallPage() {
           </button>
           <span aria-hidden="true">·</span>
           <a href="mailto:soporte@gymevo.app?subject=Restaurar%20mi%20compra" className="px-2 py-3">
-            Restaurar compra
+            ¿Ya pagaste? Escríbenos
           </a>
         </motion.div>
 
         {/* (9) Trust row — solo "Pago seguro" (la garantía ya se dijo junto al
             CTA; repetirla aquí de nuevo no sumaba información nueva) */}
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={reduce ? {} : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.56, duration: 0.3 }}
           className="mt-2 flex items-center justify-center gap-1.5 text-xs text-[var(--text-tertiary)]"
