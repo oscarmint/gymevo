@@ -45,10 +45,11 @@ export interface Ejercicio {
   grupo: string;
   /** Para la silueta de respaldo de "Explicación del ejercicio" — ver MUSCULO_LABEL. */
   grupoMuscular: GrupoMuscular;
-  /** Imagen real del ejercicio (corte anatómico, foto, etc.) para "Explicación
-   * del ejercicio" — ruta dentro de public/, ej. "/explicaciones/curl-biceps.jpg".
-   * Sin ella, se usa la silueta de cuerpo (CuerpoMuscular) como respaldo:
-   * agregar la imagen más adelante nunca rompe nada. Ver public/explicaciones/README.md. */
+  /** Imagen real del ejercicio (guía visual del programa de 90 días) para
+   * "Explicación del ejercicio" — ruta dentro de public/, ej.
+   * "/explicaciones/sentadilla-barra.jpg". Sin ella, se usa la silueta de
+   * cuerpo (CuerpoMuscular) como respaldo: agregar la imagen más adelante
+   * nunca rompe nada. Ver public/explicaciones/README.md. */
   imagenExplicacion?: string;
   series: number;
   reps: string;
@@ -60,72 +61,164 @@ export interface Ejercicio {
   alternativaId: string;
 }
 
-type TipoDia = 'empuje' | 'tiron' | 'piernas' | 'full';
+/** Tren que se calienta antes del día — decide qué lámina de calentamiento
+ * mostrar (ver CALENTAMIENTO_IMG). Sábado es full body pero empieza con
+ * sentadilla, así que calienta como día de pierna. */
+export type TrenCalentamiento = 'superior' | 'inferior';
 
+export type DiaSemana = 'lunes' | 'martes' | 'miercoles' | 'jueves' | 'viernes' | 'sabado' | 'domingo';
+
+const ORDEN_DIAS: DiaSemana[] = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+
+const NOMBRE_DIA: Record<DiaSemana, string> = {
+  lunes: 'Pierna, abdomen y cardio',
+  martes: 'Pecho, tríceps y hombro',
+  miercoles: 'Espalda, bíceps y hombro',
+  jueves: 'Pierna, abdomen y cardio',
+  viernes: 'Pecho, espalda y hombro',
+  sabado: 'Full body',
+  domingo: 'Descanso',
+};
+
+export const CALENTAMIENTO_IMG: Record<TrenCalentamiento, string> = {
+  superior: '/explicaciones/calentamiento-tren-superior.jpg',
+  inferior: '/explicaciones/calentamiento-tren-inferior.jpg',
+};
+
+const CALENTAMIENTO_DIA: Record<DiaSemana, TrenCalentamiento | null> = {
+  lunes: 'inferior',
+  martes: 'superior',
+  miercoles: 'superior',
+  jueves: 'inferior',
+  viernes: 'superior',
+  sabado: 'inferior',
+  domingo: null,
+};
+
+export type TipoCardio = 'hiit' | 'zona2';
+
+export interface CardioDelDia {
+  tipo: TipoCardio;
+  titulo: string;
+  duracion: string;
+  imagen: string;
+  opcional?: boolean;
+}
+
+const CARDIO_HIIT: CardioDelDia = {
+  tipo: 'hiit',
+  titulo: 'Cardio HIIT',
+  duracion: '10-15 min · sprints de 30s + 1 min caminando',
+  imagen: '/explicaciones/cardio-hiit.jpg',
+};
+
+const CARDIO_ZONA2: CardioDelDia = {
+  tipo: 'zona2',
+  titulo: 'Cardio Zona 2',
+  duracion: '30-60 min · ritmo cómodo y sostenido',
+  imagen: '/explicaciones/cardio-zona2.jpg',
+};
+
+const CARDIO_DIA: Record<DiaSemana, CardioDelDia | null> = {
+  lunes: CARDIO_HIIT,
+  martes: CARDIO_ZONA2,
+  miercoles: CARDIO_HIIT,
+  jueves: CARDIO_ZONA2,
+  viernes: CARDIO_HIIT,
+  sabado: { ...CARDIO_ZONA2, duracion: '20-30 min · ritmo cómodo (opcional)', opcional: true },
+  domingo: null,
+};
+
+// Catálogo real del programa de 90 días — Sesión 8. Dentro de cada día el
+// ORDEN importa: primero el grupo muscular más grande/el compuesto (ej.
+// pecho antes que tríceps, press plano antes que aperturas), los aislados y
+// accesorios van al final. Este orden viene tal cual de la guía original y
+// no se debe reordenar sin ese mismo criterio (músculo mayor → menor,
+// compuesto → aislado).
 const CATALOGO: Record<string, Ejercicio> = {
-  press_banca: { id: 'press_banca', nombre: 'Press de banca', grupo: 'Pecho', grupoMuscular: 'pecho', series: 4, reps: '8', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_mancuernas' },
-  press_mancuernas: { id: 'press_mancuernas', nombre: 'Press con mancuernas', grupo: 'Pecho', grupoMuscular: 'pecho', series: 4, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'press_banca' },
-  press_militar: { id: 'press_militar', nombre: 'Press militar', grupo: 'Hombro', grupoMuscular: 'hombro', series: 3, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'press_arnold' },
-  press_arnold: { id: 'press_arnold', nombre: 'Press Arnold', grupo: 'Hombro', grupoMuscular: 'hombro', series: 3, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'press_militar' },
-  fondos: { id: 'fondos', nombre: 'Fondos en banco', grupo: 'Tríceps', grupoMuscular: 'triceps', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'triceps_polea' },
-  triceps_polea: { id: 'triceps_polea', nombre: 'Extensión de tríceps en polea', grupo: 'Tríceps', grupoMuscular: 'triceps', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'fondos' },
+  sentadilla_barra: { id: 'sentadilla_barra', nombre: 'Sentadilla con barra', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/sentadilla-barra.jpg', series: 4, reps: '10-12', descansoSeg: 120, tempo: '3-1-1', alternativaId: 'prensa_inclinada' },
+  peso_muerto_barra: { id: 'peso_muerto_barra', nombre: 'Peso muerto con barra', grupo: 'Pierna', grupoMuscular: 'femoral', imagenExplicacion: '/explicaciones/peso-muerto-barra.jpg', series: 4, reps: '10-12', descansoSeg: 120, tempo: '3-1-1', alternativaId: 'curl_femoral_maquina' },
+  prensa_inclinada: { id: 'prensa_inclinada', nombre: 'Prensa inclinada', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/prensa-inclinada.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'sentadilla_barra' },
+  extension_cuadriceps: { id: 'extension_cuadriceps', nombre: 'Extensión de cuádriceps', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/extension-cuadriceps.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'prensa_inclinada' },
+  aductor_externo: { id: 'aductor_externo', nombre: 'Aductor externo (máquina)', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/aductor-externo.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'aductor_interno' },
+  aductor_interno: { id: 'aductor_interno', nombre: 'Aductor interno (máquina)', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/aductor-interno.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'aductor_externo' },
+  elevacion_talon: { id: 'elevacion_talon', nombre: 'Elevación de talón (de pie)', grupo: 'Pierna', grupoMuscular: 'pantorrilla', imagenExplicacion: '/explicaciones/elevacion-talon.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'extension_cuadriceps' },
+  hip_thrust_barra: { id: 'hip_thrust_barra', nombre: 'Hip thrust con barra', grupo: 'Pierna', grupoMuscular: 'gluteo', imagenExplicacion: '/explicaciones/hip-thrust-barra.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '2-1-1', alternativaId: 'peso_muerto_barra' },
+  curl_femoral_maquina: { id: 'curl_femoral_maquina', nombre: 'Curl femoral (máquina)', grupo: 'Pierna', grupoMuscular: 'femoral', imagenExplicacion: '/explicaciones/curl-femoral-maquina.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'peso_muerto_barra' },
+  crunch_lateral_inclinado: { id: 'crunch_lateral_inclinado', nombre: 'Crunch lateral inclinado', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-lateral-inclinado.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha_abdominal' },
+  elevacion_piernas: { id: 'elevacion_piernas', nombre: 'Elevación de piernas', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/elevacion-piernas.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha_abdominal' },
 
-  remo_barra: { id: 'remo_barra', nombre: 'Remo con barra', grupo: 'Espalda', grupoMuscular: 'espalda', series: 4, reps: '10', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'remo_maquina' },
-  remo_maquina: { id: 'remo_maquina', nombre: 'Remo en máquina', grupo: 'Espalda', grupoMuscular: 'espalda', series: 4, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_barra' },
-  jalon_pecho: { id: 'jalon_pecho', nombre: 'Jalón al pecho', grupo: 'Espalda', grupoMuscular: 'dorsal', series: 4, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'dominadas_asistidas' },
-  dominadas_asistidas: { id: 'dominadas_asistidas', nombre: 'Dominadas asistidas', grupo: 'Espalda', grupoMuscular: 'dorsal', series: 3, reps: '8', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'jalon_pecho' },
-  curl_biceps: { id: 'curl_biceps', nombre: 'Curl de bíceps', grupo: 'Bíceps', grupoMuscular: 'biceps', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_martillo' },
-  curl_martillo: { id: 'curl_martillo', nombre: 'Curl martillo', grupo: 'Bíceps', grupoMuscular: 'biceps', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_biceps' },
+  press_banco_mancuernas: { id: 'press_banco_mancuernas', nombre: 'Press de banco plano con mancuernas', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/press-banco-mancuernas.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_inclinado_mancuerna' },
+  press_inclinado_mancuerna: { id: 'press_inclinado_mancuerna', nombre: 'Press inclinado con mancuerna', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/press-inclinado-mancuerna.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_banco_mancuernas' },
+  aperturas_maquina: { id: 'aperturas_maquina', nombre: 'Aperturas en máquina', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/aperturas-maquina.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'crossover_polea_alta' },
+  crossover_polea_alta: { id: 'crossover_polea_alta', nombre: 'Crossover en polea alta', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/crossover-polea-alta.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'aperturas_maquina' },
+  press_frances_barra_z: { id: 'press_frances_barra_z', nombre: 'Press francés con barra Z', grupo: 'Tríceps', grupoMuscular: 'triceps', imagenExplicacion: '/explicaciones/press-frances-barra-z.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'extension_triceps_copa' },
+  extension_triceps_copa: { id: 'extension_triceps_copa', nombre: 'Extensión de tríceps (copa)', grupo: 'Tríceps', grupoMuscular: 'triceps', imagenExplicacion: '/explicaciones/extension-triceps-copa.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'press_frances_barra_z' },
+  press_militar_barra: { id: 'press_militar_barra', nombre: 'Press militar con barra', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/press-militar-barra.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'elevaciones_laterales_mancuernas' },
 
-  sentadilla: { id: 'sentadilla', nombre: 'Sentadilla', grupo: 'Piernas', grupoMuscular: 'cuadriceps', series: 4, reps: '8', descansoSeg: 120, tempo: '3-1-1', alternativaId: 'prensa' },
-  prensa: { id: 'prensa', nombre: 'Prensa de piernas', grupo: 'Piernas', grupoMuscular: 'cuadriceps', series: 4, reps: '10', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'sentadilla' },
-  peso_muerto_rumano: { id: 'peso_muerto_rumano', nombre: 'Peso muerto rumano', grupo: 'Isquiotibiales', grupoMuscular: 'femoral', series: 3, reps: '10', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'curl_femoral' },
-  curl_femoral: { id: 'curl_femoral', nombre: 'Curl femoral', grupo: 'Isquiotibiales', grupoMuscular: 'femoral', series: 3, reps: '12', descansoSeg: 75, tempo: '2-1-1', alternativaId: 'peso_muerto_rumano' },
-  zancadas: { id: 'zancadas', nombre: 'Zancadas', grupo: 'Piernas', grupoMuscular: 'cuadriceps', series: 3, reps: '12', descansoSeg: 75, tempo: '2-1-1', alternativaId: 'extension_cuadriceps' },
-  extension_cuadriceps: { id: 'extension_cuadriceps', nombre: 'Extensión de cuádriceps', grupo: 'Piernas', grupoMuscular: 'cuadriceps', series: 3, reps: '12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'zancadas' },
+  remo_barra: { id: 'remo_barra', nombre: 'Remo con barra', grupo: 'Espalda', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/remo-barra.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'remo_cerrado_maquina' },
+  jalon_pecho: { id: 'jalon_pecho', nombre: 'Jalón de pecho', grupo: 'Espalda', grupoMuscular: 'dorsal', imagenExplicacion: '/explicaciones/jalon-pecho.jpg', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'jalon_pecho_cerrado_neutro' },
+  remo_cerrado_maquina: { id: 'remo_cerrado_maquina', nombre: 'Remo cerrado en máquina', grupo: 'Espalda', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/remo-cerrado-maquina.jpg', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_barra' },
+  jalon_pecho_cerrado_neutro: { id: 'jalon_pecho_cerrado_neutro', nombre: 'Jalón de pecho cerrado neutro', grupo: 'Espalda', grupoMuscular: 'dorsal', imagenExplicacion: '/explicaciones/jalon-pecho-cerrado-neutro.jpg', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'jalon_pecho' },
+  curl_barra: { id: 'curl_barra', nombre: 'Curl con barra', grupo: 'Bíceps', grupoMuscular: 'biceps', imagenExplicacion: '/explicaciones/curl-barra.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_supinacion_maquina' },
+  curl_supinacion_maquina: { id: 'curl_supinacion_maquina', nombre: 'Curl supinación en máquina', grupo: 'Bíceps', grupoMuscular: 'biceps', imagenExplicacion: '/explicaciones/curl-supinacion-maquina.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_barra' },
+  pajaros_pie_mancuerna: { id: 'pajaros_pie_mancuerna', nombre: 'Pájaros de pie con mancuerna', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/pajaros-pie-mancuerna.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'elevaciones_laterales_mancuernas' },
+  elevaciones_laterales_mancuernas: { id: 'elevaciones_laterales_mancuernas', nombre: 'Elevaciones laterales con mancuernas', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/elevaciones-laterales-mancuernas.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'pajaros_pie_mancuerna' },
+  plancha_abdominal: { id: 'plancha_abdominal', nombre: 'Plancha abdominal', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/plancha-abdominal.jpg', series: 3, reps: '30-60 seg', descansoSeg: 45, tempo: 'isométrico', alternativaId: 'crunch_lateral_inclinado' },
 
-  press_hombros_mancuerna: { id: 'press_hombros_mancuerna', nombre: 'Press de hombros con mancuernas', grupo: 'Hombro', grupoMuscular: 'hombro', series: 3, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'press_militar' },
-  remo_un_brazo: { id: 'remo_un_brazo', nombre: 'Remo a un brazo', grupo: 'Espalda', grupoMuscular: 'espalda', series: 3, reps: '10', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_maquina' },
-  plancha: { id: 'plancha', nombre: 'Plancha abdominal', grupo: 'Core', grupoMuscular: 'core', series: 3, reps: '40 seg', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_polea' },
-  crunch_polea: { id: 'crunch_polea', nombre: 'Crunch en polea', grupo: 'Core', grupoMuscular: 'core', series: 3, reps: '15', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha' },
+  elevacion_frontal_mancuernas: { id: 'elevacion_frontal_mancuernas', nombre: 'Elevación frontal con mancuernas', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/elevacion-frontal-mancuernas.jpg', series: 4, reps: '8-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'elevaciones_laterales_mancuernas' },
+  encogimientos_mancuernas: { id: 'encogimientos_mancuernas', nombre: 'Encogimientos con mancuernas', grupo: 'Trapecio', grupoMuscular: 'trapecio', imagenExplicacion: '/explicaciones/encogimientos-mancuernas.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'elevacion_frontal_mancuernas' },
+  crunch_superior_horizontal: { id: 'crunch_superior_horizontal', nombre: 'Crunch superior horizontal (máquina)', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-superior-horizontal.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_lateral_inclinado' },
+  lumbares_maquina: { id: 'lumbares_maquina', nombre: 'Lumbares (máquina)', grupo: 'Espalda baja', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/lumbares.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha_abdominal' },
 };
 
 /** Alterna hombre/mujer entre ejercicios de forma ESTABLE (nunca al azar: el
  * mismo ejercicio siempre muestra el mismo género) — a pedido explícito del
  * usuario ("alternando... hombre, luego mujer, luego hombre..."). Se basa en
- * la posición del ejercicio dentro del catálogo completo. */
+ * la posición del ejercicio dentro del catálogo completo. Hoy es solo un
+ * respaldo (todos los ejercicios del programa ya traen su imagen real). */
 export function generoIlustracion(id: string): 'masculino' | 'femenino' {
   const indice = Object.keys(CATALOGO).indexOf(id);
   return indice % 2 === 0 ? 'masculino' : 'femenino';
 }
 
-const SPLIT: Record<TipoDia, string[]> = {
-  empuje: ['press_banca', 'press_militar', 'fondos'],
-  tiron: ['remo_barra', 'jalon_pecho', 'curl_biceps'],
-  piernas: ['sentadilla', 'peso_muerto_rumano', 'zancadas'],
-  full: ['remo_un_brazo', 'press_hombros_mancuerna', 'plancha'],
+// SPLIT semanal real del programa (docs del ebook "Transformación en 90
+// días") — de lunes a sábado, domingo descanso. El orden de cada arreglo es
+// el orden en que se entrenan: músculo grande/compuesto primero, aislados y
+// accesorios después (ver comentario del catálogo arriba).
+const SPLIT: Record<DiaSemana, string[]> = {
+  lunes: ['sentadilla_barra', 'peso_muerto_barra', 'prensa_inclinada', 'extension_cuadriceps', 'aductor_externo', 'elevacion_talon', 'crunch_lateral_inclinado'],
+  martes: ['press_banco_mancuernas', 'press_inclinado_mancuerna', 'aperturas_maquina', 'crossover_polea_alta', 'press_frances_barra_z', 'extension_triceps_copa', 'press_militar_barra'],
+  miercoles: ['remo_barra', 'jalon_pecho', 'remo_cerrado_maquina', 'jalon_pecho_cerrado_neutro', 'curl_barra', 'curl_supinacion_maquina', 'pajaros_pie_mancuerna', 'elevaciones_laterales_mancuernas', 'plancha_abdominal'],
+  jueves: ['sentadilla_barra', 'peso_muerto_barra', 'hip_thrust_barra', 'aductor_interno', 'elevacion_talon', 'curl_femoral_maquina', 'elevacion_piernas'],
+  viernes: ['press_banco_mancuernas', 'press_inclinado_mancuerna', 'crossover_polea_alta', 'jalon_pecho', 'remo_cerrado_maquina', 'jalon_pecho_cerrado_neutro', 'elevacion_frontal_mancuernas', 'encogimientos_mancuernas', 'crunch_superior_horizontal', 'lumbares_maquina'],
+  sabado: ['sentadilla_barra', 'press_banco_mancuernas', 'remo_barra', 'press_militar_barra', 'plancha_abdominal'],
+  domingo: [],
 };
 
-const ORDEN_DIAS: TipoDia[] = ['empuje', 'tiron', 'piernas', 'full'];
-
-const NOMBRE_DIA: Record<TipoDia, string> = {
-  empuje: 'Empuje',
-  tiron: 'Tirón',
-  piernas: 'Piernas',
-  full: 'Full body',
-};
-
-export function tipoDeHoy(diaActual: number): TipoDia {
+export function diaSemanaDeHoy(diaActual: number): DiaSemana {
   return ORDEN_DIAS[(diaActual - 1) % ORDEN_DIAS.length];
 }
 
 export function nombreDeHoy(diaActual: number): string {
-  return NOMBRE_DIA[tipoDeHoy(diaActual)];
+  return NOMBRE_DIA[diaSemanaDeHoy(diaActual)];
+}
+
+export function calentamientoDeHoy(diaActual: number): TrenCalentamiento | null {
+  return CALENTAMIENTO_DIA[diaSemanaDeHoy(diaActual)];
+}
+
+export function cardioDeHoy(diaActual: number): CardioDelDia | null {
+  return CARDIO_DIA[diaSemanaDeHoy(diaActual)];
+}
+
+export function esDiaDeDescanso(diaActual: number): boolean {
+  return diaSemanaDeHoy(diaActual) === 'domingo';
 }
 
 export function ejerciciosDeHoy(diaActual: number): Ejercicio[] {
-  const tipo = tipoDeHoy(diaActual);
-  return SPLIT[tipo].map((id) => CATALOGO[id]);
+  const dia = diaSemanaDeHoy(diaActual);
+  return SPLIT[dia].map((id) => CATALOGO[id]);
 }
 
 export function obtenerEjercicio(id: string): Ejercicio {

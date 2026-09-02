@@ -11,9 +11,13 @@ import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import animacionFitness from '@/public/animaciones/fitness.json';
 import { CuerpoMuscular } from '@/components/CuerpoMuscular';
 import {
+  CALENTAMIENTO_IMG,
+  calentamientoDeHoy,
+  cardioDeHoy,
   completarEntrenamiento,
   deshacerHecho,
   ejerciciosDeHoy,
+  esDiaDeDescanso,
   generoIlustracion,
   guardarProgreso,
   leerProgreso,
@@ -35,6 +39,14 @@ const DURACIONES_DESCANSO = [30, 60, 120, 180];
 
 function etiquetaDuracion(seg: number): string {
   return seg < 60 ? `${seg}s` : `${seg / 60} min`;
+}
+
+/** El objetivo del ejercicio viene como rango ("10-12") o tiempo ("30-60
+ * seg") — se prellena el input de repeticiones con el número más alto del
+ * rango (el techo del objetivo), editable por el usuario si hizo menos. */
+function repsPorDefecto(reps: string): string {
+  const numeros = reps.match(/\d+/g);
+  return numeros ? numeros[numeros.length - 1] : '';
 }
 
 // Colores del confeti de cierre — definidos en tokens.css, no en la paleta de
@@ -135,6 +147,7 @@ function PlanDelDia({
 }) {
   const [descanso, setDescanso] = useState<{ ejercicioId: string; restante: number; total: number } | null>(null);
   const [pesos, setPesos] = useState<Record<string, string>>({});
+  const [repsHechas, setRepsHechas] = useState<Record<string, string>>({});
   const [celebrarHito, setCelebrarHito] = useState<number | null>(null);
   const [celebrarFin, setCelebrarFin] = useState(false);
   // celebrarFin como dependencia es intencional: regenera las posiciones del
@@ -215,7 +228,8 @@ function PlanDelDia({
     const ej = obtenerEjercicio(ejercicioId);
     const pesoTexto = pesos[ejercicioId];
     const peso = pesoTexto ? Number(pesoTexto) : 0;
-    const log = { ejercicioId, peso, reps: Number(ej.reps) || 0, series: ej.series };
+    const repsTexto = repsHechas[ejercicioId] ?? repsPorDefecto(ej.reps);
+    const log = { ejercicioId, peso, reps: Number(repsTexto) || 0, series: ej.series };
     actualizar((p) => marcarHecho(registrarSerie(p, log), ejercicioId));
     guardarLogRemoto({ ...log, fecha: new Date().toISOString().slice(0, 10) }, () => setErrorSync(true));
     if (progreso.descansoAutomatico) {
@@ -286,6 +300,9 @@ function PlanDelDia({
   const idsHoy = ejercicios.map((e) => obtenerEjercicio(progreso.reemplazosHoy[e.id] ?? e.id));
   const todosHechos = idsHoy.every((e) => progreso.hechosHoy.includes(e.id));
   const enRiesgo = rachaEnRiesgo(progreso);
+  const diaDescanso = esDiaDeDescanso(progreso.diaActual);
+  const tren = calentamientoDeHoy(progreso.diaActual);
+  const cardio = cardioDeHoy(progreso.diaActual);
 
   return (
     <div className="px-5 pt-6">
@@ -296,7 +313,7 @@ function PlanDelDia({
       </p>
       <h1 className="mt-1 flex flex-wrap items-center gap-1 text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
         <span>
-          Hola, hoy toca {nombreDeHoy(progreso.diaActual)}
+          {diaDescanso ? 'Hoy es tu día de descanso' : `Hola, hoy toca ${nombreDeHoy(progreso.diaActual)}`}
         </span>
         <Lottie
           src={animacionFitness}
@@ -346,6 +363,30 @@ function PlanDelDia({
           </p>
         </div>
       </div>
+
+      {diaDescanso ? (
+        <div className="mt-6 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5 text-center">
+          <p className="text-base font-semibold text-[var(--text-primary)]">Hoy no hay entrenamiento — y está bien así.</p>
+          <p className="mt-2 text-sm text-[var(--text-secondary)]">
+            Durante el descanso es cuando el cuerpo se recupera y los músculos crecen. Aprovecha para dormir bien
+            y comer con calma: mañana retomas tu plan.
+          </p>
+        </div>
+      ) : (
+      <>
+      {/* Calentamiento antes de los ejercicios principales — nunca es opcional
+          (5-7 min, activa lo que vas a trabajar y protege articulaciones). */}
+      {tren && (
+        <a
+          href={CALENTAMIENTO_IMG[tren]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-6 block overflow-hidden rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)]"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={CALENTAMIENTO_IMG[tren]} alt={`Calentamiento tren ${tren}`} className="w-full" />
+        </a>
+      )}
 
       {/* Interruptor: el usuario decide si el descanso arranca solo o no */}
       <motion.button
@@ -478,9 +519,19 @@ function PlanDelDia({
                     type="number"
                     inputMode="decimal"
                     placeholder="kg"
+                    aria-label={`Peso usado en ${ej.nombre}`}
                     value={pesos[ej.id] ?? ''}
                     onChange={(e) => setPesos((p) => ({ ...p, [ej.id]: e.target.value }))}
-                    className="h-12 w-20 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-3 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+                    className="h-12 w-16 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+                  />
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    placeholder="reps"
+                    aria-label={`Repeticiones hechas en ${ej.nombre}`}
+                    value={repsHechas[ej.id] ?? repsPorDefecto(ej.reps)}
+                    onChange={(e) => setRepsHechas((p) => ({ ...p, [ej.id]: e.target.value }))}
+                    className="h-12 w-16 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
                   />
                   <motion.button
                     type="button"
@@ -514,6 +565,16 @@ function PlanDelDia({
         });
         })()}
 
+        {cardio && (
+          <div className="rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-4">
+            <p className="text-sm font-semibold text-[var(--text-primary)]">
+              {cardio.titulo}
+              {cardio.opcional && <span className="ml-1.5 font-normal text-[var(--text-tertiary)]">(opcional)</span>}
+            </p>
+            <p className="mt-0.5 text-xs text-[var(--text-secondary)]">{cardio.duracion}</p>
+          </div>
+        )}
+
         <motion.button
           type="button"
           whileTap={todosHechos ? { scale: 0.97 } : undefined}
@@ -524,6 +585,8 @@ function PlanDelDia({
           Terminar entrenamiento de hoy
         </motion.button>
       </div>
+      </>
+      )}
 
       {/* Temporizador de descanso — banner fijo con anillo que se va consumiendo */}
       <AnimatePresence>
