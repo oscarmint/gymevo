@@ -7,7 +7,7 @@
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
-import { Check, ChevronLeft, NotebookPen, RefreshCcw, ShieldAlert, Users, X, Zap } from 'lucide-react';
+import { Check, ChevronLeft, NotebookPen, PlayCircle, RefreshCcw, ShieldAlert, Users, X, Zap } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { guardarRespuestas, HORARIO_LABEL, META_LABEL, NIVEL_LABEL, type Horario, type Meta, type Nivel } from '@/lib/onboarding';
 
@@ -172,6 +172,10 @@ export default function OnboardingPage() {
             <PantallaPregunta key="nivel" dir={dir} variants={variants}>
               <Pregunta titulo="¿Cuál es tu situación hoy?" micro="Esto decide tu ruta: Principiante o Intermedio" />
               <Chips opciones={OPCIONES_NIVEL} valor={nivel} onSelect={(v) => seleccionarYAvanzar(setNivel, v)} />
+              <TarjetaBeneficio
+                icono={PlayCircle}
+                texto="Cada ejercicio de tu plan trae la técnica explicada — nunca vas a tener que adivinar cómo se hace."
+              />
               <TarjetaRuta nivel={nivel} meta={meta} horario={horario} dias={null} />
             </PantallaPregunta>
           )}
@@ -180,6 +184,10 @@ export default function OnboardingPage() {
             <PantallaPregunta key="meta" dir={dir} variants={variants}>
               <Pregunta titulo="¿Cuál es tu meta ahora?" micro="Esto define el enfoque de tu plan" />
               <Chips opciones={OPCIONES_META} valor={meta} onSelect={(v) => seleccionarYAvanzar(setMeta, v)} />
+              <TarjetaBeneficio
+                icono={RefreshCcw}
+                texto="¿Se ocupó la máquina que necesitas? El Botón de Rescate te da otro ejercicio al instante, sin perder el día."
+              />
               <TarjetaRuta nivel={nivel} meta={meta} horario={horario} dias={null} />
             </PantallaPregunta>
           )}
@@ -397,6 +405,22 @@ function TarjetaRuta({
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+/** Llena el espacio de los pasos cortos (2 chips) con contenido REAL, no
+ * relleno: un recordatorio concreto y CIERTO de algo que la app ya resuelve
+ * (hallazgo del revisor-visual: la textura de fondo no bastaba, hacía falta
+ * contenido, no otro ajuste de espaciado). Nunca promete personalización que
+ * el catálogo de ejercicios no tiene todavía — solo lo que es verdad hoy. */
+function TarjetaBeneficio({ icono: Icono, texto }: { icono: LucideIcon; texto: string }) {
+  return (
+    <div className="mt-4 flex items-start gap-3 rounded-2xl bg-[var(--chip-bg)] p-4">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--surface)]">
+        <Icono size={17} color="var(--accent)" />
+      </span>
+      <p className="text-sm leading-relaxed text-[var(--text-primary)]">{texto}</p>
     </div>
   );
 }
