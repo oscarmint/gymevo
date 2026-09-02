@@ -6,7 +6,7 @@
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { Lottie } from 'lottie-react';
 import { motion, AnimatePresence, useReducedMotion, animate } from 'motion/react';
-import { Check, Dumbbell, Flame, PlayCircle, RefreshCcw, Undo2, Volume2, VolumeX, WifiOff, X } from 'lucide-react';
+import { Check, Dumbbell, Flame, Info, PlayCircle, RefreshCcw, Undo2, Volume2, VolumeX, WifiOff, X } from 'lucide-react';
 import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import animacionFitness from '@/public/animaciones/fitness.json';
 import { CuerpoMuscular } from '@/components/CuerpoMuscular';
@@ -28,6 +28,7 @@ import {
   rachaEnRiesgo,
   registrarSerie,
   reemplazarEjercicio,
+  seriesHechasHoy,
   tituloRuta,
   type Progreso,
 } from '@/lib/routine';
@@ -148,6 +149,11 @@ function PlanDelDia({
   const [descanso, setDescanso] = useState<{ ejercicioId: string; restante: number; total: number } | null>(null);
   const [pesos, setPesos] = useState<Record<string, string>>({});
   const [repsHechas, setRepsHechas] = useState<Record<string, string>>({});
+  // Aviso (no cronómetro) al TERMINAR un ejercicio completo — descansar
+  // entre EJERCICIOS es distinto de descansar entre SERIES: aquí no se
+  // impone un tiempo porque cada quien decide cuánto necesita, solo se
+  // informa el mínimo recomendado.
+  const [avisoCambioEjercicio, setAvisoCambioEjercicio] = useState<string | null>(null);
   const [celebrarHito, setCelebrarHito] = useState<number | null>(null);
   const [celebrarFin, setCelebrarFin] = useState(false);
   // celebrarFin como dependencia es intencional: regenera las posiciones del
@@ -224,14 +230,40 @@ function PlanDelDia({
     });
   }
 
+  // Registro REAL serie por serie (5 → sección "Registro de series"): el
+  // peso y las repeticiones pueden cambiar de una serie a otra (ej. bajar
+  // peso en la última), así que cada tap registra UNA serie, no las 4 de
+  // una vez. El ejercicio se marca "hecho" solo cuando se completa la
+  // última serie de su objetivo (`ej.series`).
   function registrar(ejercicioId: string) {
     const ej = obtenerEjercicio(ejercicioId);
     const pesoTexto = pesos[ejercicioId];
     const peso = pesoTexto ? Number(pesoTexto) : 0;
     const repsTexto = repsHechas[ejercicioId] ?? repsPorDefecto(ej.reps);
-    const log = { ejercicioId, peso, reps: Number(repsTexto) || 0, series: ej.series };
-    actualizar((p) => marcarHecho(registrarSerie(p, log), ejercicioId));
+    const log = { ejercicioId, peso, reps: Number(repsTexto) || 0, series: 1 };
+    const yaHechas = seriesHechasHoy(progreso, ejercicioId);
+    const esUltimaSerie = yaHechas + 1 >= ej.series;
+
+    actualizar((p) => {
+      const conNuevaSerie = registrarSerie(p, log);
+      return esUltimaSerie ? marcarHecho(conNuevaSerie, ejercicioId) : conNuevaSerie;
+    });
     guardarLogRemoto({ ...log, fecha: new Date().toISOString().slice(0, 10) }, () => setErrorSync(true));
+
+    // Limpia los inputs para que la siguiente serie no arrastre el peso/reps
+    // de la anterior — el usuario puede repetir el mismo valor a propósito,
+    // pero no debería quedar prellenado por accidente.
+    setPesos((p) => ({ ...p, [ejercicioId]: '' }));
+    setRepsHechas((p) => ({ ...p, [ejercicioId]: repsPorDefecto(ej.reps) }));
+
+    if (esUltimaSerie) {
+      // Entre EJERCICIOS no hay cronómetro (cada quien decide cuánto
+      // descansar) — solo un aviso del mínimo recomendado para recuperar
+      // energía antes del siguiente.
+      setAvisoCambioEjercicio(ej.nombre);
+      return;
+    }
+
     if (progreso.descansoAutomatico) {
       // El AudioContext se crea/retoma AQUÍ, dentro del tap real del usuario:
       // los navegadores solo permiten reproducir sonido si nace de un gesto
@@ -460,6 +492,9 @@ function PlanDelDia({
           return idsHoy.map((ej, i) => {
             const hecho = progreso.hechosHoy.includes(ej.id);
             const esProxima = ej.id === proximaId;
+            const seriesHechas = seriesHechasHoy(progreso, ej.id);
+            const serieActual = Math.min(seriesHechas + 1, ej.series);
+            const esUltimaSerie = seriesHechas + 1 >= ej.series;
             return (
             <motion.div
               key={ej.id}
@@ -480,6 +515,11 @@ function PlanDelDia({
                   <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
                     {ej.series}×{ej.reps} · tempo {ej.tempo} · descanso {ej.descansoSeg}s
                   </p>
+                  {!hecho && (
+                    <p className="mt-1 text-xs font-semibold text-[var(--accent)]">
+                      Serie {serieActual} de {ej.series}
+                    </p>
+                  )}
                   {!hecho && (
                     <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
                       <a
@@ -518,8 +558,8 @@ function PlanDelDia({
                   <input
                     type="number"
                     inputMode="decimal"
-                    placeholder="kg"
-                    aria-label={`Peso usado en ${ej.nombre}`}
+                    placeholder={progreso.unidadPeso}
+                    aria-label={`Peso usado en ${ej.nombre}, en ${progreso.unidadPeso === 'kg' ? 'kilogramos' : 'libras'}`}
                     value={pesos[ej.id] ?? ''}
                     onChange={(e) => setPesos((p) => ({ ...p, [ej.id]: e.target.value }))}
                     className="h-12 w-16 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
@@ -543,7 +583,8 @@ function PlanDelDia({
                         : 'border border-[var(--accent)] text-[var(--accent)]'
                     }`}
                   >
-                    <Check size={16} /> {progreso.descansoAutomatico ? 'Registrar y descansar' : 'Registrar'}
+                    <Check size={16} />
+                    {esUltimaSerie ? 'Registrar última serie' : progreso.descansoAutomatico ? `Registrar serie ${serieActual} y descansar` : `Registrar serie ${serieActual}`}
                   </motion.button>
                 </div>
               ) : (
@@ -609,6 +650,49 @@ function PlanDelDia({
             <button type="button" onClick={() => setDescanso(null)} className="shrink-0 text-xs font-medium text-[var(--bg)] opacity-80">
               Saltar
             </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Aviso al terminar un ejercicio completo — descansar entre EJERCICIOS
+          (no entre series) no lleva cronómetro: cada quien decide cuánto
+          necesita, esto solo informa el mínimo recomendado. */}
+      <AnimatePresence>
+        {avisoCambioEjercicio && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-[color-mix(in_oklab,var(--text-primary)_35%,transparent)] px-6"
+            onClick={() => setAvisoCambioEjercicio(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="titulo-aviso-descanso"
+              className="w-full max-w-sm rounded-[var(--radius-card)] bg-[var(--surface)] p-6 text-center"
+            >
+              <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-[var(--chip-bg)]">
+                <Info size={22} color="var(--accent)" />
+              </span>
+              <h2 id="titulo-aviso-descanso" className="mt-4 text-lg font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">
+                ¡Terminaste {avisoCambioEjercicio}!
+              </h2>
+              <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                Descansa mínimo 3 minutos antes de tu siguiente ejercicio para recuperar energía. Tú decides cuándo seguir.
+              </p>
+              <button
+                type="button"
+                onClick={() => setAvisoCambioEjercicio(null)}
+                className="mt-5 flex h-12 w-full items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
+              >
+                Entendido
+              </button>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

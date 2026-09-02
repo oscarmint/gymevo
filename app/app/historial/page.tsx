@@ -21,13 +21,23 @@ function volumenDe(log: RegistroLog): number {
   return log.peso * log.reps * log.series;
 }
 
-function TooltipVolumen({ active, payload }: { active?: boolean; payload?: { payload: { etiqueta: string; volumen: number } }[] }) {
+function TooltipVolumen({
+  active,
+  payload,
+  unidad,
+}: {
+  active?: boolean;
+  payload?: { payload: { etiqueta: string; volumen: number } }[];
+  unidad: 'kg' | 'lb';
+}) {
   if (!active || !payload?.length) return null;
   const punto = payload[0].payload;
   return (
     <div className="rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] px-3 py-2 shadow-[var(--shadow-1)]">
       <p className="text-xs text-[var(--text-secondary)]">{punto.etiqueta}</p>
-      <p className="text-sm font-semibold tabular-nums text-[var(--text-primary)]">{NUM.format(punto.volumen)} kg</p>
+      <p className="text-sm font-semibold tabular-nums text-[var(--text-primary)]">
+        {NUM.format(punto.volumen)} {unidad}
+      </p>
     </div>
   );
 }
@@ -111,7 +121,7 @@ export default function HistorialPage() {
               Volumen de tus últimas {sesiones.length} sesiones
             </p>
             <p className="mt-1 text-4xl font-bold tabular-nums leading-none text-[var(--text-primary)] [font-family:var(--font-display)]">
-              {NUM.format(volumenSemana)} <span className="text-lg font-semibold text-[var(--text-secondary)]">kg</span>
+              {NUM.format(volumenSemana)} <span className="text-lg font-semibold text-[var(--text-secondary)]">{progreso.unidadPeso}</span>
             </p>
             <p className="mt-1.5 text-sm font-medium text-[var(--text-secondary)]">
               {cambioPct === null
@@ -136,7 +146,7 @@ export default function HistorialPage() {
                     tickLine={false}
                     tick={{ fill: 'var(--text-tertiary)', fontSize: 11 }}
                   />
-                  <Tooltip content={<TooltipVolumen />} cursor={{ stroke: 'var(--accent)', strokeOpacity: 0.2 }} />
+                  <Tooltip content={<TooltipVolumen unidad={progreso.unidadPeso} />} cursor={{ stroke: 'var(--accent)', strokeOpacity: 0.2 }} />
                   <Area
                     type="monotone"
                     dataKey="volumen"
@@ -158,7 +168,7 @@ export default function HistorialPage() {
               <thead>
                 <tr>
                   <th scope="col">Fecha</th>
-                  <th scope="col">Volumen (kg)</th>
+                  <th scope="col">Volumen ({progreso.unidadPeso})</th>
                 </tr>
               </thead>
               <tbody>
@@ -172,29 +182,40 @@ export default function HistorialPage() {
             </table>
           </div>
 
-          {/* Detalle por sesión — más reciente primero */}
+          {/* Detalle por sesión — más reciente primero. Cada log ahora es UNA
+              serie (registro real serie por serie, no un agregado), así que
+              se agrupan por ejercicio para mostrar el peso de cada serie. */}
           <div className="mt-6 flex flex-col gap-5">
-            {Array.from(porFecha.entries()).map(([fecha, logs]) => (
-              <div key={fecha}>
-                <p className="text-xs font-semibold text-[var(--text-tertiary)]">{formatearFecha(fecha)}</p>
-                <div className="mt-2 flex flex-col gap-2">
-                  {logs.map((log, i) => {
-                    const ej = obtenerEjercicio(log.ejercicioId);
-                    return (
-                      <div
-                        key={i}
-                        className="flex items-center justify-between rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] px-4 py-3"
-                      >
-                        <span className="text-sm font-medium text-[var(--text-primary)]">{ej.nombre}</span>
-                        <span className="text-sm tabular-nums text-[var(--text-secondary)]">
-                          {log.series}×{log.reps} · {log.peso > 0 ? `${log.peso} kg` : 'peso corporal'}
-                        </span>
-                      </div>
-                    );
-                  })}
+            {Array.from(porFecha.entries()).map(([fecha, logs]) => {
+              const porEjercicio = new Map<string, RegistroLog[]>();
+              for (const log of logs) {
+                const sets = porEjercicio.get(log.ejercicioId) ?? [];
+                sets.push(log);
+                porEjercicio.set(log.ejercicioId, sets);
+              }
+              return (
+                <div key={fecha}>
+                  <p className="text-xs font-semibold text-[var(--text-tertiary)]">{formatearFecha(fecha)}</p>
+                  <div className="mt-2 flex flex-col gap-2">
+                    {Array.from(porEjercicio.entries()).map(([ejercicioId, sets]) => {
+                      const ej = obtenerEjercicio(ejercicioId);
+                      const pesosTexto = sets.map((s) => (s.peso > 0 ? s.peso : '—')).join(' / ');
+                      return (
+                        <div
+                          key={ejercicioId}
+                          className="flex items-center justify-between rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] px-4 py-3"
+                        >
+                          <span className="text-sm font-medium text-[var(--text-primary)]">{ej.nombre}</span>
+                          <span className="text-sm tabular-nums text-[var(--text-secondary)]">
+                            {sets.length} series · {pesosTexto} {progreso.unidadPeso}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </>
       )}

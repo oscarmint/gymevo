@@ -78,6 +78,14 @@ export default function PerfilPage() {
     guardarProgresoRemoto(next);
   }
 
+  function cambiarUnidadPeso(unidad: 'kg' | 'lb') {
+    if (!progreso) return;
+    const next = { ...progreso, unidadPeso: unidad };
+    setProgreso(next);
+    guardarProgreso(next);
+    guardarProgresoRemoto(next);
+  }
+
   async function cerrarSesion() {
     const supabase = crearClienteSupabase();
     await supabase.auth.signOut();
@@ -177,11 +185,29 @@ export default function PerfilPage() {
       )}
 
       <div className="mt-4 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
-        <p className="text-sm font-semibold text-[var(--text-primary)]">Detalles del onboarding</p>
+        <p className="text-sm font-semibold text-[var(--text-primary)]">Tu perfil de entrenamiento</p>
         <dl className="mt-3 flex flex-col gap-2 text-sm">
           <Fila label="Nivel" valor={NIVEL_LABEL[nivel]} />
           <Fila label="Meta" valor={META_LABEL[meta]} />
         </dl>
+        <div className="mt-4 flex items-center justify-between border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4">
+          <span className="text-sm text-[var(--text-secondary)]">Registras el peso en</span>
+          <div className="flex overflow-hidden rounded-lg border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)]">
+            {(['lb', 'kg'] as const).map((u) => (
+              <button
+                key={u}
+                type="button"
+                onClick={() => cambiarUnidadPeso(u)}
+                aria-pressed={progreso.unidadPeso === u}
+                className={`px-3 py-1.5 text-sm font-semibold uppercase ${
+                  progreso.unidadPeso === u ? 'bg-[var(--accent)] text-[var(--bg)]' : 'text-[var(--text-secondary)]'
+                }`}
+              >
+                {u}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Tus macros — Ruta A (ganar músculo) / Ruta B (bajar grasa), ebook cap. 3.

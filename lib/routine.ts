@@ -278,8 +278,14 @@ export interface Progreso {
   sonidoDescanso: boolean;
   /** Peso corporal en kg — lo único que falta para calcular las macros de
    * Ruta A/Ruta B (ver lib/macros.ts). null hasta que el usuario lo ingresa
-   * en Perfil; no se le pide durante el onboarding. */
+   * en Perfil; no se le pide durante el onboarding. Nota: esto es SIEMPRE
+   * en kg (las fórmulas de macros del ebook son por kg) — no confundir con
+   * `unidadPeso`, que es la unidad del peso LEVANTADO en el gimnasio. */
   pesoKg: number | null;
+  /** Unidad en la que el usuario registra el peso que levanta en cada serie
+   * (no toda la gente entrena en kg). Default 'lb' a pedido explícito del
+   * usuario; se puede cambiar en Perfil en cualquier momento. */
+  unidadPeso: 'kg' | 'lb';
 }
 
 const KEY = 'gymevo_progreso';
@@ -295,11 +301,11 @@ function diasEntre(a: string, b: string): number {
 
 export function leerProgreso(): Progreso {
   if (typeof window === 'undefined') {
-    return { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null };
+    return { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb' };
   }
   const raw = localStorage.getItem(KEY);
   if (!raw) {
-    const inicial: Progreso = { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null };
+    const inicial: Progreso = { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb' };
     localStorage.setItem(KEY, JSON.stringify(inicial));
     return inicial;
   }
@@ -309,6 +315,7 @@ export function leerProgreso(): Progreso {
   if (p.descansoDuracionSeg === undefined) p.descansoDuracionSeg = 60;
   if (p.sonidoDescanso === undefined) p.sonidoDescanso = true;
   if (p.pesoKg === undefined) p.pesoKg = null;
+  if (p.unidadPeso === undefined) p.unidadPeso = 'lb';
   // Si cambió el día calendario desde el último completado y ya se había marcado
   // "hechosHoy", se limpia para el nuevo día (pero SIN romper la racha: eso solo
   // pasa si pasan ≥2 días sin completar, ver `racha en riesgo/rota` abajo).
@@ -327,6 +334,14 @@ export function guardarProgreso(p: Progreso) {
 export function marcarHecho(p: Progreso, ejercicioId: string): Progreso {
   if (p.hechosHoy.includes(ejercicioId)) return p;
   return { ...p, hechosHoy: [...p.hechosHoy, ejercicioId] };
+}
+
+/** Cuántas de las series de HOY ya se registraron para este ejercicio — el
+ * registro real es serie por serie (peso y reps pueden cambiar de una serie
+ * a otra), no un solo tap que da por hecho las 4 de una vez. */
+export function seriesHechasHoy(p: Progreso, ejercicioId: string): number {
+  const hoy = hoyISO();
+  return p.logs.filter((l) => l.ejercicioId === ejercicioId && l.fecha === hoy).length;
 }
 
 /** Deshace un registro de hoy (control y libertad — heurística 3): quita la
