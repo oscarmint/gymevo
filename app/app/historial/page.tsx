@@ -1,15 +1,40 @@
 'use client';
 
 // HISTORIAL — registro de pesos/cargas (04-ARQUITECTURA → workout_logs).
-// Estado vacío honesto si el usuario todavía no registró ninguna serie.
+// Sesión 7 (auditoría, hallazgo #2): antes era una lista plana sin gráfico ni
+// insight — "vacío muerto" según la rúbrica de 17-VISUALIZACION-DATOS. Ahora
+// tiene un dato héroe (volumen de la semana) + un gráfico de área animado
+// (serie temporal: el tipo correcto para "evolución en el tiempo", ver la
+// tabla de esa doctrina) + insight interpretado, con la lista detallada abajo.
 
-import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
+import { useReducedMotion } from 'motion/react';
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
 import { History } from 'lucide-react';
-import { leerProgreso, obtenerEjercicio, type Progreso } from '@/lib/routine';
+import { leerProgreso, obtenerEjercicio, type Progreso, type RegistroLog } from '@/lib/routine';
 import { leerProgresoRemoto } from '@/lib/supabase/sync';
+
+const NUM = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 });
+
+function volumenDe(log: RegistroLog): number {
+  return log.peso * log.reps * log.series;
+}
+
+function TooltipVolumen({ active, payload }: { active?: boolean; payload?: { payload: { etiqueta: string; volumen: number } }[] }) {
+  if (!active || !payload?.length) return null;
+  const punto = payload[0].payload;
+  return (
+    <div className="rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] px-3 py-2 shadow-[var(--shadow-1)]">
+      <p className="text-xs text-[var(--text-secondary)]">{punto.etiqueta}</p>
+      <p className="text-sm font-semibold tabular-nums text-[var(--text-primary)]">{NUM.format(punto.volumen)} kg</p>
+    </div>
+  );
+}
 
 export default function HistorialPage() {
   const [progreso, setProgreso] = useState<Progreso | null>(null);
+  const reduce = useReducedMotion();
 
   // localStorage no existe en el servidor: leerlo en el initializer de
   // useState causa mismatch de hydration. Este efecto es la forma correcta.
@@ -23,17 +48,43 @@ export default function HistorialPage() {
     });
   }, []);
 
+  const porFecha = useMemo(() => {
+    const mapa = new Map<string, RegistroLog[]>();
+    for (const log of [...(progreso?.logs ?? [])].reverse()) {
+      const lista = mapa.get(log.fecha) ?? [];
+      lista.push(log);
+      mapa.set(log.fecha, lista);
+    }
+    return mapa;
+  }, [progreso]);
+
+  // Serie temporal para el gráfico: una sesión por fecha, volumen = Σ peso×reps×series
+  // del día. Orden CRONOLÓGICO (viejo → nuevo) para que el área se dibuje de
+  // izquierda a derecha con sentido — la lista de abajo sigue en orden inverso
+  // (más reciente arriba), que es lo que se lee al entrar a esta pantalla.
+  const sesiones = useMemo(() => {
+    return Array.from(porFecha.entries())
+      .map(([fecha, logs]) => ({
+        fecha,
+        etiqueta: new Date(fecha + 'T00:00:00').toLocaleDateString('es', { day: 'numeric', month: 'short' }),
+        volumen: logs.reduce((acc, l) => acc + volumenDe(l), 0),
+      }))
+      .sort((a, b) => a.fecha.localeCompare(b.fecha))
+      .slice(-7); // máximo 7 puntos visibles en móvil (17-VISUALIZACION-DATOS)
+  }, [porFecha]);
+
+  const volumenSemana = sesiones.reduce((acc, s) => acc + s.volumen, 0);
+  const sesionAnterior = sesiones.length >= 2 ? sesiones[sesiones.length - 2].volumen : null;
+  const ultimaSesion = sesiones.length >= 1 ? sesiones[sesiones.length - 1].volumen : null;
+  const cambioPct =
+    sesionAnterior && sesionAnterior > 0 && ultimaSesion !== null
+      ? Math.round(((ultimaSesion - sesionAnterior) / sesionAnterior) * 100)
+      : null;
+
   if (!progreso) return null;
 
-  const porFecha = new Map<string, typeof progreso.logs>();
-  for (const log of [...progreso.logs].reverse()) {
-    const lista = porFecha.get(log.fecha) ?? [];
-    lista.push(log);
-    porFecha.set(log.fecha, lista);
-  }
-
   return (
-    <div className="px-5 pt-6">
+    <div className="px-5 pt-6 pb-10">
       <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">Tu progreso</p>
       <h1 className="mt-1 text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Historial</h1>
 
@@ -45,31 +96,107 @@ export default function HistorialPage() {
           <p className="mt-4 max-w-xs text-sm text-[var(--text-secondary)]">
             Todavía no registras ningún peso. En cuanto termines tu primer ejercicio, aparece aquí.
           </p>
+          <Link
+            href="/app"
+            className="mt-6 flex h-12 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
+          >
+            Ir a mi plan de hoy
+          </Link>
         </div>
       ) : (
-        <div className="mt-6 flex flex-col gap-5 pb-10">
-          {Array.from(porFecha.entries()).map(([fecha, logs]) => (
-            <div key={fecha}>
-              <p className="text-xs font-semibold text-[var(--text-tertiary)]">{formatearFecha(fecha)}</p>
-              <div className="mt-2 flex flex-col gap-2">
-                {logs.map((log, i) => {
-                  const ej = obtenerEjercicio(log.ejercicioId);
-                  return (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] px-4 py-3"
-                    >
-                      <span className="text-sm font-medium text-[var(--text-primary)]">{ej.nombre}</span>
-                      <span className="text-sm tabular-nums text-[var(--text-secondary)]">
-                        {log.series}×{log.reps} · {log.peso > 0 ? `${log.peso} kg` : 'peso corporal'}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+        <>
+          {/* Dato héroe + gráfico — un objeto principal, con su insight (17-VISUALIZACION-DATOS) */}
+          <div className="mt-5 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
+              Volumen de tus últimas {sesiones.length} sesiones
+            </p>
+            <p className="mt-1 text-4xl font-bold tabular-nums leading-none text-[var(--text-primary)] [font-family:var(--font-display)]">
+              {NUM.format(volumenSemana)} <span className="text-lg font-semibold text-[var(--text-secondary)]">kg</span>
+            </p>
+            <p className="mt-1.5 text-sm font-medium text-[var(--text-secondary)]">
+              {cambioPct === null
+                ? 'Sigue registrando: la comparación aparece desde tu segunda sesión.'
+                : cambioPct >= 0
+                  ? `↑ ${cambioPct}% vs tu sesión anterior — vas para arriba.`
+                  : `↓ ${Math.abs(cambioPct)}% vs tu sesión anterior.`}
+            </p>
+
+            <div className="mt-4 -mx-1 h-36">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={sesiones} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
+                  <defs>
+                    <linearGradient id="volumenFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.35} />
+                      <stop offset="100%" stopColor="var(--accent)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis
+                    dataKey="etiqueta"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: 'var(--text-tertiary)', fontSize: 11 }}
+                  />
+                  <Tooltip content={<TooltipVolumen />} cursor={{ stroke: 'var(--accent)', strokeOpacity: 0.2 }} />
+                  <Area
+                    type="monotone"
+                    dataKey="volumen"
+                    stroke="var(--accent)"
+                    strokeWidth={2.5}
+                    fill="url(#volumenFill)"
+                    dot={{ r: 3, fill: 'var(--accent)', strokeWidth: 0 }}
+                    activeDot={{ r: 5 }}
+                    isAnimationActive={!reduce}
+                    animationDuration={700}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
-          ))}
-        </div>
+
+            {/* Alternativa accesible — mismos datos en tabla, para lectores de pantalla */}
+            <table className="sr-only">
+              <caption>Volumen de entrenamiento por sesión</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Fecha</th>
+                  <th scope="col">Volumen (kg)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sesiones.map((s) => (
+                  <tr key={s.fecha}>
+                    <th scope="row">{s.etiqueta}</th>
+                    <td>{s.volumen}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Detalle por sesión — más reciente primero */}
+          <div className="mt-6 flex flex-col gap-5">
+            {Array.from(porFecha.entries()).map(([fecha, logs]) => (
+              <div key={fecha}>
+                <p className="text-xs font-semibold text-[var(--text-tertiary)]">{formatearFecha(fecha)}</p>
+                <div className="mt-2 flex flex-col gap-2">
+                  {logs.map((log, i) => {
+                    const ej = obtenerEjercicio(log.ejercicioId);
+                    return (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] px-4 py-3"
+                      >
+                        <span className="text-sm font-medium text-[var(--text-primary)]">{ej.nombre}</span>
+                        <span className="text-sm tabular-nums text-[var(--text-secondary)]">
+                          {log.series}×{log.reps} · {log.peso > 0 ? `${log.peso} kg` : 'peso corporal'}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

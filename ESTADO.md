@@ -1,5 +1,11 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
-Última actualización: 2026-09-01 | Sesión actual: 7 (en curso)
+Última actualización: 2026-09-02 | Sesión actual: 7 (en curso)
+
+⏸️ CHECKPOINT — Última acción completada (02/09/2026): **Hallazgo #2 de la auditoría CERRADO — Historial rediseñado con gráfico de volumen animado.** Antes era una lista plana sin gráfico ni insight; a pedido explícito del usuario ("un gráfico dinámico y ganador").
+- Se instaló `recharts` (pinneado, doctrina 22-LIBRERIAS-Y-CRAFT). Nuevo `app/app/historial/page.tsx`: dato héroe ("Volumen de tus últimas N sesiones", número grande animable) + insight interpretado (↑/↓ % vs la sesión anterior, o mensaje de arranque si aún no hay para comparar) + gráfico de ÁREA (serie temporal — el tipo correcto según la tabla de 17-VISUALIZACION-DATOS para "evolución en el tiempo") con degradado del acento, máximo 7 puntos visibles, tooltip tematizado con los tokens de la app, y tabla `sr-only` con los mismos datos (accesibilidad). El volumen se calcula como Σ peso×reps×series por fecha. Debajo se mantiene el detalle por sesión ya existente.
+- Estado vacío: se le agregó el CTA que faltaba ("Ir a mi plan de hoy" → `/app`) — antes quedaba sin salida, otro hallazgo de la auditoría.
+- **Verificado con datos reales del usuario** (no solo simulados): el gráfico mostró su volumen real de 3 sesiones (1216→2960→3120 kg), curva ascendente correcta, insight "↑ 5% vs tu sesión anterior — vas para arriba", sin errores de consola. tsc ✓ · eslint ✓ · build ✓.
+/ Siguiente acción exacta: queda pendiente el hallazgo #3 de la auditoría (onboarding, offline-first nunca construido) o retomar Hotmart cuando el usuario cree el producto (ver sección "PENDIENTE — conexión con Hotmart" abajo).
 
 ⏸️ CHECKPOINT — Última acción completada (01/09/2026): **🎉 Auditoría senior (--rápido) + hallazgo crítico #1 CERRADO: la app ya exige plan pagado real para entrar a `/app`, probado de punta a punta con una cuenta real (login por código + los dos casos: `free`→paywall y `pro`→app).** El usuario aprobó explícitamente el ítem #1 del reporte de auditoría.
 
