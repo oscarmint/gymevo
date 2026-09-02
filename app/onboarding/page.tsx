@@ -6,7 +6,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
+import { animate, AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
 import { Check, ChevronLeft, NotebookPen, PlayCircle, RefreshCcw, ShieldAlert, Users, X, Zap } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { guardarRespuestas, HORARIO_LABEL, META_LABEL, NIVEL_LABEL, type Horario, type Meta, type Nivel } from '@/lib/onboarding';
@@ -77,6 +77,7 @@ export default function OnboardingPage() {
   const avanzando = useRef(false);
   const botonSalirRef = useRef<HTMLButtonElement>(null);
   const seguirAquiRef = useRef<HTMLButtonElement>(null);
+  const salirModalRef = useRef<HTMLButtonElement>(null);
 
   // Hallazgo revisor-visual: "Salir" borraba las respuestas ya dadas sin
   // avisar. Si todavía no respondió nada (pasoIdx===0), salir directo — no
@@ -99,7 +100,25 @@ export default function OnboardingPage() {
     const botonQueAbrio = botonSalirRef.current;
     seguirAquiRef.current?.focus();
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') setConfirmandoSalida(false);
+      if (e.key === 'Escape') {
+        setConfirmandoSalida(false);
+        return;
+      }
+      // Trampa de foco (hallazgo revisor-visual): el modal solo tiene 2
+      // botones — Tab/Shift+Tab deben quedarse entre ellos, nunca escapar
+      // hacia el contenido de fondo que sigue montado detrás.
+      if (e.key === 'Tab') {
+        const primero = seguirAquiRef.current;
+        const ultimo = salirModalRef.current;
+        if (!primero || !ultimo) return;
+        if (e.shiftKey && document.activeElement === primero) {
+          e.preventDefault();
+          ultimo.focus();
+        } else if (!e.shiftKey && document.activeElement === ultimo) {
+          e.preventDefault();
+          primero.focus();
+        }
+      }
     }
     window.addEventListener('keydown', onKeyDown);
     return () => {
@@ -111,6 +130,22 @@ export default function OnboardingPage() {
   const paso = PASOS[pasoIdx];
   const progreso = Math.round(((pasoIdx + 1) / PASOS.length) * 100);
   const progresoMostrado = Math.max(progreso, 8); // truco de arranque (50 → A2)
+
+  // Conteo ascendente al entrar al paso "compromiso" (baseline de movimiento
+  // #2, hallazgo revisor-visual: el número solo cruzaba-desvanecía entre
+  // valores del slider, nunca contaba desde el arranque de la pantalla).
+  const [diasMostrado, setDiasMostrado] = useState(dias);
+  useEffect(() => {
+    if (paso !== 'compromiso' || reduce) return;
+    const controls = animate(1, dias, {
+      duration: 0.6,
+      ease: [0.16, 1, 0.3, 1],
+      onUpdate: (v) => setDiasMostrado(Math.round(v)),
+    });
+    return () => controls.stop();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paso]);
+  const diasEnPantalla = reduce ? dias : diasMostrado;
 
   function ir(siguiente: number) {
     setDir(siguiente > pasoIdx ? 1 : -1);
@@ -235,6 +270,7 @@ export default function OnboardingPage() {
                   Seguir aquí
                 </button>
                 <button
+                  ref={salirModalRef}
                   type="button"
                   onClick={() => router.push('/')}
                   className="flex h-12 flex-1 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
@@ -253,11 +289,13 @@ export default function OnboardingPage() {
             <PantallaPregunta key="nivel" dir={dir} variants={variants}>
               <Pregunta titulo="¿Cuál es tu situación hoy?" micro="Esto decide tu ruta: Principiante o Intermedio" />
               <Chips opciones={OPCIONES_NIVEL} valor={nivel} onSelect={(v) => seleccionarYAvanzar(setNivel, v)} />
-              <TarjetaBeneficio
-                icono={PlayCircle}
-                texto="Cada ejercicio de tu plan trae la técnica explicada — nunca vas a tener que adivinar cómo se hace."
+              <TarjetaRuta
+                nivel={nivel}
+                meta={meta}
+                horario={horario}
+                dias={null}
+                beneficio={{ icono: PlayCircle, texto: 'Cada ejercicio de tu plan trae la técnica explicada — nunca vas a tener que adivinar cómo se hace.' }}
               />
-              <TarjetaRuta nivel={nivel} meta={meta} horario={horario} dias={null} />
             </PantallaPregunta>
           )}
 
@@ -265,11 +303,13 @@ export default function OnboardingPage() {
             <PantallaPregunta key="meta" dir={dir} variants={variants}>
               <Pregunta titulo="¿Cuál es tu meta ahora?" micro="Esto define el enfoque de tu plan" />
               <Chips opciones={OPCIONES_META} valor={meta} onSelect={(v) => seleccionarYAvanzar(setMeta, v)} />
-              <TarjetaBeneficio
-                icono={RefreshCcw}
-                texto="¿Se ocupó la máquina que necesitas? El Botón de Rescate te da otro ejercicio al instante, sin perder el día."
+              <TarjetaRuta
+                nivel={nivel}
+                meta={meta}
+                horario={horario}
+                dias={null}
+                beneficio={{ icono: RefreshCcw, texto: '¿Se ocupó la máquina que necesitas? El Botón de Rescate te da otro ejercicio al instante, sin perder el día.' }}
               />
-              <TarjetaRuta nivel={nivel} meta={meta} horario={horario} dias={null} />
             </PantallaPregunta>
           )}
 
@@ -314,13 +354,14 @@ export default function OnboardingPage() {
                   {RECONOCIMIENTO_POR_FRUSTRACION[frustracion ?? 'apps']}
                 </p>
               </div>
-              <button
+              <motion.button
                 type="button"
+                whileTap={{ scale: 0.97 }}
                 onClick={() => ir(pasoIdx + 1)}
                 className="mt-6 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
               >
                 Continuar
-              </button>
+              </motion.button>
             </PantallaPregunta>
           )}
 
@@ -341,14 +382,14 @@ export default function OnboardingPage() {
                 <div className="relative h-14 overflow-hidden">
                   <AnimatePresence mode="popLayout" initial={false}>
                     <motion.span
-                      key={dias}
+                      key={diasEnPantalla}
                       initial={reduce ? {} : { y: -10, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       exit={reduce ? {} : { y: 10, opacity: 0 }}
                       transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
                       className="block text-5xl font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]"
                     >
-                      {dias}
+                      {diasEnPantalla}
                     </motion.span>
                   </AnimatePresence>
                 </div>
@@ -360,7 +401,11 @@ export default function OnboardingPage() {
                 max={7}
                 step={1}
                 value={dias}
-                onChange={(e) => setDias(Number(e.target.value))}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  setDias(v);
+                  setDiasMostrado(v);
+                }}
                 className="mt-8 w-full accent-[var(--accent)]"
                 aria-label="Días de entrenamiento por semana"
                 aria-valuetext={`${dias} ${dias === 1 ? 'día' : 'días'} por semana`}
@@ -370,13 +415,14 @@ export default function OnboardingPage() {
                 <span>7</span>
               </div>
               <p className="mt-4 text-center text-sm font-medium text-[var(--accent)]">{feedbackDias(dias)}</p>
-              <button
+              <motion.button
                 type="button"
+                whileTap={{ scale: 0.97 }}
                 onClick={terminar}
                 className="mt-8 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
               >
                 Fijar mi meta
-              </button>
+              </motion.button>
               <TarjetaRuta nivel={nivel} meta={meta} horario={horario} dias={dias} />
             </PantallaPregunta>
           )}
@@ -420,11 +466,16 @@ function TarjetaRuta({
   meta,
   horario,
   dias,
+  beneficio,
 }: {
   nivel: Nivel | null;
   meta: Meta | null;
   horario: Horario | null;
   dias: number | null;
+  /** Recordatorio real de algo que la app ya resuelve — vive DENTRO de esta
+   * misma tarjeta (no en una aparte) para no apilar dos bloques de lectura
+   * en los pasos cortos de 2 chips (hallazgo revisor-visual: densidad). */
+  beneficio?: { icono: LucideIcon; texto: string };
 }) {
   const capitalizar = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
   const hayAlgunaRespuesta = nivel !== null || meta !== null || horario !== null;
@@ -487,22 +538,21 @@ function TarjetaRuta({
           ))}
         </div>
       )}
-    </div>
-  );
-}
 
-/** Llena el espacio de los pasos cortos (2 chips) con contenido REAL, no
- * relleno: un recordatorio concreto y CIERTO de algo que la app ya resuelve
- * (hallazgo del revisor-visual: la textura de fondo no bastaba, hacía falta
- * contenido, no otro ajuste de espaciado). Nunca promete personalización que
- * el catálogo de ejercicios no tiene todavía — solo lo que es verdad hoy. */
-function TarjetaBeneficio({ icono: Icono, texto }: { icono: LucideIcon; texto: string }) {
-  return (
-    <div className="mt-4 flex items-start gap-3 rounded-2xl bg-[var(--chip-bg)] p-4">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--surface)]">
-        <Icono size={17} color="var(--accent)" />
-      </span>
-      <p className="text-sm leading-relaxed text-[var(--text-primary)]">{texto}</p>
+      {/* Recordatorio real de algo que la app ya resuelve — antes vivía en una
+       * tarjeta aparte (TarjetaBeneficio); se fusionó aquí porque apilar las
+       * dos en los pasos de 2 chips convertía una decisión binaria en 4
+       * bloques de lectura (hallazgo revisor-visual: densidad). Nunca
+       * promete personalización que el catálogo de ejercicios no tiene
+       * todavía — solo lo que es verdad hoy. */}
+      {beneficio && (
+        <div className="mt-4 flex items-start gap-3 border-t border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] pt-4">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--chip-bg)]">
+            <beneficio.icono size={17} color="var(--accent)" />
+          </span>
+          <p className="text-sm leading-relaxed text-[var(--text-secondary)]">{beneficio.texto}</p>
+        </div>
+      )}
     </div>
   );
 }
