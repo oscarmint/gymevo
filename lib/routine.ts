@@ -257,6 +257,10 @@ export interface Progreso {
   /** Si al terminar el descanso suena una notificación (además de vibrar).
    * Encendido por defecto; el usuario lo puede apagar. */
   sonidoDescanso: boolean;
+  /** Peso corporal en kg — lo único que falta para calcular las macros de
+   * Ruta A/Ruta B (ver lib/macros.ts). null hasta que el usuario lo ingresa
+   * en Perfil; no se le pide durante el onboarding. */
+  pesoKg: number | null;
 }
 
 const KEY = 'gymevo_progreso';
@@ -272,11 +276,11 @@ function diasEntre(a: string, b: string): number {
 
 export function leerProgreso(): Progreso {
   if (typeof window === 'undefined') {
-    return { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true };
+    return { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null };
   }
   const raw = localStorage.getItem(KEY);
   if (!raw) {
-    const inicial: Progreso = { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true };
+    const inicial: Progreso = { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null };
     localStorage.setItem(KEY, JSON.stringify(inicial));
     return inicial;
   }
@@ -285,6 +289,7 @@ export function leerProgreso(): Progreso {
   if (p.descansoAutomatico === undefined) p.descansoAutomatico = true;
   if (p.descansoDuracionSeg === undefined) p.descansoDuracionSeg = 60;
   if (p.sonidoDescanso === undefined) p.sonidoDescanso = true;
+  if (p.pesoKg === undefined) p.pesoKg = null;
   // Si cambió el día calendario desde el último completado y ya se había marcado
   // "hechosHoy", se limpia para el nuevo día (pero SIN romper la racha: eso solo
   // pasa si pasan ≥2 días sin completar, ver `racha en riesgo/rota` abajo).

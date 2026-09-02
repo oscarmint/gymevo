@@ -7,10 +7,11 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, ExternalLink, Flame, LogOut, Pencil } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
-import { leerProgreso, tituloRuta, type Progreso } from '@/lib/routine';
+import { calcularMacros } from '@/lib/macros';
+import { guardarProgreso, leerProgreso, tituloRuta, type Progreso } from '@/lib/routine';
 import { leerNombreLocal, guardarNombreLocal } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
-import { guardarNombreRemoto, leerMembresiaRemota, leerNombreRemoto } from '@/lib/supabase/sync';
+import { guardarNombreRemoto, guardarProgresoRemoto, leerMembresiaRemota, leerNombreRemoto } from '@/lib/supabase/sync';
 
 const ESTADO_MEMBRESIA_LABEL: Record<string, string> = {
   trialing: 'En prueba gratis',
@@ -27,6 +28,7 @@ export default function PerfilPage() {
   const [editando, setEditando] = useState(false);
   const [borrador, setBorrador] = useState('');
   const [membresia, setMembresia] = useState<{ plan: string; estado: string | null } | null>(null);
+  const [pesoBorrador, setPesoBorrador] = useState('');
 
   // localStorage/sessionStorage no existen en el servidor: leerlos en el
   // initializer de useState causa mismatch de hydration. Este efecto es la
@@ -34,7 +36,9 @@ export default function PerfilPage() {
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setRespuestas(leerRespuestas());
-    setProgreso(leerProgreso());
+    const p = leerProgreso();
+    setProgreso(p);
+    setPesoBorrador(p.pesoKg ? String(p.pesoKg) : '');
     setNombre(leerNombreLocal());
     leerNombreRemoto().then((remoto) => {
       if (remoto) {
@@ -63,6 +67,15 @@ export default function PerfilPage() {
     guardarNombreLocal(limpio);
     guardarNombreRemoto(limpio);
     setEditando(false);
+  }
+
+  function guardarPeso() {
+    const kg = Number(pesoBorrador);
+    if (!progreso || !kg || kg <= 0) return;
+    const next = { ...progreso, pesoKg: kg };
+    setProgreso(next);
+    guardarProgreso(next);
+    guardarProgresoRemoto(next);
   }
 
   async function cerrarSesion() {
@@ -171,6 +184,55 @@ export default function PerfilPage() {
         </dl>
       </div>
 
+      {/* Tus macros — Ruta A (ganar músculo) / Ruta B (bajar grasa), ebook cap. 3.
+          Ambas rutas comparten el mismo entrenamiento; lo que cambia es esto. */}
+      <div className="mt-4 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
+        <p className="text-sm font-semibold text-[var(--text-primary)]">
+          Tus macros · {meta === 'musculo' ? 'Ruta A, ganar músculo' : 'Ruta B, bajar grasa'}
+        </p>
+        <div className="mt-3 flex items-center gap-2">
+          <input
+            type="number"
+            inputMode="decimal"
+            placeholder="Tu peso"
+            aria-label="Tu peso en kilogramos"
+            value={pesoBorrador}
+            onChange={(e) => setPesoBorrador(e.target.value)}
+            className="h-11 w-24 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-3 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+          />
+          <span className="text-sm text-[var(--text-secondary)]">kg</span>
+          <button
+            type="button"
+            onClick={guardarPeso}
+            className="ml-auto flex h-11 items-center justify-center rounded-xl bg-[var(--accent)] px-4 text-sm font-semibold text-[var(--bg)]"
+          >
+            Calcular
+          </button>
+        </div>
+
+        {progreso.pesoKg ? (
+          (() => {
+            const macros = calcularMacros(progreso.pesoKg, meta);
+            return (
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <div className="col-span-2 rounded-xl bg-[var(--chip-bg)] px-4 py-3">
+                  <p className="text-2xl font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                    {macros.kcal} <span className="text-sm font-semibold text-[var(--text-secondary)]">kcal/día</span>
+                  </p>
+                </div>
+                <MacroDato label="Proteína" gramos={macros.proteinaG} />
+                <MacroDato label="Carbohidratos" gramos={macros.carbohidratosG} />
+                <MacroDato label="Grasas" gramos={macros.grasasG} />
+              </div>
+            );
+          })()
+        ) : (
+          <p className="mt-3 text-xs text-[var(--text-secondary)]">
+            Pon tu peso y calcula cuánta proteína, carbohidratos y grasa te conviene comer cada día según tu ruta.
+          </p>
+        )}
+      </div>
+
       <button
         type="button"
         onClick={cerrarSesion}
@@ -188,6 +250,15 @@ function Fila({ label, valor }: { label: string; valor: string }) {
     <div className="flex items-center justify-between">
       <dt className="text-[var(--text-secondary)]">{label}</dt>
       <dd className="font-medium text-[var(--text-primary)]">{valor}</dd>
+    </div>
+  );
+}
+
+function MacroDato({ label, gramos }: { label: string; gramos: number }) {
+  return (
+    <div className="rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] px-3 py-2.5">
+      <p className="text-lg font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{gramos}g</p>
+      <p className="text-xs text-[var(--text-secondary)]">{label}</p>
     </div>
   );
 }
