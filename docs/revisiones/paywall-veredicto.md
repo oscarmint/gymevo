@@ -1,14 +1,14 @@
 # VEREDICTO revisor-visual — paywall
 Fecha: 2026-09-02 00:00
 Screenshot: docs/revisiones/paywall-375.png
-Usabilidad: 30/40
-Craft: 15/20
-Copy (si vende): 17/20
+Usabilidad: 33/40
+Craft: 13/20
+Copy (si vende): 19/20
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 Top defectos:
-1. [Timeline card, borde izquierdo] Los 5 anillos ámbar decorativos (espiral) no coinciden en número/ritmo con los 3 nodos reales del timeline y compiten visualmente con los propios dots verdes del timeline, generando una doble fila de puntos que puede leerse como paginador/stepper sin función → reducir a 3-4 anillos alineados a la altura de cada nodo real o fusionar ambos sistemas de puntos en uno solo.
-2. [Paleta general de la pantalla] Papel cálido (#F5F1EA) + tinta verde (#5C7A1F) coincide en 2 de 3 ejes con el combo canónico vetado "Capítulo" (papel+verde+Petrona/Karla) del test anti-clon del eje 3; la tipografía difiere (Instrument Sans) por lo que no es clon exacto, pero es un riesgo de identidad que el propio registro anti-repetición de FICHA-ARTE ya advierte → desplazar el hue/saturación del verde o dar más presencia al ámbar como segundo acento dominante para distanciarse del par cream+verde puro.
-3. [Headline, línea 1-2] La frase resaltada en acento "ganar músculo" se parte entre la línea 1 y la línea 2 ("ganar" / "músculo"), rompiendo la unidad visual del énfasis → ajustar el ancho/copy para que la frase resaltada quede en una sola línea.
-4. [Flujo de pago, código] No existe ningún estado de error visible ni manejado si `checkoutUrl` falla o `window.location.href` no navega (heurística 9 sin evidencia) → agregar mensaje breve con reintento si el redirect no ocurre en unos segundos.
-5. [Selección de plan, código] Cero persistencia de la elección del usuario entre visitas (heurística 7 al mínimo, solo hay un default fijo) → guardar la última selección de plan en localStorage y preseleccionarla en la próxima visita.
+1. [Identidad, toda la pantalla — fondo + acento] Paper cálido (#F5F1EA) + tinta verde (#5C7A1F) coincide en 2 de 3 rasgos con la combinación canónica VETADA "papel cálido + tinta verde + Petrona/Karla" (test anti-clon). Instrument Sans salva el tercer rasgo, pero el kit sigue peligrosamente cerca del arquetipo prohibido → EJE 3 bajado a 1. Fix: introducir una segunda nota de color/textura propia que rompa la lectura "papel+tinta" (el ámbar #9C5F1C ya existe en la ficha pero casi no aparece en esta pantalla — traerlo a un elemento visible del paywall).
+2. [Tarjeta timeline, tercio superior] Al retirar el espiral sin reemplazo, el timeline quedó en el patrón más genérico posible (punto+línea vertical) — cero dispositivo ownable visible en esta pantalla, contradice la ficha ("cuaderno de gym" como mundo del sujeto). Fix: aplicar un tratamiento de bajo riesgo (borde punteado tipo cuaderno en los nodos, o el chip de meta con borde fino que la ficha ya define) en vez de dejarlo desnudo.
+3. [Botón CTA "Empezar mis 7 días gratis"] Contraste medido texto-sobre-botón (cream #F5F1EA sobre verde #5C7A1F) ≈ 4.4:1 — por debajo del 4.5:1 AA para texto normal/semibold de 16.5px (no califica como "texto grande"). El botón en sí sí pasa el contraste contra el fondo de página (≥3:1), pero la legibilidad interna del texto queda al límite. Fix: aclarar el verde del botón 5-8% o engrosar/aumentar el texto a un tamaño que califique como "grande" (≥18.7px).
+4. [Jerarquía tipográfica, toda la pantalla] Se cuentan 6+ tamaños distintos (eyebrow 14 / headline 30 / precio 24 / título de nodo 16 / cuerpo 14.5-13.5 / labels 12-11), por encima del máximo de 3 que pide la rúbrica — al entrecerrar los ojos se leen más de 4 niveles. Fix: fusionar título-de-nodo y FAQ-título en un mismo tamaño de tier, y bajar el precio de plan a la misma escala que el headline secundario.
+5. [Banner de error, bajo el CTA] La corrección de contraste (texto en --text-primary) es correcta y ya no falla AA — pero el ícono de alerta sigue en --status-warning solo; si status-warning también tiene bajo contraste contra su propio fondo mezclado, el ícono se percibe apagado. Verificar ese contraste puntual (no crítico, pero es la única pieza que no se remidió esta ronda).

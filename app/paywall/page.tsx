@@ -8,7 +8,7 @@
 // todavía (el usuario no las ha puesto en Vercel), cae de vuelta al mock
 // anterior (/login) para no romper nada mientras se conectan.
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
 import { AlertTriangle, Check, Loader2, Lock, ShieldCheck, X } from 'lucide-react';
@@ -25,6 +25,7 @@ export default function PaywallPage() {
   const [plan, setPlan] = useState<PlanId>('anual');
   const [redirigiendo, setRedirigiendo] = useState(false);
   const [errorRedirect, setErrorRedirect] = useState<string | null>(null);
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   // sessionStorage no existe en el servidor: leerlo en el initializer de
   // useState causa mismatch de hydration. Este efecto es la forma correcta.
@@ -60,25 +61,36 @@ export default function PaywallPage() {
       // sin agregar fricción real (300ms, no un loader eterno).
       setRedirigiendo(true);
       setErrorRedirect(null);
-      setTimeout(() => {
+      const tRedirect = setTimeout(() => {
         // El webhook conecta la compra a la cuenta por CORREO (ver
         // app/api/webhooks/hotmart/route.ts) — no hace falta pasar nada más
         // acá. Después de pagar, Hotmart lleva al comprador a /login.
         window.location.href = checkoutUrl;
       }, 200);
-      // Si en 4s seguimos en esta pantalla, la redirección no ocurrió (red
+      // Si en 2.5s seguimos en esta pantalla, la redirección no ocurrió (red
       // caída, bloqueador de popups, etc.) — heurística 9: nunca dejar al
       // usuario mirando un spinner eterno sin saber qué pasó.
-      setTimeout(() => {
+      const tError = setTimeout(() => {
         setRedirigiendo(false);
         setErrorRedirect(checkoutUrl);
-      }, 4000);
+      }, 2500);
+      timersRef.current = [tRedirect, tError];
       return;
     }
 
     // Checkout todavía no configurado (faltan las variables de entorno) —
     // mock: pasa directo al login para no romper nada mientras se conecta.
     router.push('/login?desde=paywall');
+  }
+
+  // Hallazgo revisor-visual: durante los 2.5s de espera no había forma de
+  // arrepentirse (plan equivocado, cambio de opinión) — las PlanCard quedan
+  // deshabilitadas y el CTA en spinner sin salida. Cancelar detiene el salto
+  // a Hotmart mientras siga pendiente.
+  function cancelarRedireccion() {
+    timersRef.current.forEach(clearTimeout);
+    timersRef.current = [];
+    setRedirigiendo(false);
   }
 
   return (
@@ -102,7 +114,7 @@ export default function PaywallPage() {
           <p className="text-sm font-semibold text-[var(--text-tertiary)]">Se acabó adivinar qué máquina usar</p>
           {/* (2) Headline con la META real del usuario */}
           <h1 className="mt-1 text-balance text-3xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
-            Tu plan para <span className="text-[var(--accent)]">{meta}</span> está listo
+            Tu plan para <span className="whitespace-nowrap text-[var(--accent)]">{meta}</span> está{' '}listo
           </h1>
           <p className="mt-2 text-[14.5px] text-[var(--text-secondary)]">
             Hecho con tus respuestas, con el Botón de Rescate incluido para cuando entrenes {horario}
@@ -110,24 +122,17 @@ export default function PaywallPage() {
         </motion.div>
 
         {/* (3) Visual del valor: timeline del trial — el default con trial (C4).
-            Espiral de encuadernación en el borde izquierdo (mismo dispositivo
-            ownable de TarjetaRuta en onboarding, "cuaderno de sala" de
-            FICHA-ARTE) — hallazgo revisor-visual: el paywall no tenía ningún
-            rasgo propio, se sentía genérico frente al resto de la app. */}
+            NOTA: se intentó un dispositivo ownable (espiral de encuadernación)
+            en 2 rondas y ninguna cuajó — invisible primero, mal alineado
+            después, porque los nodos del timeline tienen alturas de texto
+            desiguales y el decorativo usaba posiciones fijas. Se retira: un
+            timeline limpio es mejor que un rasgo de marca que se ve roto. */}
         <motion.div
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08, duration: 0.3 }}
-          className="relative mt-6 overflow-hidden rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] py-5 pr-5 pl-9"
+          className="mt-6 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-5"
         >
-          <div aria-hidden="true" className="absolute inset-y-4 left-3 flex flex-col justify-between">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <span
-                key={i}
-                className="size-2.5 rounded-full border-2 border-[var(--accent-2)] bg-[var(--bg)]"
-              />
-            ))}
-          </div>
           <TimelineTrial />
         </motion.div>
 
@@ -142,6 +147,7 @@ export default function PaywallPage() {
             id="anual"
             seleccionado={plan === 'anual'}
             onSelect={() => elegirPlan('anual')}
+            deshabilitado={redirigiendo}
             badge="MÁS POPULAR"
             nombre="Anual"
             precioMes="$2.50"
@@ -151,6 +157,7 @@ export default function PaywallPage() {
             id="mensual"
             seleccionado={plan === 'mensual'}
             onSelect={() => elegirPlan('mensual')}
+            deshabilitado={redirigiendo}
             nombre="Mensual"
             precioMes="$4.99"
             detalle="Se cobra cada mes"
@@ -166,7 +173,7 @@ export default function PaywallPage() {
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.24, duration: 0.3 }}
-          className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-[16.5px] font-semibold text-[var(--bg)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_25%,transparent)] disabled:opacity-80"
+          className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-xl font-bold text-[var(--bg)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_25%,transparent)] disabled:opacity-80"
         >
           {redirigiendo ? (
             <>
@@ -177,12 +184,22 @@ export default function PaywallPage() {
           )}
         </motion.button>
 
+        {redirigiendo && (
+          <button
+            type="button"
+            onClick={cancelarRedireccion}
+            className="mt-3 flex h-11 items-center justify-center gap-1.5 self-center px-4 text-sm font-semibold text-[var(--text-secondary)]"
+          >
+            <X size={15} /> Cancelar
+          </button>
+        )}
+
         {/* Garantía nombrada junto al CTA (antes solo vivía en el trust row, lejos) */}
         <motion.p
           initial={reduce ? {} : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.3 }}
-          className="mt-2 flex items-center justify-center gap-1.5 text-center text-xs text-[var(--text-secondary)]"
+          className="mt-2 flex items-center justify-center gap-1.5 text-center text-xs font-medium text-[var(--accent-2)]"
         >
           <ShieldCheck size={13} /> Garantía Hotmart de 7 días — sin preguntas
         </motion.p>
@@ -191,9 +208,17 @@ export default function PaywallPage() {
             bloqueador de popups, etc.) — nunca dejar al usuario mirando un
             spinner sin saber qué pasó ni cómo seguir (hallazgo revisor-visual). */}
         {errorRedirect && (
-          <div className="mt-3 flex flex-col items-center gap-2 rounded-xl border border-[color-mix(in_oklab,var(--status-warning)_35%,transparent)] bg-[color-mix(in_oklab,var(--status-warning)_8%,transparent)] px-4 py-3 text-center">
-            <p className="flex items-center gap-1.5 text-xs font-medium text-[var(--status-warning)]">
-              <AlertTriangle size={14} /> No pudimos abrirte el pago automáticamente.
+          <div
+            role="alert"
+            aria-live="assertive"
+            className="mt-3 flex flex-col items-center gap-2 rounded-xl border-2 border-[var(--status-warning)] bg-[color-mix(in_oklab,var(--status-warning)_8%,transparent)] px-4 py-3 text-center"
+          >
+            {/* El texto va en --text-primary, no en --status-warning: ese
+                token no llega al contraste mínimo AA sobre el fondo cálido
+                claro de la ficha — el color de aviso se queda en ícono/borde,
+                que no cargan con el requisito de contraste de texto. */}
+            <p className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-primary)]">
+              <AlertTriangle size={14} color="var(--status-warning)" /> No pudimos abrirte el pago automáticamente.
             </p>
             <a href={errorRedirect} className="text-sm font-semibold text-[var(--accent)] underline underline-offset-2">
               Toca aquí para continuar
@@ -308,6 +333,7 @@ function TimelineTrial() {
 function PlanCard({
   seleccionado,
   onSelect,
+  deshabilitado,
   badge,
   nombre,
   precioMes,
@@ -316,6 +342,7 @@ function PlanCard({
   id: PlanId;
   seleccionado: boolean;
   onSelect: () => void;
+  deshabilitado?: boolean;
   badge?: string;
   nombre: string;
   precioMes: string;
@@ -325,15 +352,16 @@ function PlanCard({
     <motion.button
       type="button"
       onClick={onSelect}
-      whileTap={{ scale: 0.98 }}
-      className={`relative flex items-center justify-between rounded-[var(--radius-card)] border px-5 py-4 text-left transition-colors ${
+      disabled={deshabilitado}
+      whileTap={deshabilitado ? undefined : { scale: 0.98 }}
+      className={`relative flex items-center justify-between rounded-[var(--radius-card)] border px-5 py-4 text-left transition-colors disabled:opacity-50 ${
         seleccionado
           ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_6%,transparent)]'
           : 'border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)]'
       }`}
     >
       {badge && (
-        <span className="absolute -top-2.5 left-4 rounded-full bg-[var(--accent)] px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--bg)]">
+        <span className="absolute -top-2.5 left-4 rounded-full bg-[var(--accent-2)] px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--bg)]">
           {badge}
         </span>
       )}
