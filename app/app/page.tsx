@@ -42,12 +42,11 @@ function etiquetaDuracion(seg: number): string {
   return seg < 60 ? `${seg}s` : `${seg / 60} min`;
 }
 
-/** El objetivo del ejercicio viene como rango ("10-12") o tiempo ("30-60
- * seg") — se prellena el input de repeticiones con el número más alto del
- * rango (el techo del objetivo), editable por el usuario si hizo menos. */
-function repsPorDefecto(reps: string): string {
-  const numeros = reps.match(/\d+/g);
-  return numeros ? numeros[numeros.length - 1] : '';
+/** Valor inicial del selector de repeticiones — fijo en 6 (a pedido
+ * explícito del usuario), editable por el usuario según lo que hizo de
+ * verdad. El rango completo sigue siendo 1-15 (ver OPCIONES_REPS). */
+function repsPorDefecto(_reps: string): string {
+  return '6';
 }
 
 /** Repeticiones como lista desplegable (1-15) en vez de un input de texto
@@ -337,6 +336,11 @@ function PlanDelDia({
   const idsHoy = ejercicios.map((e) => obtenerEjercicio(progreso.reemplazosHoy[e.id] ?? e.id));
   const todosHechos = idsHoy.every((e) => progreso.hechosHoy.includes(e.id));
   const enRiesgo = rachaEnRiesgo(progreso);
+  // La llama se llena según el progreso REAL de hoy (ejercicios ya marcados
+  // hechos / total de hoy) — a pedido explícito del usuario, no es decorativa.
+  const progresoLlamaPct = idsHoy.length
+    ? Math.round((idsHoy.filter((e) => progreso.hechosHoy.includes(e.id)).length / idsHoy.length) * 100)
+    : 0;
   const diaDescanso = esDiaDeDescanso(progreso.diaActual);
   const tren = calentamientoDeHoy(progreso.diaActual);
   const cardio = cardioDeHoy(progreso.diaActual);
@@ -390,7 +394,18 @@ function PlanDelDia({
             : 'border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[var(--chip-bg)]'
         }`}
       >
-        <Flame size={22} color={enRiesgo ? 'var(--status-warning)' : 'var(--accent)'} fill={enRiesgo ? 'none' : 'var(--accent)'} />
+        <div className="relative" style={{ width: 22, height: 22 }}>
+          <Flame size={22} color={enRiesgo ? 'var(--status-warning)' : 'var(--accent)'} fill="none" className="absolute inset-0" />
+          <div
+            className="absolute inset-0 overflow-hidden"
+            style={{
+              clipPath: `inset(${100 - progresoLlamaPct}% 0 0 0)`,
+              transition: reduce ? 'none' : 'clip-path 500ms cubic-bezier(0.16,1,0.3,1)',
+            }}
+          >
+            <Flame size={22} color="var(--accent)" fill="var(--accent)" />
+          </div>
+        </div>
         <div>
           <p className={`text-sm font-semibold ${enRiesgo ? 'text-[var(--status-warning)]' : 'text-[var(--text-primary)]'}`}>
             Racha: {rachaMostrada} {progreso.racha === 1 ? 'día' : 'días'}
@@ -606,11 +621,11 @@ function PlanDelDia({
                   </div>
                   <motion.button
                     type="button"
-                    whileTap={{ scale: 0.97 }}
+                    whileTap={esProxima ? undefined : { scale: 0.97 }}
                     onClick={() => registrar(ej.id)}
                     className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-semibold ${
                       esProxima
-                        ? 'bg-[var(--accent)] text-[var(--bg)]'
+                        ? 'boton-3d bg-[var(--accent)] text-[var(--bg)]'
                         : 'border border-[var(--accent)] text-[var(--accent)]'
                     }`}
                   >

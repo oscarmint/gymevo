@@ -1,2 +1,31 @@
 @import "tailwindcss";
 @import "../components/landing/tokens.css";
+
+/* ============================================================================
+   PROFUNDIDAD 3D PUNTUAL (pedido explícito del usuario, 03/09/2026 — referencia
+   Duolingo). NO reemplaza el sistema de hairlines de FICHA-ARTE.md: se aplica
+   solo a la acción primaria de cada pantalla y a íconos de navegación clave,
+   con los MISMOS colores de marca ya aprobados (--accent/--accent-2), nunca un
+   acento nuevo. El resto de la app sigue con bordes finos, sin sombra dura.
+   ============================================================================ */
+.boton-3d {
+  box-shadow: 0 4px 0 0 var(--accent-deep);
+  transition:
+    transform 100ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 100ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.boton-3d:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 0 var(--accent-deep);
+}
+.boton-3d:disabled {
+  box-shadow: 0 4px 0 0 color-mix(in oklab, var(--accent-deep) 60%, transparent);
+}
+.chip-3d {
+  box-shadow: 0 3px 0 0 var(--accent-deep);
+}
+@media (prefers-reduced-motion: reduce) {
+  .boton-3d {
+    transition: none;
+  }
+}

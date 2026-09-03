@@ -31,7 +31,15 @@ export default function AppShellLayout({ children }: { children: React.ReactNode
                 href={tab.href}
                 className="flex flex-1 flex-col items-center gap-1 py-2.5 text-[11.5px] font-medium"
               >
-                <Icono size={22} color={activo ? 'var(--accent)' : 'var(--text-tertiary)'} strokeWidth={activo ? 2.4 : 2} />
+                <span
+                  className={
+                    activo
+                      ? 'chip-3d flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--accent)]'
+                      : 'flex h-9 w-9 items-center justify-center rounded-xl'
+                  }
+                >
+                  <Icono size={20} color={activo ? 'var(--bg)' : 'var(--text-tertiary)'} strokeWidth={activo ? 2.4 : 2} />
+                </span>
                 <span className={activo ? 'text-[var(--accent)]' : 'text-[var(--text-tertiary)]'}>{tab.label}</span>
               </Link>
             );

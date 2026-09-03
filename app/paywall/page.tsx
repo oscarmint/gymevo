@@ -174,11 +174,10 @@ export default function PaywallPage() {
           type="button"
           onClick={empezarTrial}
           disabled={redirigiendo}
-          whileTap={redirigiendo ? undefined : { scale: 0.97 }}
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.24, duration: 0.3 }}
-          className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-xl font-bold text-[var(--bg)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_25%,transparent)] disabled:opacity-80"
+          className="boton-3d mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-xl font-bold text-[var(--bg)] disabled:opacity-80"
         >
           {redirigiendo ? (
             <>

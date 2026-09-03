@@ -393,9 +393,8 @@ export default function OnboardingPage() {
               </div>
               <motion.button
                 type="button"
-                whileTap={{ scale: 0.97 }}
                 onClick={() => ir(pasoIdx + 1)}
-                className="mt-6 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
+                className="boton-3d mt-6 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
               >
                 Continuar
               </motion.button>
@@ -454,9 +453,8 @@ export default function OnboardingPage() {
               <p className="mt-4 text-center text-sm font-medium text-[var(--accent)]">{feedbackDias(dias)}</p>
               <motion.button
                 type="button"
-                whileTap={{ scale: 0.97 }}
                 onClick={terminar}
-                className="mt-8 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
+                className="boton-3d mt-8 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
               >
                 Fijar mi meta
               </motion.button>

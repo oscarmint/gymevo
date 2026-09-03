@@ -30,6 +30,10 @@
   /* ── MARCA ── */
   --accent: #5c7a1f;
   --accent-2: #9c5f1c; /* ámbar tierra — 2ª nota prevista en FICHA-ARTE, activada Sesión 7 */
+  /* Sombra de "canto" para la profundidad 3D puntual (ver globals.css .boton-3d/.chip-3d) —
+     mismo verde/ámbar de marca oscurecido ~30%, nunca un acento nuevo. */
+  --accent-deep: #3f5416;
+  --accent-2-deep: #6e4413;
 
   /* ── SEMÁNTICOS (FICHA-ARTE.md → Brand kit final) ── */
   --status-success: #5c7a1f;

@@ -200,7 +200,7 @@ export default function PerfilPage() {
           <Fila label="Meta" valor={META_LABEL[meta]} />
         </dl>
         <div className="mt-4 flex items-center justify-between border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4">
-          <span className="text-sm text-[var(--text-secondary)]">Registras el peso en</span>
+          <span className="text-sm text-[var(--text-secondary)]">Registrar peso de cada serie en:</span>
           <div className="flex overflow-hidden rounded-lg border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)]">
             {(['lb', 'kg'] as const).map((u) => (
               <button

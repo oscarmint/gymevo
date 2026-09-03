@@ -25,7 +25,8 @@
 - Acento: `#5C7A1F` (verde tinta, SOLO en: progreso, CTA principal, check de completado) · 2ª nota: `#9C5F1C` (ámbar tierra, activada Sesión 7 — hitos y momentos puntuales: trial/"días gratis", tarjeta de progreso del onboarding, contraste "después" de la landing; nunca en CTA principal ni en progreso/completado, eso sigue siendo verde)
 - Semánticos: éxito `#5C7A1F` · error `#C0392B` (siempre con ícono) · aviso `#B8860B`
 - Display/Body: **Instrument Sans** única familia (pesos 400 body / 500 labels / 700 display-lead) · Escala: lead ~24px / body ~14.5px / meta ~12px / eyebrow ~11px
-- Radio: 14-16px cards · 100px pills · Profundidad: hairlines finos (borde `rgba(0,0,0,.08)`), sin sombras duras — el "cuaderno" no flota, se apoya en líneas · Espaciado base: escala 4·8·12·16·24·32·48·64
+- Radio: 14-16px cards · 100px pills · Profundidad: hairlines finos (borde `rgba(0,0,0,.08)`) en cards/superficies — el "cuaderno" no flota, se apoya en líneas · Espaciado base: escala 4·8·12·16·24·32·48·64
+- **Enmienda 03/09/2026 (pedido explícito del usuario, referencia Duolingo):** profundidad 3D puntual (canto sólido debajo del botón, se "hunde" al presionar) SOLO en la acción primaria de cada pantalla y el ícono activo del menú inferior — clases `.boton-3d`/`.chip-3d` en `app/globals.css`, cantos `--accent-deep #3f5416` / `--accent-2-deep #6e4413` (mismo verde/ámbar de marca oscurecido, sin acento nuevo). El resto de la app (cards, chips secundarios) sigue con hairlines, sin sombra dura.
 - Dispositivo ownable: tachado verde grueso sobre el nombre del ejercicio completado + chips de meta con borde fino
 - Motion signature: ease-out corto (`--ease-out`), bounce 0.05, stagger 60-80ms en listas, duración base 260-300ms — celebración discreta, nunca confetti
 
