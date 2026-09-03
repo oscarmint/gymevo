@@ -150,6 +150,7 @@ export default function PaywallPage() {
             deshabilitado={redirigiendo}
             badge="MÁS POPULAR"
             nombre="Anual"
+            precioTachado="$4.99"
             precioMes="$2.50"
             detalle="Se cobra $29.99/año · 6 meses gratis"
           />
@@ -336,6 +337,7 @@ function PlanCard({
   deshabilitado,
   badge,
   nombre,
+  precioTachado,
   precioMes,
   detalle,
 }: {
@@ -345,6 +347,11 @@ function PlanCard({
   deshabilitado?: boolean;
   badge?: string;
   nombre: string;
+  /** Precio de referencia tachado (el dispositivo ownable de FICHA-ARTE:
+   * el mismo tachado verde que marca un ejercicio completado, aplicado aquí
+   * al precio "antes" — reutiliza un rasgo YA probado en vez de inventar
+   * uno nuevo, tras 2 rondas fallidas con la espiral decorativa). */
+  precioTachado?: string;
   precioMes: string;
   detalle: string;
 }) {
@@ -357,7 +364,7 @@ function PlanCard({
       className={`relative flex items-center justify-between rounded-[var(--radius-card)] border px-5 py-4 text-left transition-colors disabled:opacity-50 ${
         seleccionado
           ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_6%,transparent)]'
-          : 'border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)]'
+          : 'border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] bg-[var(--surface)]'
       }`}
     >
       {badge && (
@@ -378,6 +385,11 @@ function PlanCard({
       </div>
       <div className="flex items-center gap-3">
         <div className="text-right">
+          {precioTachado && (
+            <p className="text-base font-bold tabular-nums text-[var(--text-secondary)] line-through decoration-[var(--accent)] decoration-4">
+              {precioTachado}/mes
+            </p>
+          )}
           <p className="text-2xl font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
             {precioMes}
             <span className="text-xs font-normal text-[var(--text-secondary)]">/mes</span>
