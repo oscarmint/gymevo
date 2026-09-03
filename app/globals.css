@@ -2,6 +2,21 @@
 @import "../components/landing/tokens.css";
 
 /* ============================================================================
+   TEXTO JUSTIFICADO (pedido explícito del usuario, 03/09/2026 — el texto en
+   bandera/ragged-right se veía "descuadrado" a la derecha). Con hyphens:auto
+   + lang="es" (ya fijado en app/layout.tsx) el navegador parte palabras largas
+   para que el justificado no deje huecos grandes entre palabras en columnas
+   angostas de mobile. Solo párrafos de cuerpo — títulos/labels/botones de una
+   sola línea no se ven afectados (justify no hace nada en una sola línea).
+   ============================================================================ */
+p {
+  text-align: justify;
+  text-justify: inter-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+/* ============================================================================
    PROFUNDIDAD 3D PUNTUAL (pedido explícito del usuario, 03/09/2026 — referencia
    Duolingo). NO reemplaza el sistema de hairlines de FICHA-ARTE.md: se aplica
    solo a la acción primaria de cada pantalla y a íconos de navegación clave,
