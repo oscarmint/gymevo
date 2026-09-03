@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-03 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (03/09/2026): **Barrido completo de botones tras reporte del usuario ("calcular macros quedó sin efecto") — revisión de TODOS los botones de la app, no solo los que yo recordaba haber tocado.**
+- Se hizo un grep de `bg-[var(--accent)]` y `border-[var(--accent)]` en TODO `app/` y `components/` (no solo las pantallas ya tocadas) para encontrar botones reales sin ninguna de las 3 clases de profundidad. Faltaban: **guardar nombre** (ícono ✓ junto al input), **Calcular mis macros** y **Cerrar sesión** en Perfil; los 2 CTA de **Login** (enviar enlace de acceso, confirmar código); y **"Ver mi plan completo"** en `/onboarding/plan` (una pantalla del flujo que no había revisado en las rondas anteriores).
+- **Decisión de criterio, anotada para no repetir la revisión de estos casos**: los botones circulares de SOLO ícono (atrás, cerrar el modal, reemplazar ejercicio, deshacer) y los enlaces de texto subrayado/sin fondo (Reintentar, ¿Cómo se hace?, Ahora no, Cancelar) se dejan A PROPÓSITO sin el canto 3D — es el mismo criterio que usa Duolingo (su X de cerrar y sus iconos de ajustes tampoco llevan profundidad, solo los botones/chips rectangulares y las tarjetas seleccionables).
+- Verificado: tsc ✓ · build ✓. Publicado (push).
+/ Siguiente acción exacta: esperar confirmación visual del usuario en su celular (con caché limpia). Si aparece algún botón más sin el efecto, aplicar la misma clase según si es de acento lleno (`.boton-3d`), de contorno con acento (`.boton-3d-borde`) o neutro (`.superficie-3d`) — no inventar una 4ª variante.
+
 ⏸️ CHECKPOINT — Última acción completada (03/09/2026): **Profundidad 3D reforzada y extendida a TODA la app (pedido explícito tras probar en vivo: "sigo sin ver nada... hazlo más grueso y aplícalo a toda la app").**
 - **Causa de "no veo nada"**: confirmado con un navegador limpio (sin caché ni sesión, vía Playwright) contra `gymevo-eta.vercel.app` — el canto 3D SÍ estaba publicado y renderizando (`getComputedStyle` mostró el `box-shadow` correcto). El usuario probablemente veía una versión en caché de su navegador/PWA. Se le explicó y se le mandó la captura de prueba.
 - **Reforzado**: el canto de `.boton-3d` pasó de 4px a 6px (más parecido al volumen de Duolingo).
