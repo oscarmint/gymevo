@@ -451,6 +451,19 @@ export default function OnboardingPage() {
                 <span>7</span>
               </div>
               <p className="mt-4 text-center text-sm font-medium text-[var(--accent)]">{feedbackDias(dias)}</p>
+              {/* Aviso real cuando el usuario pide 7/7 — el músculo crece en
+                  el descanso, no en el gimnasio (Día 7 del split). Se avisa
+                  aquí, ANTES de fijar la meta, no después con la rutina ya
+                  armada (a pedido explícito del usuario). */}
+              {dias === 7 && (
+                <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-[color-mix(in_oklab,var(--status-warning)_35%,transparent)] bg-[color-mix(in_oklab,var(--status-warning)_8%,transparent)] p-3.5 text-left">
+                  <ShieldAlert size={17} color="var(--status-warning)" className="mt-0.5 shrink-0" />
+                  <p className="text-xs leading-relaxed text-[var(--text-primary)]">
+                    Tu plan siempre incluye un día de descanso, aunque elijas entrenar los 7. Es donde el músculo
+                    realmente crece y el cuerpo se recupera — sin él, el riesgo es lesión y agotamiento, no más progreso.
+                  </p>
+                </div>
+              )}
               <motion.button
                 type="button"
                 onClick={terminar}

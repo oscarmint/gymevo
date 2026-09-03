@@ -11,7 +11,8 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useReducedMotion } from 'motion/react';
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
-import { History } from 'lucide-react';
+import { History, TrendingDown, TrendingUp } from 'lucide-react';
+import { leerRespuestas, type Meta } from '@/lib/onboarding';
 import { leerProgreso, obtenerEjercicio, type Progreso, type RegistroLog } from '@/lib/routine';
 import { leerProgresoRemoto } from '@/lib/supabase/sync';
 
@@ -44,12 +45,15 @@ function TooltipVolumen({
 
 export default function HistorialPage() {
   const [progreso, setProgreso] = useState<Progreso | null>(null);
+  const [meta, setMeta] = useState<Meta>('musculo');
   const reduce = useReducedMotion();
 
-  // localStorage no existe en el servidor: leerlo en el initializer de
-  // useState causa mismatch de hydration. Este efecto es la forma correcta.
+  // sessionStorage/localStorage no existen en el servidor: leerlos en el
+  // initializer de useState causa mismatch de hydration. Este efecto es la
+  // forma correcta (mismo patrón ya usado en el resto de la app).
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMeta(leerRespuestas()?.meta ?? 'musculo');
     setProgreso(leerProgreso());
     // Si hay sesión, el historial remoto (Supabase) manda sobre el local —
     // es el que tiene los registros de todos los dispositivos.
@@ -97,6 +101,12 @@ export default function HistorialPage() {
     <div className="px-5 pt-6 pb-10">
       <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">Tu progreso</p>
       <h1 className="mt-1 text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Historial</h1>
+
+      {/* El progreso se ve DISTINTO según la ruta (pedido explícito): Ruta A
+          compara el peso corporal contra el inicial (sube = éxito); Ruta B
+          compara la cintura (el objetivo ahí es MANTENER las cargas, no
+          subirlas). Vive siempre, incluso sin series registradas todavía. */}
+      <TarjetaProgreso progreso={progreso} meta={meta} />
 
       {porFecha.size === 0 ? (
         <div className="mt-10 flex flex-col items-center text-center">
@@ -226,4 +236,66 @@ export default function HistorialPage() {
 function formatearFecha(iso: string): string {
   const fecha = new Date(iso + 'T00:00:00');
   return fecha.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
+/** Progreso real, distinto por ruta — nunca un número inventado: si el
+ * usuario no ha registrado la medida relevante todavía (o solo la puso una
+ * vez, sin nada con qué compararla), se lo dice tal cual en vez de mostrar
+ * un 0 que parezca un dato real. */
+function TarjetaProgreso({ progreso, meta }: { progreso: Progreso; meta: Meta }) {
+  const desde = progreso.fechaInicioMedidas ? ` desde el ${formatearFecha(progreso.fechaInicioMedidas)}` : '';
+
+  if (meta === 'musculo') {
+    const hayDato = progreso.pesoInicialKg !== null && progreso.pesoKg !== null;
+    const deltaKg = hayDato ? Math.round((progreso.pesoKg! - progreso.pesoInicialKg!) * 10) / 10 : null;
+    return (
+      <div className="mt-5 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
+        <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Tu progreso · Ruta A (ganar músculo)</p>
+        {deltaKg === null ? (
+          <p className="mt-2 text-sm text-[var(--text-secondary)]">
+            Registra tu peso en Perfil — la próxima vez que lo actualices, vas a ver aquí cuánto cambió.
+          </p>
+        ) : (
+          <>
+            <div className="mt-1 flex items-center gap-2">
+              {deltaKg >= 0 ? <TrendingUp size={20} color="var(--accent)" /> : <TrendingDown size={20} color="var(--status-warning)" />}
+              <p className="text-3xl font-bold tabular-nums leading-none text-[var(--text-primary)] [font-family:var(--font-display)]">
+                {deltaKg >= 0 ? '+' : ''}
+                {deltaKg} kg
+              </p>
+            </div>
+            <p className="mt-1.5 text-sm text-[var(--text-secondary)]">
+              de peso corporal{desde}. Meta sana: +300 a +800 g al mes — sube el peso que levantas cuando completes tus series con buena técnica.
+            </p>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  const hayDato = progreso.cinturaInicialCm !== null && progreso.cinturaCm !== null;
+  const deltaCm = hayDato ? Math.round((progreso.cinturaCm! - progreso.cinturaInicialCm!) * 10) / 10 : null;
+  return (
+    <div className="mt-5 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
+      <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Tu progreso · Ruta B (bajar grasa)</p>
+      {deltaCm === null ? (
+        <p className="mt-2 text-sm text-[var(--text-secondary)]">
+          Registra tu cintura en Perfil — en Ruta B el progreso se ve ahí, no en el peso que levantas.
+        </p>
+      ) : (
+        <>
+          <div className="mt-1 flex items-center gap-2">
+            {deltaCm <= 0 ? <TrendingDown size={20} color="var(--accent)" /> : <TrendingUp size={20} color="var(--status-warning)" />}
+            <p className="text-3xl font-bold tabular-nums leading-none text-[var(--text-primary)] [font-family:var(--font-display)]">
+              {deltaCm > 0 ? '+' : ''}
+              {deltaCm} cm
+            </p>
+          </div>
+          <p className="mt-1.5 text-sm text-[var(--text-secondary)]">
+            de cintura{desde}. Mantén las cargas que ya levantas — en Ruta B el objetivo no es subir peso, es conservar el músculo mientras baja la grasa.
+          </p>
+        </>
+      )}
+    </div>
+  );
 }

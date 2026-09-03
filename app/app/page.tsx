@@ -18,6 +18,7 @@ import {
   deshacerHecho,
   ejerciciosDeHoy,
   esDiaDeDescanso,
+  esDiaDeRecuperacionActiva,
   generoIlustracion,
   guardarProgreso,
   leerProgreso,
@@ -26,6 +27,7 @@ import {
   nombreDeHoy,
   obtenerEjercicio,
   rachaEnRiesgo,
+  recuperacionActivaDeHoy,
   registrarSerie,
   reemplazarEjercicio,
   seriesHechasHoy,
@@ -221,7 +223,7 @@ function PlanDelDia({
   const nivel = respuestas?.nivel ?? 'principiante';
   const meta = respuestas?.meta ?? 'musculo';
 
-  const ejercicios = useMemo(() => ejerciciosDeHoy(progreso.diaActual), [progreso.diaActual]);
+  const ejercicios = useMemo(() => ejerciciosDeHoy(progreso.diaActual, nivel), [progreso.diaActual, nivel]);
 
   // Actualización funcional: siempre parte del progreso MÁS RECIENTE, nunca del
   // capturado en el closure del render — evita perder un registro si dos taps
@@ -342,8 +344,10 @@ function PlanDelDia({
     ? Math.round((idsHoy.filter((e) => progreso.hechosHoy.includes(e.id)).length / idsHoy.length) * 100)
     : 0;
   const diaDescanso = esDiaDeDescanso(progreso.diaActual);
+  const diaRecuperacion = esDiaDeRecuperacionActiva(progreso.diaActual);
+  const recuperacion = recuperacionActivaDeHoy(meta);
   const tren = calentamientoDeHoy(progreso.diaActual);
-  const cardio = cardioDeHoy(progreso.diaActual);
+  const cardio = cardioDeHoy(progreso.diaActual, meta);
 
   return (
     <div className="px-5 pt-6">
@@ -418,11 +422,40 @@ function PlanDelDia({
 
       {diaDescanso ? (
         <div className="mt-6 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5 text-center">
-          <p className="text-base font-semibold text-[var(--text-primary)]">Hoy no hay entrenamiento — y está bien así.</p>
+          <p className="text-base font-semibold text-[var(--text-primary)]">Descanso hormonal — y está bien así.</p>
           <p className="mt-2 text-sm text-[var(--text-secondary)]">
-            Durante el descanso es cuando el cuerpo se recupera y los músculos crecen. Aprovecha para dormir bien
-            y comer con calma: mañana retomas tu plan.
+            En el reposo es cuando el músculo realmente crece y el equilibrio hormonal se restaura. Aprovecha para
+            dormir bien y comer con calma: mañana retomas tu plan.
           </p>
+        </div>
+      ) : diaRecuperacion ? (
+        <div className="mt-6 flex flex-col gap-4">
+          <div className="rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5 text-center">
+            <p className="text-base font-semibold text-[var(--text-primary)]">Hoy no levantas pesas — es parte del plan.</p>
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">
+              Un día de movimiento ligero favorece el flujo sanguíneo de recuperación sin sumar más fatiga muscular.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[var(--chip-bg)] p-4">
+            <p className="text-sm font-semibold text-[var(--text-primary)]">Meta de hoy: {recuperacion.pasosObjetivo}</p>
+            <p className="mt-1 text-xs text-[var(--text-secondary)]">Camina a tu ritmo durante el día — no hace falta que sea de una sola vez.</p>
+          </div>
+          {recuperacion.cardioExtra && (
+            <div className="rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-4">
+              <p className="text-sm font-semibold text-[var(--text-primary)]">
+                {recuperacion.cardioExtra.titulo}
+                {recuperacion.cardioExtra.opcional && <span className="ml-1.5 font-normal text-[var(--text-tertiary)]">(opcional)</span>}
+              </p>
+              <p className="mt-0.5 text-xs text-[var(--text-secondary)]">{recuperacion.cardioExtra.duracion}</p>
+            </div>
+          )}
+          <motion.button
+            type="button"
+            onClick={finalizarEntrenamiento}
+            className="boton-3d flex h-14 w-full items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
+          >
+            Ya cumplí mi recuperación activa
+          </motion.button>
         </div>
       ) : (
       <>

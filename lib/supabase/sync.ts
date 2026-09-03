@@ -55,7 +55,7 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
 
   const { data: perfil } = await supabase
     .from('profiles')
-    .select('dia_actual, racha, ultimo_dia_completado, descanso_automatico, descanso_duracion_seg, sonido_descanso, peso_kg, unidad_peso, estatura_cm, edad')
+    .select('dia_actual, racha, ultimo_dia_completado, descanso_automatico, descanso_duracion_seg, sonido_descanso, peso_kg, unidad_peso, estatura_cm, edad, peso_inicial_kg, cintura_cm, cintura_inicial_cm, fecha_inicio_medidas')
     .eq('id', user.id)
     .maybeSingle();
   if (!perfil) return null;
@@ -88,6 +88,10 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
     unidadPeso: perfil.unidad_peso === 'kg' ? 'kg' : 'lb',
     estaturaCm: perfil.estatura_cm === null ? null : Number(perfil.estatura_cm),
     edad: perfil.edad === null ? null : Number(perfil.edad),
+    pesoInicialKg: perfil.peso_inicial_kg === null ? null : Number(perfil.peso_inicial_kg),
+    cinturaCm: perfil.cintura_cm === null ? null : Number(perfil.cintura_cm),
+    cinturaInicialCm: perfil.cintura_inicial_cm === null ? null : Number(perfil.cintura_inicial_cm),
+    fechaInicioMedidas: perfil.fecha_inicio_medidas,
   };
 }
 
@@ -112,6 +116,10 @@ export function guardarProgresoRemoto(p: Progreso, onError?: () => void) {
         unidad_peso: p.unidadPeso,
         estatura_cm: p.estaturaCm,
         edad: p.edad,
+        peso_inicial_kg: p.pesoInicialKg,
+        cintura_cm: p.cinturaCm,
+        cintura_inicial_cm: p.cinturaInicialCm,
+        fecha_inicio_medidas: p.fechaInicioMedidas,
       })
       .eq('id', user.id)
       .then(({ error }) => {

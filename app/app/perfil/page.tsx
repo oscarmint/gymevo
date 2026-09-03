@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { Check, ExternalLink, Flame, LogOut, Pencil } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { calcularMacros } from '@/lib/macros';
-import { ejerciciosDeHoy, guardarProgreso, leerProgreso, obtenerEjercicio, tituloRuta, type Progreso } from '@/lib/routine';
+import { ejerciciosDeHoy, guardarProgreso, leerProgreso, obtenerEjercicio, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
 import { leerNombreLocal, guardarNombreLocal } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { guardarNombreRemoto, guardarProgresoRemoto, leerMembresiaRemota, leerNombreRemoto } from '@/lib/supabase/sync';
@@ -31,6 +31,7 @@ export default function PerfilPage() {
   const [pesoBorrador, setPesoBorrador] = useState('');
   const [estaturaBorrador, setEstaturaBorrador] = useState('');
   const [edadBorrador, setEdadBorrador] = useState('');
+  const [cinturaBorrador, setCinturaBorrador] = useState('');
 
   // localStorage/sessionStorage no existen en el servidor: leerlos en el
   // initializer de useState causa mismatch de hydration. Este efecto es la
@@ -43,6 +44,7 @@ export default function PerfilPage() {
     setPesoBorrador(p.pesoKg ? String(p.pesoKg) : '');
     setEstaturaBorrador(p.estaturaCm ? String(p.estaturaCm) : '');
     setEdadBorrador(p.edad ? String(p.edad) : '');
+    setCinturaBorrador(p.cinturaCm ? String(p.cinturaCm) : '');
     setNombre(leerNombreLocal());
     leerNombreRemoto().then((remoto) => {
       if (remoto) {
@@ -61,7 +63,7 @@ export default function PerfilPage() {
 
   // Misma llama de racha que Plan de hoy: se llena según el progreso real de
   // hoy (ejercicios ya marcados hechos / total de hoy), no es decorativa.
-  const idsHoy = ejerciciosDeHoy(progreso.diaActual).map((e) => obtenerEjercicio(progreso.reemplazosHoy[e.id] ?? e.id));
+  const idsHoy = ejerciciosDeHoy(progreso.diaActual, nivel).map((e) => obtenerEjercicio(progreso.reemplazosHoy[e.id] ?? e.id));
   const progresoLlamaPct = idsHoy.length
     ? Math.round((idsHoy.filter((e) => progreso.hechosHoy.includes(e.id)).length / idsHoy.length) * 100)
     : 0;
@@ -88,7 +90,11 @@ export default function PerfilPage() {
     const cm = Number(estaturaBorrador);
     const anios = Number(edadBorrador);
     if (!progreso || !kg || kg <= 0 || !cm || cm <= 0 || !anios || anios <= 0) return;
-    const next = { ...progreso, pesoKg: kg, estaturaCm: cm, edad: anios };
+    // Cintura es opcional (solo importa de verdad para Ruta B) — si el
+    // usuario la deja vacía, no se pierde ni se fuerza a poner algo.
+    const cinturaCm = cinturaBorrador ? Number(cinturaBorrador) : null;
+    const conMedidas = registrarMedidasIniciales(progreso, kg, cinturaCm && cinturaCm > 0 ? cinturaCm : progreso.cinturaCm);
+    const next = { ...conMedidas, estaturaCm: cm, edad: anios };
     setProgreso(next);
     guardarProgreso(next);
     guardarProgresoRemoto(next);
@@ -244,7 +250,7 @@ export default function PerfilPage() {
         <p className="text-sm font-semibold text-[var(--text-primary)]">
           Tus macros · {meta === 'musculo' ? 'Ruta A, ganar músculo' : 'Ruta B, bajar grasa'}
         </p>
-        <div className="mt-3 grid grid-cols-3 gap-2">
+        <div className={`mt-3 grid gap-2 ${meta === 'grasa' ? 'grid-cols-2' : 'grid-cols-3'}`}>
           <div className="flex flex-col gap-1">
             <label htmlFor="peso-macros" className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
               Peso (kg)
@@ -287,6 +293,25 @@ export default function PerfilPage() {
               className="h-11 w-full rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
             />
           </div>
+          {/* Solo Ruta B: en bajar grasa el objetivo es MANTENER las cargas,
+              así que el progreso real se ve en centímetros, no en peso
+              levantado (ver Historial → "Tu progreso"). */}
+          {meta === 'grasa' && (
+            <div className="flex flex-col gap-1">
+              <label htmlFor="cintura-macros" className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+                Cintura (cm)
+              </label>
+              <input
+                id="cintura-macros"
+                type="number"
+                inputMode="decimal"
+                placeholder="80"
+                value={cinturaBorrador}
+                onChange={(e) => setCinturaBorrador(e.target.value)}
+                className="h-11 w-full rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+              />
+            </div>
+          )}
         </div>
         <button
           type="button"

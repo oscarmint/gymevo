@@ -69,19 +69,32 @@ export function factorActividad(diasSemana: number): number {
   return 1.725;
 }
 
+// Rangos 03/09/2026 — especificación exacta dada por el usuario (arquitectura
+// "REAL FISIC"), dentro del mismo marco de evidencia ISSN citado arriba. Se
+// usa el punto medio de cada rango.
 const PROTEINA_G_KG: Record<Meta, number> = {
-  musculo: 1.7, // ISSN: 1.4-2.0 g/kg para ganar/mantener músculo — punto medio
-  grasa: 2.4, // ISSN: 2.3-3.1 g/kg para proteger músculo en déficit — extremo bajo de ese rango
+  musculo: 1.8, // Ruta A: 1.6-2.0 g/kg — punto medio
+  grasa: 2.1, // Ruta B (protección anticatabólica): 1.8-2.4 g/kg — punto medio
 };
 
 const CARBOHIDRATOS_G_KG: Record<Meta, number> = {
-  musculo: 4, // ISSN: 3-5 g/kg en fuerza general — punto medio
-  grasa: 3, // Ajustado a la baja en déficit, dentro del mismo marco de evidencia
+  musculo: 4, // Ruta A: 3-5 g/kg — punto medio
+  grasa: 3, // Ruta B: reducidos, concentrados peri-entreno — sin rango exacto dado, se mantiene como piso
 };
 
-// Ruta A: superávit leve (ebook +150/+300 kcal, punto medio). Ruta B: déficit
-// moderado (ebook -300/-500 kcal, punto medio) — ambos sobre el TDEE real de
-// la persona, no sobre un número genérico.
+// Ruta A: fats 0.6-1.0 g/kg (regulación hormonal) — punto medio. Ruta B:
+// 0.6-0.8 g/kg (saciedad y sistema nervioso, sin exceso calórico) — punto
+// medio. Antes se calculaba como % de las calorías; ahora es directo por
+// kg, tal como lo especifica la ruta.
+const GRASA_G_KG: Record<Meta, number> = {
+  musculo: 0.8,
+  grasa: 0.7,
+};
+
+// Ruta A: superávit leve (+150/+300 kcal, punto medio +225). Ruta B: déficit
+// moderado (-300/-500 kcal, punto medio -400) — ambos sobre el TDEE real de
+// la persona. Un déficit más agresivo (ej. -800) queda BLOQUEADO por diseño:
+// el ajuste es fijo, la app nunca deja elegir un déficit mayor al de aquí.
 const AJUSTE_KCAL: Record<Meta, number> = {
   musculo: 225,
   grasa: -400,
@@ -97,9 +110,7 @@ export function calcularMacros(datos: DatosParaMacros): Macros {
   const kcal = Math.round(Math.max(tdee + AJUSTE_KCAL[meta], bmr));
 
   const proteinaG = Math.round(pesoKg * PROTEINA_G_KG[meta]);
-  const grasasMinimoG = Math.round(pesoKg * 0.6);
-  const grasasPorPorcentaje = Math.round((kcal * 0.25) / 9);
-  const grasasG = Math.max(grasasMinimoG, grasasPorPorcentaje);
+  const grasasG = Math.round(pesoKg * GRASA_G_KG[meta]);
 
   const kcalRestantes = kcal - proteinaG * 4 - grasasG * 9;
   const carbohidratosMinimoG = Math.round(pesoKg * CARBOHIDRATOS_G_KG[meta] * 0.5);

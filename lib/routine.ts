@@ -5,6 +5,15 @@
 
 import type { Meta, Nivel } from './onboarding';
 
+// REESTRUCTURACIÓN 03/09/2026 — calendario de 7 días, cardio por ruta y
+// diferenciación principiante/intermedio, a especificación exacta dada por
+// el usuario (arquitectura "REAL FISIC"): Día 1 pierna-cuádriceps, Día 2
+// empuje+cardio por ruta, Día 3 tracción, Día 4 recuperación activa (SIN
+// pesas), Día 5 pierna-isquios/glúteos, Día 6 híbrido superior sin piernas,
+// Día 7 descanso hormonal. Reemplaza el split anterior (que mezclaba
+// cuádriceps con isquios/glúteos en el mismo día y no variaba el cardio
+// según la meta del usuario).
+
 /** Grupo muscular estandarizado — independiente del `grupo` de texto libre
  * (que es la etiqueta que ve el usuario). Este es el que decide qué
  * ilustración de "Explicación del ejercicio" se muestra (ver
@@ -51,6 +60,11 @@ export interface Ejercicio {
    * cuerpo (CuerpoMuscular) como respaldo: agregar la imagen más adelante
    * nunca rompe nada. Ver public/explicaciones/README.md. */
   imagenExplicacion?: string;
+  /** Ejercicio libre/compuesto que exige más técnica (sentadilla con barra,
+   * peso muerto, press militar, remo con barra) — en Ruta Principiante se
+   * sustituye automáticamente por su `alternativaId` (máquina/más guiado),
+   * nunca se le pide a un principiante que empiece directo con barra libre. */
+  avanzado?: boolean;
   series: number;
   reps: string;
   descansoSeg: number;
@@ -71,13 +85,13 @@ export type DiaSemana = 'lunes' | 'martes' | 'miercoles' | 'jueves' | 'viernes' 
 const ORDEN_DIAS: DiaSemana[] = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
 
 const NOMBRE_DIA: Record<DiaSemana, string> = {
-  lunes: 'Pierna, abdomen y cardio',
-  martes: 'Pecho, tríceps y hombro',
-  miercoles: 'Espalda, bíceps y hombro',
-  jueves: 'Pierna, abdomen y cardio',
-  viernes: 'Pecho, espalda y hombro',
-  sabado: 'Full body',
-  domingo: 'Descanso',
+  lunes: 'Pierna (cuádriceps) y abdomen',
+  martes: 'Empuje: pecho, hombro y tríceps',
+  miercoles: 'Tracción: espalda, bíceps y hombro',
+  jueves: 'Recuperación activa',
+  viernes: 'Pierna (isquiotibiales y glúteos)',
+  sabado: 'Tren superior híbrido',
+  domingo: 'Descanso hormonal',
 };
 
 export const CALENTAMIENTO_IMG: Record<TrenCalentamiento, string> = {
@@ -89,9 +103,9 @@ const CALENTAMIENTO_DIA: Record<DiaSemana, TrenCalentamiento | null> = {
   lunes: 'inferior',
   martes: 'superior',
   miercoles: 'superior',
-  jueves: 'inferior',
-  viernes: 'superior',
-  sabado: 'inferior',
+  jueves: null, // recuperación activa: sin pesas, no aplica calentamiento de gimnasio
+  viernes: 'inferior',
+  sabado: 'superior',
   domingo: null,
 };
 
@@ -119,15 +133,34 @@ const CARDIO_ZONA2: CardioDelDia = {
   imagen: '/explicaciones/cardio-zona2.jpg',
 };
 
-const CARDIO_DIA: Record<DiaSemana, CardioDelDia | null> = {
-  lunes: CARDIO_HIIT,
-  martes: CARDIO_ZONA2,
-  miercoles: CARDIO_HIIT,
-  jueves: CARDIO_ZONA2,
-  viernes: CARDIO_HIIT,
-  sabado: { ...CARDIO_ZONA2, duracion: '20-30 min · ritmo cómodo (opcional)', opcional: true },
-  domingo: null,
-};
+/** El cardio del Día 2 (empuje) cambia según la ruta — a especificación
+ * exacta del usuario: Zona 2 para no interferir con el volumen muscular en
+ * Ruta A (ganar músculo), HIIT para acelerar el metabolismo en Ruta B (bajar
+ * grasa). Los demás días de pesas no llevan cardio (solo Día 2 y Día 4). */
+export function cardioDeHoy(diaActual: number, meta: Meta): CardioDelDia | null {
+  const dia = diaSemanaDeHoy(diaActual);
+  if (dia !== 'martes') return null;
+  return meta === 'musculo' ? CARDIO_ZONA2 : CARDIO_HIIT;
+}
+
+export interface RecuperacionActiva {
+  pasosObjetivo: string;
+  /** Solo Ruta B: sesión de cardio Zona 2 adicional orientada a quema de grasa. */
+  cardioExtra?: CardioDelDia;
+}
+
+/** Día 4 — recuperación activa: nunca es entrenamiento de fuerza, solo
+ * movimiento ligero. Ruta A camina para favorecer el flujo sanguíneo de
+ * recuperación; Ruta B suma una sesión de Zona 2 orientada a quemar grasa. */
+export function recuperacionActivaDeHoy(meta: Meta): RecuperacionActiva {
+  return {
+    pasosObjetivo: '7.000–10.000 pasos',
+    cardioExtra:
+      meta === 'grasa'
+        ? { ...CARDIO_ZONA2, titulo: 'Zona 2 extra', duracion: '30-60 min · orientado a quema de grasa', opcional: true }
+        : undefined,
+  };
+}
 
 // Catálogo real del programa de 90 días — Sesión 8. Dentro de cada día el
 // ORDEN importa: primero el grupo muscular más grande/el compuesto (ej.
@@ -136,8 +169,8 @@ const CARDIO_DIA: Record<DiaSemana, CardioDelDia | null> = {
 // no se debe reordenar sin ese mismo criterio (músculo mayor → menor,
 // compuesto → aislado).
 const CATALOGO: Record<string, Ejercicio> = {
-  sentadilla_barra: { id: 'sentadilla_barra', nombre: 'Sentadilla con barra', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/sentadilla-barra.jpg', series: 4, reps: '10-12', descansoSeg: 120, tempo: '3-1-1', alternativaId: 'prensa_inclinada' },
-  peso_muerto_barra: { id: 'peso_muerto_barra', nombre: 'Peso muerto con barra', grupo: 'Pierna', grupoMuscular: 'femoral', imagenExplicacion: '/explicaciones/peso-muerto-barra.jpg', series: 4, reps: '10-12', descansoSeg: 120, tempo: '3-1-1', alternativaId: 'curl_femoral_maquina' },
+  sentadilla_barra: { id: 'sentadilla_barra', nombre: 'Sentadilla con barra', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/sentadilla-barra.jpg', avanzado: true, series: 4, reps: '10-12', descansoSeg: 120, tempo: '3-1-1', alternativaId: 'prensa_inclinada' },
+  peso_muerto_barra: { id: 'peso_muerto_barra', nombre: 'Peso muerto con barra', grupo: 'Pierna', grupoMuscular: 'femoral', imagenExplicacion: '/explicaciones/peso-muerto-barra.jpg', avanzado: true, series: 4, reps: '10-12', descansoSeg: 120, tempo: '3-1-1', alternativaId: 'curl_femoral_maquina' },
   prensa_inclinada: { id: 'prensa_inclinada', nombre: 'Prensa inclinada', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/prensa-inclinada.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'sentadilla_barra' },
   extension_cuadriceps: { id: 'extension_cuadriceps', nombre: 'Extensión de cuádriceps', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/extension-cuadriceps.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'prensa_inclinada' },
   aductor_externo: { id: 'aductor_externo', nombre: 'Aductor externo (máquina)', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/aductor-externo.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'aductor_interno' },
@@ -154,9 +187,9 @@ const CATALOGO: Record<string, Ejercicio> = {
   crossover_polea_alta: { id: 'crossover_polea_alta', nombre: 'Crossover en polea alta', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/crossover-polea-alta.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'aperturas_maquina' },
   press_frances_barra_z: { id: 'press_frances_barra_z', nombre: 'Press francés con barra Z', grupo: 'Tríceps', grupoMuscular: 'triceps', imagenExplicacion: '/explicaciones/press-frances-barra-z.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'extension_triceps_copa' },
   extension_triceps_copa: { id: 'extension_triceps_copa', nombre: 'Extensión de tríceps (copa)', grupo: 'Tríceps', grupoMuscular: 'triceps', imagenExplicacion: '/explicaciones/extension-triceps-copa.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'press_frances_barra_z' },
-  press_militar_barra: { id: 'press_militar_barra', nombre: 'Press militar con barra', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/press-militar-barra.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'elevaciones_laterales_mancuernas' },
+  press_militar_barra: { id: 'press_militar_barra', nombre: 'Press militar con barra', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/press-militar-barra.jpg', avanzado: true, series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'elevaciones_laterales_mancuernas' },
 
-  remo_barra: { id: 'remo_barra', nombre: 'Remo con barra', grupo: 'Espalda', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/remo-barra.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'remo_cerrado_maquina' },
+  remo_barra: { id: 'remo_barra', nombre: 'Remo con barra', grupo: 'Espalda', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/remo-barra.jpg', avanzado: true, series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'remo_cerrado_maquina' },
   jalon_pecho: { id: 'jalon_pecho', nombre: 'Jalón de pecho', grupo: 'Espalda', grupoMuscular: 'dorsal', imagenExplicacion: '/explicaciones/jalon-pecho.jpg', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'jalon_pecho_cerrado_neutro' },
   remo_cerrado_maquina: { id: 'remo_cerrado_maquina', nombre: 'Remo cerrado en máquina', grupo: 'Espalda', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/remo-cerrado-maquina.jpg', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_barra' },
   jalon_pecho_cerrado_neutro: { id: 'jalon_pecho_cerrado_neutro', nombre: 'Jalón de pecho cerrado neutro', grupo: 'Espalda', grupoMuscular: 'dorsal', imagenExplicacion: '/explicaciones/jalon-pecho-cerrado-neutro.jpg', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'jalon_pecho' },
@@ -182,17 +215,25 @@ export function generoIlustracion(id: string): 'masculino' | 'femenino' {
   return indice % 2 === 0 ? 'masculino' : 'femenino';
 }
 
-// SPLIT semanal real del programa (docs del ebook "Transformación en 90
-// días") — de lunes a sábado, domingo descanso. El orden de cada arreglo es
-// el orden en que se entrenan: músculo grande/compuesto primero, aislados y
-// accesorios después (ver comentario del catálogo arriba).
+// SPLIT semanal — reestructurado 03/09/2026 a especificación exacta del
+// usuario (arquitectura "REAL FISIC"): cada grupo muscular vive en UN solo
+// día (antes cuádriceps e isquios/glúteos se mezclaban lunes+jueves). El
+// orden de cada arreglo es el orden en que se entrenan: músculo grande/
+// compuesto primero, aislados y accesorios después.
 const SPLIT: Record<DiaSemana, string[]> = {
-  lunes: ['sentadilla_barra', 'peso_muerto_barra', 'prensa_inclinada', 'extension_cuadriceps', 'aductor_externo', 'elevacion_talon', 'crunch_lateral_inclinado'],
-  martes: ['press_banco_mancuernas', 'press_inclinado_mancuerna', 'aperturas_maquina', 'crossover_polea_alta', 'press_frances_barra_z', 'extension_triceps_copa', 'press_militar_barra'],
-  miercoles: ['remo_barra', 'jalon_pecho', 'remo_cerrado_maquina', 'jalon_pecho_cerrado_neutro', 'curl_barra', 'curl_supinacion_maquina', 'pajaros_pie_mancuerna', 'elevaciones_laterales_mancuernas', 'plancha_abdominal'],
-  jueves: ['sentadilla_barra', 'peso_muerto_barra', 'hip_thrust_barra', 'aductor_interno', 'elevacion_talon', 'curl_femoral_maquina', 'elevacion_piernas'],
-  viernes: ['press_banco_mancuernas', 'press_inclinado_mancuerna', 'crossover_polea_alta', 'jalon_pecho', 'remo_cerrado_maquina', 'jalon_pecho_cerrado_neutro', 'elevacion_frontal_mancuernas', 'encogimientos_mancuernas', 'crunch_superior_horizontal', 'lumbares_maquina'],
-  sabado: ['sentadilla_barra', 'press_banco_mancuernas', 'remo_barra', 'press_militar_barra', 'plancha_abdominal'],
+  // Día 1 — pierna (cuádriceps) y abdomen.
+  lunes: ['sentadilla_barra', 'prensa_inclinada', 'extension_cuadriceps', 'aductor_externo', 'aductor_interno', 'elevacion_talon', 'crunch_lateral_inclinado'],
+  // Día 2 — empuje: pecho, hombro anterior y tríceps (+ cardio por ruta, ver cardioDeHoy).
+  martes: ['press_banco_mancuernas', 'press_inclinado_mancuerna', 'aperturas_maquina', 'crossover_polea_alta', 'press_militar_barra', 'press_frances_barra_z', 'extension_triceps_copa'],
+  // Día 3 — tracción: dorsales, bíceps, trapecio y deltoides posterior + abdomen.
+  miercoles: ['remo_barra', 'jalon_pecho', 'remo_cerrado_maquina', 'jalon_pecho_cerrado_neutro', 'curl_barra', 'curl_supinacion_maquina', 'pajaros_pie_mancuerna', 'encogimientos_mancuernas', 'plancha_abdominal'],
+  // Día 4 — recuperación activa: SIN pesas (ver recuperacionActivaDeHoy).
+  jueves: [],
+  // Día 5 — pierna (isquiotibiales y glúteos), cadena posterior.
+  viernes: ['peso_muerto_barra', 'hip_thrust_barra', 'curl_femoral_maquina', 'elevacion_piernas'],
+  // Día 6 — tren superior híbrido (empuje/tracción), sin piernas, menor carga articular.
+  sabado: ['crossover_polea_alta', 'jalon_pecho', 'remo_cerrado_maquina', 'jalon_pecho_cerrado_neutro', 'elevacion_frontal_mancuernas', 'crunch_superior_horizontal', 'lumbares_maquina'],
+  // Día 7 — descanso hormonal.
   domingo: [],
 };
 
@@ -208,17 +249,28 @@ export function calentamientoDeHoy(diaActual: number): TrenCalentamiento | null 
   return CALENTAMIENTO_DIA[diaSemanaDeHoy(diaActual)];
 }
 
-export function cardioDeHoy(diaActual: number): CardioDelDia | null {
-  return CARDIO_DIA[diaSemanaDeHoy(diaActual)];
-}
-
 export function esDiaDeDescanso(diaActual: number): boolean {
   return diaSemanaDeHoy(diaActual) === 'domingo';
 }
 
-export function ejerciciosDeHoy(diaActual: number): Ejercicio[] {
+/** Día 4 del split — recuperación activa (pasos o cardio suave), nunca pesas.
+ * Distinto de `esDiaDeDescanso` (domingo, descanso total). */
+export function esDiaDeRecuperacionActiva(diaActual: number): boolean {
+  return diaSemanaDeHoy(diaActual) === 'jueves';
+}
+
+/** En Ruta Principiante, cada ejercicio `avanzado` (barra libre) se
+ * sustituye por su alternativa guiada y las series bajan en 1 (piso de 3) —
+ * misma sesión, menos exigencia técnica el primer tramo. Ruta Intermedio (o
+ * sin nivel, por compatibilidad) usa el catálogo tal cual. */
+export function ejerciciosDeHoy(diaActual: number, nivel: Nivel = 'intermedio'): Ejercicio[] {
   const dia = diaSemanaDeHoy(diaActual);
-  return SPLIT[dia].map((id) => CATALOGO[id]);
+  return SPLIT[dia].map((id) => {
+    const ejercicio = CATALOGO[id];
+    if (nivel !== 'principiante') return ejercicio;
+    const base = ejercicio.avanzado ? CATALOGO[ejercicio.alternativaId] : ejercicio;
+    return { ...base, series: Math.max(3, base.series - 1) };
+  });
 }
 
 /** Ejercicio de respaldo para ids que ya no existen en el catálogo actual —
@@ -292,6 +344,22 @@ export interface Progreso {
    * ingresa en Perfil. */
   estaturaCm: number | null;
   edad: number | null;
+  /** Peso corporal la PRIMERA vez que el usuario lo registró — nunca se
+   * sobrescribe (ver `registrarMedidasIniciales`). Es la base para medir
+   * progreso real: Ruta A compara `pesoKg` contra esto para mostrar cuánto
+   * subió (300-800 g/mes es la señal de éxito); sin este ancla, cada edición
+   * de peso "resetea" el progreso visible. */
+  pesoInicialKg: number | null;
+  /** Cintura en cm — la métrica de progreso de Ruta B (bajar grasa): ahí el
+   * objetivo es MANTENER las cargas, así que el progreso real se ve en
+   * centímetros, no en peso levantado. null hasta que el usuario la ingresa
+   * en Perfil (solo se pide para Ruta B). */
+  cinturaCm: number | null;
+  /** Cintura la PRIMERA vez registrada — mismo ancla que `pesoInicialKg`. */
+  cinturaInicialCm: number | null;
+  /** Fecha (YYYY-MM-DD) de la primera medida registrada (peso o cintura) —
+   * para poder decir "desde el [fecha]" en el progreso, no solo "un cambio". */
+  fechaInicioMedidas: string | null;
 }
 
 const KEY = 'gymevo_progreso';
@@ -307,11 +375,11 @@ function diasEntre(a: string, b: string): number {
 
 export function leerProgreso(): Progreso {
   if (typeof window === 'undefined') {
-    return { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null };
+    return { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
   }
   const raw = localStorage.getItem(KEY);
   if (!raw) {
-    const inicial: Progreso = { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null };
+    const inicial: Progreso = { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
     localStorage.setItem(KEY, JSON.stringify(inicial));
     return inicial;
   }
@@ -324,6 +392,10 @@ export function leerProgreso(): Progreso {
   if (p.unidadPeso === undefined) p.unidadPeso = 'lb';
   if (p.estaturaCm === undefined) p.estaturaCm = null;
   if (p.edad === undefined) p.edad = null;
+  if (p.pesoInicialKg === undefined) p.pesoInicialKg = null;
+  if (p.cinturaCm === undefined) p.cinturaCm = null;
+  if (p.cinturaInicialCm === undefined) p.cinturaInicialCm = null;
+  if (p.fechaInicioMedidas === undefined) p.fechaInicioMedidas = null;
   // Si cambió el día calendario desde el último completado y ya se había marcado
   // "hechosHoy", se limpia para el nuevo día (pero SIN romper la racha: eso solo
   // pasa si pasan ≥2 días sin completar, ver `racha en riesgo/rota` abajo).
@@ -332,6 +404,18 @@ export function leerProgreso(): Progreso {
     p.reemplazosHoy = {};
   }
   return p;
+}
+
+/** Fija el ANCLA de progreso la primera vez que se registra peso y/o
+ * cintura — nunca la sobrescribe después, aunque el usuario edite el valor
+ * actual muchas veces. Sin este ancla, cada edición de Perfil "resetearía"
+ * el progreso visible en Historial (ver `pesoInicialKg`/`cinturaInicialCm`). */
+export function registrarMedidasIniciales(p: Progreso, nuevoPesoKg: number | null, nuevaCinturaCm: number | null): Progreso {
+  const next = { ...p, pesoKg: nuevoPesoKg, cinturaCm: nuevaCinturaCm };
+  if (next.pesoInicialKg === null && nuevoPesoKg !== null) next.pesoInicialKg = nuevoPesoKg;
+  if (next.cinturaInicialCm === null && nuevaCinturaCm !== null) next.cinturaInicialCm = nuevaCinturaCm;
+  if (next.fechaInicioMedidas === null && (nuevoPesoKg !== null || nuevaCinturaCm !== null)) next.fechaInicioMedidas = hoyISO();
+  return next;
 }
 
 export function guardarProgreso(p: Progreso) {
