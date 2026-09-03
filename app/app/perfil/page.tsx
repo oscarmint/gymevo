@@ -147,7 +147,7 @@ export default function PerfilPage() {
             type="button"
             aria-label="Guardar nombre"
             onClick={guardarNombre}
-            className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)] text-[var(--bg)]"
+            className="boton-3d flex size-11 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)] text-[var(--bg)]"
           >
             <Check size={18} />
           </button>
@@ -276,7 +276,7 @@ export default function PerfilPage() {
         <button
           type="button"
           onClick={guardarDatosMacros}
-          className="mt-3 flex h-11 w-full items-center justify-center rounded-xl bg-[var(--accent)] px-4 text-sm font-semibold text-[var(--bg)]"
+          className="boton-3d mt-3 flex h-11 w-full items-center justify-center rounded-xl bg-[var(--accent)] px-4 text-sm font-semibold text-[var(--bg)]"
         >
           Calcular mis macros
         </button>
@@ -314,7 +314,7 @@ export default function PerfilPage() {
       <button
         type="button"
         onClick={cerrarSesion}
-        className="mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] text-sm font-semibold text-[var(--text-secondary)]"
+        className="superficie-3d mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] text-sm font-semibold text-[var(--text-secondary)]"
       >
         <LogOut size={16} /> Cerrar sesión
       </button>

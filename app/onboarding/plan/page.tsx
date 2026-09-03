@@ -110,7 +110,7 @@ export default function VistaPreviaDiaUnoPage() {
         <button
           type="button"
           onClick={() => router.push('/paywall')}
-          className="mt-8 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_25%,transparent)]"
+          className="boton-3d mt-8 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
         >
           Ver mi plan completo
         </button>

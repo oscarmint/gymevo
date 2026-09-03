@@ -120,7 +120,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={estado === 'enviando'}
-                className="flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)] disabled:opacity-70"
+                className="boton-3d flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)] disabled:opacity-70"
               >
                 {estado === 'enviando' ? 'Enviando…' : 'Enviarme mi enlace de acceso'}
               </button>
@@ -173,7 +173,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={codigo.length < 6 || verificando}
-                  className="flex h-12 flex-1 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)] disabled:opacity-40"
+                  className="boton-3d flex h-12 flex-1 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)] disabled:opacity-40"
                 >
                   {verificando ? 'Confirmando…' : 'Confirmar código'}
                 </button>
