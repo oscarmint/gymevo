@@ -3,15 +3,15 @@
 // PERFIL — nivel, meta, plan y salida. Sesión 6 conecta "Cerrar sesión" a
 // Supabase Auth real; por ahora limpia el estado local y vuelve a la landing.
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, ExternalLink, Flame, LogOut, Pencil } from 'lucide-react';
+import { Camera, Check, ExternalLink, Flame, Loader2, LogOut, Pencil } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { calcularMacros } from '@/lib/macros';
 import { ejerciciosDeHoy, guardarProgreso, leerProgreso, obtenerEjercicio, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
-import { leerNombreLocal, guardarNombreLocal } from '@/lib/perfil';
+import { leerAvatarLocal, guardarAvatarLocal, leerNombreLocal, guardarNombreLocal } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
-import { guardarNombreRemoto, guardarProgresoRemoto, leerMembresiaRemota, leerNombreRemoto } from '@/lib/supabase/sync';
+import { guardarNombreRemoto, guardarProgresoRemoto, leerAvatarRemoto, leerMembresiaRemota, leerNombreRemoto, subirAvatar } from '@/lib/supabase/sync';
 
 const ESTADO_MEMBRESIA_LABEL: Record<string, string> = {
   trialing: 'En prueba gratis',
@@ -32,6 +32,10 @@ export default function PerfilPage() {
   const [estaturaBorrador, setEstaturaBorrador] = useState('');
   const [edadBorrador, setEdadBorrador] = useState('');
   const [cinturaBorrador, setCinturaBorrador] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [subiendoAvatar, setSubiendoAvatar] = useState(false);
+  const [errorAvatar, setErrorAvatar] = useState(false);
+  const inputAvatarRef = useRef<HTMLInputElement>(null);
 
   // localStorage/sessionStorage no existen en el servidor: leerlos en el
   // initializer de useState causa mismatch de hydration. Este efecto es la
@@ -50,6 +54,13 @@ export default function PerfilPage() {
       if (remoto) {
         setNombre(remoto);
         guardarNombreLocal(remoto);
+      }
+    });
+    setAvatarUrl(leerAvatarLocal());
+    leerAvatarRemoto().then((remoto) => {
+      if (remoto) {
+        setAvatarUrl(remoto);
+        guardarAvatarLocal(remoto);
       }
     });
     leerMembresiaRemota().then(setMembresia);
@@ -100,6 +111,22 @@ export default function PerfilPage() {
     guardarProgresoRemoto(next);
   }
 
+  async function elegirFoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const archivo = e.target.files?.[0];
+    e.target.value = ''; // permite elegir el mismo archivo dos veces seguidas
+    if (!archivo) return;
+    setSubiendoAvatar(true);
+    setErrorAvatar(false);
+    const url = await subirAvatar(archivo);
+    setSubiendoAvatar(false);
+    if (!url) {
+      setErrorAvatar(true);
+      return;
+    }
+    setAvatarUrl(url);
+    guardarAvatarLocal(url);
+  }
+
   function cambiarUnidadPeso(unidad: 'kg' | 'lb') {
     if (!progreso) return;
     const next = { ...progreso, unidadPeso: unidad };
@@ -137,12 +164,51 @@ export default function PerfilPage() {
       </video>
 
       <div className="relative z-10">
-      {/* Chip propio opaco (no un scrim de toda la pantalla, a pedido del
-          usuario: el video se ve completo) para que el saludo se lea sobre
-          cualquier fotograma del video, sin depender de qué tan claro/oscuro
-          salga. Sin glass/blur (regla anti-IA de FICHA-ARTE): superficie
-          sólida, igual que el resto de las cards de esta misma pantalla. */}
-      <div className="inline-block rounded-2xl bg-[var(--surface)] px-4 py-3 shadow-[var(--shadow-1)]">
+      {/* Foto de perfil: círculo tocable con inicial de respaldo (nunca un
+          espacio vacío) — el input de archivo SIN restringir `capture` deja
+          que el propio sistema ofrezca "Cámara" o "Galería" (a pedido
+          explícito del usuario: quiere las dos opciones, no solo selfie). */}
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          aria-label="Cambiar foto de perfil"
+          onClick={() => inputAvatarRef.current?.click()}
+          disabled={subiendoAvatar}
+          className="superficie-3d relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--surface)] bg-[var(--chip-bg)] shadow-[var(--shadow-1)] disabled:opacity-70"
+        >
+          {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatarUrl} alt="Tu foto de perfil" className="size-full object-cover" />
+          ) : (
+            <span className="text-xl font-bold text-[var(--accent)] [font-family:var(--font-display)]">
+              {(nombre ?? '?').trim().charAt(0).toUpperCase()}
+            </span>
+          )}
+          {subiendoAvatar ? (
+            <span className="absolute inset-0 flex items-center justify-center bg-[color-mix(in_oklab,var(--text-primary)_55%,transparent)]">
+              <Loader2 size={18} color="var(--bg)" className="animate-spin motion-reduce:animate-none" />
+            </span>
+          ) : (
+            <span className="absolute inset-x-0 bottom-0 flex items-center justify-center bg-[color-mix(in_oklab,var(--text-primary)_55%,transparent)] py-1">
+              <Camera size={13} color="var(--bg)" />
+            </span>
+          )}
+        </button>
+        <input
+          ref={inputAvatarRef}
+          type="file"
+          accept="image/*"
+          onChange={elegirFoto}
+          className="hidden"
+          aria-hidden="true"
+          tabIndex={-1}
+        />
+        {/* Chip propio opaco (no un scrim de toda la pantalla, a pedido del
+            usuario: el video se ve completo) para que el saludo se lea sobre
+            cualquier fotograma del video, sin depender de qué tan claro/oscuro
+            salga. Sin glass/blur (regla anti-IA de FICHA-ARTE): superficie
+            sólida, igual que el resto de las cards de esta misma pantalla. */}
+        <div className="inline-block rounded-2xl bg-[var(--surface)] px-4 py-3 shadow-[var(--shadow-1)]">
         <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">Tu cuenta</p>
       {editando ? (
         <div className="mt-1 flex items-center gap-2">
@@ -174,6 +240,10 @@ export default function PerfilPage() {
         </button>
       )}
       </div>
+      </div>
+      {errorAvatar && (
+        <p className="mt-2 text-xs font-medium text-[var(--status-error)]">No pudimos subir la foto. Intenta de nuevo.</p>
+      )}
 
       <div className="mt-6 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
         <p className="text-lg font-semibold text-[var(--text-primary)]">{tituloRuta(nivel, meta)}</p>

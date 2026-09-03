@@ -169,6 +169,49 @@ export function guardarNombreRemoto(nombre: string, onError?: () => void) {
   });
 }
 
+/** Foto de perfil (Perfil): el usuario elige entre cámara/galería en el
+ * selector nativo del sistema — el `<input type="file">` sin restringir
+ * `capture` es justo lo que abre esa elección en el navegador. Sube al
+ * bucket `avatars` bajo `<user_id>/avatar.jpg` (upsert: siempre pisa la
+ * foto anterior, nunca acumula archivos viejos) y guarda la URL pública en
+ * `profiles.avatar_url`. Devuelve `null` si algo falla — quien llama decide
+ * si avisa al usuario (nunca fallar en silencio, heurística 9). */
+export async function subirAvatar(archivo: File): Promise<string | null> {
+  const supabase = crearClienteSupabase();
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData.user;
+  if (!user) return null;
+
+  const extension = archivo.name.split('.').pop()?.toLowerCase() ?? 'jpg';
+  const ruta = `${user.id}/avatar.${extension}`;
+
+  const { error: errorSubida } = await supabase.storage.from('avatars').upload(ruta, archivo, {
+    upsert: true,
+    contentType: archivo.type || 'image/jpeg',
+  });
+  if (errorSubida) return null;
+
+  const { data: publica } = supabase.storage.from('avatars').getPublicUrl(ruta);
+  // Cache-bust: el navegador no debe reusar la imagen vieja si el usuario
+  // cambia de foto pero la ruta (mismo nombre de archivo) queda igual.
+  const url = `${publica.publicUrl}?t=${Date.now()}`;
+
+  const { error: errorGuardado } = await supabase.from('profiles').update({ avatar_url: url }).eq('id', user.id);
+  if (errorGuardado) return null;
+
+  return url;
+}
+
+export async function leerAvatarRemoto(): Promise<string | null> {
+  const supabase = crearClienteSupabase();
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData.user;
+  if (!user) return null;
+
+  const { data: perfil } = await supabase.from('profiles').select('avatar_url').eq('id', user.id).maybeSingle();
+  return perfil?.avatar_url ?? null;
+}
+
 export function guardarLogRemoto(log: RegistroLog, onError?: () => void) {
   const supabase = crearClienteSupabase();
   supabase.auth.getUser().then(({ data }) => {
