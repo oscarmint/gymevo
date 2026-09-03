@@ -3,10 +3,13 @@
 // PAYWALL — Sesión 4 (02B §C + 50 §C). El precio nunca aparece sin el timeline
 // de trial (C4) ni sin el desbloqueo nombrado (el mecanismo: el Botón de Rescate).
 // Sesión 7 (auditoría): el CTA ya abre el checkout REAL de Hotmart si las
-// variables NEXT_PUBLIC_HOTMART_CHECKOUT_{MENSUAL,ANUAL} están configuradas
-// (son públicas, no secretas — son la URL del link de pago). Sin ellas
-// todavía (el usuario no las ha puesto en Vercel), cae de vuelta al mock
-// anterior (/login) para no romper nada mientras se conectan.
+// variables NEXT_PUBLIC_HOTMART_CHECKOUT_{MENSUAL,TRIMESTRAL,SEMESTRAL,ANUAL}
+// están configuradas (son públicas, no secretas — son la URL del link de
+// pago). Sin ellas todavía (el usuario no las ha puesto en Vercel), cae de
+// vuelta al mock anterior (/login) para no romper nada mientras se conectan.
+// 03/09/2026: se agregaron Trimestral y Semestral (pedido del usuario) — esos
+// 2 planes necesitan sus propios productos/ofertas creados en Hotmart antes
+// de tener checkout real; hasta entonces caen al mock como los demás.
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -15,9 +18,36 @@ import { AlertTriangle, Check, Loader2, Lock, ShieldCheck, X } from 'lucide-reac
 import { HORARIO_LABEL, META_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { formatearCOP, useTRM } from '@/lib/trm';
 
-type PlanId = 'anual' | 'mensual';
+type PlanId = 'mensual' | 'trimestral' | 'semestral' | 'anual';
 
 const KEY_PLAN = 'gymevo_plan_elegido';
+
+/** Precio base mensual ($4.99) y el mismo descuento creciente que ya tenía el
+ * plan anual (50% off) — 3 y 6 meses interpolan entre mensual y anual con la
+ * misma lógica: cuanto más largo el compromiso, mayor el ahorro (curva real
+ * de descuento de apps de suscripción, no números al azar). Todo en .99
+ * (convención LATAM ya usada en el resto del pricing). */
+const PLANES: Record<PlanId, { nombre: string; meses: number; precioTotal: number }> = {
+  mensual: { nombre: 'Mensual', meses: 1, precioTotal: 4.99 },
+  trimestral: { nombre: 'Trimestral', meses: 3, precioTotal: 11.99 },
+  semestral: { nombre: 'Semestral', meses: 6, precioTotal: 19.99 },
+  anual: { nombre: 'Anual', meses: 12, precioTotal: 29.99 },
+};
+
+/** "/mes" · "/3 meses" · "/6 meses" · "/año" — evita el texto largo y con
+ * saltos raros de "cada N meses" en tarjetas angostas de 375px. */
+function periodoLabel(meses: number): string {
+  if (meses === 1) return '/mes';
+  if (meses === 12) return '/año';
+  return `/${meses} meses`;
+}
+
+const CHECKOUT_ENV: Record<PlanId, string | undefined> = {
+  mensual: process.env.NEXT_PUBLIC_HOTMART_CHECKOUT_MENSUAL,
+  trimestral: process.env.NEXT_PUBLIC_HOTMART_CHECKOUT_TRIMESTRAL,
+  semestral: process.env.NEXT_PUBLIC_HOTMART_CHECKOUT_SEMESTRAL,
+  anual: process.env.NEXT_PUBLIC_HOTMART_CHECKOUT_ANUAL,
+};
 
 export default function PaywallPage() {
   const router = useRouter();
@@ -37,7 +67,7 @@ export default function PaywallPage() {
     // Recuerda la última elección entre visitas (hallazgo revisor-visual:
     // sin esto, un usuario que cierra y vuelve pierde su plan preferido).
     const guardado = localStorage.getItem(KEY_PLAN);
-    if (guardado === 'anual' || guardado === 'mensual') {
+    if (guardado === 'mensual' || guardado === 'trimestral' || guardado === 'semestral' || guardado === 'anual') {
       setPlan(guardado);
     }
   }, []);
@@ -51,10 +81,7 @@ export default function PaywallPage() {
   }
 
   function empezarTrial() {
-    const checkoutUrl =
-      plan === 'anual'
-        ? process.env.NEXT_PUBLIC_HOTMART_CHECKOUT_ANUAL
-        : process.env.NEXT_PUBLIC_HOTMART_CHECKOUT_MENSUAL;
+    const checkoutUrl = CHECKOUT_ENV[plan];
 
     if (checkoutUrl) {
       // Hallazgo revisor-visual: saltar en silencio a un dominio externo en
@@ -135,38 +162,40 @@ export default function PaywallPage() {
           transition={{ delay: 0.08, duration: 0.3 }}
           className="mt-6 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-5"
         >
-          <TimelineTrial />
+          <TimelineTrial plan={plan} />
         </motion.div>
 
-        {/* (4)(5) Plan cards — ANUAL primero, pre-seleccionado */}
+        {/* (4)(5) Plan cards — de mayor a menor compromiso, Anual primero y
+            pre-seleccionado. 4 tarjetas apiladas (el patrón que usa la
+            mayoría de apps de suscripción para varios plazos) en vez de un
+            selector custom — más reconocible, menos fricción de aprendizaje. */}
         <motion.div
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16, duration: 0.3 }}
           className="mt-6 flex flex-col gap-3"
         >
-          <PlanCard
-            id="anual"
-            seleccionado={plan === 'anual'}
-            onSelect={() => elegirPlan('anual')}
-            deshabilitado={redirigiendo}
-            badge="MÁS POPULAR"
-            nombre="Anual"
-            precioTachado="$4.99"
-            precioMes="$2.50"
-            detalle="Se cobra $29.99/año · 6 meses gratis"
-            trm={trm}
-          />
-          <PlanCard
-            id="mensual"
-            seleccionado={plan === 'mensual'}
-            onSelect={() => elegirPlan('mensual')}
-            deshabilitado={redirigiendo}
-            nombre="Mensual"
-            precioMes="$4.99"
-            detalle="Se cobra cada mes"
-            trm={trm}
-          />
+          {(['anual', 'semestral', 'trimestral', 'mensual'] as const).map((id) => {
+            const info = PLANES[id];
+            const precioMes = info.precioTotal / info.meses;
+            const ahorroPct = Math.round((1 - precioMes / PLANES.mensual.precioTotal) * 100);
+            return (
+              <PlanCard
+                key={id}
+                id={id}
+                seleccionado={plan === id}
+                onSelect={() => elegirPlan(id)}
+                deshabilitado={redirigiendo}
+                badge={id === 'anual' ? 'MÁS POPULAR' : undefined}
+                ahorro={ahorroPct > 0 ? `Ahorra ${ahorroPct}%` : undefined}
+                nombre={info.nombre}
+                precioTachado={id === 'anual' ? `$${PLANES.mensual.precioTotal.toFixed(2)}` : undefined}
+                precioMes={`$${precioMes.toFixed(2)}`}
+                detalle={info.meses === 1 ? 'Se cobra cada mes' : `Se cobra $${info.precioTotal.toFixed(2)}${periodoLabel(info.meses)}`}
+                trm={trm}
+              />
+            );
+          })}
         </motion.div>
 
         {/* (6) CTA con beneficio, 1ª persona */}
@@ -306,11 +335,16 @@ export default function PaywallPage() {
   );
 }
 
-function TimelineTrial() {
+function TimelineTrial({ plan }: { plan: PlanId }) {
+  const info = PLANES[plan];
   const nodos = [
     { estado: 'lleno' as const, titulo: 'Hoy — acceso completo', sub: 'Todo tu plan, sin límites' },
     { estado: 'lleno' as const, titulo: 'Día 6 — te avisamos', sub: 'Correo antes de cualquier cobro' },
-    { estado: 'vacio' as const, titulo: 'Día 7 — 1er cobro: $29.99/año', sub: 'Cancela antes sin costo' },
+    {
+      estado: 'vacio' as const,
+      titulo: `Día 7 — 1er cobro: $${info.precioTotal.toFixed(2)}${periodoLabel(info.meses)}`,
+      sub: 'Cancela antes sin costo',
+    },
   ];
   return (
     <div className="flex flex-col">
@@ -339,6 +373,7 @@ function PlanCard({
   onSelect,
   deshabilitado,
   badge,
+  ahorro,
   nombre,
   precioTachado,
   precioMes,
@@ -350,6 +385,9 @@ function PlanCard({
   onSelect: () => void;
   deshabilitado?: boolean;
   badge?: string;
+  /** "Ahorra N%" frente al precio mensual — la razón real para elegir un
+   * plan más largo, no solo un adorno (curva de descuento de 02C). */
+  ahorro?: string;
   nombre: string;
   /** Precio de referencia tachado (el dispositivo ownable de FICHA-ARTE:
    * el mismo tachado verde que marca un ejercicio completado, aplicado aquí
@@ -387,7 +425,14 @@ function PlanCard({
         />
       )}
       <div>
-        <p className="text-[16px] font-semibold text-[var(--text-primary)]">{nombre}</p>
+        <div className="flex items-center gap-1.5">
+          <p className="text-[16px] font-semibold text-[var(--text-primary)]">{nombre}</p>
+          {ahorro && (
+            <span className="whitespace-nowrap rounded-full bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--accent)]">
+              {ahorro}
+            </span>
+          )}
+        </div>
         <p className="mt-1 text-[12.5px] text-[var(--text-secondary)]">{detalle}</p>
       </div>
       <div className="flex items-center gap-3">
