@@ -282,7 +282,7 @@ export default function OnboardingPage() {
                   ref={seguirAquiRef}
                   type="button"
                   onClick={() => setConfirmandoSalida(false)}
-                  className="flex h-12 flex-1 items-center justify-center rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-sm font-semibold text-[var(--text-primary)]"
+                  className="superficie-3d flex h-12 flex-1 items-center justify-center rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-sm font-semibold text-[var(--text-primary)]"
                 >
                   Seguir aquí
                 </button>
@@ -290,7 +290,7 @@ export default function OnboardingPage() {
                   ref={salirModalRef}
                   type="button"
                   onClick={() => router.push('/')}
-                  className="flex h-12 flex-1 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
+                  className="boton-3d flex h-12 flex-1 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
                 >
                   Salir
                 </button>
@@ -650,14 +650,13 @@ function Chips<T extends string>({
                 moverFoco(i, -1);
               }
             }}
-            whileTap={{ scale: 0.97 }}
             initial={reduce ? false : { opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: reduce ? 0 : i * 0.05, duration: reduce ? 0 : 0.25 }}
             className={`flex min-h-14 items-center gap-3 rounded-[var(--radius-button)] border px-4 py-3.5 text-left text-base font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
               seleccionado
-                ? 'border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--text-primary)]'
-                : 'border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] bg-[var(--surface)] text-[var(--text-primary)]'
+                ? 'boton-3d-borde border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--text-primary)]'
+                : 'superficie-3d border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] bg-[var(--surface)] text-[var(--text-primary)]'
             }`}
           >
             {Icono && (

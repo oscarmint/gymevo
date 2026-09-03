@@ -9,23 +9,54 @@
    acento nuevo. El resto de la app sigue con bordes finos, sin sombra dura.
    ============================================================================ */
 .boton-3d {
-  box-shadow: 0 4px 0 0 var(--accent-deep);
+  box-shadow: 0 6px 0 0 var(--accent-deep);
   transition:
     transform 100ms cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 100ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .boton-3d:active {
-  transform: translateY(4px);
+  transform: translateY(6px);
   box-shadow: 0 0 0 0 var(--accent-deep);
 }
 .boton-3d:disabled {
-  box-shadow: 0 4px 0 0 color-mix(in oklab, var(--accent-deep) 60%, transparent);
+  box-shadow: 0 6px 0 0 color-mix(in oklab, var(--accent-deep) 60%, transparent);
 }
 .chip-3d {
-  box-shadow: 0 3px 0 0 var(--accent-deep);
+  box-shadow: 0 4px 0 0 var(--accent-deep);
 }
+
+/* Variante para botones/pills de BORDE (fondo superficie, borde/texto acento) —
+   mismo canto verde, pensado para las opciones tocables del onboarding y los
+   controles secundarios, no solo el CTA principal. */
+.boton-3d-borde {
+  box-shadow: 0 5px 0 0 color-mix(in oklab, var(--accent) 55%, var(--surface-2));
+  transition:
+    transform 100ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 100ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.boton-3d-borde:active,
+.boton-3d-borde[aria-pressed='true'] {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 0 color-mix(in oklab, var(--accent) 55%, var(--surface-2));
+}
+
+/* Variante NEUTRA (superficie blanca/hundida sin acento) — tarjetas y botones
+   secundarios tocables (planes del paywall, modal de confirmación, toggle lb/kg). */
+.superficie-3d {
+  box-shadow: 0 5px 0 0 color-mix(in oklab, var(--text-tertiary) 45%, var(--surface-2));
+  transition:
+    transform 100ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 100ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.superficie-3d:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 0 color-mix(in oklab, var(--text-tertiary) 45%, var(--surface-2));
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .boton-3d {
+  .boton-3d,
+  .boton-3d-borde,
+  .superficie-3d {
     transition: none;
   }
 }

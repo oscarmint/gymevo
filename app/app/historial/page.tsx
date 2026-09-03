@@ -108,7 +108,7 @@ export default function HistorialPage() {
           </p>
           <Link
             href="/app"
-            className="mt-6 flex h-12 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
+            className="boton-3d mt-6 flex h-12 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
           >
             Ir a mi plan de hoy
           </Link>

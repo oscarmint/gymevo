@@ -471,20 +471,19 @@ function PlanDelDia({
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <div className="mt-2 flex gap-2">
+            <div className="mt-2 flex gap-2 pb-1.5">
               {DURACIONES_DESCANSO.map((seg) => {
                 const activa = progreso.descansoDuracionSeg === seg;
                 return (
                   <motion.button
                     key={seg}
                     type="button"
-                    whileTap={{ scale: 0.95 }}
                     onClick={() => elegirDuracionDescanso(seg)}
                     aria-pressed={activa}
                     className={`flex h-9 flex-1 items-center justify-center rounded-xl text-xs font-semibold ${
                       activa
-                        ? 'bg-[var(--accent)] text-[var(--bg)]'
-                        : 'border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
+                        ? 'boton-3d bg-[var(--accent)] text-[var(--bg)]'
+                        : 'superficie-3d border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
                     }`}
                   >
                     {etiquetaDuracion(seg)}
@@ -621,12 +620,11 @@ function PlanDelDia({
                   </div>
                   <motion.button
                     type="button"
-                    whileTap={esProxima ? undefined : { scale: 0.97 }}
                     onClick={() => registrar(ej.id)}
                     className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-semibold ${
                       esProxima
                         ? 'boton-3d bg-[var(--accent)] text-[var(--bg)]'
-                        : 'border border-[var(--accent)] text-[var(--accent)]'
+                        : 'boton-3d-borde border border-[var(--accent)] text-[var(--accent)]'
                     }`}
                   >
                     <Check size={16} />
@@ -664,10 +662,9 @@ function PlanDelDia({
 
         <motion.button
           type="button"
-          whileTap={todosHechos ? { scale: 0.97 } : undefined}
           disabled={!todosHechos}
           onClick={finalizarEntrenamiento}
-          className="mt-2 flex h-14 w-full items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)] disabled:opacity-35"
+          className="boton-3d mt-2 flex h-14 w-full items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)] disabled:opacity-35"
         >
           Terminar entrenamiento de hoy
         </motion.button>
@@ -734,7 +731,7 @@ function PlanDelDia({
               <button
                 type="button"
                 onClick={() => setAvisoCambioEjercicio(null)}
-                className="mt-5 flex h-12 w-full items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
+                className="boton-3d mt-5 flex h-12 w-full items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
               >
                 Entendido
               </button>
@@ -773,7 +770,7 @@ function PlanDelDia({
             <button
               type="button"
               onClick={() => setCelebrarHito(null)}
-              className="mt-8 flex h-12 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
+              className="boton-3d mt-8 flex h-12 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
             >
               Seguir
             </button>
@@ -824,7 +821,7 @@ function PlanDelDia({
               <button
                 type="button"
                 onClick={() => setCelebrarFin(false)}
-                className="mt-8 flex h-12 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
+                className="boton-3d mt-8 flex h-12 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
               >
                 Seguir
               </button>

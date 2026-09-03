@@ -368,11 +368,10 @@ function PlanCard({
       type="button"
       onClick={onSelect}
       disabled={deshabilitado}
-      whileTap={deshabilitado ? undefined : { scale: 0.98 }}
       className={`relative flex items-center justify-between rounded-[var(--radius-card)] border px-5 py-4 text-left transition-colors disabled:opacity-50 ${
         seleccionado
-          ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_6%,transparent)]'
-          : 'border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] bg-[var(--surface)]'
+          ? 'boton-3d-borde border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_6%,transparent)]'
+          : 'superficie-3d border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] bg-[var(--surface)]'
       }`}
     >
       {badge && (

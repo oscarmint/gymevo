@@ -40,3 +40,4 @@ yarn-error.log*
 *.tsbuildinfo
 .tsbuildinfo-hook
 next-env.d.ts
+.playwright-mcp/

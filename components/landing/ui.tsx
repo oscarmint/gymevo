@@ -155,9 +155,8 @@ export function CtaButton({
 }) {
   return (
     <motion.a
-      whileTap={{ scale: 0.97 }}
       href={href}
-      className={`inline-flex items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] px-8 text-[17px] font-semibold text-[var(--bg)] shadow-[0_8px_30px_color-mix(in_oklab,var(--accent)_25%,transparent)] transition-colors duration-150 hover:bg-[color-mix(in_oklab,var(--accent)_88%,var(--text-primary))] [touch-action:manipulation] ${
+      className={`boton-3d inline-flex items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] px-8 text-[17px] font-semibold text-[var(--bg)] transition-colors duration-150 hover:bg-[color-mix(in_oklab,var(--accent)_88%,var(--text-primary))] [touch-action:manipulation] ${
         alto === 56 ? 'h-14' : 'h-[52px]'
       } ${fullMobile ? 'w-full sm:w-auto' : ''}`}
     >
@@ -232,9 +231,8 @@ export function StickyCtaMobile({
           className="fixed inset-x-0 bottom-0 z-40 border-t border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] px-4 pt-2 pb-[max(12px,env(safe-area-inset-bottom))] md:hidden"
         >
           <motion.a
-            whileTap={{ scale: 0.97 }}
             href={ofertaVista ? href : `#${ofertaId}`}
-            className="flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] [touch-action:manipulation]"
+            className="boton-3d flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] [touch-action:manipulation]"
           >
             {ofertaVista ? labelComercial : labelPre}
           </motion.a>

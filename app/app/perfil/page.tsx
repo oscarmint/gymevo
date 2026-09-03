@@ -201,15 +201,17 @@ export default function PerfilPage() {
         </dl>
         <div className="mt-4 flex items-center justify-between border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4">
           <span className="text-sm text-[var(--text-secondary)]">Registrar peso de cada serie en:</span>
-          <div className="flex overflow-hidden rounded-lg border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)]">
+          <div className="flex gap-1.5">
             {(['lb', 'kg'] as const).map((u) => (
               <button
                 key={u}
                 type="button"
                 onClick={() => cambiarUnidadPeso(u)}
                 aria-pressed={progreso.unidadPeso === u}
-                className={`px-3 py-1.5 text-sm font-semibold uppercase ${
-                  progreso.unidadPeso === u ? 'bg-[var(--accent)] text-[var(--bg)]' : 'text-[var(--text-secondary)]'
+                className={`rounded-lg border px-3 py-1.5 text-sm font-semibold uppercase ${
+                  progreso.unidadPeso === u
+                    ? 'boton-3d border-[var(--accent)] bg-[var(--accent)] text-[var(--bg)]'
+                    : 'superficie-3d border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
                 }`}
               >
                 {u}
