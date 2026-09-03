@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { Check, ExternalLink, Flame, LogOut, Pencil } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { calcularMacros } from '@/lib/macros';
-import { guardarProgreso, leerProgreso, tituloRuta, type Progreso } from '@/lib/routine';
+import { ejerciciosDeHoy, guardarProgreso, leerProgreso, obtenerEjercicio, tituloRuta, type Progreso } from '@/lib/routine';
 import { leerNombreLocal, guardarNombreLocal } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { guardarNombreRemoto, guardarProgresoRemoto, leerMembresiaRemota, leerNombreRemoto } from '@/lib/supabase/sync';
@@ -58,6 +58,13 @@ export default function PerfilPage() {
 
   const nivel = respuestas?.nivel ?? 'principiante';
   const meta = respuestas?.meta ?? 'musculo';
+
+  // Misma llama de racha que Plan de hoy: se llena según el progreso real de
+  // hoy (ejercicios ya marcados hechos / total de hoy), no es decorativa.
+  const idsHoy = ejerciciosDeHoy(progreso.diaActual).map((e) => obtenerEjercicio(progreso.reemplazosHoy[e.id] ?? e.id));
+  const progresoLlamaPct = idsHoy.length
+    ? Math.round((idsHoy.filter((e) => progreso.hechosHoy.includes(e.id)).length / idsHoy.length) * 100)
+    : 0;
 
   function empezarEdicion() {
     setBorrador(nombre ?? '');
@@ -169,7 +176,15 @@ export default function PerfilPage() {
         </p>
 
         <div className="mt-4 flex items-center gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4">
-          <Flame size={18} color="var(--accent)" fill="var(--accent)" />
+          <div className="relative" style={{ width: 18, height: 18 }}>
+            <Flame size={18} color="var(--accent)" fill="none" className="absolute inset-0" />
+            <div
+              className="absolute inset-0 overflow-hidden"
+              style={{ clipPath: `inset(${100 - progresoLlamaPct}% 0 0 0)`, transition: 'clip-path 500ms cubic-bezier(0.16,1,0.3,1)' }}
+            >
+              <Flame size={18} color="var(--accent)" fill="var(--accent)" />
+            </div>
+          </div>
           <span className="text-sm font-medium text-[var(--text-primary)]">
             Racha de {progreso.racha} {progreso.racha === 1 ? 'día' : 'días'} · Día {progreso.diaActual} de tu plan
           </span>
