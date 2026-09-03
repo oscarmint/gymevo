@@ -11,10 +11,12 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
-import { Check, Loader2, Lock, ShieldCheck, X } from 'lucide-react';
+import { AlertTriangle, Check, Loader2, Lock, ShieldCheck, X } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 
 type PlanId = 'anual' | 'mensual';
+
+const KEY_PLAN = 'gymevo_plan_elegido';
 
 export default function PaywallPage() {
   const router = useRouter();
@@ -22,16 +24,28 @@ export default function PaywallPage() {
   const [respuestas, setRespuestas] = useState<RespuestasOnboarding | null>(null);
   const [plan, setPlan] = useState<PlanId>('anual');
   const [redirigiendo, setRedirigiendo] = useState(false);
+  const [errorRedirect, setErrorRedirect] = useState<string | null>(null);
 
   // sessionStorage no existe en el servidor: leerlo en el initializer de
   // useState causa mismatch de hydration. Este efecto es la forma correcta.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setRespuestas(leerRespuestas());
+    // Recuerda la última elección entre visitas (hallazgo revisor-visual:
+    // sin esto, un usuario que cierra y vuelve pierde su plan preferido).
+    const guardado = localStorage.getItem(KEY_PLAN);
+    if (guardado === 'anual' || guardado === 'mensual') {
+      setPlan(guardado);
+    }
   }, []);
 
   const meta = respuestas ? META_LABEL[respuestas.meta] : 'ganar músculo';
   const horario = respuestas ? HORARIO_LABEL[respuestas.horario] : 'en la tarde';
+
+  function elegirPlan(id: PlanId) {
+    setPlan(id);
+    localStorage.setItem(KEY_PLAN, id);
+  }
 
   function empezarTrial() {
     const checkoutUrl =
@@ -45,12 +59,20 @@ export default function PaywallPage() {
       // con cobros ocultos?"). Un aviso breve antes de salir da confianza
       // sin agregar fricción real (300ms, no un loader eterno).
       setRedirigiendo(true);
+      setErrorRedirect(null);
       setTimeout(() => {
         // El webhook conecta la compra a la cuenta por CORREO (ver
         // app/api/webhooks/hotmart/route.ts) — no hace falta pasar nada más
         // acá. Después de pagar, Hotmart lleva al comprador a /login.
         window.location.href = checkoutUrl;
       }, 200);
+      // Si en 4s seguimos en esta pantalla, la redirección no ocurrió (red
+      // caída, bloqueador de popups, etc.) — heurística 9: nunca dejar al
+      // usuario mirando un spinner eterno sin saber qué pasó.
+      setTimeout(() => {
+        setRedirigiendo(false);
+        setErrorRedirect(checkoutUrl);
+      }, 4000);
       return;
     }
 
@@ -87,13 +109,25 @@ export default function PaywallPage() {
           </p>
         </motion.div>
 
-        {/* (3) Visual del valor: timeline del trial — el default con trial (C4) */}
+        {/* (3) Visual del valor: timeline del trial — el default con trial (C4).
+            Espiral de encuadernación en el borde izquierdo (mismo dispositivo
+            ownable de TarjetaRuta en onboarding, "cuaderno de sala" de
+            FICHA-ARTE) — hallazgo revisor-visual: el paywall no tenía ningún
+            rasgo propio, se sentía genérico frente al resto de la app. */}
         <motion.div
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08, duration: 0.3 }}
-          className="mt-6 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-5"
+          className="relative mt-6 overflow-hidden rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] py-5 pr-5 pl-9"
         >
+          <div aria-hidden="true" className="absolute inset-y-4 left-3 flex flex-col justify-between">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <span
+                key={i}
+                className="size-2.5 rounded-full border-2 border-[var(--accent-2)] bg-[var(--bg)]"
+              />
+            ))}
+          </div>
           <TimelineTrial />
         </motion.div>
 
@@ -107,7 +141,7 @@ export default function PaywallPage() {
           <PlanCard
             id="anual"
             seleccionado={plan === 'anual'}
-            onSelect={() => setPlan('anual')}
+            onSelect={() => elegirPlan('anual')}
             badge="MÁS POPULAR"
             nombre="Anual"
             precioMes="$2.50"
@@ -116,7 +150,7 @@ export default function PaywallPage() {
           <PlanCard
             id="mensual"
             seleccionado={plan === 'mensual'}
-            onSelect={() => setPlan('mensual')}
+            onSelect={() => elegirPlan('mensual')}
             nombre="Mensual"
             precioMes="$4.99"
             detalle="Se cobra cada mes"
@@ -153,43 +187,57 @@ export default function PaywallPage() {
           <ShieldCheck size={13} /> Garantía Hotmart de 7 días — sin preguntas
         </motion.p>
 
-        {/* (4bis) La verdad del puente del trial — 3 bullets obligatorios, con
-            checkmark custom (círculo acento 12%) en vez del "✓" del sistema */}
-        <motion.ul
-          initial={reduce ? {} : { opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.32, duration: 0.3 }}
-          className="mt-4 flex flex-col items-center gap-2 text-sm text-[var(--text-secondary)]"
-        >
-          {['Hoy no pagas nada', 'Te avisamos 1 día antes del cobro', 'Cancela con un toque'].map((texto) => (
-            <li key={texto} className="flex items-center gap-2">
-              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
-                <Check size={12} color="var(--accent)" strokeWidth={3} />
-              </span>
-              {texto}
-            </li>
-          ))}
-        </motion.ul>
+        {/* Si la redirección no ocurrió en unos segundos (red caída,
+            bloqueador de popups, etc.) — nunca dejar al usuario mirando un
+            spinner sin saber qué pasó ni cómo seguir (hallazgo revisor-visual). */}
+        {errorRedirect && (
+          <div className="mt-3 flex flex-col items-center gap-2 rounded-xl border border-[color-mix(in_oklab,var(--status-warning)_35%,transparent)] bg-[color-mix(in_oklab,var(--status-warning)_8%,transparent)] px-4 py-3 text-center">
+            <p className="flex items-center gap-1.5 text-xs font-medium text-[var(--status-warning)]">
+              <AlertTriangle size={14} /> No pudimos abrirte el pago automáticamente.
+            </p>
+            <a href={errorRedirect} className="text-sm font-semibold text-[var(--accent)] underline underline-offset-2">
+              Toca aquí para continuar
+            </a>
+          </div>
+        )}
 
-        {/* Mini-FAQ de transparencia — responde de frente la objeción #1 de Mateo
-            (miedo al cobro oculto), en formato pregunta-respuesta explícito. */}
+        {/* Lo que necesitas saber antes de empezar — bullets + mini-FAQ ahora
+            viven en UN solo bloque bajo un eyebrow compartido (hallazgo
+            revisor-visual: eran 2 secciones consecutivas de peso casi
+            idéntico, sin nada que las distinguiera del resto). Responde de
+            frente la objeción #1 de Mateo (miedo al cobro oculto). */}
         <motion.div
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.3 }}
-          className="mt-6 flex flex-col gap-3 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-4"
+          transition={{ delay: 0.32, duration: 0.3 }}
+          className="mt-8 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-5"
         >
-          <div>
-            <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Me cobrarán hoy?</p>
-            <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-              No. Tienes 7 días gratis. Te avisamos por correo antes de que termine tu prueba.
-            </p>
-          </div>
-          <div>
-            <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Puedo cancelar fácil?</p>
-            <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-              Sí, cuando quieras, con un toque desde tu perfil — sin llamadas ni trámites.
-            </p>
+          <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent-2)]">Antes de empezar</p>
+          <div className="mt-3 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-4">
+            <ul className="flex flex-col gap-2 text-sm text-[var(--text-secondary)]">
+              {['Hoy no pagas nada', 'Te avisamos 1 día antes del cobro', 'Cancela con un toque'].map((texto) => (
+                <li key={texto} className="flex items-center gap-2">
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
+                    <Check size={12} color="var(--accent)" strokeWidth={3} />
+                  </span>
+                  {texto}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-4 flex flex-col gap-3 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4">
+              <div>
+                <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Me cobrarán hoy?</p>
+                <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                  No. Tienes 7 días gratis. Te avisamos por correo antes de que termine tu prueba.
+                </p>
+              </div>
+              <div>
+                <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Puedo cancelar fácil?</p>
+                <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                  Sí, cuando quieras, con un toque desde tu perfil — sin llamadas ni trámites.
+                </p>
+              </div>
+            </div>
           </div>
         </motion.div>
 
@@ -281,7 +329,7 @@ function PlanCard({
       className={`relative flex items-center justify-between rounded-[var(--radius-card)] border px-5 py-4 text-left transition-colors ${
         seleccionado
           ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_6%,transparent)]'
-          : 'border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] bg-[var(--surface)]'
+          : 'border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)]'
       }`}
     >
       {badge && (
