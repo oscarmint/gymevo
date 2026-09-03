@@ -286,6 +286,12 @@ export interface Progreso {
    * (no toda la gente entrena en kg). Default 'lb' a pedido explícito del
    * usuario; se puede cambiar en Perfil en cualquier momento. */
   unidadPeso: 'kg' | 'lb';
+  /** Estatura en cm y edad — junto con pesoKg y el sexo del onboarding,
+   * completan los datos de la ecuación Mifflin-St Jeor para calcular el
+   * gasto calórico real (ver lib/macros.ts). null hasta que el usuario los
+   * ingresa en Perfil. */
+  estaturaCm: number | null;
+  edad: number | null;
 }
 
 const KEY = 'gymevo_progreso';
@@ -301,11 +307,11 @@ function diasEntre(a: string, b: string): number {
 
 export function leerProgreso(): Progreso {
   if (typeof window === 'undefined') {
-    return { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb' };
+    return { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null };
   }
   const raw = localStorage.getItem(KEY);
   if (!raw) {
-    const inicial: Progreso = { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb' };
+    const inicial: Progreso = { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null };
     localStorage.setItem(KEY, JSON.stringify(inicial));
     return inicial;
   }
@@ -316,6 +322,8 @@ export function leerProgreso(): Progreso {
   if (p.sonidoDescanso === undefined) p.sonidoDescanso = true;
   if (p.pesoKg === undefined) p.pesoKg = null;
   if (p.unidadPeso === undefined) p.unidadPeso = 'lb';
+  if (p.estaturaCm === undefined) p.estaturaCm = null;
+  if (p.edad === undefined) p.edad = null;
   // Si cambió el día calendario desde el último completado y ya se había marcado
   // "hechosHoy", se limpia para el nuevo día (pero SIN romper la racha: eso solo
   // pasa si pasan ≥2 días sin completar, ver `racha en riesgo/rota` abajo).

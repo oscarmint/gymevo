@@ -5,6 +5,10 @@
 export type Nivel = "principiante" | "intermedio";
 export type Meta = "musculo" | "grasa";
 export type Horario = "manana" | "mediodia" | "tarde" | "noche";
+/** Sexo biológico — solo se usa para la fórmula de gasto calórico
+ * (Mifflin-St Jeor) en la calculadora de macros; no se muestra en ninguna
+ * otra parte de la app. */
+export type Sexo = "hombre" | "mujer";
 
 export interface RespuestasOnboarding {
   nivel: Nivel;
@@ -12,6 +16,7 @@ export interface RespuestasOnboarding {
   frustracion: string;
   horario: Horario;
   diasSemana: number;
+  sexo: Sexo;
 }
 
 const KEY = "gymevo_onboarding";
@@ -35,6 +40,11 @@ export function leerRespuestas(): RespuestasOnboarding | null {
 export const NIVEL_LABEL: Record<Nivel, string> = {
   principiante: "Principiante",
   intermedio: "Intermedio",
+};
+
+export const SEXO_LABEL: Record<Sexo, string> = {
+  hombre: "Hombre",
+  mujer: "Mujer",
 };
 
 export const META_LABEL: Record<Meta, string> = {

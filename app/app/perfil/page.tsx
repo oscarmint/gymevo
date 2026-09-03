@@ -29,6 +29,8 @@ export default function PerfilPage() {
   const [borrador, setBorrador] = useState('');
   const [membresia, setMembresia] = useState<{ plan: string; estado: string | null } | null>(null);
   const [pesoBorrador, setPesoBorrador] = useState('');
+  const [estaturaBorrador, setEstaturaBorrador] = useState('');
+  const [edadBorrador, setEdadBorrador] = useState('');
 
   // localStorage/sessionStorage no existen en el servidor: leerlos en el
   // initializer de useState causa mismatch de hydration. Este efecto es la
@@ -39,6 +41,8 @@ export default function PerfilPage() {
     const p = leerProgreso();
     setProgreso(p);
     setPesoBorrador(p.pesoKg ? String(p.pesoKg) : '');
+    setEstaturaBorrador(p.estaturaCm ? String(p.estaturaCm) : '');
+    setEdadBorrador(p.edad ? String(p.edad) : '');
     setNombre(leerNombreLocal());
     leerNombreRemoto().then((remoto) => {
       if (remoto) {
@@ -69,10 +73,15 @@ export default function PerfilPage() {
     setEditando(false);
   }
 
-  function guardarPeso() {
+  // Un solo guardado para los 3 datos: la ecuación de gasto calórico
+  // (Mifflin-St Jeor) los necesita juntos — no tiene sentido calcular con
+  // solo uno o dos.
+  function guardarDatosMacros() {
     const kg = Number(pesoBorrador);
-    if (!progreso || !kg || kg <= 0) return;
-    const next = { ...progreso, pesoKg: kg };
+    const cm = Number(estaturaBorrador);
+    const anios = Number(edadBorrador);
+    if (!progreso || !kg || kg <= 0 || !cm || cm <= 0 || !anios || anios <= 0) return;
+    const next = { ...progreso, pesoKg: kg, estaturaCm: cm, edad: anios };
     setProgreso(next);
     guardarProgreso(next);
     guardarProgresoRemoto(next);
@@ -210,35 +219,76 @@ export default function PerfilPage() {
         </div>
       </div>
 
-      {/* Tus macros — Ruta A (ganar músculo) / Ruta B (bajar grasa), ebook cap. 3.
-          Ambas rutas comparten el mismo entrenamiento; lo que cambia es esto. */}
+      {/* Tus macros — método completo de nutrición deportiva (Mifflin-St
+          Jeor + ISSN, ver lib/macros.ts), no un promedio por g/kg. Ruta A
+          (ganar músculo) / Ruta B (bajar grasa) del ebook cap. 3 — ambas
+          rutas comparten el mismo entrenamiento; lo que cambia es esto. */}
       <div className="mt-4 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
         <p className="text-sm font-semibold text-[var(--text-primary)]">
           Tus macros · {meta === 'musculo' ? 'Ruta A, ganar músculo' : 'Ruta B, bajar grasa'}
         </p>
-        <div className="mt-3 flex items-center gap-2">
-          <input
-            type="number"
-            inputMode="decimal"
-            placeholder="Tu peso"
-            aria-label="Tu peso en kilogramos"
-            value={pesoBorrador}
-            onChange={(e) => setPesoBorrador(e.target.value)}
-            className="h-11 w-24 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-3 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
-          />
-          <span className="text-sm text-[var(--text-secondary)]">kg</span>
-          <button
-            type="button"
-            onClick={guardarPeso}
-            className="ml-auto flex h-11 items-center justify-center rounded-xl bg-[var(--accent)] px-4 text-sm font-semibold text-[var(--bg)]"
-          >
-            Calcular
-          </button>
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          <div className="flex flex-col gap-1">
+            <label htmlFor="peso-macros" className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+              Peso (kg)
+            </label>
+            <input
+              id="peso-macros"
+              type="number"
+              inputMode="decimal"
+              placeholder="70"
+              value={pesoBorrador}
+              onChange={(e) => setPesoBorrador(e.target.value)}
+              className="h-11 w-full rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="estatura-macros" className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+              Estatura (cm)
+            </label>
+            <input
+              id="estatura-macros"
+              type="number"
+              inputMode="numeric"
+              placeholder="170"
+              value={estaturaBorrador}
+              onChange={(e) => setEstaturaBorrador(e.target.value)}
+              className="h-11 w-full rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="edad-macros" className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+              Edad
+            </label>
+            <input
+              id="edad-macros"
+              type="number"
+              inputMode="numeric"
+              placeholder="26"
+              value={edadBorrador}
+              onChange={(e) => setEdadBorrador(e.target.value)}
+              className="h-11 w-full rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+            />
+          </div>
         </div>
+        <button
+          type="button"
+          onClick={guardarDatosMacros}
+          className="mt-3 flex h-11 w-full items-center justify-center rounded-xl bg-[var(--accent)] px-4 text-sm font-semibold text-[var(--bg)]"
+        >
+          Calcular mis macros
+        </button>
 
-        {progreso.pesoKg ? (
+        {progreso.pesoKg && progreso.estaturaCm && progreso.edad ? (
           (() => {
-            const macros = calcularMacros(progreso.pesoKg, meta);
+            const macros = calcularMacros({
+              pesoKg: progreso.pesoKg!,
+              estaturaCm: progreso.estaturaCm!,
+              edad: progreso.edad!,
+              sexo: respuestas?.sexo ?? 'hombre',
+              diasSemana: respuestas?.diasSemana ?? 4,
+              meta,
+            });
             return (
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <div className="col-span-2 rounded-xl bg-[var(--chip-bg)] px-4 py-3">
@@ -254,7 +304,7 @@ export default function PerfilPage() {
           })()
         ) : (
           <p className="mt-3 text-xs text-[var(--text-secondary)]">
-            Pon tu peso y calcula cuánta proteína, carbohidratos y grasa te conviene comer cada día según tu ruta.
+            Pon tu peso, estatura y edad para calcular tu gasto calórico real y cuánta proteína, carbohidratos y grasa te conviene comer cada día según tu ruta.
           </p>
         )}
       </div>

@@ -55,7 +55,7 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
 
   const { data: perfil } = await supabase
     .from('profiles')
-    .select('dia_actual, racha, ultimo_dia_completado, descanso_automatico, descanso_duracion_seg, sonido_descanso, peso_kg, unidad_peso')
+    .select('dia_actual, racha, ultimo_dia_completado, descanso_automatico, descanso_duracion_seg, sonido_descanso, peso_kg, unidad_peso, estatura_cm, edad')
     .eq('id', user.id)
     .maybeSingle();
   if (!perfil) return null;
@@ -86,6 +86,8 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
     sonidoDescanso: perfil.sonido_descanso,
     pesoKg: perfil.peso_kg === null ? null : Number(perfil.peso_kg),
     unidadPeso: perfil.unidad_peso === 'kg' ? 'kg' : 'lb',
+    estaturaCm: perfil.estatura_cm === null ? null : Number(perfil.estatura_cm),
+    edad: perfil.edad === null ? null : Number(perfil.edad),
   };
 }
 
@@ -108,6 +110,8 @@ export function guardarProgresoRemoto(p: Progreso, onError?: () => void) {
         sonido_descanso: p.sonidoDescanso,
         peso_kg: p.pesoKg,
         unidad_peso: p.unidadPeso,
+        estatura_cm: p.estaturaCm,
+        edad: p.edad,
       })
       .eq('id', user.id)
       .then(({ error }) => {
