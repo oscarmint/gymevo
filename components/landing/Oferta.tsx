@@ -13,6 +13,7 @@ import { animate, motion, useInView, useReducedMotion } from 'motion/react';
 import { Star } from 'lucide-react';
 import { CheckCustom, CtaButton, Hairline, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy, warnCopy, warnRango } from './MarkedCopy';
+import { formatearCOP, useTRM } from '@/lib/trm';
 
 export interface PlanOferta {
   nombre: string;
@@ -97,6 +98,12 @@ function PrecioAnimado({ texto }: { texto: string }) {
 }
 
 function Precio({ plan }: { plan: PlanOferta }) {
+  const { trm } = useTRM();
+  // Precio en pesos colombianos (TRM oficial del día) junto al de dólares —
+  // la mayoría de la venta es en Colombia; ver solo USD ahuyenta clientes
+  // antes de que lleguen al paywall. Se omite en silencio si la TRM no
+  // cargó (nunca bloquea ni rompe la landing por esto).
+  const precioCOP = trm ? formatearCOP(plan.precioMes, trm) : null;
   return (
     <div>
       <p className="flex items-baseline gap-1">
@@ -105,6 +112,7 @@ function Precio({ plan }: { plan: PlanOferta }) {
         </span>
         <span className="text-[14px] text-[var(--text-secondary)]">{plan.sufijo ?? '/mes'}</span>
       </p>
+      {precioCOP && <p className="mt-0.5 text-[13px] tabular-nums text-[var(--text-secondary)]">≈ {precioCOP}</p>}
       {plan.descomposicionDia && (
         <p className="mt-1 text-[13px] text-[var(--text-secondary)]">{plan.descomposicionDia}</p>
       )}

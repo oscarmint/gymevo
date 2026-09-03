@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
 import { AlertTriangle, Check, Loader2, Lock, ShieldCheck, X } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
+import { formatearCOP, useTRM } from '@/lib/trm';
 
 type PlanId = 'anual' | 'mensual';
 
@@ -21,6 +22,7 @@ const KEY_PLAN = 'gymevo_plan_elegido';
 export default function PaywallPage() {
   const router = useRouter();
   const reduce = useReducedMotion();
+  const { trm } = useTRM();
   const [respuestas, setRespuestas] = useState<RespuestasOnboarding | null>(null);
   const [plan, setPlan] = useState<PlanId>('anual');
   const [redirigiendo, setRedirigiendo] = useState(false);
@@ -153,6 +155,7 @@ export default function PaywallPage() {
             precioTachado="$4.99"
             precioMes="$2.50"
             detalle="Se cobra $29.99/año · 6 meses gratis"
+            trm={trm}
           />
           <PlanCard
             id="mensual"
@@ -162,6 +165,7 @@ export default function PaywallPage() {
             nombre="Mensual"
             precioMes="$4.99"
             detalle="Se cobra cada mes"
+            trm={trm}
           />
         </motion.div>
 
@@ -340,6 +344,7 @@ function PlanCard({
   precioTachado,
   precioMes,
   detalle,
+  trm,
 }: {
   id: PlanId;
   seleccionado: boolean;
@@ -354,7 +359,11 @@ function PlanCard({
   precioTachado?: string;
   precioMes: string;
   detalle: string;
+  /** TRM del día (pesos colombianos por dólar) — null mientras carga o si
+   * falló, y entonces simplemente no se muestra la conversión. */
+  trm: number | null;
 }) {
+  const precioCOP = trm ? formatearCOP(precioMes, trm) : null;
   return (
     <motion.button
       type="button"
@@ -394,6 +403,11 @@ function PlanCard({
             {precioMes}
             <span className="text-xs font-normal text-[var(--text-secondary)]">/mes</span>
           </p>
+          {/* Precio en pesos colombianos (TRM oficial del día) — la mayoría
+              de la venta es en Colombia; ver solo USD ahuyenta clientes que
+              no saben cuánto es en su moneda. Se omite en silencio si la TRM
+              no cargó (nunca bloquea ni rompe la tarjeta por esto). */}
+          {precioCOP && <p className="mt-0.5 text-xs tabular-nums text-[var(--text-secondary)]">≈ {precioCOP}</p>}
         </div>
         <span
           className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${
