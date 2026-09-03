@@ -50,6 +50,26 @@ export default async function proxy(request: NextRequest) {
     }
   }
 
+  // Panel del dueño: verificado EN EL SERVIDOR contra profiles.role — jamás
+  // basta con ocultar el link en el cliente (eso es un IDOR, ver 09-SEGURIDAD
+  // y 21-BACKOFFICE). El RLS de admin en Supabase es la segunda barrera: aun
+  // si alguien se saltara este guard, las políticas de la base solo dejan
+  // leer datos agregados a filas con profiles.role = 'admin'.
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/login';
+      url.searchParams.set('desde', 'admin');
+      return NextResponse.redirect(url);
+    }
+    const { data: perfil } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
+    if (perfil?.role !== 'admin') {
+      const url = request.nextUrl.clone();
+      url.pathname = '/app';
+      return NextResponse.redirect(url);
+    }
+  }
+
   return response;
 }
 
