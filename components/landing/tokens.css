@@ -17,43 +17,45 @@
    ============================================================================ */
 
 :root {
-  /* ── SUPERFICIES (FICHA-ARTE.md — GymEvo, dirección "Cuaderno de Sala") ── */
-  --bg: #f5f1ea;
-  --surface: #ffffff;
-  --surface-2: #efe9de;
+  /* ── SUPERFICIES (FICHA-ARTE.md — GymEvo, dirección "Sala de Pesas" —
+     redecidida 03/09/2026 a pedido del usuario, extraída de su ebook
+     "Transformación en 90 días") ── */
+  --bg: #12161c;
+  --surface: #1a2029;
+  --surface-2: #0d1015;
 
   /* ── TEXTO ── */
-  --text-primary: #211d17;
-  --text-secondary: #6b6255;
-  --text-tertiary: #6b6255;
+  --text-primary: #f2f4f0;
+  --text-secondary: #aab1bd;
+  --text-tertiary: #7d8492;
 
   /* ── MARCA ── */
-  --accent: #5c7a1f;
-  --accent-2: #9c5f1c; /* ámbar tierra — 2ª nota prevista en FICHA-ARTE, activada Sesión 7 */
-  /* Sombra de "canto" para la profundidad 3D puntual (ver globals.css .boton-3d/.chip-3d) —
-     mismo verde/ámbar de marca oscurecido ~30%, nunca un acento nuevo. */
-  --accent-deep: #3f5416;
-  --accent-2-deep: #6e4413;
+  --accent: #97d131; /* verde eléctrico — el color de "90" y los énfasis del ebook */
+  --accent-2: #5c7a1f; /* verde militar — el de las tarjetas "Principio 01-04" del ebook (y el acento único de la identidad anterior: continuidad real, no descartado) */
+  /* Sombra de "canto" para la profundidad 3D (ver globals.css .boton-3d/.chip-3d) —
+     mismo verde de marca oscurecido ~30%, nunca un acento nuevo. */
+  --accent-deep: #5a7d16;
+  --accent-2-deep: #3f5416;
 
-  /* ── SEMÁNTICOS (FICHA-ARTE.md → Brand kit final) ── */
-  --status-success: #5c7a1f;
-  --status-error: #c0392b;
-  --status-warning: #b8860b;
+  /* ── SEMÁNTICOS (recalibrados para contraste AA sobre fondo oscuro) ── */
+  --status-success: #97d131;
+  --status-error: #ff6b5e;
+  --status-warning: #f5a524;
 
   /* ── FORMA ── */
   --radius-card: 16px;
   --radius-button: 14px;
 
-  /* ── TIPOGRAFÍA (única familia — Instrument Sans vía next/font, per FICHA-ARTE) ── */
-  --font-display: var(--font-instrument-sans), -apple-system, 'Segoe UI', sans-serif;
-  --font-body: var(--font-instrument-sans), -apple-system, 'Segoe UI', sans-serif;
+  /* ── TIPOGRAFÍA (única familia — Poppins vía next/font, la del ebook) ── */
+  --font-display: var(--font-poppins), -apple-system, 'Segoe UI', sans-serif;
+  --font-body: var(--font-poppins), -apple-system, 'Segoe UI', sans-serif;
 
-  /* ── SOMBRAS con tinte del neutro de marca ── */
-  --shadow-1: 0 1px 2px rgb(33 29 23 / 0.06);
-  --shadow-2: 0 12px 32px -12px rgb(33 29 23 / 0.16);
+  /* ── SOMBRAS (oscuras, sin tinte cálido — el fondo ya es oscuro) ── */
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.35);
+  --shadow-2: 0 16px 40px -16px rgb(0 0 0 / 0.55);
 
   /* ── DERIVADOS (no se tocan) ── */
-  --chip-bg: color-mix(in oklab, var(--accent) 10%, transparent);
+  --chip-bg: color-mix(in oklab, var(--accent) 14%, transparent);
 
   /* ── CONFETI (única excepción a la regla 60-30-10: celebración puntual de
      "entrenamiento de hoy terminado", no es parte de la paleta de UI) ── */

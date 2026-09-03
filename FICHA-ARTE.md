@@ -1,39 +1,35 @@
 # FICHA DE DIRECCIÓN DE ARTE — GymEvo
 
-## Referencia del usuario (CONTRATO — ver 16)
-- ¿Hay imagen(es) de referencia del usuario?: NO — el usuario aceptó usar las apps del reporte de validación como referencia de investigación (Hevy, Fitbod, MadMuscles/BetterMe, Strong)
-- Extracción: N/A — no hay imagen que extraer, se usó el protocolo de FUSIÓN DE LÍDERES (16, PASO 0.2bis)
-- Prohibiciones anti-IA que la referencia LEVANTA: ninguna — se mantiene la capa anti-IA completa (sin dark+neón por defecto, sin glass, sin gradiente morado)
+## Referencia del usuario (CONTRATO — ver 16) — REDECISIÓN 03/09/2026
+- ¿Hay imagen(es) de referencia del usuario?: **SÍ** — el usuario compartió su propio ebook `TRANSFORMACIÓN EN 90 DÍAS` (el material que sirvió de base para la app) y pidió explícitamente extraer su composición de colores y diseño porque consideraba la identidad anterior (ver historial abajo) genérica y aburrida para una app de ejercicio, y quería algo "ganador y motivante... que en publicidad dé ganas de tenerla".
+- Extracción: 61 páginas del PDF renderizadas e inspeccionadas directamente (portada + páginas de contenido con tarjetas, callouts, fotografía de gimnasio). Constantes encontradas en TODAS las páginas: fondo casi-negro con tinte azulado, un verde militar oscuro para bloques/tarjetas, un verde lima eléctrico para números y énfasis, tipografía display geométrica muy redondeada y bold (Poppins), fotografía de gimnasio oscura y de alto contraste.
+- Esta es una REDECISIÓN deliberada de la identidad — pedida y aprobada por el usuario, no una iniciativa unilateral de la IA (la doctrina de "cosa juzgada" protege a la IA de redecidir sola; no le quita al usuario el derecho a cambiar de opinión).
 
-## Identidad derivada (FUSIÓN de líderes — 16 PASO 0.2bis)
-- TABLA DE LÍDERES: Hevy → número del día como héroe + celebración de PRs · Fitbod → cards de datos compactas + acento de alta energía · Strong → registro de series sin fricción, minimalismo, modo claro disponible
-- Combinación tipográfica probada usada: fila "Fitness/nutrición" de 29 (sans sólida, bold en números) → **Instrument Sans**, validada contra Strong (que también usa una sans neutra clara)
-- Arquetipo: **Sabio / Gente Común** (no Héroe puro) — el usuario eligió la opción calmada; Mateo (avatar) quiere certeza y "apagar el cerebro", no adrenalina. Keywords: directo, capaz, honesto, sereno
-- Mundo del sujeto (0.45): cuaderno físico de gimnasio → timeline editorial · trazo de tiza/lápiz → el "tachado" al completar ejercicio · anotación a mano → chips de meta con borde fino
-- Dispositivo ownable: **marca de tachado verde** sobre el ejercicio completado (como tachar en una libreta real) + chips de meta con borde fino punteado
+## Identidad derivada (extracción fiel del ebook, no fusión de líderes esta vez)
+- Arquetipo: pasa de **Sabio/Gente Común** a **Héroe/Atleta** — el usuario explícitamente quiere energía y ambición ("ganador, motivante"), no calma. Keywords: intenso, imparable, directo, ambicioso.
+- Mundo del sujeto: el gimnasio de pesas real de noche/interior industrial (el de la portada del ebook) — metal, hierro, luces puntuales, sudor — no el cuaderno de anotaciones de la dirección anterior.
+- Dispositivo ownable: el **verde eléctrico como "energía que se enciende"** — se usa igual que el ebook usa el "90" en verde brillante sobre fondo oscuro: SOLO en el dato/CTA que más importa, nunca de fondo. Se conserva el tachado de ejercicio completado (ahora en el verde eléctrico en vez del verde militar) como memoria del gesto ya aprendido por el usuario.
 
-## Personalidad compilada
-- 3 adjetivos: **Sobrio** (dominante) + Técnico + Cálido
-- Compilación (tabla del 11):
-  → spring: bounce 0.05 / stiffness ~240 · duración base: 260-300ms · exclamaciones: máx 0/pantalla
-  → celebración N1: check simple con trazo verde (tachado) · N2: número que cuenta (racha/PR) · N3: línea de reconocimiento, sin confetti
-  → radio tendencial: 12-16px · color emocional: mínima — verde solo en logro/progreso
-  → arquetipo de voz: experto sobrio, con calidez cercana (tuteo latino, nunca frío)
+## Brand kit final (valores reales en `components/landing/tokens.css`)
+- Fondo: `#12161c` (casi-negro con tinte azulado, el de TODAS las páginas del ebook) · Superficie: `#1a2029` · Hundido: `#0d1015` · Texto 1º/2º/3º: `#f2f4f0` / `#aab1bd` / `#7d8492`
+- Acento primario: `#97d131` (verde eléctrico/lima — el color exacto del "90" de la portada y de los énfasis de texto del ebook) — SOLO en CTA, progreso, dato clave, igual que en el ebook
+- Acento secundario: `#5c7a1f` (verde militar — el de las tarjetas "Principio 01-04" del ebook; **es el mismo verde que ya usaba la identidad anterior completa** — no se descarta, pasa a ser el acento de apoyo/bloques)
+- Cantos 3D (`--accent-deep`/`--accent-2-deep`): `#5a7d16` / `#3f5416` — mismos verdes oscurecidos ~30%, sin acento nuevo
+- Semánticos (recalibrados para AA sobre fondo oscuro): éxito `#97d131` (=acento) · error `#ff6b5e` · aviso `#f5a524`
+- Display/Body: **Poppins** única familia (pesos 400/500/600/700/800) — es la familia real de los títulos del ebook (geométrica, terminales redondeadas, muy bold en headings)
+- Radio: 14-16px cards · 100px pills (sin cambios — es forma, no color, y ya funcionaba)
+- Profundidad: el canto 3D puntual (`.boton-3d`/`.boton-3d-borde`/`.superficie-3d`, ver `app/globals.css`) ahora encaja mejor con la identidad — Duolingo y el ebook comparten el mismo lenguaje de "energía sólida y con volumen"
+- Espaciado base: escala 4·8·12·16·24·32·48·64 (sin cambios)
+- Motion signature: sin cambios (ease-out corto, bounce 0.05, stagger 60-80ms) — la energía nueva la dan el color y la tipografía, no animaciones más agresivas
 
-## Brand kit final (valores para globals.css)
-- Fondo: `#F5F1EA` (papel cálido) · Superficie: `#FFFFFF` · Hundido: `#EFE9DE` · Texto 1º/2º: `#211D17` / `#8A7F6A`
-- Acento: `#5C7A1F` (verde tinta, SOLO en: progreso, CTA principal, check de completado) · 2ª nota: `#9C5F1C` (ámbar tierra, activada Sesión 7 — hitos y momentos puntuales: trial/"días gratis", tarjeta de progreso del onboarding, contraste "después" de la landing; nunca en CTA principal ni en progreso/completado, eso sigue siendo verde)
-- Semánticos: éxito `#5C7A1F` · error `#C0392B` (siempre con ícono) · aviso `#B8860B`
-- Display/Body: **Instrument Sans** única familia (pesos 400 body / 500 labels / 700 display-lead) · Escala: lead ~24px / body ~14.5px / meta ~12px / eyebrow ~11px
-- Radio: 14-16px cards · 100px pills · Profundidad: hairlines finos (borde `rgba(0,0,0,.08)`) en cards/superficies — el "cuaderno" no flota, se apoya en líneas · Espaciado base: escala 4·8·12·16·24·32·48·64
-- **Enmienda 03/09/2026 (pedido explícito del usuario, referencia Duolingo):** profundidad 3D puntual (canto sólido debajo del botón, se "hunde" al presionar) SOLO en la acción primaria de cada pantalla y el ícono activo del menú inferior — clases `.boton-3d`/`.chip-3d` en `app/globals.css`, cantos `--accent-deep #3f5416` / `--accent-2-deep #6e4413` (mismo verde/ámbar de marca oscurecido, sin acento nuevo). El resto de la app (cards, chips secundarios) sigue con hairlines, sin sombra dura.
-- Dispositivo ownable: tachado verde grueso sobre el nombre del ejercicio completado + chips de meta con borde fino
-- Motion signature: ease-out corto (`--ease-out`), bounce 0.05, stagger 60-80ms en listas, duración base 260-300ms — celebración discreta, nunca confetti
+## Pendiente de esta redecisión (anotado para no declarar "terminado" antes de tiempo)
+- Los 4 screenshots reales de la landing (`public/screenshots/frame-*.png`, sección "La app por dentro") se capturaron con la identidad ANTERIOR (clara) — quedan desactualizados visualmente contra el nuevo fondo oscuro. Hay que re-capturarlos con la app ya en el nuevo tema antes de dar la landing por completamente consistente.
+- Todas las pantallas se verificaron por CASCADA de tokens CSS (arquitectura ya 100% var(...), confirmado por auditoría de grep — cero hex hardcodeados en `.tsx`), no una por una con sesión autenticada real. Antes de vender, correr el TEST DE FIDELIDAD (screenshot a 375px) en las 4 pantallas del dinero + panel de administrador cuando se construya.
+- El panel de administrador (aún no construido) debe nacer YA con este brand kit — no heredar el anterior.
 
 ## Trazabilidad y vetos
-- Protocolo A/B/C: opción elegida **C ("Cuaderno de Sala")** · descartadas: A "Placa de Hierro" (oscuro, lima eléctrica, hero numérico — demasiado "gym de neón" para lo que el usuario quería) y B "Modo Bento" (oscuro cálido, cards Fitbod) · página comparativa: `docs/revisiones/direcciones-abc.html` (Artifact: https://claude.ai/code/artifact/e3533dca-d624-4fc6-9f6b-62a99c47ac62)
-- Paleta derivada de: fusión de líderes (registro claro de Strong + minimalismo), sin clonar ninguna app entera
-- Registro anti-repetición: verde `#5C7A1F` + Instrument Sans quedan VETADOS para el próximo proyecto del SO
-- Modo (claro) DERIVADO por: el avatar busca certeza y calma ("apagar el cerebro"), no adrenalina — un modo oscuro+neón hubiera sido el reflejo genérico de "app de fitness"; el claro editorial es lo distintivo y lo que el usuario efectivamente eligió
+- Dirección ANTERIOR (28/08/2026 – 03/09/2026, "Cuaderno de Sala"): protocolo A/B/C, opción C elegida, paleta papel cálido `#F5F1EA` + tinta verde `#5C7A1F` + Instrument Sans — quedó **reemplazada por decisión del usuario**, no por hallazgo de la IA. El verde `#5C7A1F` sobrevive como acento secundario de la nueva dirección (no se perdió el trabajo previo).
+- Verde eléctrico `#97D131` + Poppins quedan como identidad VIGENTE de este proyecto (no vetados: si un futuro proyecto del SO los reutiliza, es coincidencia de nicho fitness, no plagio — el registro anti-repetición del SO aplica entre proyectos DISTINTOS, no dentro del mismo).
+- Modo: pasa de claro a OSCURO, derivado explícitamente del mundo del sujeto (gimnasio de pesas nocturno/industrial del ebook), no del reflejo genérico de "toda app de fitness es oscura" — aquí SÍ hay una referencia real que lo pide.
 
-## Idioma UI: Español latino neutro (tuteo) · Fecha de cierre: 28/08/2026 · Aprobada por el usuario: SÍ
+## Idioma UI: Español latino neutro (tuteo) · Fecha de esta redecisión: 03/09/2026 · Aprobada por el usuario: SÍ (pidió explícitamente el análisis y el cambio)
