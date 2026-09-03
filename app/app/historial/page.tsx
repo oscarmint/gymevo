@@ -12,7 +12,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useReducedMotion } from 'motion/react';
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
 import { History, TrendingDown, TrendingUp } from 'lucide-react';
-import { leerRespuestas, type Meta } from '@/lib/onboarding';
+import type { Meta } from '@/lib/onboarding';
 import { leerProgreso, obtenerEjercicio, type Progreso, type RegistroLog } from '@/lib/routine';
 import { leerProgresoRemoto } from '@/lib/supabase/sync';
 
@@ -45,15 +45,12 @@ function TooltipVolumen({
 
 export default function HistorialPage() {
   const [progreso, setProgreso] = useState<Progreso | null>(null);
-  const [meta, setMeta] = useState<Meta>('musculo');
   const reduce = useReducedMotion();
 
-  // sessionStorage/localStorage no existen en el servidor: leerlos en el
-  // initializer de useState causa mismatch de hydration. Este efecto es la
-  // forma correcta (mismo patrón ya usado en el resto de la app).
+  // localStorage no existe en el servidor: leerlo en el initializer de
+  // useState causa mismatch de hydration. Este efecto es la forma correcta.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMeta(leerRespuestas()?.meta ?? 'musculo');
     setProgreso(leerProgreso());
     // Si hay sesión, el historial remoto (Supabase) manda sobre el local —
     // es el que tiene los registros de todos los dispositivos.
@@ -106,7 +103,7 @@ export default function HistorialPage() {
           compara el peso corporal contra el inicial (sube = éxito); Ruta B
           compara la cintura (el objetivo ahí es MANTENER las cargas, no
           subirlas). Vive siempre, incluso sin series registradas todavía. */}
-      <TarjetaProgreso progreso={progreso} meta={meta} />
+      <TarjetaProgreso progreso={progreso} meta={progreso.meta} />
 
       {porFecha.size === 0 ? (
         <div className="mt-10 flex flex-col items-center text-center">

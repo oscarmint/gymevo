@@ -3,7 +3,7 @@
 // `routine_days`, `exercise_alternatives`, `workout_logs`, `user_progress` — ver
 // ESTADO.md → Modelo de datos). Por ahora vive en localStorage, client-only.
 
-import type { Meta, Nivel } from './onboarding';
+import { leerRespuestas, type Meta, type Nivel } from './onboarding';
 
 // REESTRUCTURACIÓN 03/09/2026 — calendario de 7 días, cardio por ruta y
 // diferenciación principiante/intermedio, a especificación exacta dada por
@@ -313,6 +313,16 @@ export interface RegistroLog {
 }
 
 export interface Progreso {
+  /** Nivel (principiante/intermedio) y meta (músculo/grasa) — antes vivían
+   * SOLO en `RespuestasOnboarding` (sessionStorage, se borra al cerrar el
+   * navegador o cambiar de dispositivo). Bug real encontrado 03/09/2026: un
+   * usuario que iniciaba sesión en un navegador nuevo veía su ruta
+   * reseteada a Principiante/Ganar músculo sin importar lo que eligió.
+   * Ahora viven aquí, junto al resto del progreso que sí persiste
+   * (localStorage + Supabase) — y el usuario los puede cambiar en Perfil
+   * cuando quiera (ver `cambiarRuta`). */
+  nivel: Nivel;
+  meta: Meta;
   diaActual: number;
   racha: number;
   ultimaFecha: string | null; // YYYY-MM-DD del último entrenamiento completado
@@ -375,16 +385,22 @@ function diasEntre(a: string, b: string): number {
 
 export function leerProgreso(): Progreso {
   if (typeof window === 'undefined') {
-    return { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
+    return { nivel: 'principiante', meta: 'musculo', diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
   }
   const raw = localStorage.getItem(KEY);
   if (!raw) {
-    const inicial: Progreso = { diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
+    // Primera vez: si el onboarding ya se completó en esta sesión, hereda
+    // su nivel/meta (evita que el primer progreso guardado nazca con los
+    // valores por defecto pisando lo que el usuario acaba de elegir).
+    const respuestas = leerRespuestas();
+    const inicial: Progreso = { nivel: respuestas?.nivel ?? 'principiante', meta: respuestas?.meta ?? 'musculo', diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
     localStorage.setItem(KEY, JSON.stringify(inicial));
     return inicial;
   }
   const p = JSON.parse(raw) as Progreso;
   // Compatibilidad con progreso guardado antes de este campo.
+  if (p.nivel === undefined) p.nivel = leerRespuestas()?.nivel ?? 'principiante';
+  if (p.meta === undefined) p.meta = leerRespuestas()?.meta ?? 'musculo';
   if (p.descansoAutomatico === undefined) p.descansoAutomatico = true;
   if (p.descansoDuracionSeg === undefined) p.descansoDuracionSeg = 60;
   if (p.sonidoDescanso === undefined) p.sonidoDescanso = true;
@@ -404,6 +420,14 @@ export function leerProgreso(): Progreso {
     p.reemplazosHoy = {};
   }
   return p;
+}
+
+/** Cambia nivel y/o meta — a pedido explícito del usuario ("no siempre va a
+ * querer hacer lo mismo, o cambiará de parecer"). Editable en Perfil en
+ * cualquier momento; la pantalla que llama esto es responsable de pedir
+ * confirmación primero (es un cambio real de plan, no un ajuste menor). */
+export function cambiarRuta(p: Progreso, nivel: Nivel, meta: Meta): Progreso {
+  return { ...p, nivel, meta };
 }
 
 /** Fija el ANCLA de progreso la primera vez que se registra peso y/o

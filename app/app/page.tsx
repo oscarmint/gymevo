@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateActio
 import { Lottie } from 'lottie-react';
 import { motion, AnimatePresence, useReducedMotion, animate } from 'motion/react';
 import { Check, Dumbbell, Flame, Info, PlayCircle, RefreshCcw, Undo2, Volume2, VolumeX, WifiOff, X } from 'lucide-react';
-import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
+import { leerRespuestas } from '@/lib/onboarding';
 import animacionFitness from '@/public/animaciones/fitness.json';
 import { CuerpoMuscular } from '@/components/CuerpoMuscular';
 import {
@@ -108,7 +108,6 @@ function reproducirCampanita(ctx: AudioContext) {
 }
 
 export default function PlanDelDiaPage() {
-  const [respuestas, setRespuestas] = useState<RespuestasOnboarding | null>(null);
   const [progreso, setProgreso] = useState<Progreso | null>(null);
 
   // localStorage/sessionStorage no existen en el servidor: leerlos en el
@@ -119,7 +118,6 @@ export default function PlanDelDiaPage() {
   useEffect(() => {
     const r = leerRespuestas();
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setRespuestas(r);
     setProgreso(leerProgreso());
 
     // Si hay sesión de Supabase: crea el perfil remoto la primera vez (con las
@@ -140,17 +138,15 @@ export default function PlanDelDiaPage() {
   const actualizarProgreso: Dispatch<SetStateAction<Progreso>> = (accion) =>
     setProgreso((prev) => (typeof accion === 'function' ? (accion as (p: Progreso) => Progreso)(prev as Progreso) : accion));
 
-  return <PlanDelDia progreso={progreso} setProgreso={actualizarProgreso} respuestas={respuestas} />;
+  return <PlanDelDia progreso={progreso} setProgreso={actualizarProgreso} />;
 }
 
 function PlanDelDia({
   progreso,
   setProgreso,
-  respuestas,
 }: {
   progreso: Progreso;
   setProgreso: Dispatch<SetStateAction<Progreso>>;
-  respuestas: RespuestasOnboarding | null;
 }) {
   const [descanso, setDescanso] = useState<{ ejercicioId: string; restante: number; total: number } | null>(null);
   const [pesos, setPesos] = useState<Record<string, string>>({});
@@ -220,8 +216,8 @@ function PlanDelDia({
     rachaAnteriorRef.current = progreso.racha;
   }, [progreso.racha]);
 
-  const nivel = respuestas?.nivel ?? 'principiante';
-  const meta = respuestas?.meta ?? 'musculo';
+  const nivel = progreso.nivel;
+  const meta = progreso.meta;
 
   const ejercicios = useMemo(() => ejerciciosDeHoy(progreso.diaActual, nivel), [progreso.diaActual, nivel]);
 

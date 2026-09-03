@@ -8,7 +8,8 @@ import { useRouter } from 'next/navigation';
 import { Camera, Check, ExternalLink, Flame, Loader2, LogOut, Pencil } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { calcularMacros } from '@/lib/macros';
-import { ejerciciosDeHoy, guardarProgreso, leerProgreso, obtenerEjercicio, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
+import { cambiarRuta, ejerciciosDeHoy, guardarProgreso, leerProgreso, obtenerEjercicio, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
+import type { Meta, Nivel } from '@/lib/onboarding';
 import { leerAvatarLocal, guardarAvatarLocal, leerNombreLocal, guardarNombreLocal } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { guardarNombreRemoto, guardarProgresoRemoto, leerAvatarRemoto, leerMembresiaRemota, leerNombreRemoto, subirAvatar } from '@/lib/supabase/sync';
@@ -36,6 +37,10 @@ export default function PerfilPage() {
   const [subiendoAvatar, setSubiendoAvatar] = useState(false);
   const [errorAvatar, setErrorAvatar] = useState(false);
   const inputAvatarRef = useRef<HTMLInputElement>(null);
+  // Confirmación antes de cambiar nivel/meta (a pedido explícito del
+  // usuario): es un cambio real de plan, no un ajuste de un campo cualquiera
+  // — nunca se aplica con un solo tap.
+  const [pidiendoConfirmacion, setPidiendoConfirmacion] = useState<{ nivel: Nivel; meta: Meta } | null>(null);
 
   // localStorage/sessionStorage no existen en el servidor: leerlos en el
   // initializer de useState causa mismatch de hydration. Este efecto es la
@@ -69,8 +74,8 @@ export default function PerfilPage() {
 
   if (!progreso) return null;
 
-  const nivel = respuestas?.nivel ?? 'principiante';
-  const meta = respuestas?.meta ?? 'musculo';
+  const nivel = progreso.nivel;
+  const meta = progreso.meta;
 
   // Misma llama de racha que Plan de hoy: se llena según el progreso real de
   // hoy (ejercicios ya marcados hechos / total de hoy), no es decorativa.
@@ -125,6 +130,15 @@ export default function PerfilPage() {
     }
     setAvatarUrl(url);
     guardarAvatarLocal(url);
+  }
+
+  function confirmarCambioRuta() {
+    if (!progreso || !pidiendoConfirmacion) return;
+    const next = cambiarRuta(progreso, pidiendoConfirmacion.nivel, pidiendoConfirmacion.meta);
+    setProgreso(next);
+    guardarProgreso(next);
+    guardarProgresoRemoto(next);
+    setPidiendoConfirmacion(null);
   }
 
   function cambiarUnidadPeso(unidad: 'kg' | 'lb') {
@@ -250,6 +264,53 @@ export default function PerfilPage() {
         <p className="mt-1 text-sm text-[var(--text-secondary)]">
           Entrenas {respuestas ? HORARIO_LABEL[respuestas.horario] : 'en la tarde'} · {respuestas?.diasSemana ?? 4} días/semana
         </p>
+
+        {/* Nivel y meta se pueden cambiar cuando el usuario quiera — no
+            siempre va a querer lo mismo, o cambia de parecer (pedido
+            explícito). Cada cambio pide confirmación porque reordena TODO
+            el plan (ejercicios, macros, cardio), no es un ajuste menor. */}
+        <div className="mt-4 flex flex-col gap-3 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">Nivel</p>
+            <div className="mt-1.5 flex gap-2">
+              {(['principiante', 'intermedio'] as const).map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => n !== nivel && setPidiendoConfirmacion({ nivel: n, meta })}
+                  aria-pressed={nivel === n}
+                  className={`flex-1 rounded-xl border px-3 py-2 text-sm font-semibold ${
+                    nivel === n
+                      ? 'boton-3d-borde border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--accent)]'
+                      : 'superficie-3d border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
+                  }`}
+                >
+                  {NIVEL_LABEL[n]}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">Meta</p>
+            <div className="mt-1.5 flex gap-2">
+              {(['musculo', 'grasa'] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => m !== meta && setPidiendoConfirmacion({ nivel, meta: m })}
+                  aria-pressed={meta === m}
+                  className={`flex-1 rounded-xl border px-3 py-2 text-sm font-semibold capitalize ${
+                    meta === m
+                      ? 'boton-3d-borde border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--accent)]'
+                      : 'superficie-3d border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
+                  }`}
+                >
+                  {META_LABEL[m]}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
         <div className="mt-4 flex items-center gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4">
           <div className="relative" style={{ width: 18, height: 18 }}>
@@ -429,6 +490,45 @@ export default function PerfilPage() {
         <LogOut size={16} /> Cerrar sesión
       </button>
       </div>
+
+      {pidiendoConfirmacion && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="titulo-confirmar-ruta"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[color-mix(in_oklab,var(--text-primary)_35%,transparent)] px-6"
+          onClick={() => setPidiendoConfirmacion(null)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-xs rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-5"
+          >
+            <p id="titulo-confirmar-ruta" className="text-base font-semibold text-[var(--text-primary)]">
+              ¿Estás seguro?
+            </p>
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">
+              Vas a cambiar tu plan a <strong>{tituloRuta(pidiendoConfirmacion.nivel, pidiendoConfirmacion.meta)}</strong>. Tus
+              ejercicios, macros y cardio de hoy en adelante se van a ajustar a esta nueva ruta.
+            </p>
+            <div className="mt-5 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setPidiendoConfirmacion(null)}
+                className="superficie-3d flex h-12 flex-1 items-center justify-center rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-sm font-semibold text-[var(--text-primary)]"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={confirmarCambioRuta}
+                className="boton-3d flex h-12 flex-1 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
+              >
+                Sí, cambiar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -55,7 +55,7 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
 
   const { data: perfil } = await supabase
     .from('profiles')
-    .select('dia_actual, racha, ultimo_dia_completado, descanso_automatico, descanso_duracion_seg, sonido_descanso, peso_kg, unidad_peso, estatura_cm, edad, peso_inicial_kg, cintura_cm, cintura_inicial_cm, fecha_inicio_medidas')
+    .select('nivel, meta, dia_actual, racha, ultimo_dia_completado, descanso_automatico, descanso_duracion_seg, sonido_descanso, peso_kg, unidad_peso, estatura_cm, edad, peso_inicial_kg, cintura_cm, cintura_inicial_cm, fecha_inicio_medidas')
     .eq('id', user.id)
     .maybeSingle();
   if (!perfil) return null;
@@ -75,6 +75,8 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
   }));
 
   return {
+    nivel: perfil.nivel === 'intermedio' ? 'intermedio' : 'principiante',
+    meta: perfil.meta === 'grasa' ? 'grasa' : 'musculo',
     diaActual: perfil.dia_actual,
     racha: perfil.racha,
     ultimaFecha: perfil.ultimo_dia_completado,
@@ -106,6 +108,8 @@ export function guardarProgresoRemoto(p: Progreso, onError?: () => void) {
     supabase
       .from('profiles')
       .update({
+        nivel: p.nivel,
+        meta: p.meta,
         dia_actual: p.diaActual,
         racha: p.racha,
         ultimo_dia_completado: p.ultimaFecha,
