@@ -7,7 +7,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { animate, AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
-import { Check, ChevronLeft, NotebookPen, PlayCircle, RefreshCcw, ShieldAlert, Users, X, Zap } from 'lucide-react';
+import { Activity, Check, ChevronLeft, NotebookPen, PlayCircle, RefreshCcw, ShieldAlert, Users, X, Zap } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
   guardarRespuestas,
@@ -98,7 +98,7 @@ export default function OnboardingPage() {
   // Hallazgo revisor-visual: "Salir" borraba las respuestas ya dadas sin
   // avisar. Si todavía no respondió nada (pasoIdx===0), salir directo — no
   // hay nada que perder. Si ya avanzó, confirmar antes (no guardamos
-  // progreso a mitad del cuestionario: son 6 pasos, ~1 minuto, no vale la
+  // progreso a mitad del cuestionario: son 7 pasos, ~1 minuto, no vale la
   // pena la complejidad de persistir un estado a medio completar).
   function pedirSalir() {
     if (pasoIdx === 0) {
@@ -313,7 +313,7 @@ export default function OnboardingPage() {
                 horario={horario}
                 dias={null}
                 beneficio={{
-                  icono: PlayCircle,
+                  icono: Activity,
                   texto: 'El gasto calórico en reposo cambia entre hombres y mujeres — sin este dato, tus macros serían un promedio genérico, no los tuyos.',
                 }}
               />
