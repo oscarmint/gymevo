@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-03 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (03/09/2026): **Corregida la tarjeta "Tu ruta se está armando" del onboarding — el usuario mandó captura señalando que se veía descuadrada ("unas cosas a un lado, otras centradas").**
+- Causa real: una decoración de "espiral de cuaderno" (6 puntos repartidos con `justify-between` en toda la altura de la tarjeta, posición absoluta) no seguía el ritmo del texto real al lado (que cambia de alto según cuántas filas hay) — los puntos quedaban sueltos, sin relación visual con las líneas de texto, y el padding izquierdo (`pl-9`) estaba pensado solo para darles espacio a ellos.
+- Se quitó la espiral por completo (no era el dispositivo ownable protegido en FICHA-ARTE — ese sigue siendo el tachado verde + los chips de borde punteado) y se volvió el padding simétrico (`px-6` en vez de `pr-9 pl-9`).
+- Verificado: tsc ✓ · build ✓ · confirmado en el navegador — el texto ahora respira parejo a ambos lados, sin elementos descuadrados.
+/ Siguiente acción exacta: publicar (push) y esperar confirmación del usuario.
+
 ⏸️ CHECKPOINT — Última acción completada (03/09/2026): **Barrido completo de botones tras reporte del usuario ("calcular macros quedó sin efecto") — revisión de TODOS los botones de la app, no solo los que yo recordaba haber tocado.**
 - Se hizo un grep de `bg-[var(--accent)]` y `border-[var(--accent)]` en TODO `app/` y `components/` (no solo las pantallas ya tocadas) para encontrar botones reales sin ninguna de las 3 clases de profundidad. Faltaban: **guardar nombre** (ícono ✓ junto al input), **Calcular mis macros** y **Cerrar sesión** en Perfil; los 2 CTA de **Login** (enviar enlace de acceso, confirmar código); y **"Ver mi plan completo"** en `/onboarding/plan` (una pantalla del flujo que no había revisado en las rondas anteriores).
 - **Decisión de criterio, anotada para no repetir la revisión de estos casos**: los botones circulares de SOLO ícono (atrás, cerrar el modal, reemplazar ejercicio, deshacer) y los enlaces de texto subrayado/sin fondo (Reintentar, ¿Cómo se hace?, Ahora no, Cancelar) se dejan A PROPÓSITO sin el canto 3D — es el mismo criterio que usa Duolingo (su X de cerrar y sus iconos de ajustes tampoco llevan profundidad, solo los botones/chips rectangulares y las tarjetas seleccionables).

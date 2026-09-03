@@ -525,21 +525,13 @@ function TarjetaRuta({
   ];
 
   return (
-    <div className="relative mt-10 overflow-hidden rounded-[var(--radius-card)] border-t-2 border-t-[color-mix(in_oklab,var(--accent-2)_40%,transparent)] bg-[var(--surface)] py-6 pr-9 pl-9">
+    <div className="relative mt-10 overflow-hidden rounded-[var(--radius-card)] border-t-2 border-t-[color-mix(in_oklab,var(--accent-2)_40%,transparent)] bg-[var(--surface)] px-6 py-6">
       {/* Solo hairline SUPERIOR (no un borde completo): un borde entero + ícono
           + etiqueta en mayúsculas se leía como un ítem tocable, igual que los
           chips reales, sin tener onClick (hallazgo revisor-visual). Un
           separador arriba basta para distinguirla del fondo sin fingir que
           responde al tap. El ámbar (2ª nota de FICHA-ARTE) vive en ese
           hairline + el ícono/etiqueta, de forma REAL y visible. */}
-      {/* Espiral de encuadernación (mundo del sujeto: la tarjeta ES una hoja
-          de cuaderno) — dispositivo ownable reforzado, distinto del grano del
-          ejemplo vetado del banco canónico. */}
-      <div aria-hidden="true" className="absolute inset-y-4 left-3 flex flex-col justify-between">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <span key={i} className="size-1.5 rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)]" />
-        ))}
-      </div>
       <div className="flex items-center gap-2">
         <NotebookPen size={16} color="var(--accent-2)" aria-hidden="true" />
         <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent-2)]">Tu ruta se está armando</p>
