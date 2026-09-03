@@ -1,41 +1,38 @@
 'use client';
 
-// PAYWALL — Sesión 4 (02B §C + 50 §C). El precio nunca aparece sin el timeline
-// de trial (C4) ni sin el desbloqueo nombrado (el mecanismo: el Botón de Rescate).
-// Sesión 7 (auditoría): el CTA ya abre el checkout REAL de Hotmart si las
-// variables NEXT_PUBLIC_HOTMART_CHECKOUT_{MENSUAL,TRIMESTRAL,SEMESTRAL,ANUAL}
-// están configuradas (son públicas, no secretas — son la URL del link de
-// pago). Sin ellas todavía (el usuario no las ha puesto en Vercel), cae de
-// vuelta al mock anterior (/login) para no romper nada mientras se conectan.
-// 03/09/2026: se agregaron Trimestral y Semestral (pedido del usuario) — esos
-// 2 planes necesitan sus propios productos/ofertas creados en Hotmart antes
-// de tener checkout real; hasta entonces caen al mock como los demás.
+// PAYWALL — reescrito 03/09/2026 a especificación exacta del usuario (hard
+// paywall estilo landing larga, efecto señuelo de 3 planes, trial solo en
+// Semestral/Anual, cierre con retraso). Reemplaza la versión de 4 planes
+// (Mensual/Trimestral/Semestral/Anual, todos con trial) de la ronda anterior.
+// El CTA abre el checkout REAL de Hotmart si las variables
+// NEXT_PUBLIC_HOTMART_CHECKOUT_{MENSUAL,SEMESTRAL,ANUAL} están configuradas
+// (públicas, no secretas — son la URL del link de pago). Sin ellas todavía,
+// cae al mock (/login) para no romper nada mientras se conectan.
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
-import { AlertTriangle, Check, Loader2, Lock, ShieldCheck, X } from 'lucide-react';
+import { AlertTriangle, Check, Loader2, Lock, RefreshCcw, ShieldCheck, X } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { formatearCOP, useTRM } from '@/lib/trm';
 
-type PlanId = 'mensual' | 'trimestral' | 'semestral' | 'anual';
+type PlanId = 'mensual' | 'semestral' | 'anual';
 
 const KEY_PLAN = 'gymevo_plan_elegido';
 
-/** Precio base mensual ($4.99) y el mismo descuento creciente que ya tenía el
- * plan anual (50% off) — 3 y 6 meses interpolan entre mensual y anual con la
- * misma lógica: cuanto más largo el compromiso, mayor el ahorro (curva real
- * de descuento de apps de suscripción, no números al azar). Todo en .99
- * (convención LATAM ya usada en el resto del pricing). */
-const PLANES: Record<PlanId, { nombre: string; meses: number; precioTotal: number }> = {
-  mensual: { nombre: 'Mensual', meses: 1, precioTotal: 4.99 },
-  trimestral: { nombre: 'Trimestral', meses: 3, precioTotal: 11.99 },
-  semestral: { nombre: 'Semestral', meses: 6, precioTotal: 19.99 },
-  anual: { nombre: 'Anual', meses: 12, precioTotal: 29.99 },
+/** Estructura de 3 planes con efecto señuelo (02C): Mensual es el ANCLA caro
+ * sin trial (para que el resto se vea barato); Semestral es el escalón
+ * intermedio; Anual es el plan recomendado, con el mayor ahorro y el trial
+ * más largo de sobra para engancharse. El trial (7 días) va SOLO en
+ * Semestral/Anual — el Mensual cobra de inmediato, a pedido explícito. */
+const PLANES: Record<PlanId, { nombre: string; meses: number; precioTotal: number; trial: boolean }> = {
+  mensual: { nombre: 'Mensual', meses: 1, precioTotal: 4.99, trial: false },
+  semestral: { nombre: 'Semestral', meses: 6, precioTotal: 19.99, trial: true },
+  anual: { nombre: 'Anual', meses: 12, precioTotal: 29.99, trial: true },
 };
 
-/** "/mes" · "/3 meses" · "/6 meses" · "/año" — evita el texto largo y con
- * saltos raros de "cada N meses" en tarjetas angostas de 375px. */
+/** "/mes" · "/6 meses" · "/año" — evita el texto largo y con saltos raros de
+ * "cada N meses" en tarjetas angostas de 375px. */
 function periodoLabel(meses: number): string {
   if (meses === 1) return '/mes';
   if (meses === 12) return '/año';
@@ -44,7 +41,6 @@ function periodoLabel(meses: number): string {
 
 const CHECKOUT_ENV: Record<PlanId, string | undefined> = {
   mensual: process.env.NEXT_PUBLIC_HOTMART_CHECKOUT_MENSUAL,
-  trimestral: process.env.NEXT_PUBLIC_HOTMART_CHECKOUT_TRIMESTRAL,
   semestral: process.env.NEXT_PUBLIC_HOTMART_CHECKOUT_SEMESTRAL,
   anual: process.env.NEXT_PUBLIC_HOTMART_CHECKOUT_ANUAL,
 };
@@ -57,6 +53,7 @@ export default function PaywallPage() {
   const [plan, setPlan] = useState<PlanId>('anual');
   const [redirigiendo, setRedirigiendo] = useState(false);
   const [errorRedirect, setErrorRedirect] = useState<string | null>(null);
+  const [puedeCerrar, setPuedeCerrar] = useState(false);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   // sessionStorage no existe en el servidor: leerlo en el initializer de
@@ -67,13 +64,20 @@ export default function PaywallPage() {
     // Recuerda la última elección entre visitas (hallazgo revisor-visual:
     // sin esto, un usuario que cierra y vuelve pierde su plan preferido).
     const guardado = localStorage.getItem(KEY_PLAN);
-    if (guardado === 'mensual' || guardado === 'trimestral' || guardado === 'semestral' || guardado === 'anual') {
+    if (guardado === 'mensual' || guardado === 'semestral' || guardado === 'anual') {
       setPlan(guardado);
     }
+    // Cierre con retraso (pedido explícito): 2.5s para que la oferta se
+    // alcance a leer antes de poder salir — el botón sigue ahí, solo tarda
+    // en activarse, nunca se esconde ni se elimina la salida por completo
+    // (heurística 3: control y libertad, con un límite de tiempo razonable).
+    const t = setTimeout(() => setPuedeCerrar(true), 2500);
+    return () => clearTimeout(t);
   }, []);
 
   const meta = respuestas ? META_LABEL[respuestas.meta] : 'ganar músculo';
   const horario = respuestas ? HORARIO_LABEL[respuestas.horario] : 'en la tarde';
+  const infoPlan = PLANES[plan];
 
   function elegirPlan(id: PlanId) {
     setPlan(id);
@@ -125,57 +129,78 @@ export default function PaywallPage() {
   return (
     <div className="flex min-h-dvh flex-col bg-[var(--bg)] px-5 py-6 [font-family:var(--font-body)]">
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col">
-        {/* (1) Cierre — SIEMPRE visible, nunca con delay */}
+        {/* (5) Cierre con retraso de 2.5s (pedido explícito) — nunca
+            desaparece del todo, solo tarda en activarse: sigue en el mismo
+            lugar todo el tiempo (heurística 3), pero no es tocable ni
+            visible hasta que el usuario tuvo tiempo de leer la oferta. */}
         <button
           type="button"
           aria-label="Cerrar"
-          onClick={() => router.push('/')}
-          className="flex size-11 items-center justify-center self-start rounded-full text-[var(--text-secondary)]"
+          onClick={() => puedeCerrar && router.push('/')}
+          disabled={!puedeCerrar}
+          aria-hidden={!puedeCerrar}
+          tabIndex={puedeCerrar ? 0 : -1}
+          className={`flex size-11 items-center justify-center self-start rounded-full text-[var(--text-secondary)] transition-opacity duration-300 ${
+            puedeCerrar ? 'opacity-100' : 'pointer-events-none opacity-0'
+          }`}
         >
           <X size={22} />
         </button>
 
+        {/* (1) Titular orientado al mecanismo de supervivencia en el gym —
+            no "Suscríbete" — + prueba visual del Botón de Rescate. */}
         <motion.div initial={reduce ? {} : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-          {/* Eyebrow que reconoce el dolor real antes del alivio (FICHA-AVATAR:
-              terror a lesionarse + vergüenza de no saber qué hacer frente a las
-              máquinas) — hallazgo revisor-visual: el headline saltaba directo
-              a la solución sin agitar la objeción que trae al avatar hasta acá. */}
           <p className="text-sm font-semibold text-[var(--text-tertiary)]">Se acabó adivinar qué máquina usar</p>
-          {/* (2) Headline con la META real del usuario */}
           <h1 className="mt-1 text-balance text-3xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
-            Tu plan para <span className="whitespace-nowrap text-[var(--accent)]">{meta}</span> está{' '}listo
+            Desbloquea tu <span className="whitespace-nowrap text-[var(--accent)]">Botón de Rescate</span>
           </h1>
           <p className="mt-2 text-[14.5px] text-[var(--text-secondary)]">
-            Hecho con tus respuestas, con el Botón de Rescate incluido para cuando entrenes {horario}
+            Tu plan para {meta} ya está hecho con tus respuestas — listo para cuando entrenes {horario}
           </p>
         </motion.div>
 
-        {/* (3) Visual del valor: timeline del trial — el default con trial (C4).
-            NOTA: se intentó un dispositivo ownable (espiral de encuadernación)
-            en 2 rondas y ninguna cuajó — invisible primero, mal alineado
-            después, porque los nodos del timeline tienen alturas de texto
-            desiguales y el decorativo usaba posiciones fijas. Se retira: un
-            timeline limpio es mejor que un rasgo de marca que se ve roto. */}
+        {/* Prueba visual: el mecanismo en acción, no una captura de pantalla
+            inventada (32-DEL-MVP-AL-PRODUCTO: nunca fingir producto que no
+            existe) — un ícono real de la app mostrando qué hace el botón. */}
+        <motion.div
+          initial={reduce ? {} : { opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.04, duration: 0.3 }}
+          className="mt-5 flex items-center gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-4"
+        >
+          <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-[var(--chip-bg)]">
+            <RefreshCcw size={26} color="var(--accent)" />
+          </span>
+          <div>
+            <p className="text-sm font-semibold text-[var(--text-primary)]">¿Máquina ocupada? Un toque y listo.</p>
+            <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+              El Botón de Rescate te da otro ejercicio al instante, sin perder el día ni improvisar.
+            </p>
+          </div>
+        </motion.div>
+
+        {/* (3) Visual del valor: timeline del trial (solo si el plan
+            elegido lo tiene) o el cobro directo (Mensual, sin trial). */}
         <motion.div
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08, duration: 0.3 }}
-          className="mt-6 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-5"
+          className="mt-5 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-5"
         >
-          <TimelineTrial plan={plan} />
+          {infoPlan.trial ? <TimelineTrial plan={plan} /> : <TimelineSinTrial plan={plan} />}
         </motion.div>
 
-        {/* (4)(5) Plan cards — de mayor a menor compromiso, Anual primero y
-            pre-seleccionado. 4 tarjetas apiladas (el patrón que usa la
-            mayoría de apps de suscripción para varios plazos) en vez de un
-            selector custom — más reconocible, menos fricción de aprendizaje. */}
+        {/* (2) Estructura de precios — Anual primero y pre-seleccionado
+            (recomendado), Semestral en medio (escalón con trial), Mensual al
+            final (el ancla cara, sin trial, para que los otros dos se vean
+            baratos en contraste — efecto señuelo real, no decorativo). */}
         <motion.div
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16, duration: 0.3 }}
           className="mt-6 flex flex-col gap-3"
         >
-          {(['anual', 'semestral', 'trimestral', 'mensual'] as const).map((id) => {
+          {(['anual', 'semestral', 'mensual'] as const).map((id) => {
             const info = PLANES[id];
             const precioMes = info.precioTotal / info.meses;
             const ahorroPct = Math.round((1 - precioMes / PLANES.mensual.precioTotal) * 100);
@@ -188,17 +213,20 @@ export default function PaywallPage() {
                 deshabilitado={redirigiendo}
                 badge={id === 'anual' ? 'MÁS POPULAR' : undefined}
                 ahorro={ahorroPct > 0 ? `Ahorra ${ahorroPct}%` : undefined}
+                trial={info.trial}
                 nombre={info.nombre}
                 precioTachado={id === 'anual' ? `$${PLANES.mensual.precioTotal.toFixed(2)}` : undefined}
                 precioMes={`$${precioMes.toFixed(2)}`}
-                detalle={info.meses === 1 ? 'Se cobra cada mes' : `Se cobra $${info.precioTotal.toFixed(2)}${periodoLabel(info.meses)}`}
+                detalle={info.meses === 1 ? 'Se cobra cada mes, desde hoy' : `Se cobra $${info.precioTotal.toFixed(2)}${periodoLabel(info.meses)}`}
                 trm={trm}
               />
             );
           })}
         </motion.div>
 
-        {/* (6) CTA con beneficio, 1ª persona */}
+        {/* (6) CTA — nunca dice "Suscríbete"; el texto cambia según si el
+            plan elegido tiene trial o no (transparencia: el botón dice
+            exactamente lo que va a pasar). */}
         <motion.button
           type="button"
           onClick={empezarTrial}
@@ -212,8 +240,10 @@ export default function PaywallPage() {
             <>
               <Loader2 size={18} className="animate-spin motion-reduce:animate-none" /> Te llevamos a Hotmart, pago seguro…
             </>
-          ) : (
+          ) : infoPlan.trial ? (
             'Empezar mis 7 días gratis'
+          ) : (
+            'Activar mi Botón de Rescate'
           )}
         </motion.button>
 
@@ -259,11 +289,10 @@ export default function PaywallPage() {
           </div>
         )}
 
-        {/* Lo que necesitas saber antes de empezar — bullets + mini-FAQ ahora
-            viven en UN solo bloque bajo un eyebrow compartido (hallazgo
-            revisor-visual: eran 2 secciones consecutivas de peso casi
-            idéntico, sin nada que las distinguiera del resto). Responde de
-            frente la objeción #1 de Mateo (miedo al cobro oculto). */}
+        {/* (4) Transparencia radical anti-cancelación — responde de frente
+            el miedo #1 (cobros ocultos) con las 3 garantías exactas
+            pedidas: cancelar con un toque, aviso antes del cobro, cero
+            sorpresas. */}
         <motion.div
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -273,7 +302,11 @@ export default function PaywallPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent-2)]">Antes de empezar</p>
           <div className="mt-3 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-4">
             <ul className="flex flex-col gap-2 text-sm text-[var(--text-secondary)]">
-              {['Hoy no pagas nada', 'Te avisamos 1 día antes del cobro', 'Cancela con un toque'].map((texto) => (
+              {[
+                infoPlan.trial ? 'Hoy no pagas nada' : 'Pagas hoy, sin trial en este plan',
+                infoPlan.trial ? 'Te avisamos 1 día antes del cobro' : 'Nunca un cobro extra sin avisarte antes',
+                'Cancela con un solo toque, cuando quieras',
+              ].map((texto) => (
                 <li key={texto} className="flex items-center gap-2">
                   <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
                     <Check size={12} color="var(--accent)" strokeWidth={3} />
@@ -286,13 +319,21 @@ export default function PaywallPage() {
               <div>
                 <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Me cobrarán hoy?</p>
                 <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                  No. Tienes 7 días gratis. Te avisamos por correo antes de que termine tu prueba.
+                  {infoPlan.trial
+                    ? 'No. Tienes 7 días gratis. Te avisamos por correo antes de que termine tu prueba.'
+                    : 'Sí — el plan Mensual se cobra desde hoy, sin período de prueba. Si prefieres probar gratis 7 días, elige Semestral o Anual arriba.'}
                 </p>
               </div>
               <div>
                 <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Puedo cancelar fácil?</p>
                 <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
                   Sí, cuando quieras, con un toque desde tu perfil — sin llamadas ni trámites.
+                </p>
+              </div>
+              <div>
+                <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Hay cobros escondidos?</p>
+                <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                  Cero. El precio que ves arriba es el único que se cobra — nada de cargos extra ni renovaciones sorpresa.
                 </p>
               </div>
             </div>
@@ -368,12 +409,33 @@ function TimelineTrial({ plan }: { plan: PlanId }) {
   );
 }
 
+/** Plan Mensual (sin trial): el timeline de 3 días no aplica — se reemplaza
+ * por una sola línea honesta de "cobro hoy", nunca fingiendo un trial que
+ * ese plan no tiene (transparencia radical, pedido explícito). */
+function TimelineSinTrial({ plan }: { plan: PlanId }) {
+  const info = PLANES[plan];
+  return (
+    <div className="flex items-center gap-3">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--accent)]">
+        <Check size={16} color="var(--bg)" strokeWidth={3} />
+      </span>
+      <div>
+        <p className="text-base font-semibold text-[var(--text-primary)]">
+          Hoy — cobro de ${info.precioTotal.toFixed(2)}, acceso completo
+        </p>
+        <p className="text-xs text-[var(--text-secondary)]">Sin trial en este plan. Cancela cuando quieras, sin costo.</p>
+      </div>
+    </div>
+  );
+}
+
 function PlanCard({
   seleccionado,
   onSelect,
   deshabilitado,
   badge,
   ahorro,
+  trial,
   nombre,
   precioTachado,
   precioMes,
@@ -388,6 +450,9 @@ function PlanCard({
   /** "Ahorra N%" frente al precio mensual — la razón real para elegir un
    * plan más largo, no solo un adorno (curva de descuento de 02C). */
   ahorro?: string;
+  /** El gancho "7 días gratis" va SOLO en los planes que de verdad lo
+   * incluyen (Semestral/Anual) — nunca en Mensual, a pedido explícito. */
+  trial: boolean;
   nombre: string;
   /** Precio de referencia tachado (el dispositivo ownable de FICHA-ARTE:
    * el mismo tachado verde que marca un ejercicio completado, aplicado aquí
@@ -425,11 +490,16 @@ function PlanCard({
         />
       )}
       <div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5">
           <p className="text-[16px] font-semibold text-[var(--text-primary)]">{nombre}</p>
           {ahorro && (
             <span className="whitespace-nowrap rounded-full bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--accent)]">
               {ahorro}
+            </span>
+          )}
+          {trial && (
+            <span className="whitespace-nowrap rounded-full bg-[color-mix(in_oklab,var(--accent-2)_16%,transparent)] px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--accent-2)]">
+              7 días gratis
             </span>
           )}
         </div>
