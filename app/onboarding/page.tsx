@@ -304,7 +304,7 @@ export default function OnboardingPage() {
         <AnimatePresence mode="wait" custom={dir} initial={false}>
           {paso === 'sexo' && (
             <PantallaPregunta key="sexo" dir={dir} variants={variants}>
-              <Pregunta titulo="¿Cuál es tu sexo biológico?" micro="Solo lo usamos para calcular tus calorías y macros con precisión real" />
+              <Pregunta titulo="¿Cuál es tu sexo biológico?" micro="Lo usamos para calcular tus calorías y macros con mayor precisión." />
               <Chips opciones={OPCIONES_SEXO} valor={sexo} onSelect={(v) => seleccionarYAvanzar(setSexo, v)} />
               <TarjetaRuta
                 sexo={sexo}
@@ -314,7 +314,7 @@ export default function OnboardingPage() {
                 dias={null}
                 beneficio={{
                   icono: Activity,
-                  texto: 'El gasto calórico en reposo cambia entre hombres y mujeres — sin este dato, tus macros serían un promedio genérico, no los tuyos.',
+                  texto: 'El gasto calórico en reposo varía según el sexo. Sin este dato, tus macros serían un promedio genérico y no 100% adaptados a ti.',
                 }}
               />
             </PantallaPregunta>
@@ -541,7 +541,7 @@ function TarjetaRuta({
         // Arranque honesto: nunca las 4 filas en "—" a la vez (se lee como
         // widget roto) — un mensaje de bienvenida mientras no hay nada que mostrar.
         <p className="mt-3 text-sm leading-relaxed text-[var(--text-secondary)]">
-          Cada respuesta se va guardando aquí, como en una libreta — vas a verla llenarse en un momento.
+          Cada respuesta se guarda aquí, como en una libreta. En un momento verás cómo se llena.
         </p>
       ) : (
         <div className="mt-3 flex flex-col gap-3">
