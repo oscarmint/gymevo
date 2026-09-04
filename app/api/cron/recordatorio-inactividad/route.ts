@@ -22,12 +22,17 @@ const TITULO = '¿Todo bien por ahí? 👀';
 const CUERPO = 'Llevas 2 días de descanso. Tomar un respiro está perfecto, pero no pierdas el ritmo. ¿Hacemos una rutina corta hoy?';
 
 export async function GET(req: NextRequest) {
+  // Fail-secure (auditoría de seguridad 04/09/2026): sin CRON_SECRET
+  // configurado en Vercel, este endpoint quedaba abierto para cualquiera —
+  // mismo criterio que ya usa el webhook de Hotmart (hotmart-verify.ts):
+  // sin la clave, se rechaza a TODOS en vez de dejar pasar a todos.
   const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const auth = req.headers.get('authorization');
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-    }
+  if (!secret) {
+    return NextResponse.json({ error: 'CRON_SECRET no configurado' }, { status: 500 });
+  }
+  const auth = req.headers.get('authorization');
+  if (auth !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
   const admin = clienteAdmin();
