@@ -107,10 +107,11 @@ export default function LandingGymEvo() {
         ctaHref={CTA_HREF}
       />
 
-      {/* 6. OFERTA — anual primero, trial 7 días en ambas (02C) */}
+      {/* 6. OFERTA — anual primero, con trial de 7 días; Mensual es el
+          ancla SIN trial (mismo esquema del paywall in-app — nunca prometer
+          en la landing algo que el paywall no cumple). */}
       <Oferta
         tituloMarked="Empieza gratis. Sigue por menos de [acento]$0.09/día[/acento]"
-        trialDias={7}
         stack={{
           lineas: [
             { resultado: 'GymEvo Pro con el Botón de Rescate (12 meses)', valor: '$60' },
@@ -124,6 +125,7 @@ export default function LandingGymEvo() {
           nombre: 'Anual',
           badge: 'MÁS POPULAR',
           precioMes: '$2.50',
+          trialDias: 7,
           totalAnual: 'Se cobra $29.99/año',
           ahorro: '6 meses gratis',
           descomposicionDia: 'menos de $0.09 al día',

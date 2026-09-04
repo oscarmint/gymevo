@@ -9,6 +9,13 @@
 - Verificado: tsc ✓ · build ✓ · estructura de la pantalla confirmada completa y correcta (árbol de accesibilidad) — la herramienta de captura de pantalla falló de forma intermitente (quedó en `about:blank` sin razón clara, posible falla transitoria de Playwright), así que la evidencia visual de esta ronda es el árbol de contenido, no un PNG. Pendiente tomar el screenshot real la próxima vez que se abra el paywall.
 / Siguiente acción exacta: pedirle al usuario los 2 checkout links de Hotmart cuando los tenga listos.
 
+⏸️ CHECKPOINT — Última acción completada (03/09/2026): **Bug real corregido tras el rediseño del paywall: la landing seguía prometiendo "7 días gratis" en el plan Mensual, que ya no lo tiene.**
+- **Cómo se descubrió**: el usuario preguntó por qué no se siguió el pedido "al pie de la letra" ni se actualizaron los precios — al revisar, el paywall (`/paywall`) sí quedó correcto, pero la landing (`app/page.tsx`, sección Oferta) seguía usando el esquema VIEJO: un solo `trialDias={7}` compartido que ponía el badge "7 DÍAS GRATIS" en AMBAS tarjetas (Anual y Mensual) — justo la contradicción de confianza que el propio pedido buscaba evitar (prometer un trial que el plan no tiene).
+- **Fix**: `trialDias` pasó de ser una prop global de `<Oferta>` a una propiedad de CADA plan (`PlanOferta.trialDias?: number`) — así cada tarjeta declara su propio trial o su ausencia, sin heredar uno compartido. En `app/page.tsx`, `trialDias: 7` se movió a `anual={{...}}` y el objeto `mensual={{...}}` ya no lo tiene.
+- Verificado en el navegador: Anual conserva el badge "7 DÍAS GRATIS"; Mensual ya no lo muestra — landing y paywall ahora dicen lo mismo.
+- Verificado: tsc ✓ · eslint ✓ (0 errores) · build ✓.
+/ Siguiente acción exacta: publicar.
+
 ⏸️ CHECKPOINT — Última acción completada (03/09/2026): **Paywall reescrito por completo a especificación exacta del usuario — estructura de hard paywall con efecto señuelo de 3 planes, trial solo en Semestral/Anual, y cierre con retraso de 2.5s.**
 - **Reemplaza la ronda anterior de 4 planes** (Mensual/Trimestral/Semestral/Anual, todos con trial) — el usuario dio un brief completo de UI/UX/copywriting y pidió implementarlo tal cual. Se quitó Trimestral.
 - **3 planes con señuelo real**: Mensual $4.99 (ancla cara, SIN trial, cobra desde hoy) · Semestral $19.99/6 meses (ahorra 33%, CON trial) · Anual $29.99/año ≈$2.50/mes (ahorra 50%, "MÁS POPULAR", CON trial, pre-seleccionado). El trial de 7 días solo aparece como badge en Semestral/Anual — nunca en Mensual, a pedido explícito.

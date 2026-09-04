@@ -22,6 +22,11 @@ export interface PlanOferta {
   sufijo?: string;
   /** Descomposición por día ("menos de $0.17 al día") — 13px bajo el precio. */
   descomposicionDia?: string;
+  /** Días de trial DE ESTE PLAN — no todos los planes tienen por qué tenerlo
+   * (ej. un plan Mensual "ancla" sin trial mientras el Anual sí). undefined
+   * = este plan en particular no tiene trial → sin badge. Nunca mostrar el
+   * badge en un plan que de verdad no lo incluye (transparencia radical). */
+  trialDias?: number;
   ctaLabel: string;
   ctaHref: string;
   /** 4-6 features en lenguaje de RESULTADO, máx 12 palabras c/u. */
@@ -32,8 +37,6 @@ export interface OfertaProps {
   kicker?: string;
   /** Copy MARCADO del título (máx 8 palabras). */
   tituloMarked: string;
-  /** N días de trial según 02C/ESTADO.md. undefined = esquema SIN trial → sin badge. */
-  trialDias?: number;
   /** El plan ANUAL — recomendado, primero en el DOM. */
   anual: PlanOferta & {
     /** "Se cobra $X/año" — OBLIGATORIO: el total nunca se esconde (52 §2). */
@@ -138,7 +141,6 @@ function Features({ items, origen }: { items: string[]; origen: string }) {
 export function Oferta({
   kicker = 'LA OFERTA',
   tituloMarked,
-  trialDias,
   anual,
   mensual,
   stack,
@@ -199,7 +201,7 @@ export function Oferta({
               <div className="rounded-[var(--radius-card)] bg-[color-mix(in_oklab,var(--accent)_5%,transparent)] p-6 md:p-7">
                 <div className="flex items-center justify-between gap-3">
                   <h3 className="text-[18px] font-semibold text-[var(--text-primary)]">{anual.nombre}</h3>
-                  {trialDias !== undefined && <TrialBadge dias={trialDias} />}
+                  {anual.trialDias !== undefined && <TrialBadge dias={anual.trialDias} />}
                 </div>
                 <div className="mt-4">
                   <Precio plan={anual} />
@@ -224,7 +226,7 @@ export function Oferta({
           >
             <div className="flex items-center justify-between gap-3">
               <h3 className="text-[18px] font-semibold text-[var(--text-primary)]">{mensual.nombre}</h3>
-              {trialDias !== undefined && <TrialBadge dias={trialDias} />}
+              {mensual.trialDias !== undefined && <TrialBadge dias={mensual.trialDias} />}
             </div>
             <div className="mt-4">
               <Precio plan={mensual} />
