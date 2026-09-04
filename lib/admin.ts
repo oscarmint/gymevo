@@ -233,17 +233,23 @@ export interface ResumenFunnel {
    * usa el resto del panel. */
   registrosTotal: number;
   registradosSinComprar: number;
+  /** Empezaron el cuestionario de onboarding pero no llegaron al final
+   * (nunca vieron su plan de Día 1) — mismo contador anónimo que las visitas. */
+  onboardingIniciado30d: number;
+  onboardingCompletado30d: number;
 }
 
-/** Los 2 huecos del embudo que pidió el dueño: quién visita y no se
- * registra, y quién se registra y no compra — sin nombres, solo conteos
- * (21-BACKOFFICE / 36-ANALÍTICA). */
+/** Los huecos del embudo que pidió el dueño: quién visita y no se registra,
+ * quién se registra y no compra, y quién empieza el onboarding y no lo
+ * termina — sin nombres, solo conteos (21-BACKOFFICE / 36-ANALÍTICA). */
 export async function obtenerResumenFunnel(): Promise<ResumenFunnel> {
   const supabase = await crearClienteSupabaseServidor();
   const hace30 = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
-  const [{ count: visitas }, { data: perfiles }] = await Promise.all([
+  const [{ count: visitas }, { count: onboardingIniciado }, { count: onboardingCompletado }, { data: perfiles }] = await Promise.all([
     supabase.from('event_log').select('id', { count: 'exact', head: true }).eq('type', 'landing_view').gte('created_at', hace30),
+    supabase.from('event_log').select('id', { count: 'exact', head: true }).eq('type', 'onboarding_start').gte('created_at', hace30),
+    supabase.from('event_log').select('id', { count: 'exact', head: true }).eq('type', 'onboarding_complete').gte('created_at', hace30),
     supabase.from('profiles').select('plan'),
   ]);
 
@@ -255,6 +261,8 @@ export async function obtenerResumenFunnel(): Promise<ResumenFunnel> {
     visitasLanding30d: visitas ?? 0,
     registrosTotal,
     registradosSinComprar,
+    onboardingIniciado30d: onboardingIniciado ?? 0,
+    onboardingCompletado30d: onboardingCompletado ?? 0,
   };
 }
 

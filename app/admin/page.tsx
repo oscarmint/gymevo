@@ -2,7 +2,7 @@
 // (17-VISUALIZACION-DATOS: Tufte, un dato héroe por card). Ningún número se
 // inventa: lo que no tiene fuente real hoy se rotula "Sin datos".
 
-import { AlertTriangle, CheckCircle2, DollarSign, Dumbbell, Eye, TrendingDown, TrendingUp, UserX, Users } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, DollarSign, Dumbbell, Eye, NotebookPen, TrendingDown, TrendingUp, UserX, Users } from 'lucide-react';
 import { calcularAvisos, obtenerChurn, obtenerResumenFunnel, obtenerResumenUso, obtenerResumenUsuarios, obtenerResumenVentas, obtenerVentasPorSemana } from '@/lib/admin';
 import { GraficoVentas } from './GraficoVentas';
 
@@ -70,6 +70,7 @@ export default async function AdminPage() {
   const cancelados = (ventas.porEstado.cancelled ?? 0) + (ventas.porEstado.expired ?? 0);
   const visitasSinRegistro = Math.max(funnel.visitasLanding30d - usuarios.altasUltimos30Dias, 0);
   const pctRegistroSinComprar = funnel.registrosTotal > 0 ? Math.round((funnel.registradosSinComprar / funnel.registrosTotal) * 100) : 0;
+  const onboardingAbandonado = Math.max(funnel.onboardingIniciado30d - funnel.onboardingCompletado30d, 0);
 
   return (
     <div className="flex flex-col gap-6">
@@ -143,8 +144,16 @@ export default async function AdminPage() {
             insight={`${pctRegistroSinComprar}% de los ${funnel.registrosTotal} registrados totales`}
           />
         </div>
+        <div className="mt-3">
+          <Card
+            icono={NotebookPen}
+            titulo="Empiezan el cuestionario y no lo terminan"
+            heroe={String(onboardingAbandonado)}
+            insight={`${funnel.onboardingIniciado30d} lo empezaron en 30 días · ${funnel.onboardingCompletado30d} llegaron a ver su plan`}
+          />
+        </div>
         <p className="mt-2 text-xs text-[var(--text-tertiary)]">
-          Las vistas cuentan cada carga de la landing (no visitantes únicos) — recién se empezó a medir, así que el número crece día a día.
+          Las vistas cuentan cada carga de página (no visitantes únicos) — recién se empezó a medir, así que los números crecen día a día.
         </p>
       </section>
 

@@ -1,6 +1,13 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-04 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (04/09/2026): **Embudo del panel — se agregó el 3er hueco: quién empieza el onboarding y no lo termina (pedido de seguimiento explícito del checkpoint anterior).**
+- El contador anónimo de eventos se generalizó: `app/api/analitica/visita/route.ts` ahora acepta un `tipo` (lista blanca: `landing_view`/`onboarding_start`/`onboarding_complete`) en vez de estar fijo a uno solo. Nuevo helper `lib/analitica.ts` (`registrarEvento`) para no repetir el `fetch` en cada pantalla.
+- `app/onboarding/page.tsx`: dispara `onboarding_start` al montar y `onboarding_complete` justo antes de `router.push('/onboarding/generando')` (el momento real en que alguien termina las 7 preguntas y va a ver su plan).
+- Panel: nueva tarjeta "Empiezan el cuestionario y no lo terminan" = inicios − completados (últimos 30 días), mismo criterio honesto que las otras 2 tarjetas del embudo (conteo de eventos, no de personas únicas).
+- Verificado: tsc ✓ · eslint ✓ · build ✓ · confirmado en el navegador que `/onboarding` dispara `onboarding_start` (200 OK) y que terminar el cuestionario dispara `onboarding_complete`. Misma limitación ya conocida: no se pudo confirmar el INSERT real en desarrollo local (falta `SUPABASE_SERVICE_ROLE_KEY` en `.env.local`) — funciona en producción por el mismo patrón que el webhook de Hotmart.
+/ Siguiente acción exacta: ninguna — el embudo de 3 huecos (visita→registro→pago, más onboarding) queda completo. Revisar el panel en unos días para ver los 3 números crecer.
+
 ⏸️ CHECKPOINT — Última acción completada (04/09/2026): **Panel de administrador: los 2 huecos del embudo que pidió el dueño — quién visita y no se registra, quién se registra y no compra. Sin nombres, solo conteos.**
 - **"Se registran y no compran"**: sale directo de `profiles.plan` (ya existía la fuente) — cuenta cuántos de los registrados totales nunca llegaron a `plan='pro'`, con el % sobre el total.
 - **"Visitan y no se registran"**: esto SÍ requería instrumentar algo nuevo — la app no medía visitas a la landing en absoluto. Se agregó un contador anónimo (`event_log`, tabla que ya existía desde el panel de admin — solo se le suma un tipo de evento nuevo `landing_view`, sin `user_id`, sin IP, sin nada que identifique a la persona) que se dispara una vez al cargar la landing (`app/api/analitica/visita/route.ts`, usa la llave de servidor porque un visitante anónimo no tiene sesión). El panel resta las altas de los últimos 30 días a las vistas de los últimos 30 días.

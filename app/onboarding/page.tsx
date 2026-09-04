@@ -20,6 +20,7 @@ import {
   type Nivel,
   type Sexo,
 } from '@/lib/onboarding';
+import { registrarEvento } from '@/lib/analitica';
 
 type PasoId = 'sexo' | 'nivel' | 'meta' | 'frustracion' | 'reconocimiento' | 'horario' | 'compromiso';
 
@@ -94,6 +95,12 @@ export default function OnboardingPage() {
   const botonSalirRef = useRef<HTMLButtonElement>(null);
   const seguirAquiRef = useRef<HTMLButtonElement>(null);
   const salirModalRef = useRef<HTMLButtonElement>(null);
+
+  // Embudo del panel de admin (21-BACKOFFICE): cuántos empiezan el
+  // cuestionario — se compara luego contra "onboarding_complete" en terminar().
+  useEffect(() => {
+    registrarEvento('onboarding_start');
+  }, []);
 
   // Hallazgo revisor-visual: "Salir" borraba las respuestas ya dadas sin
   // avisar. Si todavía no respondió nada (pasoIdx===0), salir directo — no
@@ -188,6 +195,7 @@ export default function OnboardingPage() {
       horario: horario ?? 'tarde',
       diasSemana: dias,
     });
+    registrarEvento('onboarding_complete');
     router.push('/onboarding/generando');
   }
 
