@@ -144,7 +144,7 @@ export default function LoginPage() {
 
               <button
                 type="submit"
-                disabled={estado === 'enviando' || !acepto}
+                disabled={estado === 'enviando'}
                 className="boton-3d flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)] disabled:opacity-70"
               >
                 {estado === 'enviando' ? 'Enviando…' : 'Enviarme mi enlace de acceso'}
