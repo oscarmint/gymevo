@@ -5,13 +5,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Camera, Check, ExternalLink, Flame, Loader2, LogOut, Pencil } from 'lucide-react';
+import { Bell, BellOff, Camera, Check, ExternalLink, Flame, Loader2, LogOut, Pencil } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { calcularMacros } from '@/lib/macros';
 import { cambiarRuta, ejerciciosDeHoy, guardarProgreso, leerProgreso, obtenerEjercicio, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
 import type { Meta, Nivel } from '@/lib/onboarding';
 import { leerAvatarLocal, guardarAvatarLocal, leerNombreLocal, guardarNombreLocal } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
+import { activarAvisos, desactivarAvisos, estaSuscrito, pushSoportado } from '@/lib/push-client';
 import { guardarNombreRemoto, guardarProgresoRemoto, leerAvatarRemoto, leerMembresiaRemota, leerNombreRemoto, subirAvatar } from '@/lib/supabase/sync';
 
 const ESTADO_MEMBRESIA_LABEL: Record<string, string> = {
@@ -42,6 +43,14 @@ export default function PerfilPage() {
   // — nunca se aplica con un solo tap.
   const [pidiendoConfirmacion, setPidiendoConfirmacion] = useState<{ nivel: Nivel; meta: Meta } | null>(null);
 
+  // Avisos push (recordatorio de "2 días sin entrenar") — `null` mientras se
+  // revisa si este navegador ya está suscrito; `false` también cubre el caso
+  // de un navegador que no soporta push (el botón se oculta, ver JSX).
+  const [avisosActivos, setAvisosActivos] = useState<boolean | null>(null);
+  const [avisosSoportados, setAvisosSoportados] = useState(true);
+  const [cargandoAvisos, setCargandoAvisos] = useState(false);
+  const [errorAvisos, setErrorAvisos] = useState<string | null>(null);
+
   // localStorage/sessionStorage no existen en el servidor: leerlos en el
   // initializer de useState causa mismatch de hydration. Este efecto es la
   // forma correcta (solo corre en el cliente, tras la hydration).
@@ -69,6 +78,11 @@ export default function PerfilPage() {
       }
     });
     leerMembresiaRemota().then(setMembresia);
+    if (pushSoportado()) {
+      estaSuscrito().then(setAvisosActivos);
+    } else {
+      setAvisosSoportados(false);
+    }
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 
@@ -147,6 +161,28 @@ export default function PerfilPage() {
     setProgreso(next);
     guardarProgreso(next);
     guardarProgresoRemoto(next);
+  }
+
+  async function alternarAvisos() {
+    setErrorAvisos(null);
+    setCargandoAvisos(true);
+    try {
+      if (avisosActivos) {
+        await desactivarAvisos();
+        setAvisosActivos(false);
+      } else {
+        const resultado = await activarAvisos();
+        if (resultado.ok) {
+          setAvisosActivos(true);
+        } else if (resultado.motivo === 'permiso-denegado') {
+          setErrorAvisos('Bloqueaste las notificaciones para GymEvo — actívalas desde los ajustes de tu navegador para este sitio.');
+        } else {
+          setErrorAvisos('No pudimos activar los avisos en este dispositivo. Intenta de nuevo.');
+        }
+      }
+    } finally {
+      setCargandoAvisos(false);
+    }
   }
 
   async function cerrarSesion() {
@@ -481,6 +517,41 @@ export default function PerfilPage() {
           </p>
         )}
       </div>
+
+      {/* Recordatorio push (2 días sin entrenar) — activo/inactivo POR
+          DISPOSITIVO, nunca se pide el permiso solo, siempre con un botón
+          de por medio (los navegadores bloquean el permiso "para siempre"
+          si se pide en frío al cargar la pantalla). Se oculta del todo si
+          este navegador no soporta push (ej. Safari de iPhone sin instalar
+          la app a la pantalla de inicio). */}
+      {avisosSoportados ? (
+        <div className="superficie-3d mt-6 flex items-center justify-between gap-3 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-4">
+          <div className="flex items-center gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[var(--chip-bg)]">
+              {avisosActivos ? <Bell size={18} color="var(--accent)" /> : <BellOff size={18} color="var(--text-secondary)" />}
+            </span>
+            <div>
+              <p className="text-sm font-semibold text-[var(--text-primary)]">Recordatorio de racha</p>
+              <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                {avisosActivos ? 'Activo en este dispositivo' : 'Un aviso si llevas 2 días sin entrenar'}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={alternarAvisos}
+            disabled={cargandoAvisos || avisosActivos === null}
+            className={`flex h-9 shrink-0 items-center justify-center rounded-full px-4 text-xs font-semibold transition-colors disabled:opacity-60 ${
+              avisosActivos
+                ? 'border border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] text-[var(--text-secondary)]'
+                : 'bg-[var(--accent)] text-[var(--bg)]'
+            }`}
+          >
+            {cargandoAvisos ? <Loader2 size={14} className="animate-spin motion-reduce:animate-none" /> : avisosActivos ? 'Desactivar' : 'Activar'}
+          </button>
+        </div>
+      ) : null}
+      {errorAvisos && <p className="mt-2 text-xs text-[var(--status-warning)]">{errorAvisos}</p>}
 
       <button
         type="button"
