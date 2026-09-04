@@ -1,6 +1,15 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-03 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (03/09/2026): **Precios ahora llevan la moneda explícita — "USD" junto a todos los dólares, "COP" junto a la conversión en pesos.**
+- **Por qué**: pedido explícito del usuario — ambas monedas usan el símbolo "$", así que "$29.99" y "≈ $ 7.853" (COP) se podían confundir sin la etiqueta.
+- **`lib/trm.ts`**: `formatearCOP()` ahora devuelve `"$ 7.853 COP"` en vez de `"$ 7.853"` (un solo cambio, cubre paywall y landing porque ambos llaman a la misma función).
+- **`app/paywall/page.tsx`**: precio grande + tachado de cada `PlanCard` llevan "USD" en texto chico; el timeline del trial ("1er cobro: $29.99 USD/año"), el timeline sin trial ("cobro de $4.99 USD") y el detalle de cada tarjeta ("Se cobra $19.99 USD/6 meses") también.
+- **`components/landing/Oferta.tsx`**: el precio grande de cada plan (Anual/Mensual) lleva "USD" chico junto al "/mes".
+- **`app/page.tsx`**: los valores del stack de valor, el total tachado y la nota ("Hoy: $2.50 USD/mes...") ahora incluyen "USD" en el texto.
+- Verificado: tsc ✓ · build ✓ · confirmado visualmente a 375px en paywall (tarjetas + timeline) y en landing (sección Oferta) — el linter de diseño marcó tamaños de texto en px como "arbitrarios" en `Oferta.tsx`, pero son deuda preexistente del archivo (36px/14px/13px ya estaban ahí antes de este cambio, no es un valor nuevo que yo haya introducido) — no se tocó por estar fuera del alcance de este pedido.
+/ Siguiente acción exacta: publicar.
+
 ⏸️ CHECKPOINT — Última acción completada (03/09/2026): **Re-verificación punto por punto del prompt "Hard Paywall" (el usuario lo reenvió idéntico, tras quejarse de que no se había seguido al pie de la letra) — 1 hueco real encontrado y corregido.**
 - **Auditoría**: se revisaron los 5 numerales exactos del prompt contra `app/paywall/page.tsx`. 4 de 5 ya estaban cumplidos (titular sin "Suscríbete", señuelo de 3 precios, badge de trial solo en Semestral/Anual, FAQ anti-cancelación, cierre con retraso). El numeral 1 pedía "una imagen o ilustración CLARA de la app" y lo que había era solo un ícono de 56px — no llegaba al nivel pedido.
 - **Fix**: la tarjeta de "prueba visual" ahora muestra primero el video real de gimnasio (`/videos/hero-gimnasio.mp4`, el mismo que ya usan la landing y Plan de hoy) en un bloque de 144px, y debajo el ícono + texto del mecanismo. Nunca se inventó una ilustración nueva (doctrina 32: no fingir producto que no existe) — se reutilizó un asset real ya aprobado. Respaldo sin video para `prefers-reduced-motion` (mismo alto, sin movimiento, para que la tarjeta no se vea rota).

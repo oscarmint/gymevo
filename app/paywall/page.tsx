@@ -235,7 +235,7 @@ export default function PaywallPage() {
                 nombre={info.nombre}
                 precioTachado={id === 'anual' ? `$${PLANES.mensual.precioTotal.toFixed(2)}` : undefined}
                 precioMes={`$${precioMes.toFixed(2)}`}
-                detalle={info.meses === 1 ? 'Se cobra cada mes, desde hoy' : `Se cobra $${info.precioTotal.toFixed(2)}${periodoLabel(info.meses)}`}
+                detalle={info.meses === 1 ? 'Se cobra cada mes, desde hoy' : `Se cobra $${info.precioTotal.toFixed(2)} USD${periodoLabel(info.meses)}`}
                 trm={trm}
               />
             );
@@ -401,7 +401,7 @@ function TimelineTrial({ plan }: { plan: PlanId }) {
     { estado: 'lleno' as const, titulo: 'Día 6 — te avisamos', sub: 'Correo antes de cualquier cobro' },
     {
       estado: 'vacio' as const,
-      titulo: `Día 7 — 1er cobro: $${info.precioTotal.toFixed(2)}${periodoLabel(info.meses)}`,
+      titulo: `Día 7 — 1er cobro: $${info.precioTotal.toFixed(2)} USD${periodoLabel(info.meses)}`,
       sub: 'Cancela antes sin costo',
     },
   ];
@@ -439,7 +439,7 @@ function TimelineSinTrial({ plan }: { plan: PlanId }) {
       </span>
       <div>
         <p className="text-base font-semibold text-[var(--text-primary)]">
-          Hoy — cobro de ${info.precioTotal.toFixed(2)}, acceso completo
+          Hoy — cobro de ${info.precioTotal.toFixed(2)} USD, acceso completo
         </p>
         <p className="text-xs text-[var(--text-secondary)]">Sin trial en este plan. Cancela cuando quieras, sin costo.</p>
       </div>
@@ -527,12 +527,13 @@ function PlanCard({
         <div className="text-right">
           {precioTachado && (
             <p className="text-base font-bold tabular-nums text-[var(--text-secondary)] line-through decoration-[var(--accent)] decoration-4">
-              {precioTachado}/mes
+              {precioTachado}/mes USD
             </p>
           )}
           <p className="text-2xl font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
             {precioMes}
-            <span className="text-xs font-normal text-[var(--text-secondary)]">/mes</span>
+            <span className="text-xs font-normal text-[var(--text-secondary)]">/mes </span>
+            <span className="text-[10.5px] font-semibold text-[var(--text-tertiary)]">USD</span>
           </p>
           {/* Precio en pesos colombianos (TRM oficial del día) — la mayoría
               de la venta es en Colombia; ver solo USD ahuyenta clientes que

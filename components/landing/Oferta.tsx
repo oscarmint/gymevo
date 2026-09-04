@@ -113,7 +113,8 @@ function Precio({ plan }: { plan: PlanOferta }) {
         <span className="text-[36px] font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
           <PrecioAnimado texto={plan.precioMes} />
         </span>
-        <span className="text-[14px] text-[var(--text-secondary)]">{plan.sufijo ?? '/mes'}</span>
+        <span className="text-[14px] text-[var(--text-secondary)]">{plan.sufijo ?? '/mes'}</span>{' '}
+        <span className="text-[10.5px] font-semibold text-[var(--text-tertiary)]">USD</span>
       </p>
       {precioCOP && <p className="mt-0.5 text-[13px] tabular-nums text-[var(--text-secondary)]">≈ {precioCOP}</p>}
       {plan.descomposicionDia && (

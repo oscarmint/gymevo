@@ -45,9 +45,11 @@ const FORMATO_COP = new Intl.NumberFormat('es-CO', {
 });
 
 /** "$4.99" + TRM → "≈ $19.500 COP". Redondea al peso, sin decimales (nadie
- * cobra centavos de peso colombiano). */
+ * cobra centavos de peso colombiano). El sufijo "COP" es obligatorio (pedido
+ * explícito del usuario): ambas monedas usan el símbolo "$", así que sin la
+ * etiqueta de moneda un usuario puede confundir pesos con dólares. */
 export function formatearCOP(precioUSD: string, trm: number): string | null {
   const numero = extraerNumeroUSD(precioUSD);
   if (numero === null) return null;
-  return FORMATO_COP.format(numero * trm);
+  return `${FORMATO_COP.format(numero * trm)} COP`;
 }

@@ -114,19 +114,19 @@ export default function LandingGymEvo() {
         tituloMarked="Empieza gratis. Sigue por menos de [acento]$0.09/día[/acento]"
         stack={{
           lineas: [
-            { resultado: 'GymEvo Pro con el Botón de Rescate (12 meses)', valor: '$60' },
-            { resultado: 'Ruta Intermedio completa anti-estancamiento', valor: '$29' },
-            { resultado: 'Guía de nutrición sin fórmulas complicadas', valor: '$19' },
+            { resultado: 'GymEvo Pro con el Botón de Rescate (12 meses)', valor: '$60 USD' },
+            { resultado: 'Ruta Intermedio completa anti-estancamiento', valor: '$29 USD' },
+            { resultado: 'Guía de nutrición sin fórmulas complicadas', valor: '$19 USD' },
           ],
-          totalTachado: '$108',
-          nota: 'Hoy: $2.50/mes (se cobra $29.99/año)',
+          totalTachado: '$108 USD',
+          nota: 'Hoy: $2.50 USD/mes (se cobra $29.99 USD/año)',
         }}
         anual={{
           nombre: 'Anual',
           badge: 'MÁS POPULAR',
           precioMes: '$2.50',
           trialDias: 7,
-          totalAnual: 'Se cobra $29.99/año',
+          totalAnual: 'Se cobra $29.99 USD/año',
           ahorro: '6 meses gratis',
           descomposicionDia: 'menos de $0.09 al día',
           ctaLabel: 'Empezar mis 7 días gratis',
