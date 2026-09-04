@@ -159,23 +159,41 @@ export default function PaywallPage() {
           </p>
         </motion.div>
 
-        {/* Prueba visual: el mecanismo en acción, no una captura de pantalla
-            inventada (32-DEL-MVP-AL-PRODUCTO: nunca fingir producto que no
-            existe) — un ícono real de la app mostrando qué hace el botón. */}
+        {/* Prueba visual pedida en el prompt ("una imagen o ilustración
+            CLARA de la app"): el mismo video real de gimnasio que ya usan
+            la landing y Plan de hoy — nunca una captura o ilustración
+            inventada (32-DEL-MVP-AL-PRODUCTO: no fingir producto que no
+            existe). Debajo, el ícono + copy explican el mecanismo exacto. */}
         <motion.div
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.04, duration: 0.3 }}
-          className="mt-5 flex items-center gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-4"
+          className="mt-5 overflow-hidden rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)]"
         >
-          <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-[var(--chip-bg)]">
-            <RefreshCcw size={26} color="var(--accent)" />
-          </span>
-          <div>
-            <p className="text-sm font-semibold text-[var(--text-primary)]">¿Máquina ocupada? Un toque y listo.</p>
-            <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-              El Botón de Rescate te da otro ejercicio al instante, sin perder el día ni improvisar.
-            </p>
+          <video
+            aria-hidden="true"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className="h-36 w-full object-cover motion-reduce:hidden"
+          >
+            <source src="/videos/hero-gimnasio.mp4" type="video/mp4" />
+          </video>
+          {/* Respaldo sin video para prefers-reduced-motion: mismo alto, sin
+              movimiento, para que la tarjeta nunca se vea rota o vacía. */}
+          <div className="hidden h-36 w-full bg-[var(--surface-2)] motion-reduce:block" />
+          <div className="flex items-center gap-3 p-4">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--chip-bg)]">
+              <RefreshCcw size={22} color="var(--accent)" />
+            </span>
+            <div>
+              <p className="text-sm font-semibold text-[var(--text-primary)]">¿Máquina ocupada? Un toque y listo.</p>
+              <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                El Botón de Rescate te da otro ejercicio al instante, sin perder el día ni improvisar.
+              </p>
+            </div>
           </div>
         </motion.div>
 
