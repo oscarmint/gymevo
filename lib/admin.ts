@@ -132,6 +132,96 @@ export async function buscarUsuarios(query: string): Promise<UsuarioFila[]> {
   }));
 }
 
+export interface UsuarioCancelado {
+  email: string;
+  status: string;
+  actualizadoEn: string;
+}
+
+const ESTADOS_CANCELADO = ['cancelled', 'expired', 'refunded', 'chargeback'];
+
+export interface ResumenChurn {
+  total: number;
+  ultimos: UsuarioCancelado[];
+}
+
+/** Quién canceló (o se le venció/reembolsó/hizo contracargo la membresía) —
+ * usa `hotmart_purchases.status` + `updated_at`, la única fuente real de
+ * cuándo alguien dejó de pagar (18-VENTA-HOTMART / 58-RETENCION). */
+export async function obtenerChurn(): Promise<ResumenChurn> {
+  const supabase = await crearClienteSupabaseServidor();
+  const { data } = await supabase
+    .from('hotmart_purchases')
+    .select('email, status, updated_at')
+    .in('status', ESTADOS_CANCELADO)
+    .order('updated_at', { ascending: false });
+  const filas = data ?? [];
+  return {
+    total: filas.length,
+    ultimos: filas.slice(0, 8).map((f) => ({ email: f.email, status: f.status, actualizadoEn: f.updated_at })),
+  };
+}
+
+export interface PuntoVentasPorSemana {
+  semana: string; // "16 jun" — inicio de la semana, para el eje X del gráfico
+  compras: number;
+}
+
+/** Compras nuevas por semana (últimas 8) — cuenta eventos reales de
+ * `first_paid_at`, no inventa ingresos: el webhook no guarda el monto
+ * cobrado todavía (ver ResumenVentas.ingresosDisponibles), así que el
+ * gráfico muestra VOLUMEN de compras, no dinero. */
+export async function obtenerVentasPorSemana(): Promise<PuntoVentasPorSemana[]> {
+  const supabase = await crearClienteSupabaseServidor();
+  const { data } = await supabase.from('hotmart_purchases').select('first_paid_at').not('first_paid_at', 'is', null);
+  const filas = data ?? [];
+
+  const hoy = new Date();
+  const semanas: PuntoVentasPorSemana[] = [];
+  for (let i = 7; i >= 0; i--) {
+    const inicio = new Date(hoy);
+    inicio.setDate(hoy.getDate() - hoy.getDay() - i * 7);
+    inicio.setHours(0, 0, 0, 0);
+    const fin = new Date(inicio);
+    fin.setDate(inicio.getDate() + 7);
+    const compras = filas.filter((f) => {
+      const t = new Date(f.first_paid_at as string).getTime();
+      return t >= inicio.getTime() && t < fin.getTime();
+    }).length;
+    semanas.push({
+      semana: new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'short' }).format(inicio),
+      compras,
+    });
+  }
+  return semanas;
+}
+
+export interface CostoServicio {
+  id: string;
+  servicio: string;
+  montoMensual: number;
+  moneda: string;
+  notas: string | null;
+}
+
+export interface ResumenCostos {
+  servicios: CostoServicio[];
+  totalMensualUSD: number;
+}
+
+/** Costo real de mantener la app corriendo — lo carga el dueño a mano
+ * (Supabase, Vercel, Resend, dominio, comisión de Hotmart, etc.). El total
+ * solo suma filas en USD (mezclar monedas sin TRM fija daría un número
+ * falso) — si hay una fila en otra moneda, se muestra aparte, no se suma. */
+export async function obtenerCostosServicios(): Promise<ResumenCostos> {
+  const supabase = await crearClienteSupabaseServidor();
+  const { data } = await supabase.from('costos_servicios').select('id, servicio, monto_mensual, moneda, notas').order('monto_mensual', { ascending: false });
+  const filas = data ?? [];
+  const servicios = filas.map((f) => ({ id: f.id, servicio: f.servicio, montoMensual: Number(f.monto_mensual), moneda: f.moneda, notas: f.notas }));
+  const totalMensualUSD = servicios.filter((s) => s.moneda === 'USD').reduce((acc, s) => acc + s.montoMensual, 0);
+  return { servicios, totalMensualUSD };
+}
+
 export interface AvisoAdmin {
   tipo: 'aviso' | 'ok';
   mensaje: string;

@@ -2,11 +2,12 @@
 // admin en Supabase (migración 0011). Nunca confiar en ocultar este link.
 
 import Link from 'next/link';
-import { LayoutDashboard, Users } from 'lucide-react';
+import { DollarSign, LayoutDashboard, Users } from 'lucide-react';
 
 const TABS = [
   { href: '/admin', label: 'Resumen', icon: LayoutDashboard },
   { href: '/admin/usuarios', label: 'Usuarios', icon: Users },
+  { href: '/admin/costos', label: 'Costos', icon: DollarSign },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

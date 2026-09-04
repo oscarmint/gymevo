@@ -2,8 +2,16 @@
 // (17-VISUALIZACION-DATOS: Tufte, un dato héroe por card). Ningún número se
 // inventa: lo que no tiene fuente real hoy se rotula "Sin datos".
 
-import { AlertTriangle, CheckCircle2, DollarSign, Dumbbell, TrendingUp, Users } from 'lucide-react';
-import { calcularAvisos, obtenerResumenUso, obtenerResumenUsuarios, obtenerResumenVentas } from '@/lib/admin';
+import { AlertTriangle, CheckCircle2, DollarSign, Dumbbell, TrendingDown, TrendingUp, Users } from 'lucide-react';
+import { calcularAvisos, obtenerChurn, obtenerResumenUso, obtenerResumenUsuarios, obtenerResumenVentas, obtenerVentasPorSemana } from '@/lib/admin';
+import { GraficoVentas } from './GraficoVentas';
+
+const ESTADO_CHURN_LABEL: Record<string, string> = {
+  cancelled: 'Canceló',
+  expired: 'Se le venció',
+  refunded: 'Reembolso',
+  chargeback: 'Contracargo',
+};
 
 function formatearFecha(iso: string | null): string {
   if (!iso) return 'nunca';
@@ -47,11 +55,13 @@ function CardSinDatos({ icono: Icono, titulo, motivo }: { icono: React.ElementTy
 }
 
 export default async function AdminPage() {
-  const [ventas, usuarios, uso, avisos] = await Promise.all([
+  const [ventas, usuarios, uso, avisos, churn, ventasPorSemana] = await Promise.all([
     obtenerResumenVentas(),
     obtenerResumenUsuarios(),
     obtenerResumenUso(),
     calcularAvisos(),
+    obtenerChurn(),
+    obtenerVentasPorSemana(),
   ]);
 
   const activos = ventas.porEstado.active ?? 0;
@@ -95,6 +105,12 @@ export default async function AdminPage() {
             motivo="El webhook de Hotmart todavía no guarda el monto de cada cobro — hay que agregarlo antes de poder mostrar ingresos reales."
           />
         </div>
+        <div className="superficie-3d mt-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.05em] text-[var(--text-tertiary)]">Compras por semana</p>
+          <div className="mt-3">
+            <GraficoVentas datos={ventasPorSemana} />
+          </div>
+        </div>
       </section>
 
       {/* USUARIOS */}
@@ -104,6 +120,30 @@ export default async function AdminPage() {
           <Card icono={Users} titulo="Total de usuarios" heroe={String(usuarios.total)} insight={`${usuarios.porPlan.pro ?? 0} con plan pro`} />
           <Card icono={TrendingUp} titulo="Altas últimos 7 días" heroe={String(usuarios.altasUltimos7Dias)} insight={`${usuarios.altasUltimos30Dias} en los últimos 30 días`} />
         </div>
+      </section>
+
+      {/* CHURN — quién cancela (58-RETENCION-DE-INGRESOS) */}
+      <section>
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Churn — quién cancela</h2>
+        {churn.total === 0 ? (
+          <CardSinDatos icono={TrendingDown} titulo="Cancelaciones" motivo="Nadie ha cancelado, vencido, pedido reembolso o hecho contracargo todavía." />
+        ) : (
+          <div className="rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
+            <div className="flex items-center gap-2 text-[var(--text-tertiary)]">
+              <TrendingDown size={15} />
+              <p className="text-xs font-semibold uppercase tracking-[0.05em]">Total histórico</p>
+            </div>
+            <p className="mt-2 text-3xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">{churn.total}</p>
+            <div className="mt-4 flex flex-col gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4">
+              {churn.ultimos.map((u) => (
+                <div key={u.email} className="flex items-center justify-between gap-3 text-sm">
+                  <p className="truncate text-[var(--text-primary)]">{u.email}</p>
+                  <span className="shrink-0 text-xs font-semibold text-[var(--status-warning)]">{ESTADO_CHURN_LABEL[u.status] ?? u.status}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
 
       {/* USO */}
