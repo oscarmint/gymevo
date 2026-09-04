@@ -26,7 +26,7 @@ export default function PrivacidadPage() {
         <section>
           <h2 className="text-lg font-semibold">Quién es el responsable de tus datos</h2>
           <p className="mt-2">
-            GymEvo es operado por <strong>Oscar [tu apellido]</strong>, persona natural, con domicilio en
+            GymEvo es operado por <strong>Oscar Hernán Hernández Murillo</strong>, persona natural, con domicilio en
             Colombia. Puedes contactarnos para cualquier tema de privacidad en{" "}
             <a href="mailto:soporte@gymevo.app" className="underline underline-offset-4">
               soporte@gymevo.app

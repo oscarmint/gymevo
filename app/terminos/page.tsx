@@ -21,7 +21,7 @@ export default function TerminosPage() {
         <section>
           <h2 className="text-lg font-semibold">Quién ofrece este servicio</h2>
           <p className="mt-2">
-            GymEvo es operado por <strong>Oscar [tu apellido]</strong>, persona natural con domicilio en
+            GymEvo es operado por <strong>Oscar Hernán Hernández Murillo</strong>, persona natural con domicilio en
             Colombia. Estos términos se rigen por las leyes de Colombia, y cualquier disputa se resuelve
             ante sus autoridades competentes.
           </p>
