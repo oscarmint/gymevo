@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { CreditCard, Frown, RefreshCcw, ShieldAlert, Users } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { Hero } from '@/components/landing/Hero';
@@ -20,6 +21,13 @@ const CTA_HREF = '/onboarding';
 const CTA_LABEL = 'Crear mi plan de mañana gratis';
 
 export default function LandingGymEvo() {
+  // Contador anónimo de visitas para el panel del dueño (nunca guarda IP ni
+  // identifica a nadie — ver app/api/analitica/visita/route.ts). Una vez por
+  // carga de página, no por cada re-render.
+  useEffect(() => {
+    fetch('/api/analitica/visita', { method: 'POST' }).catch(() => {});
+  }, []);
+
   return (
     <div className="min-h-dvh bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]">
       {/* 1. HERO */}

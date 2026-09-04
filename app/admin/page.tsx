@@ -2,8 +2,8 @@
 // (17-VISUALIZACION-DATOS: Tufte, un dato héroe por card). Ningún número se
 // inventa: lo que no tiene fuente real hoy se rotula "Sin datos".
 
-import { AlertTriangle, CheckCircle2, DollarSign, Dumbbell, TrendingDown, TrendingUp, Users } from 'lucide-react';
-import { calcularAvisos, obtenerChurn, obtenerResumenUso, obtenerResumenUsuarios, obtenerResumenVentas, obtenerVentasPorSemana } from '@/lib/admin';
+import { AlertTriangle, CheckCircle2, DollarSign, Dumbbell, Eye, TrendingDown, TrendingUp, UserX, Users } from 'lucide-react';
+import { calcularAvisos, obtenerChurn, obtenerResumenFunnel, obtenerResumenUso, obtenerResumenUsuarios, obtenerResumenVentas, obtenerVentasPorSemana } from '@/lib/admin';
 import { GraficoVentas } from './GraficoVentas';
 
 const ESTADO_CHURN_LABEL: Record<string, string> = {
@@ -55,18 +55,21 @@ function CardSinDatos({ icono: Icono, titulo, motivo }: { icono: React.ElementTy
 }
 
 export default async function AdminPage() {
-  const [ventas, usuarios, uso, avisos, churn, ventasPorSemana] = await Promise.all([
+  const [ventas, usuarios, uso, avisos, churn, ventasPorSemana, funnel] = await Promise.all([
     obtenerResumenVentas(),
     obtenerResumenUsuarios(),
     obtenerResumenUso(),
     calcularAvisos(),
     obtenerChurn(),
     obtenerVentasPorSemana(),
+    obtenerResumenFunnel(),
   ]);
 
   const activos = ventas.porEstado.active ?? 0;
   const trialing = ventas.porEstado.trialing ?? 0;
   const cancelados = (ventas.porEstado.cancelled ?? 0) + (ventas.porEstado.expired ?? 0);
+  const visitasSinRegistro = Math.max(funnel.visitasLanding30d - usuarios.altasUltimos30Dias, 0);
+  const pctRegistroSinComprar = funnel.registrosTotal > 0 ? Math.round((funnel.registradosSinComprar / funnel.registrosTotal) * 100) : 0;
 
   return (
     <div className="flex flex-col gap-6">
@@ -120,6 +123,29 @@ export default async function AdminPage() {
           <Card icono={Users} titulo="Total de usuarios" heroe={String(usuarios.total)} insight={`${usuarios.porPlan.pro ?? 0} con plan pro`} />
           <Card icono={TrendingUp} titulo="Altas últimos 7 días" heroe={String(usuarios.altasUltimos7Dias)} insight={`${usuarios.altasUltimos30Dias} en los últimos 30 días`} />
         </div>
+      </section>
+
+      {/* EMBUDO — los 2 huecos que se pierden entre visitar, registrarse y
+          pagar (21-BACKOFFICE / 36-ANALÍTICA). Nunca nombres, solo conteos. */}
+      <section>
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Embudo — dónde se pierde la gente</h2>
+        <div className="grid grid-cols-2 gap-3">
+          <Card
+            icono={Eye}
+            titulo="Visitan y no se registran"
+            heroe={String(visitasSinRegistro)}
+            insight={`${funnel.visitasLanding30d} vistas a la landing en 30 días · ${usuarios.altasUltimos30Dias} se registraron`}
+          />
+          <Card
+            icono={UserX}
+            titulo="Se registran y no compran"
+            heroe={String(funnel.registradosSinComprar)}
+            insight={`${pctRegistroSinComprar}% de los ${funnel.registrosTotal} registrados totales`}
+          />
+        </div>
+        <p className="mt-2 text-xs text-[var(--text-tertiary)]">
+          Las vistas cuentan cada carga de la landing (no visitantes únicos) — recién se empezó a medir, así que el número crece día a día.
+        </p>
       </section>
 
       {/* CHURN — quién cancela (58-RETENCION-DE-INGRESOS) */}

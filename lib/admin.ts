@@ -222,6 +222,42 @@ export async function obtenerCostosServicios(): Promise<ResumenCostos> {
   return { servicios, totalMensualUSD };
 }
 
+export interface ResumenFunnel {
+  /** Vistas a la landing en los últimos 30 días — un conteo simple (no
+   * visitantes únicos: recargar la página suma otra vista), nunca ligado a
+   * una persona. Empieza en 0 el día que se conecta el contador — un 0 acá
+   * es un dato real (todavía no se registró ninguna visita), no "sin datos". */
+  visitasLanding30d: number;
+  /** De los que SÍ se registraron, cuántos siguen en plan gratis (no
+   * compraron nunca) — sale de `profiles.plan`, la misma fuente real que ya
+   * usa el resto del panel. */
+  registrosTotal: number;
+  registradosSinComprar: number;
+}
+
+/** Los 2 huecos del embudo que pidió el dueño: quién visita y no se
+ * registra, y quién se registra y no compra — sin nombres, solo conteos
+ * (21-BACKOFFICE / 36-ANALÍTICA). */
+export async function obtenerResumenFunnel(): Promise<ResumenFunnel> {
+  const supabase = await crearClienteSupabaseServidor();
+  const hace30 = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+  const [{ count: visitas }, { data: perfiles }] = await Promise.all([
+    supabase.from('event_log').select('id', { count: 'exact', head: true }).eq('type', 'landing_view').gte('created_at', hace30),
+    supabase.from('profiles').select('plan'),
+  ]);
+
+  const filas = perfiles ?? [];
+  const registrosTotal = filas.length;
+  const registradosSinComprar = filas.filter((f) => f.plan !== 'pro').length;
+
+  return {
+    visitasLanding30d: visitas ?? 0,
+    registrosTotal,
+    registradosSinComprar,
+  };
+}
+
 export interface AvisoAdmin {
   tipo: 'aviso' | 'ok';
   mensaje: string;
