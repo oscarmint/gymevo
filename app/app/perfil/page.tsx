@@ -447,7 +447,7 @@ export default function PerfilPage() {
         </p>
         <div className={`mt-3 grid gap-2 ${meta === 'grasa' ? 'grid-cols-2' : 'grid-cols-3'}`}>
           <div className="flex flex-col gap-1">
-            <label htmlFor="peso-macros" className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+            <label htmlFor="peso-macros" className="flex min-h-8 items-end text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
               Peso (kg)
             </label>
             <input
@@ -461,7 +461,7 @@ export default function PerfilPage() {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label htmlFor="estatura-macros" className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+            <label htmlFor="estatura-macros" className="flex min-h-8 items-end text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
               Estatura (cm)
             </label>
             <input
@@ -475,7 +475,7 @@ export default function PerfilPage() {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label htmlFor="edad-macros" className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+            <label htmlFor="edad-macros" className="flex min-h-8 items-end text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
               Edad
             </label>
             <input
@@ -493,7 +493,7 @@ export default function PerfilPage() {
               levantado (ver Historial → "Tu progreso"). */}
           {meta === 'grasa' && (
             <div className="flex flex-col gap-1">
-              <label htmlFor="cintura-macros" className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+              <label htmlFor="cintura-macros" className="flex min-h-8 items-end text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
                 Cintura (cm)
               </label>
               <input

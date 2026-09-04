@@ -18,6 +18,19 @@ p {
 }
 
 /* ============================================================================
+   TEXTO JUSTIFICADO, SOLO EN LAS PÁGINAS LEGALES (04/09/2026, pedido
+   explícito): a diferencia del copy corto de la UI (donde justificar sin
+   partir palabras deja huecos feos en líneas cortas, ver arriba), un
+   documento legal es prosa larga y corrida — ahí SÍ se ve bien justificado,
+   como cualquier contrato impreso. Sin `hyphens: auto` (nunca se vuelve a
+   combinar con justify — es la causa del bug de palabras cortadas) — el
+   texto-wrap: pretty ya heredado de `p` sigue ayudando a repartir líneas. */
+.prosa-legal p {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+/* ============================================================================
    PROFUNDIDAD 3D PUNTUAL (pedido explícito del usuario, 03/09/2026 — referencia
    Duolingo). NO reemplaza el sistema de hairlines de FICHA-ARTE.md: se aplica
    solo a la acción primaria de cada pantalla y a íconos de navegación clave,

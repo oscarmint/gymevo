@@ -17,7 +17,7 @@ export default function ReembolsosPage() {
       <h1 className="text-4xl font-bold [font-family:var(--font-display)]">Política de Reembolsos</h1>
       <p className="mt-2 text-sm text-[var(--text-secondary)]">Última actualización: 4 de septiembre de 2026 (versión 2)</p>
 
-      <div className="mt-8 flex flex-col gap-6 text-base leading-relaxed">
+      <div className="prosa-legal mt-8 flex flex-col gap-6 text-base leading-relaxed">
         <section>
           <h2 className="text-lg font-semibold">La Garantía del Primer Plan Claro</h2>
           <p className="mt-2">
