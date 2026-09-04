@@ -5,7 +5,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bell, BellOff, Camera, Check, ExternalLink, Flame, Loader2, LogOut, Pencil } from 'lucide-react';
+import { AlertTriangle, Bell, BellOff, Camera, Check, ExternalLink, Flame, Loader2, LogOut, Pencil, Trash2 } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { calcularMacros } from '@/lib/macros';
 import { cambiarRuta, ejerciciosDeHoy, guardarProgreso, leerProgreso, obtenerEjercicio, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
@@ -42,6 +42,12 @@ export default function PerfilPage() {
   // usuario): es un cambio real de plan, no un ajuste de un campo cualquiera
   // — nunca se aplica con un solo tap.
   const [pidiendoConfirmacion, setPidiendoConfirmacion] = useState<{ nivel: Nivel; meta: Meta } | null>(null);
+
+  // Eliminar cuenta (derecho de eliminación real, 47-LEGAL-FISCAL-Y-PRIVACIDAD):
+  // pide confirmación explícita, nunca se borra con un solo tap.
+  const [pidiendoEliminar, setPidiendoEliminar] = useState(false);
+  const [eliminandoCuenta, setEliminandoCuenta] = useState(false);
+  const [errorEliminar, setErrorEliminar] = useState<string | null>(null);
 
   // Avisos push (recordatorio de "2 días sin entrenar") — `null` mientras se
   // revisa si este navegador ya está suscrito; `false` también cubre el caso
@@ -182,6 +188,28 @@ export default function PerfilPage() {
       }
     } finally {
       setCargandoAvisos(false);
+    }
+  }
+
+  async function confirmarEliminarCuenta() {
+    setEliminandoCuenta(true);
+    setErrorEliminar(null);
+    try {
+      const resp = await fetch('/api/cuenta/eliminar', { method: 'DELETE' });
+      if (!resp.ok) {
+        const data = await resp.json().catch(() => null);
+        setErrorEliminar(data?.error ?? 'No pudimos eliminar tu cuenta. Intenta de nuevo o escríbenos a soporte.');
+        setEliminandoCuenta(false);
+        return;
+      }
+      const supabase = crearClienteSupabase();
+      await supabase.auth.signOut();
+      sessionStorage.clear();
+      localStorage.removeItem('gymevo_progreso');
+      router.push('/');
+    } catch {
+      setErrorEliminar('No pudimos eliminar tu cuenta. Intenta de nuevo o escríbenos a soporte.');
+      setEliminandoCuenta(false);
     }
   }
 
@@ -560,6 +588,20 @@ export default function PerfilPage() {
       >
         <LogOut size={16} /> Cerrar sesión
       </button>
+
+      {/* Zona de peligro — derecho de eliminación real (47-LEGAL-FISCAL-Y-
+          PRIVACIDAD): un botón que de verdad borra los datos, no solo la
+          promesa de "escríbenos". Separado visualmente del resto (irreversible). */}
+      <div className="mt-8 border-t border-[color-mix(in_oklab,var(--status-error)_20%,transparent)] pt-5">
+        <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Zona de peligro</p>
+        <button
+          type="button"
+          onClick={() => setPidiendoEliminar(true)}
+          className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-[color-mix(in_oklab,var(--status-error)_35%,transparent)] text-sm font-semibold text-[var(--status-error)]"
+        >
+          <Trash2 size={16} /> Eliminar mi cuenta
+        </button>
+      </div>
       </div>
 
       {pidiendoConfirmacion && (
@@ -595,6 +637,53 @@ export default function PerfilPage() {
                 className="boton-3d flex h-12 flex-1 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
               >
                 Sí, cambiar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {pidiendoEliminar && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="titulo-confirmar-eliminar"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[color-mix(in_oklab,var(--text-primary)_35%,transparent)] px-6"
+          onClick={() => !eliminandoCuenta && setPidiendoEliminar(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-xs rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-5"
+          >
+            <div className="flex items-center gap-2">
+              <AlertTriangle size={18} color="var(--status-error)" />
+              <p id="titulo-confirmar-eliminar" className="text-base font-semibold text-[var(--text-primary)]">
+                ¿Eliminar tu cuenta?
+              </p>
+            </div>
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">
+              Se borra tu perfil, tu historial de entrenamientos, tu foto y tus avisos activados —
+              de inmediato y para siempre. Esto no cancela una suscripción activa: si tienes una,
+              cancélala antes desde Hotmart para no seguir pagando.
+            </p>
+            {errorEliminar && <p className="mt-2 text-sm text-[var(--status-error)]">{errorEliminar}</p>}
+            <div className="mt-5 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setPidiendoEliminar(false)}
+                disabled={eliminandoCuenta}
+                className="superficie-3d flex h-12 flex-1 items-center justify-center rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-sm font-semibold text-[var(--text-primary)] disabled:opacity-60"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={confirmarEliminarCuenta}
+                disabled={eliminandoCuenta}
+                className="flex h-12 flex-1 items-center justify-center gap-1.5 rounded-xl bg-[var(--status-error)] text-sm font-semibold text-white disabled:opacity-70"
+              >
+                {eliminandoCuenta ? <Loader2 size={15} className="animate-spin motion-reduce:animate-none" /> : null}
+                {eliminandoCuenta ? 'Eliminando…' : 'Sí, eliminar'}
               </button>
             </div>
           </div>

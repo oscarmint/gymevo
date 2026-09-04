@@ -17,6 +17,7 @@ type Estado = 'idle' | 'enviando' | 'enviado' | 'error';
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
+  const [acepto, setAcepto] = useState(false);
   const [estado, setEstado] = useState<Estado>('idle');
   const [countdown, setCountdown] = useState(0);
   const [codigo, setCodigo] = useState('');
@@ -25,7 +26,7 @@ export default function LoginPage() {
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.includes('@') || estado === 'enviando') return;
+    if (!email.includes('@') || !acepto || estado === 'enviando') return;
     setEstado('enviando');
 
     const supabase = crearClienteSupabase();
@@ -117,9 +118,33 @@ export default function LoginPage() {
                   className="h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] pl-11 pr-4 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
                 />
               </div>
+              {/* Autorización previa expresa (Ley 1581 de Colombia): checkbox
+                  SIN premarcar, requerido para poder enviar el enlace — no se
+                  crea ninguna cuenta sin este consentimiento explícito. */}
+              <label className="flex items-start gap-2.5 text-xs text-[var(--text-secondary)]">
+                <input
+                  type="checkbox"
+                  checked={acepto}
+                  onChange={(e) => setAcepto(e.target.checked)}
+                  required
+                  className="mt-0.5 size-4 shrink-0 accent-[var(--accent)]"
+                />
+                <span>
+                  Autorizo el tratamiento de mis datos y acepto los{' '}
+                  <Link href="/terminos" className="underline underline-offset-4">
+                    Términos
+                  </Link>{' '}
+                  y la{' '}
+                  <Link href="/privacidad" className="underline underline-offset-4">
+                    Política de Privacidad
+                  </Link>
+                  .
+                </span>
+              </label>
+
               <button
                 type="submit"
-                disabled={estado === 'enviando'}
+                disabled={estado === 'enviando' || !acepto}
                 className="boton-3d flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)] disabled:opacity-70"
               >
                 {estado === 'enviando' ? 'Enviando…' : 'Enviarme mi enlace de acceso'}

@@ -152,10 +152,14 @@ export default function LandingGymEvo() {
         }}
       />
 
-      {/* 7. GARANTÍA — 7 días de prueba sin cobro + 7 días más de devolución tras el cobro (FICHA-MERCADO.md: 14 > 7) */}
+      {/* 7. GARANTÍA — el trial de 7 días SOLO existe en Semestral/Anual (Mensual
+          cobra desde el día 1, a pedido explícito del usuario en el paywall) —
+          la garantía de devolución de 7 días desde el cobro sí aplica a los 3
+          planes por igual (auditoría legal 04/09/2026: el copy anterior prometía
+          "7 días de prueba" como si fuera universal, contradiciendo al Mensual). */}
       <Garantia
         nombre="la Garantía del Primer Plan Claro"
-        condicionMarked="7 días de prueba sin que se te cobre nada. Si igual pagas y no sabes qué hacer, tienes [b]7 días más[/b] para pedir tu dinero de vuelta. Sin preguntas."
+        condicionMarked="Elige Semestral o Anual y entras 7 días gratis, sin que se te cobre nada. ¿Ya pagaste y no sabes qué hacer? Tienes [b]7 días desde tu cobro[/b] para pedir tu dinero de vuelta, en cualquier plan. Sin preguntas."
         pisoLegal="Respaldada por la garantía Hotmart"
       />
 
@@ -180,7 +184,7 @@ export default function LandingGymEvo() {
           {
             pregunta: '¿Me van a cobrar algo oculto la próxima tarjeta?',
             respuestaMarked:
-              'No. El precio que ves es el que pagas, y tienes 7 días gratis antes de que se cobre nada — [b]sin sorpresas[/b].',
+              'No. El precio que ves es el que pagas. Con Semestral o Anual tienes 7 días gratis antes del primer cobro; con Mensual se cobra desde hoy — en los 3 planes tienes 7 días desde tu cobro para pedir devolución si algo no te convence — [b]sin sorpresas[/b].',
           },
           {
             pregunta: '¿Y qué pasa después de los 90 días de la Ruta Principiante?',
@@ -201,8 +205,8 @@ export default function LandingGymEvo() {
         futurePacingMarked="Llegas a tu gimnasio, abres GymEvo, ves tu ejercicio de hoy y empiezas — sin buscar al entrenador, sin improvisar."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
-        recap="Garantía del Primer Plan Claro · 7 días gratis"
-        psMarked="PS: GymEvo te dice exactamente qué hacer en el gimnasio, con el Botón de Rescate para cuando la máquina está ocupada. Hoy entras con 7 días gratis y la Garantía del Primer Plan Claro."
+        recap="Garantía del Primer Plan Claro · desde 7 días gratis"
+        psMarked="PS: GymEvo te dice exactamente qué hacer en el gimnasio, con el Botón de Rescate para cuando la máquina está ocupada. Elige Semestral o Anual y entra gratis 7 días — cualquier plan que elijas queda respaldado por la Garantía del Primer Plan Claro."
       />
 
       {/* 10. FOOTER LEGAL */}
