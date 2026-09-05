@@ -266,6 +266,64 @@ export async function obtenerResumenFunnel(): Promise<ResumenFunnel> {
   };
 }
 
+export interface FilaAtribucionUTM {
+  fuente: string;
+  visitas: number;
+  onboardingIniciado: number;
+  onboardingCompletado: number;
+  registros: number;
+  compras: number;
+}
+
+/** Cuántas personas llegó cada campaña y hasta dónde avanzaron en el embudo
+ * (pedido explícito del dueño: "por cada peso invertido, cuántos llegan a
+ * cada etapa"). La campaña viaja en `event_log.metadata.utm` (ver lib/utm.ts,
+ * capturada una sola vez por visitante) y, para quienes se registran, queda
+ * también en `profiles.utm_source/medium/campaign`. Se agrupa en JS —
+ * filtrar un campo dentro de un jsonb por código es más frágil que traer las
+ * filas y agrupar aquí, y el volumen de este panel no lo justifica. */
+export async function obtenerAtribucionUTM(): Promise<FilaAtribucionUTM[]> {
+  const supabase = await crearClienteSupabaseServidor();
+  const hace30 = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+  const [{ data: eventos }, { data: perfiles }] = await Promise.all([
+    supabase
+      .from('event_log')
+      .select('type, metadata')
+      .in('type', ['landing_view', 'onboarding_start', 'onboarding_complete'])
+      .gte('created_at', hace30),
+    supabase.from('profiles').select('plan, utm_source').not('utm_source', 'is', null),
+  ]);
+
+  const porFuente = new Map<string, FilaAtribucionUTM>();
+  function fila(fuente: string): FilaAtribucionUTM {
+    let f = porFuente.get(fuente);
+    if (!f) {
+      f = { fuente, visitas: 0, onboardingIniciado: 0, onboardingCompletado: 0, registros: 0, compras: 0 };
+      porFuente.set(fuente, f);
+    }
+    return f;
+  }
+
+  for (const e of eventos ?? []) {
+    const fuente = (e.metadata as { utm?: { source?: string } } | null)?.utm?.source;
+    if (!fuente) continue;
+    const f = fila(fuente);
+    if (e.type === 'landing_view') f.visitas++;
+    else if (e.type === 'onboarding_start') f.onboardingIniciado++;
+    else if (e.type === 'onboarding_complete') f.onboardingCompletado++;
+  }
+
+  for (const p of perfiles ?? []) {
+    if (!p.utm_source) continue;
+    const f = fila(p.utm_source);
+    f.registros++;
+    if (p.plan === 'pro') f.compras++;
+  }
+
+  return Array.from(porFuente.values()).sort((a, b) => b.visitas - a.visitas);
+}
+
 export interface AvisoAdmin {
   tipo: 'aviso' | 'ok';
   mensaje: string;

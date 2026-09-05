@@ -2,8 +2,8 @@
 // (17-VISUALIZACION-DATOS: Tufte, un dato héroe por card). Ningún número se
 // inventa: lo que no tiene fuente real hoy se rotula "Sin datos".
 
-import { AlertTriangle, CheckCircle2, DollarSign, Dumbbell, Eye, NotebookPen, TrendingDown, TrendingUp, UserX, Users } from 'lucide-react';
-import { calcularAvisos, obtenerChurn, obtenerResumenFunnel, obtenerResumenUso, obtenerResumenUsuarios, obtenerResumenVentas, obtenerVentasPorSemana } from '@/lib/admin';
+import { AlertTriangle, CheckCircle2, DollarSign, Dumbbell, Eye, Megaphone, NotebookPen, TrendingDown, TrendingUp, UserX, Users } from 'lucide-react';
+import { calcularAvisos, obtenerAtribucionUTM, obtenerChurn, obtenerResumenFunnel, obtenerResumenUso, obtenerResumenUsuarios, obtenerResumenVentas, obtenerVentasPorSemana } from '@/lib/admin';
 import { GraficoVentas } from './GraficoVentas';
 
 const ESTADO_CHURN_LABEL: Record<string, string> = {
@@ -55,7 +55,7 @@ function CardSinDatos({ icono: Icono, titulo, motivo }: { icono: React.ElementTy
 }
 
 export default async function AdminPage() {
-  const [ventas, usuarios, uso, avisos, churn, ventasPorSemana, funnel] = await Promise.all([
+  const [ventas, usuarios, uso, avisos, churn, ventasPorSemana, funnel, atribucion] = await Promise.all([
     obtenerResumenVentas(),
     obtenerResumenUsuarios(),
     obtenerResumenUso(),
@@ -63,6 +63,7 @@ export default async function AdminPage() {
     obtenerChurn(),
     obtenerVentasPorSemana(),
     obtenerResumenFunnel(),
+    obtenerAtribucionUTM(),
   ]);
 
   const activos = ventas.porEstado.active ?? 0;
@@ -154,6 +155,50 @@ export default async function AdminPage() {
         </div>
         <p className="mt-2 text-xs text-[var(--text-tertiary)]">
           Las vistas cuentan cada carga de página (no visitantes únicos) — recién se empezó a medir, así que los números crecen día a día.
+        </p>
+      </section>
+
+      {/* CAMPAÑAS — de dónde viene cada visitante (link con utm_source) y hasta
+          dónde avanza en el embudo (36-ANALITICA, pedido explícito del dueño:
+          "por cada peso invertido, cuántos llegan a cada etapa"). */}
+      <section>
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Campañas — de dónde viene la gente</h2>
+        {atribucion.length === 0 ? (
+          <CardSinDatos
+            icono={Megaphone}
+            titulo="Tráfico por campaña"
+            motivo="Todavía no llega nadie con un link que traiga ?utm_source=... — en cuanto entre la primera visita de una campaña, aparece aquí."
+          />
+        ) : (
+          <div className="superficie-3d overflow-x-auto rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+                  <th className="pb-2 pr-3">Campaña</th>
+                  <th className="pb-2 pr-3">Visitas</th>
+                  <th className="pb-2 pr-3">Empezaron cuestionario</th>
+                  <th className="pb-2 pr-3">Vieron su plan</th>
+                  <th className="pb-2 pr-3">Se registraron</th>
+                  <th className="pb-2">Compraron</th>
+                </tr>
+              </thead>
+              <tbody>
+                {atribucion.map((f) => (
+                  <tr key={f.fuente} className="border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)]">
+                    <td className="py-2 pr-3 font-semibold text-[var(--text-primary)]">{f.fuente}</td>
+                    <td className="py-2 pr-3 text-[var(--text-secondary)]">{f.visitas}</td>
+                    <td className="py-2 pr-3 text-[var(--text-secondary)]">{f.onboardingIniciado}</td>
+                    <td className="py-2 pr-3 text-[var(--text-secondary)]">{f.onboardingCompletado}</td>
+                    <td className="py-2 pr-3 text-[var(--text-secondary)]">{f.registros}</td>
+                    <td className="py-2 font-semibold text-[var(--accent)]">{f.compras}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        <p className="mt-2 text-xs text-[var(--text-tertiary)]">
+          &ldquo;Campaña&rdquo; es lo que pongas en <code>utm_source</code> de tu link (ej. facebook, instagram). Solo cuenta a quien haya usado un link con ese parámetro — el resto de las visitas ya sale arriba, en &ldquo;Embudo&rdquo;.
         </p>
       </section>
 

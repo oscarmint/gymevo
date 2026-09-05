@@ -24,8 +24,13 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => null);
     const tipo = TIPOS_VALIDOS.includes(body?.tipo) ? body.tipo : 'landing_view';
+    const utm = body?.utm;
+    const metadata =
+      utm && typeof utm === 'object' && typeof utm.source === 'string'
+        ? { utm: { source: utm.source, medium: utm.medium ?? null, campaign: utm.campaign ?? null } }
+        : null;
     const admin = clienteAdmin();
-    await admin.from('event_log').insert({ type: tipo });
+    await admin.from('event_log').insert({ type: tipo, metadata });
   } catch {
     // Un fallo acá nunca debe afectar al visitante real — es solo un contador.
   }

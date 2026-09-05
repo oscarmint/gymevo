@@ -7,6 +7,7 @@
 import { crearClienteSupabase } from './client';
 import type { RespuestasOnboarding } from '../onboarding';
 import type { Progreso, RegistroLog } from '../routine';
+import { leerUTM } from '../utm';
 
 export async function usuarioActual() {
   const supabase = crearClienteSupabase();
@@ -32,6 +33,7 @@ export async function sincronizarPerfilInicial(respuestas: RespuestasOnboarding 
   await supabase.rpc('reconciliar_membresia');
 
   if (respuestas) {
+    const utm = leerUTM();
     await supabase
       .from('profiles')
       .update({
@@ -40,6 +42,9 @@ export async function sincronizarPerfilInicial(respuestas: RespuestasOnboarding 
         sexo: respuestas.sexo,
         horario: respuestas.horario,
         dias_semana: respuestas.diasSemana,
+        ...(utm
+          ? { utm_source: utm.source, utm_medium: utm.medium, utm_campaign: utm.campaign }
+          : {}),
       })
       .eq('id', user.id);
   }

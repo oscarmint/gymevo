@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { CreditCard, Frown, RefreshCcw, ShieldAlert, Users } from 'lucide-react';
 import { registrarEvento } from '@/lib/analitica';
+import { capturarUTMDesdeURL } from '@/lib/utm';
 import { Logo } from '@/components/Logo';
 import { Hero } from '@/components/landing/Hero';
 import { Problema } from '@/components/landing/Problema';
@@ -26,6 +27,7 @@ export default function LandingGymEvo() {
   // identifica a nadie — ver app/api/analitica/visita/route.ts). Una vez por
   // carga de página, no por cada re-render.
   useEffect(() => {
+    capturarUTMDesdeURL();
     registrarEvento('landing_view');
   }, []);
 
