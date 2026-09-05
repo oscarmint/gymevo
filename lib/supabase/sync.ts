@@ -37,6 +37,7 @@ export async function sincronizarPerfilInicial(respuestas: RespuestasOnboarding 
       .update({
         nivel: respuestas.nivel,
         meta: respuestas.meta,
+        sexo: respuestas.sexo,
         horario: respuestas.horario,
         dias_semana: respuestas.diasSemana,
       })
@@ -55,7 +56,7 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
 
   const { data: perfil } = await supabase
     .from('profiles')
-    .select('nivel, meta, dia_actual, racha, ultimo_dia_completado, descanso_automatico, descanso_duracion_seg, sonido_descanso, peso_kg, unidad_peso, estatura_cm, edad, peso_inicial_kg, cintura_cm, cintura_inicial_cm, fecha_inicio_medidas')
+    .select('nivel, meta, sexo, dia_actual, racha, ultimo_dia_completado, descanso_automatico, descanso_duracion_seg, sonido_descanso, peso_kg, unidad_peso, estatura_cm, edad, peso_inicial_kg, cintura_cm, cintura_inicial_cm, fecha_inicio_medidas')
     .eq('id', user.id)
     .maybeSingle();
   if (!perfil) return null;
@@ -77,6 +78,7 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
   return {
     nivel: perfil.nivel === 'intermedio' ? 'intermedio' : 'principiante',
     meta: perfil.meta === 'grasa' ? 'grasa' : 'musculo',
+    sexo: perfil.sexo === 'mujer' ? 'mujer' : 'hombre',
     diaActual: perfil.dia_actual,
     racha: perfil.racha,
     ultimaFecha: perfil.ultimo_dia_completado,
@@ -110,6 +112,7 @@ export function guardarProgresoRemoto(p: Progreso, onError?: () => void) {
       .update({
         nivel: p.nivel,
         meta: p.meta,
+        sexo: p.sexo,
         dia_actual: p.diaActual,
         racha: p.racha,
         ultimo_dia_completado: p.ultimaFecha,

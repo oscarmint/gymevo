@@ -6,10 +6,11 @@
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { Lottie } from 'lottie-react';
 import { motion, AnimatePresence, useReducedMotion, animate } from 'motion/react';
-import { Check, Dumbbell, Flame, Info, PlayCircle, RefreshCcw, Undo2, Volume2, VolumeX, WifiOff, X } from 'lucide-react';
+import { Check, Dumbbell, Flame, Info, PlayCircle, RefreshCcw, Undo2, Volume2, VolumeX, WifiOff, X, Zap } from 'lucide-react';
 import { leerRespuestas } from '@/lib/onboarding';
 import animacionFitness from '@/public/animaciones/fitness.json';
 import { CuerpoMuscular } from '@/components/CuerpoMuscular';
+import { EntrenadorAnimado } from '@/components/EntrenadorAnimado';
 import {
   CALENTAMIENTO_IMG,
   calentamientoDeHoy,
@@ -167,6 +168,29 @@ function PlanDelDia({
   const rachaAnteriorRef = useRef(progreso.racha);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const reduce = useReducedMotion();
+
+  // Arranque del entrenamiento (pedido explícito): saludo → entrenador
+  // animado → plan de hoy. Se salta en días de descanso/recuperación (no
+  // aplica "vamos con toda" sin pesas) y si ya se vio hoy (no repetir el
+  // ritual cada vez que el usuario entra y sale de la pantalla el mismo día).
+  const [etapa, setEtapa] = useState<'saludo' | 'entrenador' | 'plan'>(() => {
+    if (typeof window === 'undefined') return 'plan';
+    if (esDiaDeDescanso(progreso.diaActual) || esDiaDeRecuperacionActiva(progreso.diaActual)) return 'plan';
+    const hoy = new Date().toISOString().slice(0, 10);
+    const yaVisto = sessionStorage.getItem('gymevo_saludo_visto') === hoy;
+    return yaVisto ? 'plan' : 'saludo';
+  });
+
+  useEffect(() => {
+    if (etapa !== 'entrenador') return;
+    const t = setTimeout(() => setEtapa('plan'), reduce ? 0 : 2000);
+    return () => clearTimeout(t);
+  }, [etapa, reduce]);
+
+  function iniciarEntrenamiento() {
+    sessionStorage.setItem('gymevo_saludo_visto', new Date().toISOString().slice(0, 10));
+    setEtapa('entrenador');
+  }
 
   useEffect(() => {
     if (!descanso || descanso.restante <= 0) return;
@@ -344,6 +368,52 @@ function PlanDelDia({
   const recuperacion = recuperacionActivaDeHoy(meta);
   const tren = calentamientoDeHoy(progreso.diaActual);
   const cardio = cardioDeHoy(progreso.diaActual, meta);
+
+  if (etapa !== 'plan') {
+    return (
+      <div
+        className="flex min-h-[calc(100dvh-5rem)] flex-col items-center justify-center overflow-hidden px-6 text-center"
+        onClick={etapa === 'entrenador' ? () => setEtapa('plan') : undefined}
+        role={etapa === 'entrenador' ? 'button' : undefined}
+        aria-label={etapa === 'entrenador' ? 'Toca para continuar' : undefined}
+      >
+        {etapa === 'saludo' ? (
+          <motion.div
+            initial={reduce ? {} : { opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35 }}
+            className="flex flex-col items-center"
+          >
+            <span className="chip-3d flex size-16 items-center justify-center rounded-2xl bg-[var(--accent)]">
+              <Zap size={30} color="var(--bg)" strokeWidth={2.4} />
+            </span>
+            <h1 className="mt-5 text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Hola!</h1>
+            <p className="mt-2 max-w-xs text-base text-[var(--text-secondary)]">
+              Hoy vamos a iniciar el entrenamiento de <strong className="text-[var(--text-primary)]">{nombreDeHoy(progreso.diaActual)}</strong>. ¡Vamos con toda!
+            </p>
+            <button
+              type="button"
+              onClick={iniciarEntrenamiento}
+              className="boton-3d mt-7 flex h-14 w-56 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-bold text-[var(--bg)]"
+            >
+              Iniciar entrenamiento
+            </button>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={reduce ? {} : { opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="flex flex-col items-center"
+          >
+            <EntrenadorAnimado sexo={progreso.sexo} />
+            <p className="mt-3 text-lg font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Vamos con toda!</p>
+            <p className="mt-1 text-xs text-[var(--text-tertiary)]">Toca para continuar</p>
+          </motion.div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="px-5 pt-6">

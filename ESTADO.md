@@ -1,6 +1,14 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-04 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (05/09/2026): **Ritual de arranque del entrenamiento (pedido explícito): saludo + entrenador animado antes de cargar "Plan del día".**
+- **Flujo nuevo**: al entrar a Plan del día en un día de pesas (no en descanso ni recuperación activa), primero aparece un saludo ("¡Hola! Hoy vamos a iniciar el entrenamiento de [día]. ¡Vamos con toda!") con botón "Iniciar entrenamiento". Al tocarlo, aparece un entrenador animado (2 segundos, o toca para saltar) y después carga la rutina de siempre, sin tocar nada de su lógica.
+- **Se muestra una sola vez por día** (`sessionStorage`) — si el usuario entra y sale de la pantalla el mismo día, ya no repite el ritual.
+- **Bug real encontrado y corregido de paso**: el `sexo` del usuario (necesario para elegir el género del entrenador) vivía SOLO en `sessionStorage` (`RespuestasOnboarding`) — el mismo bug ya corregido para nivel/meta el 03/09. Se movió a `Progreso` (persistente, localStorage + Supabase, columna nueva `profiles.sexo`) para que el género mostrado sea siempre el real de la persona, no un valor por defecto en una sesión/dispositivo nuevo — a pedido explícito del usuario ("no deben ser los mismos para respetar derechos").
+- **Ilustración nueva** (`components/EntrenadorAnimado.tsx`): silueta propia en SVG (mismo lenguaje visual que `CuerpoMuscular.tsx`, nunca una foto de un tercero), 2 variantes (masculina/femenina) en pose de "puños al aire", con una animación de rebote + ráfagas de energía detrás de cada puño (se apaga con `prefers-reduced-motion`).
+- Verificado: tsc ✓ · eslint ✓ · build ✓ · las 2 siluetas confirmadas visualmente en una ruta de prueba temporal (`/dev-preview-entrenador`, creada y borrada en esta misma sesión — no quedó en el build final, confirmado). NO se pudo probar el flujo completo (saludo → entrenador → plan) en vivo dentro de `/app` porque esa pantalla exige sesión paga real.
+/ Siguiente acción exacta: el usuario prueba el flujo completo en su celular (entra a Plan de hoy en un día de pesas) y confirma que el género del entrenador coincide con el suyo.
+
 ⏸️ CHECKPOINT — Última acción completada (04/09/2026): **Embudo del panel — se agregó el 3er hueco: quién empieza el onboarding y no lo termina (pedido de seguimiento explícito del checkpoint anterior).**
 - El contador anónimo de eventos se generalizó: `app/api/analitica/visita/route.ts` ahora acepta un `tipo` (lista blanca: `landing_view`/`onboarding_start`/`onboarding_complete`) en vez de estar fijo a uno solo. Nuevo helper `lib/analitica.ts` (`registrarEvento`) para no repetir el `fetch` en cada pantalla.
 - `app/onboarding/page.tsx`: dispara `onboarding_start` al montar y `onboarding_complete` justo antes de `router.push('/onboarding/generando')` (el momento real en que alguien termina las 7 preguntas y va a ver su plan).

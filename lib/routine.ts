@@ -3,7 +3,7 @@
 // `routine_days`, `exercise_alternatives`, `workout_logs`, `user_progress` — ver
 // ESTADO.md → Modelo de datos). Por ahora vive en localStorage, client-only.
 
-import { leerRespuestas, type Meta, type Nivel } from './onboarding';
+import { leerRespuestas, type Meta, type Nivel, type Sexo } from './onboarding';
 
 // REESTRUCTURACIÓN 03/09/2026 — calendario de 7 días, cardio por ruta y
 // diferenciación principiante/intermedio, a especificación exacta dada por
@@ -323,6 +323,11 @@ export interface Progreso {
    * cuando quiera (ver `cambiarRuta`). */
   nivel: Nivel;
   meta: Meta;
+  /** Mismo bug de nivel/meta (arriba): antes solo vivía en
+   * `RespuestasOnboarding` (sessionStorage), así que el entrenador animado de
+   * "Plan del día" podía mostrar el género equivocado a alguien que entraba
+   * desde una sesión/dispositivo nuevo. Ahora persiste aquí. */
+  sexo: Sexo;
   diaActual: number;
   racha: number;
   ultimaFecha: string | null; // YYYY-MM-DD del último entrenamiento completado
@@ -385,7 +390,7 @@ function diasEntre(a: string, b: string): number {
 
 export function leerProgreso(): Progreso {
   if (typeof window === 'undefined') {
-    return { nivel: 'principiante', meta: 'musculo', diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
+    return { nivel: 'principiante', meta: 'musculo', sexo: 'hombre', diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
   }
   const raw = localStorage.getItem(KEY);
   if (!raw) {
@@ -393,7 +398,7 @@ export function leerProgreso(): Progreso {
     // su nivel/meta (evita que el primer progreso guardado nazca con los
     // valores por defecto pisando lo que el usuario acaba de elegir).
     const respuestas = leerRespuestas();
-    const inicial: Progreso = { nivel: respuestas?.nivel ?? 'principiante', meta: respuestas?.meta ?? 'musculo', diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
+    const inicial: Progreso = { nivel: respuestas?.nivel ?? 'principiante', meta: respuestas?.meta ?? 'musculo', sexo: respuestas?.sexo ?? 'hombre', diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
     localStorage.setItem(KEY, JSON.stringify(inicial));
     return inicial;
   }
@@ -401,6 +406,7 @@ export function leerProgreso(): Progreso {
   // Compatibilidad con progreso guardado antes de este campo.
   if (p.nivel === undefined) p.nivel = leerRespuestas()?.nivel ?? 'principiante';
   if (p.meta === undefined) p.meta = leerRespuestas()?.meta ?? 'musculo';
+  if (p.sexo === undefined) p.sexo = leerRespuestas()?.sexo ?? 'hombre';
   if (p.descansoAutomatico === undefined) p.descansoAutomatico = true;
   if (p.descansoDuracionSeg === undefined) p.descansoDuracionSeg = 60;
   if (p.sonidoDescanso === undefined) p.sonidoDescanso = true;
