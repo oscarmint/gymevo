@@ -10,7 +10,6 @@ import { Check, Dumbbell, Flame, Info, PlayCircle, RefreshCcw, Undo2, Volume2, V
 import { leerRespuestas } from '@/lib/onboarding';
 import animacionFitness from '@/public/animaciones/fitness.json';
 import { CuerpoMuscular } from '@/components/CuerpoMuscular';
-import { EntrenadorAnimado } from '@/components/EntrenadorAnimado';
 import {
   CALENTAMIENTO_IMG,
   calentamientoDeHoy,
@@ -406,7 +405,10 @@ function PlanDelDia({
             transition={{ duration: 0.3 }}
             className="flex flex-col items-center"
           >
-            <EntrenadorAnimado sexo={progreso.sexo} />
+            {/* Imagen fija entregada por el usuario — la misma para
+                cualquier persona, sin distinguir sexo (pedido explícito). */}
+            {/* eslint-disable-next-line @next/next/no-img-element -- imagen propia estática, no necesita next/image aquí */}
+            <img src="/ilustraciones/entrenador-inicio.png" alt="Ilustración de alguien entrenando con mancuernas" className="h-56 w-auto" />
             <p className="mt-3 text-lg font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Vamos con toda!</p>
             <p className="mt-1 text-xs text-[var(--text-tertiary)]">Toca para continuar</p>
           </motion.div>

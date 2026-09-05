@@ -1,6 +1,14 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-04 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (05/09/2026): **Cambio de decisión del usuario: la pantalla de "Iniciar entrenamiento" usa AHORA una sola imagen fija para todos, sin distinguir hombre/mujer — reemplaza el rediseño anterior.**
+- El usuario pegó una imagen en el chat y pidió usarla "sin cambios" para cualquier persona. Se encontró el archivo real en `C:\Users\OSCAR\Downloads\descarga.png` (guardado automáticamente al pegarla) y se copió a `public/ilustraciones/entrenador-inicio.png`.
+- **Aclaración honesta dada al usuario**: la llamó "gif" pero es una imagen fija (PNG, sin fotogramas de animación) — se usa tal cual, sin animar.
+- Se ELIMINÓ `components/EntrenadorAnimado.tsx` (el SVG de hombre/mujer del checkpoint anterior, ya no se usa en ningún lado) y los tokens `--ilustracion-*` de `tokens.css` que solo eran para esa ilustración — nada de código muerto.
+- `progreso.sexo` (la persistencia que se agregó para elegir el género del entrenador) NO se revirtió — sigue siendo real y necesaria para la calculadora de macros (fórmula Mifflin-St Jeor), que ya la usaba desde antes.
+- Verificado: tsc ✓ · eslint ✓ · build ✓ · confirmado visualmente en una ruta de prueba temporal (creada y borrada en esta misma sesión, confirmado que no quedó en el build) — la imagen se ve bien sobre el fondo oscuro (tiene transparencia real).
+/ Siguiente acción exacta: ninguna — el usuario decide si en algún momento quiere volver a distinguir género o agregar más imágenes.
+
 ⏸️ CHECKPOINT — Última acción completada (05/09/2026): **Rediseño del entrenador animado — de un muñeco simple a una ilustración "flat design" (cara, pelo, ropa a color) haciendo un curl con mancuerna, siguiendo una referencia visual que el usuario mandó en el chat.**
 - **Aclaración honesta dada al usuario**: no hay generador de imágenes disponible en esta sesión — no se puede replicar un estilo anime detallado ni la composición exacta de la referencia (mockup de videollamada). Se construyó a mano en SVG (mismo criterio que `CuerpoMuscular.tsx`), tomando del estilo de referencia lo que SÍ es alcanzable a mano: personaje plano, cara simple, ropa a color, mancuerna real.
 - **Colores nuevos, con la misma excepción ya usada para el confeti** (`components/landing/tokens.css`): `--ilustracion-piel/-pelo/-ropa-1/-ropa-2` — contenido ilustrado, no paleta de marca/UI, documentado como tal.
