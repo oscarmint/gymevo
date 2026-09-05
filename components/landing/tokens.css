@@ -64,6 +64,15 @@
   --confetti-3: #ec4899;
   --confetti-4: #eab308;
   --confetti-5: #22d3ee;
+
+  /* ── ENTRENADOR ANIMADO (otra excepción puntual al 60-30-10, mismo
+     criterio que el confeti): colores de contenido ilustrado — piel, pelo,
+     ropa — de la pantalla "Iniciar entrenamiento", no son parte de la
+     paleta de marca/UI. */
+  --ilustracion-piel: #e8b48c;
+  --ilustracion-pelo: #2b2320;
+  --ilustracion-ropa-1: #223142;
+  --ilustracion-ropa-2: #4fb0a5;
 }
 
 /* ============================================================================

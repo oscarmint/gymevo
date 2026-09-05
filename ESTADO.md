@@ -1,6 +1,14 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-04 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (05/09/2026): **Rediseño del entrenador animado — de un muñeco simple a una ilustración "flat design" (cara, pelo, ropa a color) haciendo un curl con mancuerna, siguiendo una referencia visual que el usuario mandó en el chat.**
+- **Aclaración honesta dada al usuario**: no hay generador de imágenes disponible en esta sesión — no se puede replicar un estilo anime detallado ni la composición exacta de la referencia (mockup de videollamada). Se construyó a mano en SVG (mismo criterio que `CuerpoMuscular.tsx`), tomando del estilo de referencia lo que SÍ es alcanzable a mano: personaje plano, cara simple, ropa a color, mancuerna real.
+- **Colores nuevos, con la misma excepción ya usada para el confeti** (`components/landing/tokens.css`): `--ilustracion-piel/-pelo/-ropa-1/-ropa-2` — contenido ilustrado, no paleta de marca/UI, documentado como tal.
+- **Movimiento**: el antebrazo con la mancuerna gira de verdad alrededor del codo (no todo el brazo), simulando un curl en bucle — verificado con el estilo computado en el navegador (rotación cambiando en vivo), no solo por lectura de código.
+- Sigue alternando hombre/mujer según `progreso.sexo` (real, persistente — ver checkpoint anterior).
+- Verificado: tsc ✓ · eslint ✓ · build ✓ · confirmado visualmente en `/dev-preview-entrenador` (creada y borrada en esta misma sesión, confirmado que no quedó en el build).
+/ Siguiente acción exacta: el usuario decide si esto ya cumple lo que buscaba o si prefiere conseguir/generar 2 imágenes reales (una por género) para reemplazar el dibujo — en ese caso el cambio es solo de este componente, no de la lógica del flujo.
+
 ⏸️ CHECKPOINT — Última acción completada (05/09/2026): **Ritual de arranque del entrenamiento (pedido explícito): saludo + entrenador animado antes de cargar "Plan del día".**
 - **Flujo nuevo**: al entrar a Plan del día en un día de pesas (no en descanso ni recuperación activa), primero aparece un saludo ("¡Hola! Hoy vamos a iniciar el entrenamiento de [día]. ¡Vamos con toda!") con botón "Iniciar entrenamiento". Al tocarlo, aparece un entrenador animado (2 segundos, o toca para saltar) y después carga la rutina de siempre, sin tocar nada de su lógica.
 - **Se muestra una sola vez por día** (`sessionStorage`) — si el usuario entra y sale de la pantalla el mismo día, ya no repite el ritual.

@@ -1,102 +1,113 @@
 'use client';
 
 // Entrenador animado — pantalla de arranque de "Plan del día" (pedido
-// explícito del usuario): un personaje ilustrado (SVG propio, mismo lenguaje
-// visual que CuerpoMuscular.tsx — nunca una foto de un tercero) que celebra
-// el inicio del entrenamiento con un gesto inventado ("puño al aire") antes
-// de cargar la rutina. Alterna masculino/femenino según el sexo REAL de la
-// persona (Progreso.sexo) — nunca el mismo personaje para todos, a pedido
-// explícito ("no deben ser los mismos para respetar derechos").
+// explícito del usuario, con referencia de estilo "flat design" entregada
+// en el chat). Ilustración propia en SVG (no una foto/asset de un tercero:
+// no hay generador de imágenes disponible en esta sesión, así que se
+// construye a mano con figuras planas — mismo criterio que CuerpoMuscular.tsx)
+// haciendo un curl de mancuerna en bucle. Alterna hombre/mujer según el sexo
+// REAL de la persona (Progreso.sexo) — nunca el mismo personaje para todos,
+// a pedido explícito ("no deben ser los mismos para respetar derechos").
 
 import { motion, useReducedMotion } from 'motion/react';
 import type { Sexo } from '@/lib/onboarding';
 
-function Rafaga({ cx, cy }: { cx: number; cy: number }) {
-  // "Ráfaga" de energía detrás de cada puño — 3 anillos que laten en bucle,
-  // desfasados, simulando el impacto del gesto (nunca un gradiente/glow
-  // regado: son trazos finitos, coherente con FICHA-ARTE).
+/** Rango del curl: brazo casi extendido → mancuerna junto al hombro. El
+ * pivote (transformOrigin) es el codo, no el hombro — así el antebrazo gira
+ * de verdad en vez de mover todo el brazo. */
+function BrazoConMancuerna({ codo, reduce }: { codo: { x: number; y: number }; reduce: boolean }) {
+  return (
+    <motion.g
+      style={{ transformOrigin: `${codo.x}px ${codo.y}px` }}
+      initial={reduce ? undefined : { rotate: -6 }}
+      animate={reduce ? undefined : { rotate: -92 }}
+      transition={reduce ? undefined : { duration: 0.55, repeat: Infinity, repeatType: 'mirror', ease: 'easeInOut' }}
+    >
+      {/* Antebrazo */}
+      <rect x={codo.x - 6} y={codo.y - 2} width="12" height="34" rx="6" fill="var(--ilustracion-piel)" />
+      {/* Mancuerna */}
+      <g transform={`translate(${codo.x}, ${codo.y + 34})`}>
+        <rect x="-13" y="-5" width="26" height="10" rx="3" fill="var(--text-tertiary)" />
+        <rect x="-16" y="-8" width="7" height="16" rx="2" fill="var(--ilustracion-ropa-1)" />
+        <rect x="9" y="-8" width="7" height="16" rx="2" fill="var(--ilustracion-ropa-1)" />
+      </g>
+    </motion.g>
+  );
+}
+
+function Cara({ sonrisaAncha = true }: { sonrisaAncha?: boolean }) {
   return (
     <>
-      {[0, 1, 2].map((i) => (
-        <motion.circle
-          key={i}
-          cx={cx}
-          cy={cy}
-          r="11"
-          fill="none"
-          stroke="var(--accent)"
-          strokeWidth="2"
-          initial={{ opacity: 0.55, scale: 0.6 }}
-          animate={{ opacity: 0, scale: 2.2 }}
-          transition={{ duration: 1.4, repeat: Infinity, delay: i * 0.45, ease: 'easeOut' }}
-          style={{ transformOrigin: `${cx}px ${cy}px` }}
-        />
-      ))}
+      <circle cx="92" cy="52" r="2.4" fill="var(--surface)" />
+      <circle cx="108" cy="52" r="2.4" fill="var(--surface)" />
+      <path d={sonrisaAncha ? 'M90,60 Q100,68 110,60' : 'M92,60 Q100,65 108,60'} stroke="var(--surface)" strokeWidth="2.2" fill="none" strokeLinecap="round" />
     </>
   );
 }
 
-function FiguraMasculina() {
+function FiguraMasculina({ reduce }: { reduce: boolean }) {
   return (
     <>
-      <circle cx="100" cy="46" r="20" />
-      <rect x="90" y="64" width="20" height="12" rx="4" />
-      {/* Torso en V atlético */}
-      <path d="M62,84 C62,78 80,74 100,74 C120,74 138,78 138,84 L128,168 C112,176 88,176 72,168 Z" />
-      {/* Brazo izquierdo en alto, puño cerrado */}
-      <path d="M66,86 C48,82 34,66 26,44 L40,34 C48,52 58,64 72,72 Z" />
-      <circle cx="26" cy="38" r="12" />
-      {/* Brazo derecho en alto, puño cerrado */}
-      <path d="M134,86 C152,82 166,66 174,44 L160,34 C152,52 142,64 128,72 Z" />
-      <circle cx="174" cy="38" r="12" />
-      {/* Piernas en postura firme */}
-      <path d="M72,168 L104,168 L98,232 L78,232 Z" />
-      <path d="M96,168 L128,168 L122,232 L102,232 Z" />
-      <ellipse cx="82" cy="236" rx="14" ry="7" />
-      <ellipse cx="118" cy="236" rx="14" ry="7" />
+      {/* Pelo corto */}
+      <path d="M74,42 C74,26 88,18 100,18 C112,18 126,26 126,42 C126,34 118,30 100,30 C82,30 74,34 74,42 Z" fill="var(--ilustracion-pelo)" />
+      {/* Cabeza */}
+      <circle cx="100" cy="48" r="24" fill="var(--ilustracion-piel)" />
+      <Cara />
+      {/* Cuello + torso (camiseta) */}
+      <rect x="92" y="68" width="16" height="12" rx="4" fill="var(--ilustracion-piel)" />
+      <path d="M64,88 C64,80 82,76 100,76 C118,76 136,80 136,88 L130,168 C110,176 90,176 70,168 Z" fill="var(--ilustracion-ropa-1)" />
+      {/* Brazo relajado (izquierdo del personaje) */}
+      <path d="M68,90 C56,96 50,112 52,132 L64,132 C63,114 66,100 76,92 Z" fill="var(--ilustracion-piel)" />
+      {/* Brazo con mancuerna (derecho del personaje) — el que se anima */}
+      <path d="M132,90 C142,94 148,104 150,116 L138,120 C136,110 132,102 124,96 Z" fill="var(--ilustracion-piel)" />
+      <BrazoConMancuerna codo={{ x: 144, y: 118 }} reduce={reduce} />
+      {/* Shorts + piernas */}
+      <path d="M70,168 L130,168 L136,192 L64,192 Z" fill="var(--ilustracion-ropa-2)" />
+      <path d="M68,192 L98,192 L94,244 L76,244 Z" fill="var(--ilustracion-piel)" />
+      <path d="M102,192 L132,192 L124,244 L108,244 Z" fill="var(--ilustracion-piel)" />
+      <rect x="70" y="244" width="30" height="12" rx="5" fill="var(--ilustracion-pelo)" />
+      <rect x="102" y="244" width="30" height="12" rx="5" fill="var(--ilustracion-pelo)" />
     </>
   );
 }
 
-function FiguraFemenina() {
+function FiguraFemenina({ reduce }: { reduce: boolean }) {
   return (
     <>
-      <circle cx="100" cy="46" r="19" />
-      <rect x="91" y="63" width="18" height="11" rx="4" />
-      <path d="M68,82 C68,76 82,72 100,72 C118,72 132,76 132,82 L124,150 C110,158 90,158 76,150 Z" />
-      <path d="M70,84 C52,80 38,64 30,42 L44,32 C52,50 62,62 76,70 Z" />
-      <circle cx="30" cy="36" r="11" />
-      <path d="M130,84 C148,80 162,64 170,42 L156,32 C148,50 138,62 124,70 Z" />
-      <circle cx="170" cy="36" r="11" />
-      <path d="M76,150 L124,150 L132,172 L68,172 Z" />
-      <path d="M74,172 L100,172 L95,232 L80,232 Z" />
-      <path d="M100,172 L126,172 L120,232 L105,232 Z" />
-      <ellipse cx="86" cy="236" rx="13" ry="6" />
-      <ellipse cx="114" cy="236" rx="13" ry="6" />
+      {/* Cabello largo, detrás del cuerpo */}
+      <path d="M70,50 C68,80 68,110 74,132 L86,128 C82,104 82,76 86,54 Z" fill="var(--ilustracion-pelo)" />
+      <path d="M130,50 C132,80 132,110 126,132 L114,128 C118,104 118,76 114,54 Z" fill="var(--ilustracion-pelo)" />
+      <path d="M74,40 C74,24 86,16 100,16 C114,16 126,24 126,40 C126,30 116,26 100,26 C84,26 74,30 74,40 Z" fill="var(--ilustracion-pelo)" />
+      {/* Cabeza */}
+      <circle cx="100" cy="47" r="23" fill="var(--ilustracion-piel)" />
+      <Cara />
+      <rect x="92" y="66" width="16" height="11" rx="4" fill="var(--ilustracion-piel)" />
+      {/* Torso (top deportivo), más entallado en la cintura */}
+      <path d="M68,86 C68,79 84,75 100,75 C116,75 132,79 132,86 L126,140 C110,148 90,148 74,140 Z" fill="var(--ilustracion-ropa-2)" />
+      <path d="M72,90 C60,96 54,111 56,130 L67,130 C66,113 69,100 78,92 Z" fill="var(--ilustracion-piel)" />
+      <path d="M128,90 C138,94 144,103 146,115 L135,119 C133,109 129,101 122,95 Z" fill="var(--ilustracion-piel)" />
+      <BrazoConMancuerna codo={{ x: 140, y: 117 }} reduce={reduce} />
+      {/* Leggings */}
+      <path d="M74,140 L126,140 L132,164 L68,164 Z" fill="var(--ilustracion-ropa-1)" />
+      <path d="M72,164 L98,164 L96,244 L80,244 Z" fill="var(--ilustracion-ropa-1)" />
+      <path d="M102,164 L128,164 L120,244 L104,244 Z" fill="var(--ilustracion-ropa-1)" />
+      <rect x="74" y="244" width="26" height="11" rx="5" fill="var(--ilustracion-pelo)" />
+      <rect x="100" y="244" width="26" height="11" rx="5" fill="var(--ilustracion-pelo)" />
     </>
   );
 }
 
 export function EntrenadorAnimado({ sexo }: { sexo: Sexo }) {
-  const reduce = useReducedMotion();
+  const reduce = !!useReducedMotion();
 
   return (
-    <motion.svg
-      viewBox="0 0 200 240"
+    <svg
+      viewBox="0 0 200 260"
       className="h-64 w-auto"
       role="img"
-      aria-label={sexo === 'mujer' ? 'Entrenadora animada celebrando el inicio del entrenamiento' : 'Entrenador animado celebrando el inicio del entrenamiento'}
-      initial={reduce ? undefined : { y: 0 }}
-      animate={reduce ? undefined : { y: [0, -10, 0] }}
-      transition={reduce ? undefined : { duration: 0.7, repeat: Infinity, ease: [0.34, 1.56, 0.64, 1] }}
+      aria-label={sexo === 'mujer' ? 'Entrenadora animada haciendo un curl con mancuerna' : 'Entrenador animado haciendo un curl con mancuerna'}
     >
-      {!reduce && (
-        <>
-          <Rafaga cx={sexo === 'mujer' ? 30 : 26} cy={37} />
-          <Rafaga cx={sexo === 'mujer' ? 170 : 174} cy={37} />
-        </>
-      )}
-      <g fill="var(--accent)">{sexo === 'mujer' ? <FiguraFemenina /> : <FiguraMasculina />}</g>
-    </motion.svg>
+      {sexo === 'mujer' ? <FiguraFemenina reduce={reduce} /> : <FiguraMasculina reduce={reduce} />}
+    </svg>
   );
 }
