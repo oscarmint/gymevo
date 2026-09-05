@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-04 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (05/09/2026): **La pantalla de "Iniciar entrenamiento" ahora usa el GIF animado real (el checkpoint anterior usaba una imagen fija por error — el usuario había pegado un PNG, no el GIF).**
+- Se encontró el archivo real en Descargas (`Personal trainer transparant background.gif`, 150×150, ~1.4MB — sí tiene varios fotogramas, confirmado con `file`) y se copió a `public/ilustraciones/entrenador-inicio.gif`, reemplazando el PNG anterior (que se borró).
+- Un `<img>` normal anima GIFs solo — no hace falta ninguna librería ni lógica extra.
+- Verificado: tsc ✓ · eslint ✓ · build ✓ · confirmado visualmente en una ruta de prueba temporal (creada y borrada en esta misma sesión) que el GIF carga con fondo transparente sobre el tema oscuro.
+/ Siguiente acción exacta: ninguna.
+
 ⏸️ CHECKPOINT — Última acción completada (05/09/2026): **Cambio de decisión del usuario: la pantalla de "Iniciar entrenamiento" usa AHORA una sola imagen fija para todos, sin distinguir hombre/mujer — reemplaza el rediseño anterior.**
 - El usuario pegó una imagen en el chat y pidió usarla "sin cambios" para cualquier persona. Se encontró el archivo real en `C:\Users\OSCAR\Downloads\descarga.png` (guardado automáticamente al pegarla) y se copió a `public/ilustraciones/entrenador-inicio.png`.
 - **Aclaración honesta dada al usuario**: la llamó "gif" pero es una imagen fija (PNG, sin fotogramas de animación) — se usa tal cual, sin animar.

@@ -405,10 +405,10 @@ function PlanDelDia({
             transition={{ duration: 0.3 }}
             className="flex flex-col items-center"
           >
-            {/* Imagen fija entregada por el usuario — la misma para
+            {/* GIF animado entregado por el usuario — el mismo para
                 cualquier persona, sin distinguir sexo (pedido explícito). */}
-            {/* eslint-disable-next-line @next/next/no-img-element -- imagen propia estática, no necesita next/image aquí */}
-            <img src="/ilustraciones/entrenador-inicio.png" alt="Ilustración de alguien entrenando con mancuernas" className="h-56 w-auto" />
+            {/* eslint-disable-next-line @next/next/no-img-element -- GIF propio, next/image no anima GIFs */}
+            <img src="/ilustraciones/entrenador-inicio.gif" alt="Entrenador animado entrenando con mancuernas" className="h-56 w-auto" />
             <p className="mt-3 text-lg font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Vamos con toda!</p>
             <p className="mt-1 text-xs text-[var(--text-tertiary)]">Toca para continuar</p>
           </motion.div>
