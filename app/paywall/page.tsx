@@ -244,7 +244,11 @@ export default function PaywallPage() {
                 nombre={info.nombre}
                 precioTachado={id === 'anual' ? `$${PLANES.mensual.precioTotal.toFixed(2)}` : undefined}
                 precioMes={`$${precioMes.toFixed(2)}`}
-                detalle={info.meses === 1 ? 'Se cobra cada mes, desde hoy' : `Se cobra $${info.precioTotal.toFixed(2)} USD${periodoLabel(info.meses)}`}
+                detalle={
+                  info.meses === 1
+                    ? 'Se cobra cada mes, desde hoy'
+                    : `Tras tus 7 días gratis: 1 cobro de $${info.precioTotal.toFixed(2)} USD${periodoLabel(info.meses)} (equivale a $${precioMes.toFixed(2)}/mes)`
+                }
                 trm={trm}
               />
             );
@@ -511,7 +515,7 @@ function PlanCard({
       type="button"
       onClick={onSelect}
       disabled={deshabilitado}
-      className={`relative flex items-center justify-between rounded-[var(--radius-card)] border px-5 py-4 text-left transition-colors disabled:opacity-50 ${
+      className={`relative flex flex-col rounded-[var(--radius-card)] border px-5 py-4 text-left transition-colors disabled:opacity-50 ${
         seleccionado
           ? 'boton-3d-borde border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_6%,transparent)]'
           : 'superficie-3d border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] bg-[var(--surface)]'
@@ -529,48 +533,58 @@ function PlanCard({
           style={{ background: 'linear-gradient(90deg, transparent, var(--accent), transparent)' }}
         />
       )}
-      <div>
-        <div className="flex flex-wrap items-center gap-1.5">
-          <p className="text-[16px] font-semibold text-[var(--text-primary)]">{nombre}</p>
-          {ahorro && (
-            <span className="whitespace-nowrap rounded-full bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--accent)]">
-              {ahorro}
-            </span>
-          )}
-          {trial && (
-            <span className="whitespace-nowrap rounded-full bg-[color-mix(in_oklab,var(--accent-2)_16%,transparent)] px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--accent-2)]">
-              7 días gratis
-            </span>
-          )}
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <p className="text-[16px] font-semibold text-[var(--text-primary)]">{nombre}</p>
+            {ahorro && (
+              <span className="whitespace-nowrap rounded-full bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--accent)]">
+                {ahorro}
+              </span>
+            )}
+            {trial && (
+              <span className="whitespace-nowrap rounded-full bg-[color-mix(in_oklab,var(--accent-2)_16%,transparent)] px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--accent-2)]">
+                7 días gratis
+              </span>
+            )}
+          </div>
         </div>
-        <p className="mt-1 text-[12.5px] text-[var(--text-secondary)]">{detalle}</p>
-      </div>
-      <div className="flex items-center gap-3">
-        <div className="text-right">
-          {precioTachado && (
-            <p className="text-base font-bold tabular-nums text-[var(--text-secondary)] line-through decoration-[var(--accent)] decoration-4">
-              {precioTachado}/mes USD
+        <div className="flex items-center gap-3">
+          <div className="text-right">
+            {precioTachado && (
+              <p className="text-base font-bold tabular-nums text-[var(--text-secondary)] line-through decoration-[var(--accent)] decoration-4">
+                {precioTachado}/mes USD
+              </p>
+            )}
+            <p className="text-2xl font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+              {precioMes}
+              <span className="text-xs font-normal text-[var(--text-secondary)]">/mes </span>
+              <span className="text-[10.5px] font-semibold text-[var(--text-tertiary)]">USD</span>
             </p>
-          )}
-          <p className="text-2xl font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-            {precioMes}
-            <span className="text-xs font-normal text-[var(--text-secondary)]">/mes </span>
-            <span className="text-[10.5px] font-semibold text-[var(--text-tertiary)]">USD</span>
-          </p>
-          {/* Precio en pesos colombianos (TRM oficial del día) — la mayoría
-              de la venta es en Colombia; ver solo USD ahuyenta clientes que
-              no saben cuánto es en su moneda. Se omite en silencio si la TRM
-              no cargó (nunca bloquea ni rompe la tarjeta por esto). */}
-          {precioCOP && <p className="mt-0.5 text-xs tabular-nums text-[var(--text-secondary)]">≈ {precioCOP}</p>}
+            {/* Precio en pesos colombianos (TRM oficial del día) — la mayoría
+                de la venta es en Colombia; ver solo USD ahuyenta clientes que
+                no saben cuánto es en su moneda. Se omite en silencio si la TRM
+                no cargó (nunca bloquea ni rompe la tarjeta por esto). */}
+            {precioCOP && <p className="mt-0.5 text-xs tabular-nums text-[var(--text-secondary)]">≈ {precioCOP}</p>}
+          </div>
+          <span
+            className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${
+              seleccionado ? 'border-[var(--accent)] bg-[var(--accent)]' : 'border-[var(--text-tertiary)]'
+            }`}
+          >
+            {seleccionado && <Check size={13} color="var(--bg)" strokeWidth={3} />}
+          </span>
         </div>
-        <span
-          className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${
-            seleccionado ? 'border-[var(--accent)] bg-[var(--accent)]' : 'border-[var(--text-tertiary)]'
-          }`}
-        >
-          {seleccionado && <Check size={13} color="var(--bg)" strokeWidth={3} />}
-        </span>
       </div>
+      {/* El "$2.50/mes" de arriba es un precio EFECTIVO (el total repartido
+          entre los meses) — nunca lo que se cobra de verdad. Sin esta línea,
+          quien ve un número mensual grande espera un cargo mensual chico y
+          se sorprende con el cargo real (hallazgo: "la explicación no está
+          clara"). Va debajo de TODA la fila (no bajo el nombre a la
+          izquierda) porque el ojo termina de leer en el precio, a la derecha. */}
+      <p className="mt-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-2 text-[12.5px] text-[var(--text-secondary)]">
+        {detalle}
+      </p>
     </motion.button>
   );
 }
