@@ -262,15 +262,29 @@ export function esDiaDeRecuperacionActiva(diaActual: number): boolean {
 /** En Ruta Principiante, cada ejercicio `avanzado` (barra libre) se
  * sustituye por su alternativa guiada y las series bajan en 1 (piso de 3) —
  * misma sesión, menos exigencia técnica el primer tramo. Ruta Intermedio (o
- * sin nivel, por compatibilidad) usa el catálogo tal cual. */
+ * sin nivel, por compatibilidad) usa el catálogo tal cual.
+ *
+ * En lunes/miércoles/viernes esa alternativa YA es, además, un ejercicio
+ * propio del split de ese día (ej. viernes trae `peso_muerto_barra` Y
+ * `curl_femoral_maquina` por separado, y `peso_muerto_barra` se sustituye
+ * justo por `curl_femoral_maquina`) — sin este control, Ruta Principiante
+ * terminaba con la misma tarjeta repetida dos veces ese día (bug real
+ * detectado por consola: "two children with the same key"). Se deduplica
+ * por id sustituido en vez de dropear la tarjeta a ciegas. */
 export function ejerciciosDeHoy(diaActual: number, nivel: Nivel = 'intermedio'): Ejercicio[] {
   const dia = diaSemanaDeHoy(diaActual);
-  return SPLIT[dia].map((id) => {
+  if (nivel !== 'principiante') return SPLIT[dia].map((id) => CATALOGO[id]);
+
+  const vistos = new Set<string>();
+  const resultado: Ejercicio[] = [];
+  for (const id of SPLIT[dia]) {
     const ejercicio = CATALOGO[id];
-    if (nivel !== 'principiante') return ejercicio;
     const base = ejercicio.avanzado ? CATALOGO[ejercicio.alternativaId] : ejercicio;
-    return { ...base, series: Math.max(3, base.series - 1) };
-  });
+    if (vistos.has(base.id)) continue;
+    vistos.add(base.id);
+    resultado.push({ ...base, series: Math.max(3, base.series - 1) });
+  }
+  return resultado;
 }
 
 /** Ejercicio de respaldo para ids que ya no existen en el catálogo actual —
