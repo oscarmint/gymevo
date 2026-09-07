@@ -1,6 +1,11 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-07 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (07/09/2026): **Link real de checkout de Hotmart conectado para Semestral — quedan los 3 planes (Mensual/Semestral/Anual) con checkout real.**
+- Mismo patrón que Mensual/Anual: variable `NEXT_PUBLIC_HOTMART_CHECKOUT_SEMESTRAL` agregada en Vercel (tipo Config) con el link `...off=g685jomu`, redesplegado, y confirmado con evidencia real: se descargó el JS del paywall YA PUBLICADO en `gymevo-eta.vercel.app` y los 3 links de Hotmart (Mensual, Semestral, Anual) están los 3 dentro.
+- Verificado: tsc ✓ · los 3 links confirmados dentro del código publicado en producción (no solo en prueba local).
+/ Siguiente acción exacta: ninguna sobre los checkout links — los 3 planes están completos. Sigue pendiente que el usuario haga un pago de prueba real end-to-end (pago → webhook → plan Pro activado) para cerrar del todo la integración de Hotmart.
+
 ⏸️ CHECKPOINT — Última acción completada (07/09/2026): **HALLAZGO CRÍTICO REAL: `SUPABASE_SERVICE_ROLE_KEY` nunca estuvo configurada en Vercel producción — el webhook de Hotmart (y todo lo que depende de la misma llave) ha estado fallando en silencio hasta hoy.**
 - **Cómo se descubrió**: al conectar `HOTMART_HOTTOK` (el usuario ya lo agregó en Vercel) y redesplegar, se mandó una petición de prueba real al webhook publicado — devolvió `500` vacío. Se revisó `get_runtime_errors` de Vercel (evidencia real, no suposición): `Error: FALTA SUPABASE_SERVICE_ROLE_KEY` con **10 ocurrencias / 9 usuarios distintos** en la última hora — es decir, ya habían llegado intentos reales (probablemente el propio "Enviar test" de Hotmart) que fallaron.
 - **Contradice una nota anterior de esta misma sesión** ("funciona en producción por el mismo patrón que el webhook de Hotmart", checkpoints del 03-04/09) — esa suposición NUNCA se verificó con una petición real contra producción; hoy sí se verificó, y era falsa. **Impacto real, no solo el webhook**: `SUPABASE_SERVICE_ROLE_KEY` la usan también `/api/analitica/visita` (contador de visitas/embudo), `/api/cron/recordatorio-inactividad` (aviso de 2 días sin entrenar) y `/api/cuenta/eliminar` — probablemente TODOS fallando en producción por la misma causa, aunque solo se confirmó con evidencia el del webhook hasta ahora.
