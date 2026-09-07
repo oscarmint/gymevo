@@ -39,6 +39,15 @@ function periodoLabel(meses: number): string {
   return `/${meses} meses`;
 }
 
+/** Fecha exacta (no relativa) para el aviso y el cobro del trial — pedido de
+ * la revisión externa: "1 día antes" es una regla, no algo que la mente
+ * ansiosa pueda anotar en su calendario; una fecha concreta sí. */
+function fechaEnDias(dias: number): string {
+  const f = new Date();
+  f.setDate(f.getDate() + dias);
+  return new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'long' }).format(f);
+}
+
 const CHECKOUT_ENV: Record<PlanId, string | undefined> = {
   mensual: process.env.NEXT_PUBLIC_HOTMART_CHECKOUT_MENSUAL,
   semestral: process.env.NEXT_PUBLIC_HOTMART_CHECKOUT_SEMESTRAL,
@@ -242,6 +251,19 @@ export default function PaywallPage() {
           })}
         </motion.div>
 
+        {/* Confianza justo en el momento de la duda (hallazgo de revisión
+            externa): la misma promesa de "Antes de empezar" vivía solo más
+            abajo, lejos del botón — el usuario decide ACÁ, no en el FAQ. */}
+        <motion.p
+          initial={reduce ? {} : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.3 }}
+          className="mt-6 flex items-center justify-center gap-1.5 text-center text-sm font-semibold text-[var(--text-primary)]"
+        >
+          <Check size={15} color="var(--accent)" strokeWidth={3} />
+          {infoPlan.trial ? 'Hoy no pagas nada' : `Pagas $${infoPlan.precioTotal.toFixed(2)} USD hoy, sin trial en este plan`}
+        </motion.p>
+
         {/* (6) CTA — nunca dice "Suscríbete"; el texto cambia según si el
             plan elegido tiene trial o no (transparencia: el botón dice
             exactamente lo que va a pasar). */}
@@ -252,7 +274,7 @@ export default function PaywallPage() {
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.24, duration: 0.3 }}
-          className="boton-3d mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-xl font-bold text-[var(--bg)] disabled:opacity-80"
+          className="boton-3d mt-3 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-xl font-bold text-[var(--bg)] disabled:opacity-80"
         >
           {redirigiendo ? (
             <>
@@ -322,7 +344,7 @@ export default function PaywallPage() {
             <ul className="flex flex-col gap-2 text-sm text-[var(--text-secondary)]">
               {[
                 infoPlan.trial ? 'Hoy no pagas nada' : 'Pagas hoy, sin trial en este plan',
-                infoPlan.trial ? 'Te avisamos 1 día antes del cobro' : 'Nunca un cobro extra sin avisarte antes',
+                infoPlan.trial ? `Te avisamos el ${fechaEnDias(5)}, antes de cobrarte` : 'Nunca un cobro extra sin avisarte antes',
                 'Cancela con un solo toque, cuando quieras',
               ].map((texto) => (
                 <li key={texto} className="flex items-center gap-2">
@@ -398,10 +420,10 @@ function TimelineTrial({ plan }: { plan: PlanId }) {
   const info = PLANES[plan];
   const nodos = [
     { estado: 'lleno' as const, titulo: 'Hoy — acceso completo', sub: 'Todo tu plan, sin límites' },
-    { estado: 'lleno' as const, titulo: 'Día 6 — te avisamos', sub: 'Correo antes de cualquier cobro' },
+    { estado: 'lleno' as const, titulo: `Día 6 — te avisamos el ${fechaEnDias(5)}`, sub: 'Correo antes de cualquier cobro' },
     {
       estado: 'vacio' as const,
-      titulo: `Día 7 — 1er cobro: $${info.precioTotal.toFixed(2)} USD${periodoLabel(info.meses)}`,
+      titulo: `Día 7 (${fechaEnDias(6)}) — 1er cobro: $${info.precioTotal.toFixed(2)} USD${periodoLabel(info.meses)}`,
       sub: 'Cancela antes sin costo',
     },
   ];
