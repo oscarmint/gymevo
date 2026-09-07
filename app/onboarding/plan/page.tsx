@@ -36,7 +36,7 @@ export default function VistaPreviaDiaUnoPage() {
 
   if (!cargado || !respuestas) return null;
 
-  const ejercicios = ejerciciosDeHoy(1);
+  const ejercicios = ejerciciosDeHoy(1, respuestas.nivel);
   const nombreDia1 = nombreDeHoy(1);
 
   return (
