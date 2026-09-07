@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-07 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (07/09/2026): **Paywall: la caja "Antes de empezar" no decía CUÁNDO es el cobro, solo cuándo es el aviso — el propio usuario, mirando la captura, no supo responder si el cobro era el 12 o el 13.**
+- Esa fila decía "Te avisamos el 12 de septiembre, antes de cobrarte" — el día del cobro real (13, un día después) solo aparecía arriba en el timeline (nodo "Día 7"), no en esta caja. Si alguien lee solo esta caja (la más cercana al botón), no puede saber la fecha exacta del cobro.
+- Fix: `app/paywall/page.tsx` ahora dice "Te avisamos el 12 de septiembre — el cobro es al día siguiente, el 13 de septiembre" — las 2 fechas juntas, en la misma frase.
+- Verificado: tsc ✓ · eslint ✓ · confirmado el texto exacto renderizado con las fechas reales calculadas.
+/ Siguiente acción exacta: ninguna — publicado.
+
 ⏸️ CHECKPOINT — Última acción completada (07/09/2026): **Link real de checkout de Hotmart conectado para Semestral — quedan los 3 planes (Mensual/Semestral/Anual) con checkout real.**
 - Mismo patrón que Mensual/Anual: variable `NEXT_PUBLIC_HOTMART_CHECKOUT_SEMESTRAL` agregada en Vercel (tipo Config) con el link `...off=g685jomu`, redesplegado, y confirmado con evidencia real: se descargó el JS del paywall YA PUBLICADO en `gymevo-eta.vercel.app` y los 3 links de Hotmart (Mensual, Semestral, Anual) están los 3 dentro.
 - Verificado: tsc ✓ · los 3 links confirmados dentro del código publicado en producción (no solo en prueba local).

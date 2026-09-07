@@ -348,7 +348,9 @@ export default function PaywallPage() {
             <ul className="flex flex-col gap-2 text-sm text-[var(--text-secondary)]">
               {[
                 infoPlan.trial ? 'Hoy no pagas nada' : 'Pagas hoy, sin trial en este plan',
-                infoPlan.trial ? `Te avisamos el ${fechaEnDias(5)}, antes de cobrarte` : 'Nunca un cobro extra sin avisarte antes',
+                infoPlan.trial
+                  ? `Te avisamos el ${fechaEnDias(5)} — el cobro es al día siguiente, el ${fechaEnDias(6)}`
+                  : 'Nunca un cobro extra sin avisarte antes',
                 'Cancela con un solo toque, cuando quieras',
               ].map((texto) => (
                 <li key={texto} className="flex items-center gap-2">
