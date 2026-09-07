@@ -25,10 +25,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => null);
     const tipo = TIPOS_VALIDOS.includes(body?.tipo) ? body.tipo : 'landing_view';
     const utm = body?.utm;
+    // event_log.metadata es NOT NULL (default '{}') — mandar `null` explícito
+    // pisa ese default y viola la restricción, así que el insert entero
+    // fallaba en silencio (atrapado por el catch de abajo) para CUALQUIER
+    // evento sin campaña. Real desde que se agregó el rastreo UTM hoy mismo.
     const metadata =
       utm && typeof utm === 'object' && typeof utm.source === 'string'
         ? { utm: { source: utm.source, medium: utm.medium ?? null, campaign: utm.campaign ?? null } }
-        : null;
+        : {};
     const admin = clienteAdmin();
     await admin.from('event_log').insert({ type: tipo, metadata });
   } catch {
