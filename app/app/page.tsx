@@ -31,7 +31,6 @@ import {
   registrarSerie,
   reemplazarEjercicio,
   seriesHechasHoy,
-  tituloRuta,
   type Progreso,
 } from '@/lib/routine';
 import { guardarLogRemoto, guardarProgresoRemoto, leerProgresoRemoto, sincronizarPerfilInicial } from '@/lib/supabase/sync';
@@ -423,10 +422,12 @@ function PlanDelDia({
 
   return (
     <div className="px-5 pt-6">
-      {/* (1) EL DATO DE HOY — saludo con nombre + la parte de hoy en una sola
-          frase, con la animación de cierre (Lottie) coronando la misión del día. */}
+      {/* (1) EL DATO DE HOY — la fecha real de calendario (no el número de
+          día del programa) arriba, chiquita; abajo la misión de hoy, con la
+          animación de cierre (Lottie) coronándola. Pedido explícito del
+          usuario: quitar el "Hola" y mostrar la fecha real. */}
       <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">
-        Día {progreso.diaActual} · {tituloRuta(nivel, meta)}
+        {new Date().toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' })}
       </p>
       {/* items-start (no items-center) + el Lottie FUERA del flujo del texto
           (shrink-0, su propia columna): con el título en 2 líneas, ponerlo
@@ -436,7 +437,7 @@ function PlanDelDia({
           última palabra. */}
       <div className="mt-1 flex items-start gap-2">
         <h1 className="min-w-0 flex-1 text-balance text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
-          {diaDescanso ? 'Hoy es tu día de descanso' : `Hola, hoy toca ${nombreDeHoy(progreso.diaActual)}`}
+          {diaDescanso ? 'Hoy es tu día de descanso' : `Hoy vamos con: ${nombreDeHoy(progreso.diaActual)}`}
         </h1>
         <Lottie
           src={animacionFitness}
