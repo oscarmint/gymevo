@@ -189,6 +189,7 @@ export default function LoginPage() {
                 <input
                   type="text"
                   inputMode="numeric"
+                  autoComplete="one-time-code"
                   maxLength={10}
                   placeholder="00000000"
                   value={codigo}

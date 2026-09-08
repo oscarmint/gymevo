@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Código de respaldo del login: se agregó `autoComplete="one-time-code"` al input — el teclado del celular ahora puede sugerir el código automáticamente.**
+- El usuario preguntó si la app podía "llenar sola" el código que llega por correo. Se le explicó que ningún sitio web puede leer la bandeja de entrada de nadie (ni pidiendo permiso — sería un hueco de seguridad grave), pero SÍ existe un mecanismo real y estándar: el atributo HTML `autocomplete="one-time-code"` en el campo de código, que le indica al teclado de iOS/Android que sugiera el código automáticamente cuando lo detecta cerca (copiado, o en el correo/SMS), con un toque para llenarlo — sin dar acceso a nada.
+- Un solo archivo tocado: `app/login/page.tsx`, el input del "código de respaldo" (cuando el enlace del correo dice "expirado").
+- Verificado: tsc ✓ · eslint ✓ (0 errores).
+/ Siguiente acción exacta: ninguna — publicado. El efecto solo se nota probando en un celular real (el navegador de escritorio no muestra esta sugerencia).
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Se quitó "tempo 3-1-1" de la línea de detalle de cada ejercicio — el usuario lo marcó como poco claro para la persona que usa la app.**
 - Afectaba 2 pantallas con la misma línea (`{series}×{reps} · tempo {tempo} · descanso {seg}s`): `app/app/page.tsx` (Plan del día) y `app/onboarding/plan/page.tsx` (vista previa del Día 1, antes del paywall). Ahora dice solo `4×10-12 · descanso 90s`.
 - El campo `tempo` en el catálogo (`lib/routine.ts`) NO se borró — sigue existiendo como dato (por si se retoma más adelante con una explicación mejor, ej. un ícono con tooltip), solo se dejó de mostrar en crudo como número "3-1-1" que no se explicaba en ningún lado.
