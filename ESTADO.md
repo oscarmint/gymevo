@@ -1,6 +1,14 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Ícono de la app actualizado en TODOS lados — el usuario compartió una referencia (fondo oscuro `#12161c` + isotipo verde `#97d131`) para reemplazar el ícono de pantalla de inicio, que seguía con el fondo crema de la identidad vieja (previa al rediseño oscuro del 03/09 — nunca se había actualizado tras ese cambio).**
+- Regenerados con el mismo isotipo real (pesa+reloj de arena de `components/Logo.tsx`) sobre el fondo/color correctos: `public/icon-192.png`, `public/icon-512.png`, `app/apple-icon.png` (renderizados con Playwright+Poppins a partir de un maestro de 512px, reescalados hacia abajo con `sharp` para nitidez).
+- `app/icon.svg` (favicon): color corregido de `#5C7A1F` (verde militar, accent-2 — no correspondía) a `#97D131` (verde de acento real).
+- `app/manifest.ts`: `background_color`/`theme_color` corregidos de `#F5EEDA` (crema viejo) a `#12161c` (fondo oscuro real) — así el "splash" que Android muestra al abrir la app ya no desentona con el resto.
+- Revisados TODOS los demás usos de `<Logo>` (login, landing, legales) — ya usan `text-[var(--accent)]` del tema, así que ya estaban correctos automáticamente; no necesitaron cambio.
+- Verificado: tsc ✓ · build ✓ · PNGs inspeccionados visualmente, coinciden con la referencia del usuario.
+/ Siguiente acción exacta: ninguna — publicado. El usuario puede confirmar quitando y volviendo a agregar el acceso directo en su celular (los íconos de home screen suelen cachearse).
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Aviso de "revisa spam" agregado a la pantalla de login (`app/login/page.tsx`), estado "Revisa tu correo".**
 - Una línea con ícono `Info`, justo debajo de "Te enviamos el enlace de acceso a...": "¿No lo ves en unos minutos? Revisa tu carpeta de Spam o Correo no deseado." — para que la persona no piense que la app falló mientras el dominio nuevo (`gymevoapp.com`) todavía gana reputación con Hotmail/Gmail.
 - Verificado: tsc ✓ · eslint ✓ (0 errores) · probado en el navegador disparando un envío real y confirmando el aviso en pantalla con el espaciado correcto.
