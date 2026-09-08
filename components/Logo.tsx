@@ -14,8 +14,7 @@ export function Logo({ className }: { className?: string }) {
       <rect x="145" y="58" width="35" height="24" rx="4" />
       <rect x="95" y="40" width="50" height="8" rx="2" />
       <rect x="95" y="92" width="50" height="8" rx="2" />
-      <path d="M95,48 L145,48 L120,70 Z" />
-      <path d="M95,92 L145,92 L120,70 Z" />
+      <path d="M95,48 L145,48 C145,58 130,64 120,70 C130,76 145,82 145,92 L95,92 C95,82 110,76 120,70 C110,64 95,58 95,48 Z" />
     </svg>
   );
 }
