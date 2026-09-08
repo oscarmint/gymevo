@@ -1,6 +1,13 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Tercera y definitiva pasada de fidelidad al isotipo — el usuario por fin logró adjuntar el archivo real (antes solo llegaba pegado con Ctrl+V, inaccesible por código). Se midió con un script (umbral de color verde vs. fondo de ajedrez) en vez de a ojo.**
+- Hallazgo real: las puntas exteriores de la pesa son ~30% de la altura del disco principal (112px vs 377px medidos) — mucho más cortas que cualquier intento anterior. `components/Logo.tsx` y `app/icon.svg`: `height` de las puntas bajó de 64 a 36.
+- Hallazgo estructural más importante: el reloj de arena NO es un "moño" sólido — la mitad de ARRIBA está HUECA (solo el marco curvo, se ve el fondo a través, como el vidrio vacío) y la mitad de ABAJO está SÓLIDA (la arena ya caída). Se implementó el hueco con `fill-rule="evenodd"` (contorno externo + contorno interno) — así es transparencia real del SVG, no un parche del color de fondo que se rompería en cualquier superficie distinta.
+- Regenerados de nuevo TODOS los assets derivados (favicon, `icon-192/512`, `apple-icon`, `email-logo-dark.png`).
+- Verificado: tsc ✓ · eslint ✓ · build ✓ · comparación visual confirmando que ahora sí se parece a un reloj de arena real (hueco arriba, sólido abajo), no a un doble triángulo simétrico.
+/ Siguiente acción exacta: pedirle confirmación final al usuario — si esta vez coincide con su referencia, este isotipo queda como definitivo (cosa juzgada de FICHA-ARTE) y no se vuelve a redecidir sin pedido explícito nuevo.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Segunda pasada de fidelidad al isotipo — el usuario insistió en que debía ser "exactamente" igual a su referencia; se ajustaron proporciones reales, no solo la curva del reloj de arena de la vuelta anterior.**
 - `components/Logo.tsx` + `app/icon.svg`: las barras exteriores de la pesa pasan de `height:100` a `height:64` (mucho más cortas frente al disco principal de `height:120`, como en la referencia) y la curva del reloj de arena gana un segundo tramo de control (bulto redondeado arriba/abajo antes de cerrar en el cuello, en vez de una sola curva) — más parecido a un reloj de arena real, menos a un "moño".
 - Regenerados de nuevo TODOS los assets derivados (favicon, `icon-192/512`, `apple-icon`, `email-logo-dark.png`) desde el mismo trazo corregido.
