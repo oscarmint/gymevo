@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Se quitó "tempo 3-1-1" de la línea de detalle de cada ejercicio — el usuario lo marcó como poco claro para la persona que usa la app.**
+- Afectaba 2 pantallas con la misma línea (`{series}×{reps} · tempo {tempo} · descanso {seg}s`): `app/app/page.tsx` (Plan del día) y `app/onboarding/plan/page.tsx` (vista previa del Día 1, antes del paywall). Ahora dice solo `4×10-12 · descanso 90s`.
+- El campo `tempo` en el catálogo (`lib/routine.ts`) NO se borró — sigue existiendo como dato (por si se retoma más adelante con una explicación mejor, ej. un ícono con tooltip), solo se dejó de mostrar en crudo como número "3-1-1" que no se explicaba en ningún lado.
+- Verificado: tsc ✓ · eslint ✓ (0 errores nuevos) · build ✓ · confirmado en el navegador que la línea de detalle ya no incluye el tempo en ninguna de las 2 pantallas.
+/ Siguiente acción exacta: ninguna — publicado.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Ícono de pantalla de inicio + manifest agregados — antes de esto, al tocar el acceso directo de GymEvo en un celular, solo se veía el trazo desnudo de la pesa (favicon) sin fondo ni nombre.**
 - El usuario mandó una referencia (ícono pesa+reloj de arena sobre fondo crema, con "GymEvo" debajo) y pidió que se vea así al abrir la app desde el celular. Se confirmó que el proyecto nunca tuvo `manifest.json` ni `apple-icon` — Android/iOS caían al favicon plano por defecto.
 - Se recreó el diseño como código (reutilizando el mismo path SVG del isotipo ya existente en `components/Logo.tsx`, más el texto "GymEvo" en Poppins, sobre fondo crema `#F5EEDA`) y se generaron los 3 tamaños reales que Android/iOS necesitan: `app/apple-icon.png` (180×180, convención de Next.js para iOS), `public/icon-192.png` y `public/icon-512.png` (para el manifest de Android). Nuevo `app/manifest.ts` (convención de Next.js — genera `/manifest.webmanifest` solo) declara nombre, `display: standalone` y esos íconos.

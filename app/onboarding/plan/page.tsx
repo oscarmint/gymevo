@@ -69,7 +69,7 @@ export default function VistaPreviaDiaUnoPage() {
             >
               <p className="text-base font-semibold text-[var(--text-primary)]">{ej.nombre}</p>
               <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                {ej.series}×{ej.reps} · tempo {ej.tempo} · descanso {ej.descansoSeg}s
+                {ej.series}×{ej.reps} · descanso {ej.descansoSeg}s
               </p>
             </motion.div>
           ))}
