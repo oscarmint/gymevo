@@ -1,6 +1,13 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **La app "pedía autenticar" cada vez que se cerraba y reabría en el celular (PWA) — causa raíz: NO era pérdida de sesión, era que `app/page.tsx` (la landing) siempre se mostraba primero sin revisar si ya había sesión.**
+- El manifest (`app/manifest.ts`) tiene `start_url: '/'` — cada apertura desde el ícono del celular vuelve a cargar la landing de ventas, que hasta hoy nunca comprobaba si el usuario ya tenía sesión iniciada. Para alguien ya logueado, esto se siente exactamente como "me pide autenticar de nuevo" aunque el token de Supabase siguiera vigente.
+- Fix real en `app/page.tsx`: al montar, se llama `supabase.auth.getUser()`; si hay sesión, se redirige de inmediato a `/app` (nunca se llega a ver la landing/CTA). Si no hay sesión, la landing se muestra normal — verificado en el navegador que un visitante sin sesión sigue viendo la página completa sin cambios.
+- Verificado: tsc ✓ · eslint ✓ (0 errores) · landing renderizada completa para visitante anónimo (sin sesión) sin diferencias visuales ni de contenido.
+- **Pendiente real de UX que NO se tocó hoy** (fuera de alcance de este fix puntual): `/app` en sí mismo no tiene ningún guard de sesión — cualquiera puede entrar a esa URL sin login (solo funciona con datos locales del celular, sin sincronizar). No es lo que reportó el usuario hoy, pero es una brecha real a cerrar en una sesión de seguridad.
+/ Siguiente acción exacta: pedirle al usuario que cierre por completo la app en su celular (no solo minimizarla) y la vuelva a abrir para confirmar que ahora entra directo a su plan sin pantalla de login de por medio.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **RESUELTO de raíz el pendiente crítico de entregabilidad de correo (ver checkpoint de arriba del 08/09): `gymevoapp.com` verificado en Resend y remitente de Supabase cambiado de `onboarding@resend.dev` a `acceso@gymevoapp.com` (SMTP: `smtp.resend.com`, puerto 465).**
 - Causa raíz confirmada en vivo: un usuario real (`santiagomc18@hotmail.com`) intentó entrar y recibió "No pudimos enviar el enlace" — el remitente de pruebas de Resend solo entrega al dueño de la cuenta, nunca a terceros. Esto probablemente afectó a TODOS los compradores reales hasta hoy, no solo a este caso puntual.
 - Verificado con una prueba real end-to-end en el navegador contra producción (`https://gymevoapp.com/login`, el mismo correo que había fallado): el envío ahora responde "Te enviamos el enlace de acceso" sin error. Pendiente de que el usuario confirme que el correo llegó de verdad a la bandeja (no solo que el servidor aceptó el envío).

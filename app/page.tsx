@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { CreditCard, Frown, RefreshCcw, ShieldAlert, Users } from 'lucide-react';
+import { crearClienteSupabase } from '@/lib/supabase/client';
 import { registrarEvento } from '@/lib/analitica';
 import { capturarUTMDesdeURL } from '@/lib/utm';
 import { Logo } from '@/components/Logo';
@@ -23,13 +25,40 @@ const CTA_HREF = '/onboarding';
 const CTA_LABEL = 'Crear mi plan de mañana gratis';
 
 export default function LandingGymEvo() {
+  const router = useRouter();
+  // Si la app se abre desde el ícono del celular (PWA) y la persona ya tiene
+  // sesión iniciada, debe entrar directo a su plan — como Instagram/Facebook,
+  // nunca de vuelta a la página de ventas. Sin esto, cada apertura "se siente"
+  // como un cierre de sesión aunque el token siga vigente.
+  const [verificandoSesion, setVerificandoSesion] = useState(true);
+
+  useEffect(() => {
+    let activo = true;
+    crearClienteSupabase()
+      .auth.getUser()
+      .then(({ data }) => {
+        if (!activo) return;
+        if (data.user) {
+          router.replace('/app');
+          return;
+        }
+        setVerificandoSesion(false);
+      });
+    return () => {
+      activo = false;
+    };
+  }, [router]);
+
   // Contador anónimo de visitas para el panel del dueño (nunca guarda IP ni
   // identifica a nadie — ver app/api/analitica/visita/route.ts). Una vez por
   // carga de página, no por cada re-render.
   useEffect(() => {
+    if (verificandoSesion) return;
     capturarUTMDesdeURL();
     registrarEvento('landing_view');
-  }, []);
+  }, [verificandoSesion]);
+
+  if (verificandoSesion) return null;
 
   return (
     <div className="min-h-dvh bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]">
