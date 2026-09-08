@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Segunda causa de los colores apagados en Outlook: el modo oscuro PROPIO de Outlook.com (OWA), distinto del `color-scheme` que ya se había corregido — el usuario mandó una segunda captura mostrando el toggle de sol/modo oscuro en la barra de Outlook, colores seguían apagados.**
+- OWA reescribe los colores del cuerpo del correo con su propio algoritmo cuando el usuario tiene Outlook en oscuro, sin importar el meta `color-scheme`. Existe un hook conocido: agrega el atributo `data-ogsc` al `<body>` cuando aplica ese modo.
+- Fix en ambas plantillas (`magic-link.html`, `confirm-signup.html`): se le puso una clase a cada elemento con color propio (fondo, tarjeta, título, botón, código, pie) y se agregaron reglas `[data-ogsc] .clase { color: X !important; }` que fuerzan los colores reales de vuelta cuando Outlook activa su modo oscuro.
+- Verificado en Chrome que el render normal no cambió (Chrome no tiene `data-ogsc`, así que esas reglas nunca aplican ahí — el fix es específicamente para Outlook).
+/ Siguiente acción exacta: el usuario debe volver a pegar AMBAS plantillas en Supabase (tercera vez) y probar un envío real con Outlook en modo oscuro activado para confirmar que esta vez sí respeta los colores.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Bug real en las plantillas de correo: los colores llegaban apagados/grisáceos en Outlook (captura real del usuario) en vez del verde brillante de la marca.**
 - Causa raíz: `<meta name="color-scheme" content="dark light">` le dice a Outlook/Gmail "este correo sabe adaptarse a modo oscuro" — Outlook toma eso como permiso para REPROCESAR los colores a su manera, y su algoritmo desatura/apaga los tonos brillantes que no reconoce como "seguros". Como el diseño YA es oscuro a propósito (colores fijos, no adaptativos), declarar soporte de modo oscuro es contraproducente.
 - Fix en `docs/email-templates/magic-link.html` y `confirm-signup.html`: `color-scheme`/`supported-color-schemes` vuelven a `"light"` únicamente — así el cliente de correo no reprocesa nada y respeta los colores exactos que se escribieron.

@@ -30,6 +30,24 @@
     .titular { font-size: 22px !important; line-height: 1.25 !important; }
     .codigo { font-size: 22px !important; letter-spacing: 0.25em !important; }
   }
+  /* Outlook.com (OWA) reescribe los colores del correo con su PROPIO modo
+     oscuro cuando el usuario tiene Outlook en oscuro — esto pasa por encima
+     del meta color-scheme y desatura los colores (hallazgo real: captura del
+     usuario con verde apagado y tarjeta gris). [data-ogsc] es el selector que
+     OWA agrega al <body> cuando aplica ese modo — se usa para forzar los
+     colores reales de vuelta, ignorando lo que Outlook intentó "corregir". */
+  [data-ogsc] .email-bg { background-color: #101216 !important; background-image: none !important; }
+  [data-ogsc] .email-card { background-color: #12161c !important; background-image: none !important; }
+  [data-ogsc] .email-wordmark-chip { background-color: #97d131 !important; }
+  [data-ogsc] .email-wordmark-text,
+  [data-ogsc] .email-title { color: #f6f7f4 !important; }
+  [data-ogsc] .email-body-text { color: #aab1bd !important; }
+  [data-ogsc] .email-btn-bg { background-color: #97d131 !important; }
+  [data-ogsc] .email-btn-text { color: #12161c !important; }
+  [data-ogsc] .email-code-bg { background-color: #1a2029 !important; }
+  [data-ogsc] .email-code-text { color: #a9e94f !important; }
+  [data-ogsc] .email-footer-text { color: #7d8390 !important; }
+  [data-ogsc] .email-footer-sub { color: #5a6069 !important; }
 </style>
 </head>
 <body style="margin:0; padding:0; background-color:#101216;">
@@ -38,7 +56,7 @@
     Toca el botón para confirmar tu correo y activar tu cuenta de GymEvo.
   </div>
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#101216" style="background-color:#101216; background:radial-gradient(circle at 50% 0%, #1b1f26 0%, #101216 65%);">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#101216" class="email-bg" style="background-color:#101216; background:radial-gradient(circle at 50% 0%, #1b1f26 0%, #101216 65%);">
     <tr>
       <td align="center" style="padding: 40px 16px;">
 
@@ -49,10 +67,10 @@
             <td align="center" style="padding-bottom: 24px; font-family: 'Poppins', 'Segoe UI', Helvetica, Arial, sans-serif;">
               <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td bgcolor="#97d131" align="center" valign="middle" style="width:28px; height:28px; background-color:#97d131; border-radius:8px; box-shadow: 0 0 18px rgba(151,209,49,0.55);">
+                  <td bgcolor="#97d131" align="center" valign="middle" class="email-wordmark-chip" style="width:28px; height:28px; background-color:#97d131; border-radius:8px; box-shadow: 0 0 18px rgba(151,209,49,0.55);">
                     <img src="https://www.gymevoapp.com/email-logo-dark.png" width="20" height="12" alt="GymEvo" style="display:block; width:20px; height:12px;">
                   </td>
-                  <td style="padding-left:10px; font-size:17px; font-weight:700; color:#f2f4f0; letter-spacing:-0.01em;">
+                  <td class="email-wordmark-text" style="padding-left:10px; font-size:17px; font-weight:700; color:#f2f4f0; letter-spacing:-0.01em;">
                     GymEvo
                   </td>
                 </tr>
@@ -62,25 +80,25 @@
 
           <!-- Tarjeta — relieve metálico + resplandor de acento, todo con CSS (sin imágenes de fondo) -->
           <tr>
-            <td class="relleno" bgcolor="#12161c" style="background-color:#12161c; background-image: linear-gradient(180deg, #171c24 0%, #12161c 55%); border-radius:22px; padding:44px 32px; border: 1px solid #2a3038; box-shadow: 0 0 0 1px rgba(255,255,255,0.03) inset, 0 0 50px rgba(151,209,49,0.10), 0 24px 48px rgba(0,0,0,0.45);">
+            <td class="relleno email-card" bgcolor="#12161c" style="background-color:#12161c; background-image: linear-gradient(180deg, #171c24 0%, #12161c 55%); border-radius:22px; padding:44px 32px; border: 1px solid #2a3038; box-shadow: 0 0 0 1px rgba(255,255,255,0.03) inset, 0 0 50px rgba(151,209,49,0.10), 0 24px 48px rgba(0,0,0,0.45);">
 
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td align="center" style="font-family: 'Poppins', 'Segoe UI', Helvetica, Arial, sans-serif;">
 
-                    <p class="titular" style="margin:0; font-size:25px; line-height:1.3; font-weight:700; color:#f6f7f4; text-shadow: 0 0 24px rgba(242,244,240,0.18);">
+                    <p class="titular email-title" style="margin:0; font-size:25px; line-height:1.3; font-weight:700; color:#f6f7f4; text-shadow: 0 0 24px rgba(242,244,240,0.18);">
                       Confirma tu correo<br>para empezar
                     </p>
 
-                    <p style="margin:14px 0 0; font-size:14px; line-height:1.6; color:#aab1bd;">
+                    <p class="email-body-text" style="margin:14px 0 0; font-size:14px; line-height:1.6; color:#aab1bd;">
                       Toca el botón para activar tu cuenta. Sin contraseñas — este enlace es de un solo uso y vence en poco tiempo.
                     </p>
 
                     <!-- CTA con resplandor -->
                     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 30px auto 0;">
                       <tr>
-                        <td align="center" bgcolor="#97d131" style="border-radius: 14px; box-shadow: 0 0 28px rgba(151,209,49,0.55), 0 8px 18px rgba(151,209,49,0.25);">
-                          <a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block; padding:16px 42px; font-family: 'Poppins', 'Segoe UI', Helvetica, Arial, sans-serif; font-size:15px; font-weight:700; color:#12161c;">
+                        <td align="center" bgcolor="#97d131" class="email-btn-bg" style="border-radius: 14px; box-shadow: 0 0 28px rgba(151,209,49,0.55), 0 8px 18px rgba(151,209,49,0.25);">
+                          <a href="{{ .ConfirmationURL }}" target="_blank" class="email-btn-text" style="display:inline-block; padding:16px 42px; font-family: 'Poppins', 'Segoe UI', Helvetica, Arial, sans-serif; font-size:15px; font-weight:700; color:#12161c;">
                             Confirmar mi correo
                           </a>
                         </td>
@@ -94,7 +112,7 @@
                       </tr>
                     </table>
 
-                    <p style="margin:26px 0 0; font-size:12px; line-height:1.6; color:#7c8494;">
+                    <p class="email-body-text" style="margin:26px 0 0; font-size:12px; line-height:1.6; color:#7c8494;">
                       ¿El botón te dice "expirado" sin que lo hayas tocado? Abre la app y escribe este código:
                     </p>
 
@@ -102,13 +120,13 @@
                          (nunca una imagen: si fuera imagen no se podría copiar). -->
                     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:14px auto 0;">
                       <tr>
-                        <td bgcolor="#1a2029" style="background-color:#1a2029; border: 1px solid #2e3644; border-radius:12px; padding:14px 26px; box-shadow: 0 0 22px rgba(151,209,49,0.18) inset;">
-                          <span class="codigo" style="font-family: 'Courier New', Courier, monospace; font-size:24px; font-weight:700; letter-spacing:0.35em; color:#a9e94f; text-shadow: 0 0 16px rgba(169,233,79,0.65);">{{ .Token }}</span>
+                        <td bgcolor="#1a2029" class="email-code-bg" style="background-color:#1a2029; border: 1px solid #2e3644; border-radius:12px; padding:14px 26px; box-shadow: 0 0 22px rgba(151,209,49,0.18) inset;">
+                          <span class="codigo email-code-text" style="font-family: 'Courier New', Courier, monospace; font-size:24px; font-weight:700; letter-spacing:0.35em; color:#a9e94f; text-shadow: 0 0 16px rgba(169,233,79,0.65);">{{ .Token }}</span>
                         </td>
                       </tr>
                     </table>
 
-                    <p style="margin:12px 0 0; font-size:11px; color:#5f6673;">
+                    <p class="email-footer-sub" style="margin:12px 0 0; font-size:11px; color:#5f6673;">
                       Puedes seleccionar y copiar este código.
                     </p>
 
@@ -122,10 +140,10 @@
           <!-- Pie -->
           <tr>
             <td align="center" style="padding: 26px 24px 0; font-family: 'Poppins', 'Segoe UI', Helvetica, Arial, sans-serif;">
-              <p style="margin:0; font-size:12px; line-height:1.6; color:#7d8390;">
+              <p class="email-footer-text" style="margin:0; font-size:12px; line-height:1.6; color:#7d8390;">
                 ¿No creaste una cuenta en GymEvo? Ignora este correo — no se activará nada sin este enlace.
               </p>
-              <p style="margin:10px 0 0; font-size:11px; color:#5a6069;">
+              <p class="email-footer-sub" style="margin:10px 0 0; font-size:11px; color:#5a6069;">
                 GymEvo · soporte@gymevo.app
               </p>
             </td>
