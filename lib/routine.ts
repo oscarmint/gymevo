@@ -86,8 +86,8 @@ const ORDEN_DIAS: DiaSemana[] = ['lunes', 'martes', 'miercoles', 'jueves', 'vier
 
 const NOMBRE_DIA: Record<DiaSemana, string> = {
   lunes: 'Pierna (cuádriceps) y abdomen',
-  martes: 'Empuje: pecho, hombro y tríceps',
-  miercoles: 'Tracción: espalda, bíceps y hombro',
+  martes: 'Empuje (pecho, hombro y tríceps)',
+  miercoles: 'Tracción (espalda, bíceps y hombro)',
   jueves: 'Recuperación activa',
   viernes: 'Pierna (isquiotibiales y glúteos)',
   sabado: 'Tren superior híbrido',
