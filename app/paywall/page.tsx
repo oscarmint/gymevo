@@ -1,9 +1,11 @@
 'use client';
 
 // PAYWALL — reescrito 03/09/2026 a especificación exacta del usuario (hard
-// paywall estilo landing larga, efecto señuelo de 3 planes, trial solo en
-// Semestral/Anual, cierre con retraso). Reemplaza la versión de 4 planes
-// (Mensual/Trimestral/Semestral/Anual, todos con trial) de la ronda anterior.
+// paywall estilo landing larga, efecto señuelo de 3 planes, cierre con
+// retraso). Reemplaza la versión de 4 planes (Mensual/Trimestral/Semestral/
+// Anual, todos con trial) de la ronda anterior. El Mensual pasó de "sin
+// trial" a 3 días gratis el 08/09/2026 (a pedido explícito, para probar si
+// mejora su conversión — cada plan define su propia duración en `PLANES`).
 // El CTA abre el checkout REAL de Hotmart si las variables
 // NEXT_PUBLIC_HOTMART_CHECKOUT_{MENSUAL,SEMESTRAL,ANUAL} están configuradas
 // (públicas, no secretas — son la URL del link de pago). Sin ellas todavía,
@@ -21,14 +23,15 @@ type PlanId = 'mensual' | 'semestral' | 'anual';
 const KEY_PLAN = 'gymevo_plan_elegido';
 
 /** Estructura de 3 planes con efecto señuelo (02C): Mensual es el ANCLA caro
- * sin trial (para que el resto se vea barato); Semestral es el escalón
- * intermedio; Anual es el plan recomendado, con el mayor ahorro y el trial
- * más largo de sobra para engancharse. El trial (7 días) va SOLO en
- * Semestral/Anual — el Mensual cobra de inmediato, a pedido explícito. */
-const PLANES: Record<PlanId, { nombre: string; meses: number; precioTotal: number; trial: boolean }> = {
-  mensual: { nombre: 'Mensual', meses: 1, precioTotal: 4.99, trial: false },
-  semestral: { nombre: 'Semestral', meses: 6, precioTotal: 19.99, trial: true },
-  anual: { nombre: 'Anual', meses: 12, precioTotal: 29.99, trial: true },
+ * (para que el resto se vea barato); Semestral es el escalón intermedio;
+ * Anual es el plan recomendado, con el mayor ahorro y el trial más largo de
+ * sobra para engancharse. `trialDias: 0` significa "cobra de inmediato, sin
+ * prueba" — el Mensual pasó de 0 a 3 días (07/09/2026, a pedido explícito,
+ * para probar si un trial corto también mejora su conversión). */
+const PLANES: Record<PlanId, { nombre: string; meses: number; precioTotal: number; trialDias: number }> = {
+  mensual: { nombre: 'Mensual', meses: 1, precioTotal: 4.99, trialDias: 3 },
+  semestral: { nombre: 'Semestral', meses: 6, precioTotal: 19.99, trialDias: 7 },
+  anual: { nombre: 'Anual', meses: 12, precioTotal: 29.99, trialDias: 7 },
 };
 
 /** "/mes" · "/6 meses" · "/año" — evita el texto largo y con saltos raros de
@@ -214,13 +217,14 @@ export default function PaywallPage() {
           transition={{ delay: 0.08, duration: 0.3 }}
           className="mt-5 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-5"
         >
-          {infoPlan.trial ? <TimelineTrial plan={plan} /> : <TimelineSinTrial plan={plan} />}
+          {infoPlan.trialDias > 0 ? <TimelineTrial plan={plan} /> : <TimelineSinTrial plan={plan} />}
         </motion.div>
 
         {/* (2) Estructura de precios — Anual primero y pre-seleccionado
-            (recomendado), Semestral en medio (escalón con trial), Mensual al
-            final (el ancla cara, sin trial, para que los otros dos se vean
-            baratos en contraste — efecto señuelo real, no decorativo). */}
+            (recomendado), Semestral en medio, Mensual al final (el ancla
+            cara — precio más alto por mes de los 3 — para que los otros dos
+            se vean baratos en contraste, efecto señuelo real). Los 3 tienen
+            trial ahora; lo que los distingue es el precio, no el trial. */}
         <motion.div
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -240,14 +244,16 @@ export default function PaywallPage() {
                 deshabilitado={redirigiendo}
                 badge={id === 'anual' ? 'MÁS POPULAR' : undefined}
                 ahorro={ahorroPct > 0 ? `Ahorra ${ahorroPct}%` : undefined}
-                trial={info.trial}
+                trialDias={info.trialDias}
                 nombre={info.nombre}
                 precioTachado={id === 'anual' ? `$${PLANES.mensual.precioTotal.toFixed(2)}` : undefined}
                 precioMes={`$${precioMes.toFixed(2)}`}
                 detalle={
-                  info.meses === 1
-                    ? 'Se cobra cada mes, desde hoy'
-                    : `Tras tus 7 días gratis: 1 cobro de $${info.precioTotal.toFixed(2)} USD${periodoLabel(info.meses)} (equivale a $${precioMes.toFixed(2)}/mes)`
+                  info.trialDias === 0
+                    ? `Se cobra $${info.precioTotal.toFixed(2)} USD${periodoLabel(info.meses)}, desde hoy`
+                    : info.meses === 1
+                      ? `Tras tus ${info.trialDias} días gratis: $${info.precioTotal.toFixed(2)} USD/mes`
+                      : `Tras tus ${info.trialDias} días gratis: 1 cobro de $${info.precioTotal.toFixed(2)} USD${periodoLabel(info.meses)} (equivale a $${precioMes.toFixed(2)}/mes)`
                 }
                 trm={trm}
               />
@@ -265,7 +271,7 @@ export default function PaywallPage() {
           className="mt-6 flex items-center justify-center gap-1.5 text-center text-sm font-semibold text-[var(--text-primary)]"
         >
           <Check size={15} color="var(--accent)" strokeWidth={3} />
-          {infoPlan.trial ? 'Hoy no pagas nada' : `Pagas $${infoPlan.precioTotal.toFixed(2)} USD hoy, sin trial en este plan`}
+          {infoPlan.trialDias > 0 ? 'Hoy no pagas nada' : `Pagas $${infoPlan.precioTotal.toFixed(2)} USD hoy, sin trial en este plan`}
         </motion.p>
 
         {/* (6) CTA — nunca dice "Suscríbete"; el texto cambia según si el
@@ -284,8 +290,8 @@ export default function PaywallPage() {
             <>
               <Loader2 size={18} className="animate-spin motion-reduce:animate-none" /> Te llevamos a Hotmart, pago seguro…
             </>
-          ) : infoPlan.trial ? (
-            'Empezar mis 7 días gratis'
+          ) : infoPlan.trialDias > 0 ? (
+            `Empezar mis ${infoPlan.trialDias} días gratis`
           ) : (
             'Activar mi Botón de Rescate'
           )}
@@ -347,9 +353,9 @@ export default function PaywallPage() {
           <div className="mt-3 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-4">
             <ul className="flex flex-col gap-2 text-sm text-[var(--text-secondary)]">
               {[
-                infoPlan.trial ? 'Hoy no pagas nada' : 'Pagas hoy, sin trial en este plan',
-                infoPlan.trial
-                  ? `Te avisamos el ${fechaEnDias(5)} — el cobro es al día siguiente, el ${fechaEnDias(6)}`
+                infoPlan.trialDias > 0 ? 'Hoy no pagas nada' : 'Pagas hoy, sin trial en este plan',
+                infoPlan.trialDias > 0
+                  ? `Te avisamos el ${fechaEnDias(infoPlan.trialDias - 2)} — el cobro es al día siguiente, el ${fechaEnDias(infoPlan.trialDias - 1)}`
                   : 'Nunca un cobro extra sin avisarte antes',
                 'Cancela con un solo toque, cuando quieras',
               ].map((texto) => (
@@ -365,9 +371,9 @@ export default function PaywallPage() {
               <div>
                 <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Me cobrarán hoy?</p>
                 <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                  {infoPlan.trial
-                    ? 'No. Tienes 7 días gratis. Te avisamos por correo antes de que termine tu prueba.'
-                    : 'Sí — el plan Mensual se cobra desde hoy, sin período de prueba. Si prefieres probar gratis 7 días, elige Semestral o Anual arriba.'}
+                  {infoPlan.trialDias > 0
+                    ? `No. Tienes ${infoPlan.trialDias} días gratis. Te avisamos por correo antes de que termine tu prueba.`
+                    : 'Sí — este plan se cobra desde hoy, sin período de prueba.'}
                 </p>
               </div>
               <div>
@@ -424,12 +430,21 @@ export default function PaywallPage() {
 
 function TimelineTrial({ plan }: { plan: PlanId }) {
   const info = PLANES[plan];
+  // Día de aviso = el día antes del cobro; día de cobro = el propio trialDias
+  // (ej. con 3 días gratis: "Hoy" es el día 1, se avisa el día 2, se cobra el
+  // día 3). Generalizado para que cada plan pueda tener su propia duración.
+  const diaAviso = info.trialDias - 1;
+  const diaCobro = info.trialDias;
   const nodos = [
     { estado: 'lleno' as const, titulo: 'Hoy — acceso completo', sub: 'Todo tu plan, sin límites' },
-    { estado: 'lleno' as const, titulo: `Día 6 — te avisamos el ${fechaEnDias(5)}`, sub: 'Correo antes de cualquier cobro' },
+    {
+      estado: 'lleno' as const,
+      titulo: `Día ${diaAviso} — te avisamos el ${fechaEnDias(diaAviso - 1)}`,
+      sub: 'Correo antes de cualquier cobro',
+    },
     {
       estado: 'vacio' as const,
-      titulo: `Día 7 (${fechaEnDias(6)}) — 1er cobro: $${info.precioTotal.toFixed(2)} USD${periodoLabel(info.meses)}`,
+      titulo: `Día ${diaCobro} (${fechaEnDias(diaCobro - 1)}) — 1er cobro: $${info.precioTotal.toFixed(2)} USD${periodoLabel(info.meses)}`,
       sub: 'Cancela antes sin costo',
     },
   ];
@@ -455,9 +470,10 @@ function TimelineTrial({ plan }: { plan: PlanId }) {
   );
 }
 
-/** Plan Mensual (sin trial): el timeline de 3 días no aplica — se reemplaza
- * por una sola línea honesta de "cobro hoy", nunca fingiendo un trial que
- * ese plan no tiene (transparencia radical, pedido explícito). */
+/** Para un plan sin trial (`trialDias: 0`, ninguno hoy pero la estructura lo
+ * sigue soportando): el timeline de días no aplica — se reemplaza por una
+ * sola línea honesta de "cobro hoy", nunca fingiendo un trial que ese plan
+ * no tiene (transparencia radical, pedido explícito). */
 function TimelineSinTrial({ plan }: { plan: PlanId }) {
   const info = PLANES[plan];
   return (
@@ -481,7 +497,7 @@ function PlanCard({
   deshabilitado,
   badge,
   ahorro,
-  trial,
+  trialDias,
   nombre,
   precioTachado,
   precioMes,
@@ -496,9 +512,9 @@ function PlanCard({
   /** "Ahorra N%" frente al precio mensual — la razón real para elegir un
    * plan más largo, no solo un adorno (curva de descuento de 02C). */
   ahorro?: string;
-  /** El gancho "7 días gratis" va SOLO en los planes que de verdad lo
-   * incluyen (Semestral/Anual) — nunca en Mensual, a pedido explícito. */
-  trial: boolean;
+  /** El gancho "N días gratis" va SOLO en los planes que de verdad tienen
+   * trial — 0 lo apaga (transparencia: nunca fingir un trial que no existe). */
+  trialDias: number;
   nombre: string;
   /** Precio de referencia tachado (el dispositivo ownable de FICHA-ARTE:
    * el mismo tachado verde que marca un ejercicio completado, aplicado aquí
@@ -544,9 +560,9 @@ function PlanCard({
                 {ahorro}
               </span>
             )}
-            {trial && (
+            {trialDias > 0 && (
               <span className="whitespace-nowrap rounded-full bg-[color-mix(in_oklab,var(--accent-2)_16%,transparent)] px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--accent-2)]">
-                7 días gratis
+                {trialDias} días gratis
               </span>
             )}
           </div>

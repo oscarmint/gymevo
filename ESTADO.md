@@ -1,6 +1,14 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **El plan Mensual pasó de "sin trial" a 3 días gratis — decisión del usuario, siguiendo la sugerencia de la revisión externa de probar si un trial corto mejora su conversión.**
+- Refactor real en `app/paywall/page.tsx`: el campo `trial: boolean` se generalizó a `trialDias: number` en todo el archivo (`PLANES`, `PlanCard`, `TimelineTrial`, badges, CTA, FAQ, caja "Antes de empezar") — no fue solo cambiar un número, cada plan ahora declara SU propia duración de prueba en vez de un interruptor compartido. `PLANES.mensual.trialDias` pasó de la ausencia del campo (antes `trial: false`) a `3`; Semestral/Anual se quedan en `7`, sin cambios.
+- El timeline (`TimelineTrial`) y la caja "Antes de empezar" calculan las fechas de aviso/cobro a partir de `trialDias` en vez de tener "Día 6"/"Día 7" fijos — con Mensual (3 días) ahora muestran "Día 2 — te avisamos..." / "Día 3 — 1er cobro", con las fechas reales.
+- **La garantía de devolución de Hotmart (7 días) NO cambió** — es independiente del trial, sigue siendo universal a los 3 planes (así lo definió el usuario desde el 03/09).
+- `TimelineSinTrial` no quedó código muerto: sigue siendo la rama válida para cualquier plan futuro con `trialDias: 0` (ninguno hoy, pero la estructura lo soporta sin fingir nada).
+- Verificado: tsc ✓ · eslint ✓ (0 errores) · build ✓ · confirmado en el navegador el texto completo con Mensual seleccionado (badge "3 DÍAS GRATIS", CTA "Empezar mis 3 días gratis", fechas de Día 2/Día 3 correctas, FAQ actualizado) — Anual/Semestral confirmados sin cambios.
+/ Siguiente acción exacta: publicar (push) y monitorear en el panel de admin (`obtenerAtribucionUTM`/embudo) si la conversión del Mensual mejora en las próximas semanas — es justo el experimento que sugirió la revisión externa.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Código de respaldo del login: se agregó `autoComplete="one-time-code"` al input — el teclado del celular ahora puede sugerir el código automáticamente.**
 - El usuario preguntó si la app podía "llenar sola" el código que llega por correo. Se le explicó que ningún sitio web puede leer la bandeja de entrada de nadie (ni pidiendo permiso — sería un hueco de seguridad grave), pero SÍ existe un mecanismo real y estándar: el atributo HTML `autocomplete="one-time-code"` en el campo de código, que le indica al teclado de iOS/Android que sugiera el código automáticamente cuando lo detecta cerca (copiado, o en el correo/SMS), con un toque para llenarlo — sin dar acceso a nada.
 - Un solo archivo tocado: `app/login/page.tsx`, el input del "código de respaldo" (cuando el enlace del correo dice "expirado").
