@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #12161c;
+    font-family: -apple-system, 'Segoe UI', Arial, sans-serif;
+    color: #f2f4f0;
+    padding: 40px;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  h1 {
+    font-size: 30px;
+    font-weight: 800;
+    margin: 0 0 6px;
+  }
+  .sub {
+    color: #aab1bd;
+    font-size: 15px;
+    margin: 0 0 36px;
+  }
+  .pasos {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .paso {
+    background: #1a2029;
+    border: 1px solid #2a3140;
+    border-radius: 18px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    background: #97d131;
+    color: #12161c;
+    font-weight: 800;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .texto {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 16px 14px;
+  }
+  .texto p {
+    margin: 0;
+    font-size: 14.5px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .shot {
+    width: 100%;
+    display: block;
+    border-top: 1px solid #2a3140;
+  }
+  .nota {
+    margin-top: 28px;
+    font-size: 13px;
+    color: #7d8492;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Cómo entrar a GymEvo</h1>
+    <p class="sub">Sigue estos 4 pasos con el mismo correo que usaste para pagar.</p>
+    <div class="pasos">
+      <div class="paso">
+        <div class="texto"><span class="num">1</span><p>Entra a gymevoapp.com y escribe tu correo</p></div>
+        <img class="shot" src="1-entra-y-escribe-tu-correo.png" alt="Paso 1" />
+      </div>
+      <div class="paso">
+        <div class="texto"><span class="num">2</span><p>Marca la casilla y toca el botón verde</p></div>
+        <img class="shot" src="2-marca-la-casilla-y-envia.png" alt="Paso 2" />
+      </div>
+      <div class="paso">
+        <div class="texto"><span class="num">3</span><p>Abre tu correo y toca el enlace que te llega</p></div>
+        <img class="shot" src="3-revisa-tu-correo.png" alt="Paso 3" />
+      </div>
+      <div class="paso">
+        <div class="texto"><span class="num">4</span><p>Listo — ya estás dentro de tu plan</p></div>
+        <img class="shot" src="4-ya-estas-adentro.png" alt="Paso 4" />
+      </div>
+    </div>
+    <p class="nota">No necesitas contraseña · Funciona en celular y computador · ¿No llega el correo? Revisa spam</p>
+  </div>
+</body>
+</html>
