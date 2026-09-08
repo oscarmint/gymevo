@@ -164,6 +164,10 @@ function PlanDelDia({
   const piezasConfeti = useMemo(() => generarConfeti(28), [celebrarFin]);
   const [errorSync, setErrorSync] = useState(false);
   const [explicando, setExplicando] = useState<string | null>(null);
+  // Cortar la rutina a medias (pedido explícito): hay momentos reales en que
+  // la persona debe parar sin haber marcado todos los ejercicios — pide
+  // confirmación una sola vez porque avanza el día/racha igual que terminarla completa.
+  const [pidiendoCortar, setPidiendoCortar] = useState(false);
   const rachaAnteriorRef = useRef(progreso.racha);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const reduce = useReducedMotion();
@@ -769,8 +773,63 @@ function PlanDelDia({
         >
           Terminar entrenamiento de hoy
         </motion.button>
+
+        {/* Salida honesta para cuando de verdad hay que parar (llamada,
+            máquina cerrada, lo que sea) — sin esto, la única forma de avanzar
+            de día era marcar TODO, aunque la persona ya no pudiera seguir. */}
+        {!todosHechos && progreso.hechosHoy.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setPidiendoCortar(true)}
+            className="mt-1 flex h-10 w-full items-center justify-center text-xs font-medium text-[var(--text-tertiary)] underline underline-offset-2"
+          >
+            Tengo que cortar aquí — dar por terminado con lo de hoy
+          </button>
+        )}
       </div>
       </>
+      )}
+
+      {pidiendoCortar && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="titulo-cortar-rutina"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[color-mix(in_oklab,var(--text-primary)_35%,transparent)] px-6"
+          onClick={() => setPidiendoCortar(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-xs rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-5"
+          >
+            <p id="titulo-cortar-rutina" className="text-base font-semibold text-[var(--text-primary)]">
+              ¿Damos por terminado el día?
+            </p>
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">
+              Hiciste {idsHoy.filter((e) => progreso.hechosHoy.includes(e.id)).length} de {idsHoy.length} ejercicios. Se cuenta
+              como completado y tu racha sigue viva — mañana sigues con el resto de tu ruta.
+            </p>
+            <div className="mt-5 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setPidiendoCortar(false)}
+                className="superficie-3d flex h-12 flex-1 items-center justify-center rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-sm font-semibold text-[var(--text-primary)]"
+              >
+                Seguir entrenando
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPidiendoCortar(false);
+                  finalizarEntrenamiento();
+                }}
+                className="boton-3d flex h-12 flex-1 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
+              >
+                Sí, terminar aquí
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Temporizador de descanso — banner fijo con anillo que se va consumiendo */}
