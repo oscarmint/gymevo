@@ -435,7 +435,7 @@ function PlanDelDia({
           su propia columna sin que el ícono dependa de dónde termine la
           última palabra. */}
       <div className="mt-1 flex items-start gap-2">
-        <h1 className="min-w-0 flex-1 text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+        <h1 className="min-w-0 flex-1 text-balance text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
           {diaDescanso ? 'Hoy es tu día de descanso' : `Hola, hoy toca ${nombreDeHoy(progreso.diaActual)}`}
         </h1>
         <Lottie
