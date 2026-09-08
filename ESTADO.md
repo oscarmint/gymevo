@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Isotipo real de GymEvo agregado al chip verde del correo de acceso (`docs/email-templates/magic-link.html`).**
+- Nuevo asset `public/email-logo-dark.png` (360×210, fondo transparente, el mismo dibujo de `components/Logo.tsx` — pesa+reloj de arena — en oscuro `#12161c` para que se vea bien sobre el verde). Generado con `sharp` a partir del SVG real, no un ícono genérico.
+- Se referencia por URL absoluta pública (`https://www.gymevoapp.com/email-logo-dark.png`), NUNCA como imagen embebida en base64 — Gmail no muestra imágenes `data:` incrustadas en el HTML del correo, así que tenía que ser un archivo real alojado.
+- Verificado end-to-end: push → deploy en Vercel (`dpl_7FCZ3rYSp83E7Rc8v8MG7JDv16gt`, READY) → `curl` confirma 200 en la URL de la imagen → captura del HTML del correo cargando la imagen real desde el servidor (no un placeholder).
+/ Siguiente acción exacta: el usuario pega esta versión final en Supabase (Authentication → Email Templates → Magic Link) y hace un envío de prueba real para confirmar que el logo carga también dentro del correo (Gmail/Hotmail a veces bloquean imágenes por defecto — si no se ve, avisar que toque "mostrar imágenes").
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **`docs/email-templates/magic-link.html` con acabado premium (glow, relieve, fondo con degradado) — el usuario pidió una versión "más bonita" mostrando una referencia con metal cepillado + íconos decorativos.**
 - Se logró el brillo/relieve con SOLO CSS (text-shadow, box-shadow, gradientes) — a propósito NO se agregaron las imágenes decorativas de fondo (pesas/calendario) ni la textura fotográfica de metal de la referencia: en un correo, imágenes de fondo pesadas son justo lo que puede hacer que Outlook/Hotmail las bloqueen o que el correo pese más y vuelva a caer en spam — contradiría el problema que se está resolviendo. Se le explicó esto al usuario en vez de construirlo sin avisar.
 - El código de respaldo sigue siendo texto real dentro de un único `<span>` (pedido explícito del usuario: "el código debe dejarse copiar") — nunca una imagen. Se agregó la leyenda "Puedes seleccionar y copiar este código" para que quede claro.
