@@ -1,6 +1,11 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **RESUELTO de raíz el pendiente crítico de entregabilidad de correo (ver checkpoint de arriba del 08/09): `gymevoapp.com` verificado en Resend y remitente de Supabase cambiado de `onboarding@resend.dev` a `acceso@gymevoapp.com` (SMTP: `smtp.resend.com`, puerto 465).**
+- Causa raíz confirmada en vivo: un usuario real (`santiagomc18@hotmail.com`) intentó entrar y recibió "No pudimos enviar el enlace" — el remitente de pruebas de Resend solo entrega al dueño de la cuenta, nunca a terceros. Esto probablemente afectó a TODOS los compradores reales hasta hoy, no solo a este caso puntual.
+- Verificado con una prueba real end-to-end en el navegador contra producción (`https://gymevoapp.com/login`, el mismo correo que había fallado): el envío ahora responde "Te enviamos el enlace de acceso" sin error. Pendiente de que el usuario confirme que el correo llegó de verdad a la bandeja (no solo que el servidor aceptó el envío).
+/ Siguiente acción exacta: si el usuario confirma que el correo llegó, cerrar este pendiente definitivamente. Si no llega, revisar la carpeta de spam y los logs de entrega de Resend (Emails → buscar por destinatario).
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **El plan Mensual pasó de "sin trial" a 3 días gratis — decisión del usuario, siguiendo la sugerencia de la revisión externa de probar si un trial corto mejora su conversión.**
 - Refactor real en `app/paywall/page.tsx`: el campo `trial: boolean` se generalizó a `trialDias: number` en todo el archivo (`PLANES`, `PlanCard`, `TimelineTrial`, badges, CTA, FAQ, caja "Antes de empezar") — no fue solo cambiar un número, cada plan ahora declara SU propia duración de prueba en vez de un interruptor compartido. `PLANES.mensual.trialDias` pasó de la ausencia del campo (antes `trial: false`) a `3`; Semestral/Anual se quedan en `7`, sin cambios.
 - El timeline (`TimelineTrial`) y la caja "Antes de empezar" calculan las fechas de aviso/cobro a partir de `trialDias` en vez de tener "Día 6"/"Día 7" fijos — con Mensual (3 días) ahora muestran "Día 2 — te avisamos..." / "Día 3 — 1er cobro", con las fechas reales.
