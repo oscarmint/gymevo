@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Ícono de GymEvo unificado como marca completa en todos lados (pedido explícito: "que sea un ícono como tal de GymEvo", con TikTok como referencia de estilo).**
+- Íconos de pantalla de inicio (`public/icon-192.png`, `public/icon-512.png`, `app/apple-icon.png`): se quitó el texto "GymEvo" y el isotipo (pesa+reloj de arena) se agrandó a ~74% del ancho del cuadro (antes ~43%) — ahora se reconoce de un vistazo, igual que un ícono de app real.
+- `app/icon.svg` (la favicon, la pestañita del navegador): antes era solo el trazo verde suelto sin fondo — ahora tiene el mismo fondo oscuro redondeado (`#12161c`) y la misma proporción que los íconos de pantalla de inicio, para que sea EL MISMO ícono de marca en cualquier lugar donde aparezca, no una versión distinta.
+- Verificado: tsc ✓ · build ✓ · captura visual de la favicon confirmando el mismo look que los íconos de pantalla de inicio.
+/ Siguiente acción exacta: ninguna — publicado. Recordar al usuario que los navegadores también cachean favicons (puede tardar en verse el cambio sin refrescar fuerte / limpiar caché).
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Ícono de la app actualizado en TODOS lados — el usuario compartió una referencia (fondo oscuro `#12161c` + isotipo verde `#97d131`) para reemplazar el ícono de pantalla de inicio, que seguía con el fondo crema de la identidad vieja (previa al rediseño oscuro del 03/09 — nunca se había actualizado tras ese cambio).**
 - Regenerados con el mismo isotipo real (pesa+reloj de arena de `components/Logo.tsx`) sobre el fondo/color correctos: `public/icon-192.png`, `public/icon-512.png`, `app/apple-icon.png` (renderizados con Playwright+Poppins a partir de un maestro de 512px, reescalados hacia abajo con `sharp` para nitidez).
 - `app/icon.svg` (favicon): color corregido de `#5C7A1F` (verde militar, accent-2 — no correspondía) a `#97D131` (verde de acento real).
