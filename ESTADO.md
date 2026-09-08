@@ -1,6 +1,11 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Aviso de "revisa spam" agregado a la pantalla de login (`app/login/page.tsx`), estado "Revisa tu correo".**
+- Una línea con ícono `Info`, justo debajo de "Te enviamos el enlace de acceso a...": "¿No lo ves en unos minutos? Revisa tu carpeta de Spam o Correo no deseado." — para que la persona no piense que la app falló mientras el dominio nuevo (`gymevoapp.com`) todavía gana reputación con Hotmail/Gmail.
+- Verificado: tsc ✓ · eslint ✓ (0 errores) · probado en el navegador disparando un envío real y confirmando el aviso en pantalla con el espaciado correcto.
+/ Siguiente acción exacta: ninguna — listo para publicar.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Hallazgo real: Supabase usa una plantilla DISTINTA ("Confirm signup") la primera vez que un correo nunca antes registrado entra por OTP — solo se había personalizado "Magic Link", así que a usuarios nuevos les seguía llegando la plantilla genérica en inglés.**
 - Confirmado con captura real del usuario: correo "Confirm your email address" en inglés, remitente `acceso@gymevoapp.com` (o sea, el SMTP y dominio SÍ están bien — es la plantilla equivocada la que faltaba).
 - Nuevo archivo `docs/email-templates/confirm-signup.html`: mismo sistema visual que `magic-link.html` (misma tarjeta, logo, glow, código de respaldo copiable), copy adaptado a "primera vez" ("Confirma tu correo para empezar" / botón "Confirmar mi correo").

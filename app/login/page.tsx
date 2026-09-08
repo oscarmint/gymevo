@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Lock, Mail } from 'lucide-react';
+import { Info, Lock, Mail } from 'lucide-react';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { Logo } from '@/components/Logo';
 
@@ -169,6 +169,13 @@ export default function LoginPage() {
             </h1>
             <p className="mt-3 text-sm text-[var(--text-secondary)]">
               Te enviamos el enlace de acceso a <span className="font-semibold text-[var(--text-primary)]">{email}</span>
+            </p>
+            {/* Aviso honesto: un dominio de correo nuevo puede caer en spam las
+                primeras veces mientras gana reputación (ver ESTADO.md) — mejor
+                avisarlo aquí que dejar a la persona pensando que la app falló. */}
+            <p className="mt-3 flex items-start gap-1.5 text-xs text-[var(--text-tertiary)]">
+              <Info size={13} className="mt-0.5 shrink-0" />
+              ¿No lo ves en unos minutos? Revisa tu carpeta de Spam o Correo no deseado.
             </p>
             <button
               type="button"
