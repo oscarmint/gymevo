@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light">
-<meta name="supported-color-schemes" content="light">
+<meta name="color-scheme" content="dark light">
+<meta name="supported-color-schemes" content="dark light">
 <title>Tu acceso a GymEvo</title>
 <!--[if mso]>
 <noscript>
@@ -19,36 +19,37 @@
   body, table, td { -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; }
   table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
   img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
-  body { margin: 0; padding: 0; width: 100% !important; background-color: #efeee9; }
+  body { margin: 0; padding: 0; width: 100% !important; background-color: #101216; }
   a { text-decoration: none; }
   @media (max-width: 480px) {
     .contenedor { width: 100% !important; }
     .relleno { padding-left: 20px !important; padding-right: 20px !important; }
     .titular { font-size: 22px !important; line-height: 1.25 !important; }
+    .codigo { font-size: 22px !important; letter-spacing: 0.25em !important; }
   }
 </style>
 </head>
-<body style="margin:0; padding:0; background-color:#efeee9;">
+<body style="margin:0; padding:0; background-color:#101216;">
   <!-- Preheader: texto de previsualización, oculto en el cuerpo -->
   <div style="display:none; max-height:0; overflow:hidden; opacity:0; mso-hide:all;">
     Toca el botón y entras directo a tu plan de hoy. El enlace vence pronto.
   </div>
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#efeee9;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#101216" style="background-color:#101216; background:radial-gradient(circle at 50% 0%, #1b1f26 0%, #101216 65%);">
     <tr>
-      <td align="center" style="padding: 32px 16px;">
+      <td align="center" style="padding: 40px 16px;">
 
         <table role="presentation" class="contenedor" width="480" cellpadding="0" cellspacing="0" border="0" style="width:480px; max-width:480px;">
 
-          <!-- Wordmark fuera de la tarjeta, sobre el fondo claro -->
+          <!-- Wordmark -->
           <tr>
-            <td align="center" style="padding-bottom: 20px; font-family: 'Poppins', 'Segoe UI', Helvetica, Arial, sans-serif;">
+            <td align="center" style="padding-bottom: 24px; font-family: 'Poppins', 'Segoe UI', Helvetica, Arial, sans-serif;">
               <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td style="width:26px; height:26px; background-color:#97d131; border-radius:7px;">
+                  <td bgcolor="#97d131" style="width:28px; height:28px; background-color:#97d131; border-radius:8px; box-shadow: 0 0 18px rgba(151,209,49,0.55);">
                     &nbsp;
                   </td>
-                  <td style="padding-left:8px; font-size:16px; font-weight:700; color:#12161c; letter-spacing:-0.01em;">
+                  <td style="padding-left:10px; font-size:17px; font-weight:700; color:#f2f4f0; letter-spacing:-0.01em;">
                     GymEvo
                   </td>
                 </tr>
@@ -56,15 +57,15 @@
             </td>
           </tr>
 
-          <!-- Tarjeta oscura — la misma identidad de la app -->
+          <!-- Tarjeta — relieve metálico + resplandor de acento, todo con CSS (sin imágenes de fondo) -->
           <tr>
-            <td class="relleno" style="background-color:#12161c; border-radius:20px; padding:40px 32px;">
+            <td class="relleno" bgcolor="#12161c" style="background-color:#12161c; background-image: linear-gradient(180deg, #171c24 0%, #12161c 55%); border-radius:22px; padding:44px 32px; border: 1px solid #2a3038; box-shadow: 0 0 0 1px rgba(255,255,255,0.03) inset, 0 0 50px rgba(151,209,49,0.10), 0 24px 48px rgba(0,0,0,0.45);">
 
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td align="center" style="font-family: 'Poppins', 'Segoe UI', Helvetica, Arial, sans-serif;">
 
-                    <p class="titular" style="margin:0; font-size:24px; line-height:1.3; font-weight:700; color:#f2f4f0;">
+                    <p class="titular" style="margin:0; font-size:25px; line-height:1.3; font-weight:700; color:#f6f7f4; text-shadow: 0 0 24px rgba(242,244,240,0.18);">
                       Tu plan de hoy<br>te está esperando
                     </p>
 
@@ -72,11 +73,11 @@
                       Toca el botón para entrar a tu cuenta. Sin contraseñas — este enlace es de un solo uso y vence en poco tiempo.
                     </p>
 
-                    <!-- CTA -->
-                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 28px auto 0;">
+                    <!-- CTA con resplandor -->
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 30px auto 0;">
                       <tr>
-                        <td align="center" bgcolor="#97d131" style="border-radius: 14px;">
-                          <a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block; padding:16px 40px; font-family: 'Poppins', 'Segoe UI', Helvetica, Arial, sans-serif; font-size:15px; font-weight:700; color:#12161c;">
+                        <td align="center" bgcolor="#97d131" style="border-radius: 14px; box-shadow: 0 0 28px rgba(151,209,49,0.55), 0 8px 18px rgba(151,209,49,0.25);">
+                          <a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block; padding:16px 42px; font-family: 'Poppins', 'Segoe UI', Helvetica, Arial, sans-serif; font-size:15px; font-weight:700; color:#12161c;">
                             Entrar a mi plan
                           </a>
                         </td>
@@ -84,24 +85,29 @@
                     </table>
 
                     <!-- Separador -->
-                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:32px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:34px;">
                       <tr>
                         <td style="border-top:1px solid #262c36; font-size:0; line-height:0;">&nbsp;</td>
                       </tr>
                     </table>
 
-                    <p style="margin:24px 0 0; font-size:12px; line-height:1.6; color:#7c8494;">
-                      ¿El botón te dice "expirado" sin que lo hayas tocado? Abre la app y usa este código:
+                    <p style="margin:26px 0 0; font-size:12px; line-height:1.6; color:#7c8494;">
+                      ¿El botón te dice "expirado" sin que lo hayas tocado? Abre la app y escribe este código:
                     </p>
 
-                    <!-- Código de respaldo -->
-                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:12px auto 0;">
+                    <!-- Código de respaldo — texto real, seleccionable y copiable
+                         (nunca una imagen: si fuera imagen no se podría copiar). -->
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:14px auto 0;">
                       <tr>
-                        <td bgcolor="#1a2029" style="border:1px solid #2e3644; border-radius:10px; padding:12px 22px;">
-                          <span style="font-family: 'Courier New', Courier, monospace; font-size:20px; font-weight:700; letter-spacing:0.3em; color:#97d131;">{{ .Token }}</span>
+                        <td bgcolor="#1a2029" style="background-color:#1a2029; border: 1px solid #2e3644; border-radius:12px; padding:14px 26px; box-shadow: 0 0 22px rgba(151,209,49,0.18) inset;">
+                          <span class="codigo" style="font-family: 'Courier New', Courier, monospace; font-size:24px; font-weight:700; letter-spacing:0.35em; color:#a9e94f; text-shadow: 0 0 16px rgba(169,233,79,0.65);">{{ .Token }}</span>
                         </td>
                       </tr>
                     </table>
+
+                    <p style="margin:12px 0 0; font-size:11px; color:#5f6673;">
+                      Puedes seleccionar y copiar este código.
+                    </p>
 
                   </td>
                 </tr>
@@ -110,13 +116,13 @@
             </td>
           </tr>
 
-          <!-- Pie fuera de la tarjeta -->
+          <!-- Pie -->
           <tr>
-            <td align="center" style="padding: 24px 24px 0; font-family: 'Poppins', 'Segoe UI', Helvetica, Arial, sans-serif;">
-              <p style="margin:0; font-size:12px; line-height:1.6; color:#8b8f86;">
+            <td align="center" style="padding: 26px 24px 0; font-family: 'Poppins', 'Segoe UI', Helvetica, Arial, sans-serif;">
+              <p style="margin:0; font-size:12px; line-height:1.6; color:#7d8390;">
                 ¿No pediste este correo? Ignóralo — nadie más puede entrar a tu cuenta sin este enlace.
               </p>
-              <p style="margin:10px 0 0; font-size:11px; color:#a3a79c;">
+              <p style="margin:10px 0 0; font-size:11px; color:#5a6069;">
                 GymEvo · soporte@gymevo.app
               </p>
             </td>

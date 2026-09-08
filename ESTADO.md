@@ -1,6 +1,13 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **`docs/email-templates/magic-link.html` con acabado premium (glow, relieve, fondo con degradado) — el usuario pidió una versión "más bonita" mostrando una referencia con metal cepillado + íconos decorativos.**
+- Se logró el brillo/relieve con SOLO CSS (text-shadow, box-shadow, gradientes) — a propósito NO se agregaron las imágenes decorativas de fondo (pesas/calendario) ni la textura fotográfica de metal de la referencia: en un correo, imágenes de fondo pesadas son justo lo que puede hacer que Outlook/Hotmail las bloqueen o que el correo pese más y vuelva a caer en spam — contradiría el problema que se está resolviendo. Se le explicó esto al usuario en vez de construirlo sin avisar.
+- El código de respaldo sigue siendo texto real dentro de un único `<span>` (pedido explícito del usuario: "el código debe dejarse copiar") — nunca una imagen. Se agregó la leyenda "Puedes seleccionar y copiar este código" para que quede claro.
+- Ajustado a 6 dígitos de ejemplo en la verificación visual (el usuario está bajando el largo del OTP de 8 a 6 en Supabase, Authentication → Sign In/Providers → Email → OTP Length — cambio de configuración, no de código).
+- Verificado visualmente en el navegador (sustituyendo las variables por valores de prueba): brillo, relieve y jerarquía se ven correctos.
+/ Siguiente acción exacta: el usuario debe pegar esta versión actualizada en Supabase (Authentication → Email Templates → Magic Link, reemplazando lo que haya) y confirmar el largo del código en 6 dígitos antes de la próxima prueba real de envío.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Plantilla del correo de acceso (magic link) rediseñada con la identidad real de la marca — motivo: el amigo del usuario recibió el correo en Spam (plantilla genérica de Supabase, dominio nuevo sin reputación aún).**
 - Archivo nuevo `docs/email-templates/magic-link.html`: email transaccional real (tablas + estilos inline, compatible con Outlook/Hotmail/Gmail), tarjeta oscura `#12161c` con acento verde lima `#97d131` (mismos tokens de `components/landing/tokens.css`), botón CTA + código de respaldo de 8 dígitos (`{{ .Token }}`) para el mismo flujo que ya existe en `app/login/page.tsx`. Fondo de página claro neutro fuera de la tarjeta (mejor compatibilidad y menos riesgo de spam que un email 100% oscuro).
 - Verificado visualmente en el navegador (reemplazando las variables de Supabase por valores de prueba): se ve correcto, sin overflow, jerarquía clara.
