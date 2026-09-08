@@ -90,7 +90,7 @@ const NOMBRE_DIA: Record<DiaSemana, string> = {
   miercoles: 'Tracción (espalda, bíceps y hombro)',
   jueves: 'Recuperación activa',
   viernes: 'Pierna (isquiotibiales y glúteos)',
-  sabado: 'Tren superior híbrido',
+  sabado: 'Tren superior híbrido (pecho, espalda y hombro)',
   domingo: 'Descanso hormonal',
 };
 
