@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Hallazgo real al mover el webhook de Hotmart al dominio propio: `gymevoapp.com` (sin "www") NO sirve para el webhook — solo redirige (308), nunca responde directo.**
+- El usuario decidió pasar todo a `gymevoapp.com` como dirección oficial (incluido el webhook, opción cosmética que él pidió). Al probar con `curl` la URL sin www (`https://gymevoapp.com/api/webhooks/hotmart`), respondió `308 Redirecting...` en vez de procesar el aviso — Hotmart (como la mayoría de sistemas de webhooks de pago) no sigue redirecciones en sus llamadas POST, así que con esa URL el webhook fallaría en silencio para pagos reales.
+- Probado con `www.gymevoapp.com/api/webhooks/hotmart` → `401 unauthorized` (correcto, el endpoint responde de verdad). **La URL correcta para el webhook de Hotmart es la que lleva "www"**, nunca la versión sin www (esa es solo para gente escribiendo el dominio en el navegador, donde SÍ seguir el redirect es normal).
+- Se le explicó al usuario y quedó pendiente de que confirme el valor exacto que puso en Hotmart.
+/ Siguiente acción exacta: cuando el usuario confirme, volver a probar con `curl` contra la URL exacta que quedó puesta en Hotmart (con www) para cerrar esto del todo.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Dominio propio conectado — `gymevoapp.com` (comprado en Hostinger) ya sirve la app real, en vez de solo la URL de Vercel.**
 - Guiado paso a paso al usuario: dominio agregado en Vercel (Settings → Domains), 2 registros DNS puestos en Hostinger (CNAME `www` → el valor único que dio Vercel; A `@` → `76.76.21.21`, reemplazando el registro A que traía Hostinger por defecto).
 - Verificado con pruebas reales (`curl`), no solo con la pantalla de Vercel: `https://www.gymevoapp.com` responde 200 con el HTML real de la app; `https://gymevoapp.com` responde 308 y redirige a la versión con `www` — el patrón que se configuró a propósito (la gente puede escribir el dominio con o sin "www").
