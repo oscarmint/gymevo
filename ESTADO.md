@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Tercer intento contra los colores apagados en Outlook — se confirmó (con captura del editor de Supabase) que las plantillas SÍ estaban bien pegadas, así que el fix anterior (`[data-ogsc]`) no bastó por sí solo.**
+- Se agregó una capa extra en ambas plantillas: `:root { color-scheme: light only; }` DENTRO del `<style>` (no solo el `<meta>`) — el Outlook nuevo para Windows (basado en WebView2) a veces lee esta propiedad CSS en vez del meta tag. También se agregó `[data-ogsb]` (variante del hook de fondo) junto a `[data-ogsc]`, por si esta versión de Outlook usa ese atributo en vez del de OWA clásico.
+- Verificado en Chrome que el render normal sigue intacto.
+- **Nivel de confianza real, sin exagerar**: esto es la tercera capa de defensa contra un comportamiento de Outlook que no está 100% documentado públicamente y varía entre sus versiones (OWA, nuevo Outlook Windows, Outlook clásico) — es posible que ninguna de estas técnicas sea la que ese cliente específico respeta. Si after esta ronda SIGUE apagado, la alternativa realista es aceptar que ese cliente puntual reinterpreta el color y enfocar el esfuerzo en que el correo funcione bien (botón, código) en vez de perseguir el tono exacto en un solo cliente.
+/ Siguiente acción exacta: el usuario debe pegar de nuevo ambas plantillas (cuarta vez) y probar con Outlook en oscuro. Si sigue igual, evaluar con el usuario si vale la pena seguir invirtiendo tiempo en esto vs. aceptar el comportamiento de ese cliente puntual.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Segunda causa de los colores apagados en Outlook: el modo oscuro PROPIO de Outlook.com (OWA), distinto del `color-scheme` que ya se había corregido — el usuario mandó una segunda captura mostrando el toggle de sol/modo oscuro en la barra de Outlook, colores seguían apagados.**
 - OWA reescribe los colores del cuerpo del correo con su propio algoritmo cuando el usuario tiene Outlook en oscuro, sin importar el meta `color-scheme`. Existe un hook conocido: agrega el atributo `data-ogsc` al `<body>` cuando aplica ese modo.
 - Fix en ambas plantillas (`magic-link.html`, `confirm-signup.html`): se le puso una clase a cada elemento con color propio (fondo, tarjeta, título, botón, código, pie) y se agregaron reglas `[data-ogsc] .clase { color: X !important; }` que fuerzan los colores reales de vuelta cuando Outlook activa su modo oscuro.
