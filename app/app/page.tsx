@@ -428,18 +428,24 @@ function PlanDelDia({
       <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">
         Día {progreso.diaActual} · {tituloRuta(nivel, meta)}
       </p>
-      <h1 className="mt-1 flex flex-wrap items-center gap-1 text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
-        <span>
+      {/* items-start (no items-center) + el Lottie FUERA del flujo del texto
+          (shrink-0, su propia columna): con el título en 2 líneas, ponerlo
+          inline o en flex-wrap lo empujaba a una tercera línea suelta y
+          descuadrada (hallazgo del usuario) — así el texto envuelve libre en
+          su propia columna sin que el ícono dependa de dónde termine la
+          última palabra. */}
+      <div className="mt-1 flex items-start gap-2">
+        <h1 className="min-w-0 flex-1 text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
           {diaDescanso ? 'Hoy es tu día de descanso' : `Hola, hoy toca ${nombreDeHoy(progreso.diaActual)}`}
-        </span>
+        </h1>
         <Lottie
           src={animacionFitness}
           autoplay
           loop
-          className="shrink-0"
+          className="mt-0.5 shrink-0"
           style={{ width: 36, height: 36 }}
         />
-      </h1>
+      </div>
 
       {/* Aviso si la sincronización remota falla — nunca en silencio (heurística 9),
           con "Reintentar" real (control y libertad, heurística 3) */}
