@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Bug real en Plan del día: el ícono animado (Lottie, brazo flexionando) del saludo se caía a una línea suelta y descuadrada cuando el nombre del día era largo (ej. "Tracción: espalda, bíceps y hombro" — 2 líneas).**
+- Causa raíz: el título usaba `flex flex-wrap` con el texto y el Lottie como hermanos — al llenar la última línea de texto todo el ancho, no quedaba espacio para el ícono en esa línea y caía a una tercera línea solo, descentrado.
+- Fix real en `app/app/page.tsx`: se separó en dos columnas (`flex items-start`) — el título en `flex-1 min-w-0` (envuelve libre en su propio espacio) y el Lottie en una columna fija `shrink-0` a la derecha, que ya no depende de dónde termine la última palabra.
+- Verificado: tsc ✓ · eslint ✓ · build ✓ · reproducido el caso exacto del usuario (texto largo forzando 2 líneas) en el navegador confirmando que el ícono queda arriba a la derecha, no debajo.
+/ Siguiente acción exacta: ninguna — publicado.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Quinta pasada del isotipo, y la que por fin cerró el tema: "no" (seco) del usuario tras 4 intentos midiendo/ajustando a mano llevó a cambiar de método por completo — vectorización automática en vez de dibujar a mano.**
 - Se instaló `potrace` (herramienta de vectorización, usada solo dentro de esta sesión — YA DESINSTALADA, no queda como dependencia del proyecto): se aisló el verde del archivo real del usuario contra el fondo de ajedrez (umbral de color), se generó una máscara binaria, y se trazó el contorno EXACTO en vez de aproximarlo con curvas Bézier a mano.
 - Verificación real (no "se parece"): se superpuso el trazo resultante sobre un recorte del archivo original, ambos al mismo tamaño en píxeles — coincidencia exacta confirmada visualmente.
