@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Hallazgo real: Supabase usa una plantilla DISTINTA ("Confirm signup") la primera vez que un correo nunca antes registrado entra por OTP — solo se había personalizado "Magic Link", así que a usuarios nuevos les seguía llegando la plantilla genérica en inglés.**
+- Confirmado con captura real del usuario: correo "Confirm your email address" en inglés, remitente `acceso@gymevoapp.com` (o sea, el SMTP y dominio SÍ están bien — es la plantilla equivocada la que faltaba).
+- Nuevo archivo `docs/email-templates/confirm-signup.html`: mismo sistema visual que `magic-link.html` (misma tarjeta, logo, glow, código de respaldo copiable), copy adaptado a "primera vez" ("Confirma tu correo para empezar" / botón "Confirmar mi correo").
+- Verificado visualmente en el navegador con valores de prueba — igual de bien que el otro.
+/ Siguiente acción exacta: el usuario debe pegar `confirm-signup.html` en Supabase → Authentication → Email Templates → **"Confirm signup"** (una plantilla distinta a "Magic Link or OTP", ambas deben quedar personalizadas). Asunto sugerido: "Confirma tu correo en GymEvo".
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Isotipo real de GymEvo agregado al chip verde del correo de acceso (`docs/email-templates/magic-link.html`).**
 - Nuevo asset `public/email-logo-dark.png` (360×210, fondo transparente, el mismo dibujo de `components/Logo.tsx` — pesa+reloj de arena — en oscuro `#12161c` para que se vea bien sobre el verde). Generado con `sharp` a partir del SVG real, no un ícono genérico.
 - Se referencia por URL absoluta pública (`https://www.gymevoapp.com/email-logo-dark.png`), NUNCA como imagen embebida en base64 — Gmail no muestra imágenes `data:` incrustadas en el HTML del correo, así que tenía que ser un archivo real alojado.
