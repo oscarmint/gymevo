@@ -1,6 +1,11 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Retomado un pendiente crítico ya anotado el 01/09: el correo de acceso (magic link/OTP) sigue saliendo desde `onboarding@resend.dev` — el remitente de PRUEBAS de Resend, que solo entrega al dueño de la cuenta, no a clientes reales.**
+- El usuario preguntó por qué el envío se siente "restringido/lento" — la causa real no es un límite de cantidad ajustable, es la restricción de sandbox de Resend (documentada ya en un incidente real anterior: un comprador no recibió su correo de acceso). Con dominio propio ya conectado (`gymevoapp.com`, sesión de hoy), por fin existe lo que faltaba para arreglarlo de raíz.
+- Se le explicó al usuario el plan: verificar `gymevoapp.com` en Resend (Domains → Add Domain → agregar los registros DNS en Hostinger, mismo patrón ya usado con Vercel) y luego cambiar el remitente en Supabase (Authentication → Settings → SMTP Settings) de `onboarding@resend.dev` a algo como `acceso@gymevoapp.com`.
+/ Siguiente acción exacta: esperando que el usuario entre a Resend y pase los registros DNS exactos que le muestre, para guiarlo a ponerlos en Hostinger — mismo patrón ya ejecutado con éxito para el dominio y el webhook.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Hallazgo real al mover el webhook de Hotmart al dominio propio: `gymevoapp.com` (sin "www") NO sirve para el webhook — solo redirige (308), nunca responde directo.**
 - El usuario decidió pasar todo a `gymevoapp.com` como dirección oficial (incluido el webhook, opción cosmética que él pidió). Al probar con `curl` la URL sin www (`https://gymevoapp.com/api/webhooks/hotmart`), respondió `308 Redirecting...` en vez de procesar el aviso — Hotmart (como la mayoría de sistemas de webhooks de pago) no sigue redirecciones en sus llamadas POST, así que con esa URL el webhook fallaría en silencio para pagos reales.
 - Probado con `www.gymevoapp.com/api/webhooks/hotmart` → `401 unauthorized` (correcto, el endpoint responde de verdad). **La URL correcta para el webhook de Hotmart es la que lleva "www"**, nunca la versión sin www (esa es solo para gente escribiendo el dominio en el navegador, donde SÍ seguir el redirect es normal).
