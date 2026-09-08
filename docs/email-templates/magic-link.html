@@ -3,8 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="dark light">
-<meta name="supported-color-schemes" content="dark light">
+<!-- "light" a propósito, aunque el diseño ES oscuro: esto le dice a Outlook/
+     Gmail "no reproceses mis colores para modo oscuro", porque ya elegimos
+     el oscuro nosotros mismos con colores fijos. Con "dark light" Outlook
+     los reescribe solo y los deja apagados/grisáceos (hallazgo real del
+     usuario, correo recibido con los colores lavados). -->
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
 <title>Tu acceso a GymEvo</title>
 <!--[if mso]>
 <noscript>

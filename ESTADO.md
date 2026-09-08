@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Bug real en las plantillas de correo: los colores llegaban apagados/grisáceos en Outlook (captura real del usuario) en vez del verde brillante de la marca.**
+- Causa raíz: `<meta name="color-scheme" content="dark light">` le dice a Outlook/Gmail "este correo sabe adaptarse a modo oscuro" — Outlook toma eso como permiso para REPROCESAR los colores a su manera, y su algoritmo desatura/apaga los tonos brillantes que no reconoce como "seguros". Como el diseño YA es oscuro a propósito (colores fijos, no adaptativos), declarar soporte de modo oscuro es contraproducente.
+- Fix en `docs/email-templates/magic-link.html` y `confirm-signup.html`: `color-scheme`/`supported-color-schemes` vuelven a `"light"` únicamente — así el cliente de correo no reprocesa nada y respeta los colores exactos que se escribieron.
+- Verificado visualmente en el navegador (Chrome no aplica este reprocesamiento, así que no muestra el bug — el fix es específico para Outlook/Gmail, confirmado por la lógica del meta tag, no por una captura de Outlook post-fix).
+/ Siguiente acción exacta: el usuario debe volver a pegar AMBAS plantillas actualizadas en Supabase (ya las tenía pegadas, pero con el meta tag viejo) y confirmar con un envío de prueba real que los colores llegan correctos en Outlook.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Bug real en Plan del día: el ícono animado (Lottie, brazo flexionando) del saludo se caía a una línea suelta y descuadrada cuando el nombre del día era largo (ej. "Tracción: espalda, bíceps y hombro" — 2 líneas).**
 - Causa raíz: el título usaba `flex flex-wrap` con el texto y el Lottie como hermanos — al llenar la última línea de texto todo el ancho, no quedaba espacio para el ícono en esa línea y caía a una tercera línea solo, descentrado.
 - Fix real en `app/app/page.tsx`: se separó en dos columnas (`flex items-start`) — el título en `flex-1 min-w-0` (envuelve libre en su propio espacio) y el Lottie en una columna fija `shrink-0` a la derecha, que ya no depende de dónde termine la última palabra.
