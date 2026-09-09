@@ -1,6 +1,13 @@
-// Service worker de notificaciones push — SOLO recibe y muestra el aviso de
-// "llevas 2 días sin entrenar"; no cachea nada ni intercepta fetch (evita
-// cualquier efecto secundario sobre el resto de la app).
+// Service worker de notificaciones push. El handler de "fetch" de abajo es
+// un simple paso-directo (no cachea nada, no cambia ninguna respuesta) — pero
+// SU SOLA PRESENCIA es lo que Chrome/Android exige para ofrecer "Instalar
+// aplicación" de verdad (sin él, solo ofrece "Crear acceso directo", que
+// abre la app dentro de una pestaña normal con la barra del navegador visible
+// — hallazgo real del usuario: la franja negra que veía era la barra de
+// Chrome, no algo de GymEvo).
+self.addEventListener('fetch', (event) => {
+  event.respondWith(fetch(event.request));
+});
 
 self.addEventListener('push', (event) => {
   if (!event.data) return;
