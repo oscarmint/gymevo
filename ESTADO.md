@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **CERRADO por decisión explícita del usuario: los colores del correo de acceso siguen viéndose apagados en una versión puntual de Outlook, pese a 3 capas de fix distintas (meta color-scheme, `[data-ogsc]`/`[data-ogsb]`, `:root{color-scheme}` en CSS). El usuario eligió "dejarlo así" en vez de seguir invirtiendo tiempo.**
+- Es un comportamiento propio de esa versión de Outlook, no documentado públicamente de forma confiable — no se pudo verificar en un Outlook real durante esta sesión (solo capturas del usuario).
+- El correo sigue siendo 100% funcional ahí (botón, código, texto) — solo cambia el tono exacto del verde en ese cliente puntual; en Gmail, Apple Mail, y el resto se ve con los colores reales de marca.
+- **No volver a tocar esto sin un pedido explícito nuevo del usuario** — ya se agotaron las 3 técnicas conocidas y el usuario decidió aceptar el resultado actual.
+/ Siguiente acción exacta: ninguna sobre este tema — retomar la próxima tarea que el usuario traiga.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Tercer intento contra los colores apagados en Outlook — se confirmó (con captura del editor de Supabase) que las plantillas SÍ estaban bien pegadas, así que el fix anterior (`[data-ogsc]`) no bastó por sí solo.**
 - Se agregó una capa extra en ambas plantillas: `:root { color-scheme: light only; }` DENTRO del `<style>` (no solo el `<meta>`) — el Outlook nuevo para Windows (basado en WebView2) a veces lee esta propiedad CSS en vez del meta tag. También se agregó `[data-ogsb]` (variante del hook de fondo) junto a `[data-ogsc]`, por si esta versión de Outlook usa ese atributo en vez del de OWA clásico.
 - Verificado en Chrome que el render normal sigue intacto.
