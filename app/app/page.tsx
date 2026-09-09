@@ -426,17 +426,20 @@ function PlanDelDia({
             transition={{ duration: 0.35 }}
             className="flex flex-col items-center"
           >
-            <span className="chip-3d flex size-16 items-center justify-center rounded-2xl bg-[var(--accent)]">
-              <Zap size={30} color="var(--bg)" strokeWidth={2.4} />
+            {/* Mismo hallazgo del usuario que en Historial: quedaba pequeño
+                en el medio de mucho espacio vacío. Se agranda (ícono, título,
+                botón) para tener presencia real en el espacio disponible. */}
+            <span className="chip-3d flex size-24 items-center justify-center rounded-2xl bg-[var(--accent)]">
+              <Zap size={40} color="var(--bg)" strokeWidth={2.4} />
             </span>
-            <h1 className="mt-5 text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Hola!</h1>
-            <p className="mt-2 max-w-xs text-base text-[var(--text-secondary)]">
+            <h1 className="mt-6 text-3xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Hola!</h1>
+            <p className="mt-3 max-w-sm text-base text-[var(--text-secondary)]">
               Hoy vamos a iniciar el entrenamiento de <strong className="text-[var(--text-primary)]">{nombreDeHoy(progreso.diaActual)}</strong>. ¡Vamos con toda!
             </p>
             <button
               type="button"
               onClick={iniciarEntrenamiento}
-              className="boton-3d mt-7 flex h-14 w-56 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-bold text-[var(--bg)]"
+              className="boton-3d mt-8 flex h-16 w-64 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-lg font-bold text-[var(--bg)]"
             >
               Iniciar entrenamiento
             </button>
