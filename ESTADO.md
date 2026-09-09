@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Dos bugs reales de progreso, encontrados por el usuario probando 5 días seguidos del plan el mismo día real.**
+- **Crítico**: el domingo (descanso hormonal completo) no tenía NINGÚN botón para avanzar el día. `diaActual` solo cambia dentro de `completarEntrenamiento()`, nunca solo por pasar la fecha real — el texto "mañana retomas tu plan" era falso, no pasaba nada solo. CUALQUIER usuario real habría quedado atascado en domingo para siempre, no solo en pruebas. Se agregó el botón "Ya descansé, continuar mi plan" en `app/app/page.tsx`, mismo patrón que el día de recuperación activa (jueves) ya tenía.
+- El saludo de inicio ("¡Hola!" → "¡Vamos con toda!") se guardaba en `sessionStorage` por FECHA de calendario (`gymevo_saludo_visto`), no por día del plan — al completar varios días del plan en la misma fecha real (como al probar), el saludo solo aparecía en el primero. Cambiado a guardar por `diaActual` (`gymevo_saludo_visto_dia`) — un usuario real no nota el cambio (solo avanza un día del plan por fecha real de todos modos).
+- Verificado: tsc ✓ · eslint ✓ · build ✓ · verificación visual del nuevo botón del domingo a 375px.
+/ Siguiente acción exacta: ninguna — publicado. El usuario debería poder ahora completar los 7 días del ciclo sin quedar atascado.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **"Toca para continuar" (pantalla de inicio de rutina, "¡Vamos con toda!") reemplazado por un consejo educativo real.**
 - `app/app/page.tsx`: texto nuevo "Estirar antes de levantar te debilita. Prepara el músculo con series de acercamiento (peso ligero)." — mismo color (`--text-tertiary`, sin hex nuevo), `text-sm`, `max-w-xs mx-auto text-center` para que rompa en 2 líneas parejas. GIF, título y el gesto de tocar cualquier parte para continuar (el `onClick` sigue en el `<div>` contenedor, sin tocarlo) quedaron exactamente igual — pedido explícito del usuario.
 - Verificado: tsc ✓ · eslint ✓ · build ✓ · verificación visual a 375px confirmando el layout de 2 líneas.
