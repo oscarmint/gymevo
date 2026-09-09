@@ -1,6 +1,15 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **5 tareas del usuario resueltas de una sola vez en Plan del día.**
+1. Bug real: "Tengo que cortar aquí" solo aparecía tras completar 1 ejercicio (`progreso.hechosHoy.length > 0`) — el usuario reportó que no le aparecía; se quitó esa condición, ahora está disponible desde el minuto 0 del día (a veces hay que cortar antes de alcanzar a terminar el primero).
+2. Nuevo: enlace "¿Cuánto usé la última vez?" en la primera serie de cada ejercicio — opt-in (pedido explícito: no mostrar el peso solo, debe ser algo que el usuario toque si quiere verlo). Nueva función `ultimoRegistro()` en `lib/routine.ts` que busca en `progreso.logs` (nunca se recorta) la entrada más reciente ANTES de hoy para ese ejercicio.
+3. Bug real: el GIF de "¡Vamos con toda!" al iniciar el día se mostraba a 224px (`h-56`) pero el archivo real es de 150×150px — se veía borroso por el estiramiento. Bajado a `h-36` (144px, casi 1:1 con su resolución real).
+4. El ícono Lottie del brazo junto al título ("Hoy vamos con...") subió de 36px a 56px — es vectorial (sin raster embebido), se veía borroso solo por ser demasiado chico para que se noten sus detalles finos.
+5. La imagen de "Explicación del ejercicio" (la infografía técnica tipo "REMO BARRA") pasó de `max-h-56` (achicada, texto ilegible) a `w-full` dentro de una hoja que ahora permite hasta `90dvh` de alto con scroll — el usuario va a LEER el texto técnico para basar su ejecución, no solo verla de referencia.
+- Verificado: tsc ✓ · eslint ✓ · build ✓ · verificación visual real de la infografía a 375px (texto legible, sin overflow) y del gif de bienvenida achicado.
+/ Siguiente acción exacta: ninguna — publicado. Las 5 tareas quedaron resueltas.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Pantalla de cierre del entrenamiento del día rediseñada, aprobada con vista previa antes de publicar (flujo: maqueta HTML de prueba fuera del código real → captura mostrada al usuario → confirmación → recién ahí se tocó `app/app/page.tsx`).**
 - Título "¡Muy bien!" pasó a `text-5xl font-extrabold` (antes `text-4xl font-bold`).
 - La pesa animada pasó de 64px (`size-16`) a 176px (`size-44`) — el usuario pidió explícitamente que el bloque completo (título+pesa+textos) ocupara buena parte de la pantalla, no un detalle chico.
