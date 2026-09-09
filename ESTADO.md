@@ -1,6 +1,14 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Pantalla de cierre del entrenamiento del día rediseñada, aprobada con vista previa antes de publicar (flujo: maqueta HTML de prueba fuera del código real → captura mostrada al usuario → confirmación → recién ahí se tocó `app/app/page.tsx`).**
+- Título "¡Muy bien!" pasó a `text-5xl font-extrabold` (antes `text-4xl font-bold`).
+- La pesa animada pasó de 64px (`size-16`) a 176px (`size-44`) — el usuario pidió explícitamente que el bloque completo (título+pesa+textos) ocupara buena parte de la pantalla, no un detalle chico.
+- El copy cambió de "Terminaste el entrenamiento de hoy. Descansa, mañana continuaremos." a dos líneas separadas: "Entrenamiento completado." (confirmación, texto principal) + "Recuerda: el músculo se estimula aquí, pero crece mientras descansas." (consejo educativo, texto secundario en `--text-tertiary`).
+- El confeti que ya existía en esta pantalla NO se tocó — sigue funcionando igual, solo se usó como referencia visual en la maqueta de prueba para mostrarle al usuario cómo se ve todo junto.
+- Verificado: tsc ✓ · eslint ✓ (incluye el linter de diseño del proyecto, que rechazó un valor arbitrario `size-[180px]` — se corrigió a `size-44`, dentro de la escala real de Tailwind) · build ✓.
+/ Siguiente acción exacta: ninguna — publicado. El usuario puede confirmar terminando un entrenamiento real en la app para ver el movimiento (pesa girando + confeti cayendo), que una imagen fija no puede mostrar.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Nuevo asset recoloreado + reemplazo del emoji de celebración por la pesa de marca (pedido explícito: "le da más seriedad a la app").**
 - `public/animaciones/entrenador-verde.gif`: el usuario adjuntó un GIF real (150×150, 64 cuadros, pesa naranja sobre fondo negro sólido) y se recoloreó por código con `sharp` — fondo negro → transparencia real (alpha, no un parche de color), pesa naranja → verde de acento exacto (`#97d131`). 2 bugs reales encontrados y corregidos en el proceso: (1) `pageHeight` va DENTRO del objeto `raw:{...}`, no como opción hermana — si no, sharp escribe un GIF de 1 solo cuadro gigante; (2) sharp combina cuadros idénticos consecutivos por defecto (`keepDuplicateFrames` debe ir en `true`) y el `delay`/`loop` original solo se leen con `.metadata()`, nunca con `.raw()` — si no, el GIF queda con 0ms de velocidad.
 - `app/app/page.tsx`: el emoji 😅 de la pantalla "¡Muy bien!" (al terminar el entrenamiento del día) se reemplazó por este GIF.
