@@ -583,14 +583,16 @@ export default function PerfilPage() {
           </button>
         </div>
       ) : null}
-      {/* Antes era texto suelto sin fondo (se mezclaba con lo que hubiera
-          detrás, hallazgo del usuario: sin contraste contra "Zona de
-          peligro") — ahora es una tarjeta con su propio fondo tintado, igual
-          que los demás avisos de error de la app. También era el color
-          equivocado: esto es un ERROR real (no se pudo activar), no una
-          advertencia — status-error, no status-warning. */}
+      {/* Esta pantalla tiene el video de fondo sin capa de color encima (a
+          pedido explícito del usuario) — un fondo tintado suave se perdía
+          contra el video en movimiento. Se resuelve con texto en negrita +
+          sombra oscura (no una caja), mismo criterio que "Zona de peligro"
+          abajo: se lee bien sin importar qué haya detrás en el video. */}
       {errorAvisos && (
-        <p className="mt-2 rounded-xl border border-[color-mix(in_oklab,var(--status-error)_35%,transparent)] bg-[color-mix(in_oklab,var(--status-error)_10%,transparent)] px-4 py-2.5 text-xs font-medium text-[var(--status-error)]">
+        <p
+          className="mt-2 text-xs font-semibold text-[var(--status-error)]"
+          style={{ textShadow: '0 1px 6px rgba(0,0,0,0.85)' }}
+        >
           {errorAvisos}
         </p>
       )}
@@ -607,7 +609,16 @@ export default function PerfilPage() {
           PRIVACIDAD): un botón que de verdad borra los datos, no solo la
           promesa de "escríbenos". Separado visualmente del resto (irreversible). */}
       <div className="mt-8 border-t border-[color-mix(in_oklab,var(--status-error)_20%,transparent)] pt-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Zona de peligro</p>
+        {/* Antes color-tertiary (gris apagado) — se perdía contra el video de
+            fondo (hallazgo del usuario). status-error + sombra da contraste
+            real sin importar qué haya detrás, y encaja con el resto de la
+            sección (mismo color que el borde de arriba y "Eliminar cuenta"). */}
+        <p
+          className="text-xs font-bold uppercase tracking-[0.06em] text-[var(--status-error)]"
+          style={{ textShadow: '0 1px 6px rgba(0,0,0,0.85)' }}
+        >
+          Zona de peligro
+        </p>
         <button
           type="button"
           onClick={() => setPidiendoEliminar(true)}
