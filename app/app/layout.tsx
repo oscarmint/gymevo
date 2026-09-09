@@ -20,6 +20,10 @@ export default function AppShellLayout({ children }: { children: React.ReactNode
     <div className="flex min-h-dvh flex-col bg-[var(--bg)] [font-family:var(--font-body)]">
       <div className="flex-1 pb-20">{children}</div>
 
+      {/* pb-1 en el Link (no pb-2.5) — ese aire extra se sumaba al margen de
+          seguridad de abajo (env(safe-area-inset-bottom)) y en Android con
+          gestos se veía como espacio vacío de más entre el texto y el borde
+          (comparación real del usuario contra Instagram, 09/09/2026). */}
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] pb-[max(8px,env(safe-area-inset-bottom))]">
         <div className="mx-auto flex w-full max-w-md">
           {TABS.map((tab) => {
@@ -29,7 +33,7 @@ export default function AppShellLayout({ children }: { children: React.ReactNode
               <Link
                 key={tab.href}
                 href={tab.href}
-                className="flex flex-1 flex-col items-center gap-1 py-2.5 text-[11.5px] font-medium"
+                className="flex flex-1 flex-col items-center gap-1 pt-2.5 pb-1 text-[11.5px] font-medium"
               >
                 <span
                   className={
