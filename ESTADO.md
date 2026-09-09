@@ -1,6 +1,13 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-09 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (09/09/2026): **"Explicación del ejercicio" pasó de hoja inferior (bottom sheet) a pantalla completa real — pedido explícito del usuario, aprobado con vista previa antes de publicar.**
+- Antes: `fixed inset-0 flex items-end` + tarjeta `max-h-[90dvh]` con esquinas redondeadas arriba — dejaba ver un pedacito de la pantalla de atrás (el toggle "Descanso automático entre series"), que el usuario marcó en rojo en una captura.
+- Ahora en `app/app/page.tsx`: el propio `motion.div` con `fixed inset-0` ES la pantalla completa (sin contenedor hijo separado ni bottom-sheet), fondo `bg-[var(--surface)]` cubre TODO el viewport de una vez — el padding de seguridad (`pt-[max(20px,env(safe-area-inset-top))]`) solo empuja el contenido, nunca el fondo, así que no queda ningún hueco arriba sin importar notch/status bar.
+- También se quitó la barrita de "arrastrar" (tenía sentido en un bottom sheet, no en pantalla completa) y el botón de cerrar ganó su propio fondo (`bg-[var(--chip-bg)]`) para verse como un botón real en vez de flotar solo.
+- Verificado: tsc ✓ · eslint ✓ · build ✓ · vista previa mostrada al usuario ANTES de publicar (pidió explícitamente no publicar sin ver) — confirmó con una segunda captura marcando la misma zona, se publicó después de esa confirmación.
+/ Siguiente acción exacta: ninguna — publicado.
+
 ⏸️ CHECKPOINT — Última acción completada (09/09/2026): **El fix de ayer del saludo de inicio (guardar por diaActual en vez de por fecha) no bastaba — el usuario probó de nuevo y seguía sin aparecer al terminar un día y avanzar al siguiente.**
 - Causa raíz real (más profunda que la de ayer): `etapa` se inicializaba con `useState(() => ...)`, que SOLO corre una vez al MONTAR el componente. Avanzar de día (`completarEntrenamiento` tras tocar "Seguir" en la pantalla de cierre) no remonta el componente — cambia `progreso.diaActual`, pero nada volvía a evaluar si tocaba mostrar el saludo. `etapa` quedaba en `'plan'` para siempre después del primer día de la sesión.
 - Fix en `app/app/page.tsx`: nuevo `useEffect` que reacciona específicamente a que `progreso.diaActual` cambió (comparando contra un `useRef` para no dispararse en el montaje inicial, que ya lo maneja el `useState`) y recalcula `etapa` con la misma regla (día de descanso/recuperación → 'plan' directo; si no, revisa `sessionStorage` por `diaActual` y decide 'saludo' o 'plan').
