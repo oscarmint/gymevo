@@ -730,10 +730,16 @@ function PlanDelDia({
                     ) : (
                       <button
                         type="button"
-                        onClick={() => setPesoAnteriorVisible((p) => ({ ...p, [ej.id]: true }))}
+                        onClick={() => {
+                          setPesoAnteriorVisible((p) => ({ ...p, [ej.id]: true }));
+                          // Se oculta solo a los 30s (pedido explícito del
+                          // usuario) — no queda un dato viejo pegado en
+                          // pantalla para siempre después de que ya sirvió.
+                          setTimeout(() => setPesoAnteriorVisible((p) => ({ ...p, [ej.id]: false })), 30000);
+                        }}
                         className="mt-1 text-xs font-medium text-[var(--text-tertiary)] underline underline-offset-2"
                       >
-                        ¿Cuánto usé la última vez?
+                        ¿Cuánto usé en la última rutina?
                       </button>
                     )
                   )}
@@ -1121,7 +1127,7 @@ function PlanDelDia({
                     <X size={18} />
                   </button>
                 </div>
-                <div className="mt-3 flex flex-1 items-start justify-center">
+                <div className="mt-3 flex justify-center">
                   {ej.imagenExplicacion ? (
                     // eslint-disable-next-line @next/next/no-img-element -- ver AppPorDentro.tsx: <img> mantiene el kit portable
                     <img
@@ -1133,6 +1139,20 @@ function PlanDelDia({
                     <CuerpoMuscular musculo={ej.grupoMuscular} genero={generoIlustracion(ej.id)} />
                   )}
                 </div>
+                {/* La infografía casi nunca llena la pantalla completa
+                    (proporción vertical distinta a la del celular) — en vez
+                    de dejar el resto como vacío muerto (hallazgo del
+                    usuario), ese espacio se llena con una acción real que
+                    cierra la pantalla. mt-auto la empuja al fondo solo
+                    cuando sobra alto; si el contenido ya llena todo, queda
+                    pegada justo debajo sin superponerse. */}
+                <button
+                  type="button"
+                  onClick={() => setExplicando(null)}
+                  className="boton-3d mt-auto flex h-14 w-full shrink-0 items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
+                >
+                  Entendido, volver al ejercicio
+                </button>
               </motion.div>
             );
           })()}
