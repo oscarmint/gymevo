@@ -365,13 +365,17 @@ function PlanDelDia({
   const idsHoy = ejercicios.map((e) => obtenerEjercicio(progreso.reemplazosHoy[e.id] ?? e.id));
   const todosHechos = idsHoy.every((e) => progreso.hechosHoy.includes(e.id));
   const enRiesgo = rachaEnRiesgo(progreso);
-  // La llama se llena según el progreso REAL de hoy (ejercicios ya marcados
-  // hechos / total de hoy) — a pedido explícito del usuario, no es decorativa.
-  const progresoLlamaPct = idsHoy.length
-    ? Math.round((idsHoy.filter((e) => progreso.hechosHoy.includes(e.id)).length / idsHoy.length) * 100)
-    : 0;
   const diaDescanso = esDiaDeDescanso(progreso.diaActual);
   const diaRecuperacion = esDiaDeRecuperacionActiva(progreso.diaActual);
+  // La llama se llena según el progreso REAL de hoy (ejercicios ya marcados
+  // hechos / total de hoy) — a pedido explícito del usuario, no es decorativa.
+  // En el día de descanso no hay ejercicios que marcar, pero la racha sigue
+  // intacta (no es que "falte esfuerzo") — se muestra llena, no vacía.
+  const progresoLlamaPct = diaDescanso
+    ? 100
+    : idsHoy.length
+      ? Math.round((idsHoy.filter((e) => progreso.hechosHoy.includes(e.id)).length / idsHoy.length) * 100)
+      : 0;
   const recuperacion = recuperacionActivaDeHoy(meta);
   const tren = calentamientoDeHoy(progreso.diaActual);
   const cardio = cardioDeHoy(progreso.diaActual, meta);

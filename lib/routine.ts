@@ -520,8 +520,13 @@ export function completarEntrenamiento(p: Progreso): Progreso {
   return { ...p, diaActual: p.diaActual + 1, racha, ultimaFecha: hoy };
 }
 
-/** Racha en riesgo (M4 de 56): ya pasó ≥1 día completo sin entrenar y aún no venció del todo. */
+/** Racha en riesgo (M4 de 56): ya pasó ≥1 día completo sin entrenar y aún no
+ * venció del todo. NUNCA en el día de descanso — ahí no hay nada que
+ * registrar por diseño, así que "hechosHoy vacío" es lo normal, no una señal
+ * de riesgo (bug real encontrado por el usuario: la llama salía en color de
+ * alerta un domingo sin haber hecho nada mal). */
 export function rachaEnRiesgo(p: Progreso): boolean {
   if (!p.ultimaFecha || p.racha === 0) return false;
+  if (esDiaDeDescanso(p.diaActual)) return false;
   return diasEntre(p.ultimaFecha, hoyISO()) >= 1 && p.hechosHoy.length === 0;
 }
