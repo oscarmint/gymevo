@@ -976,22 +976,23 @@ function PlanDelDia({
               <X size={22} />
             </button>
             <div className="relative z-10 flex flex-col items-center">
-              <h2 className="text-4xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Muy bien!</h2>
+              <h2 className="text-5xl font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Muy bien!</h2>
               {/* Pesa animada en el verde de la app en vez del emoji — le da
                   más seriedad a la app (pedido explícito del usuario). GIF
                   propio (recoloreado desde el original naranja), next/image
-                  no anima GIFs. */}
+                  no anima GIFs. Grande a propósito (180px, no un ícono
+                  chiquito) — el usuario pidió que el bloque completo ocupe
+                  buena parte de la pantalla, no solo un detalle discreto. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/animaciones/entrenador-verde.gif"
                 alt=""
                 aria-hidden="true"
-                className="mt-2 size-16"
+                className="my-9 size-44"
               />
-              <p className="mt-4 max-w-xs text-center text-sm text-[var(--text-secondary)]">
-                Terminaste el entrenamiento de hoy.
-                <br />
-                Descansa, mañana continuaremos.
+              <p className="text-center text-lg font-semibold text-[var(--text-primary)]">Entrenamiento completado.</p>
+              <p className="mt-3 max-w-xs text-center text-base text-[var(--text-tertiary)]">
+                Recuerda: el músculo se estimula aquí, pero crece mientras descansas.
               </p>
               <button
                 type="button"
