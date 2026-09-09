@@ -153,8 +153,12 @@ function PlanDelDia({
   const [repsHechas, setRepsHechas] = useState<Record<string, string>>({});
   // Recordatorio del último peso usado (pedido del usuario): NO se muestra
   // solo, es un enlace que la persona toca si quiere recordarlo — algunos
-  // prefieren no verlo y decidir el peso por su cuenta.
-  const [pesoAnteriorVisible, setPesoAnteriorVisible] = useState<Record<string, boolean>>({});
+  // prefieren no verlo y decidir el peso por su cuenta. Tres estados por
+  // ejercicio: sin tocar (enlace visible) → visible (dato mostrado) →
+  // expirado (todo el apartado desaparece a los 30s, no vuelve a salir el
+  // enlace — pedido explícito del usuario: "que desaparezca de ahí ESE
+  // apartado completo", no que regrese al botón).
+  const [pesoAnteriorEstado, setPesoAnteriorEstado] = useState<Record<string, 'visible' | 'expirado'>>({});
   // Aviso (no cronómetro) al TERMINAR un ejercicio completo — descansar
   // entre EJERCICIOS es distinto de descansar entre SERIES: aquí no se
   // impone un tiempo porque cada quien decide cuánto necesita, solo se
@@ -721,8 +725,8 @@ function PlanDelDia({
                       Serie {serieActual} de {ej.series}
                     </p>
                   )}
-                  {!hecho && registroAnterior && (
-                    pesoAnteriorVisible[ej.id] ? (
+                  {!hecho && registroAnterior && pesoAnteriorEstado[ej.id] !== 'expirado' && (
+                    pesoAnteriorEstado[ej.id] === 'visible' ? (
                       <p className="mt-1 text-xs text-[var(--text-tertiary)]">
                         Última vez: {registroAnterior.peso}
                         {progreso.unidadPeso} × {registroAnterior.reps} reps
@@ -731,11 +735,12 @@ function PlanDelDia({
                       <button
                         type="button"
                         onClick={() => {
-                          setPesoAnteriorVisible((p) => ({ ...p, [ej.id]: true }));
-                          // Se oculta solo a los 30s (pedido explícito del
-                          // usuario) — no queda un dato viejo pegado en
-                          // pantalla para siempre después de que ya sirvió.
-                          setTimeout(() => setPesoAnteriorVisible((p) => ({ ...p, [ej.id]: false })), 30000);
+                          setPesoAnteriorEstado((p) => ({ ...p, [ej.id]: 'visible' }));
+                          // Se oculta solo a los 30s Y NO vuelve a mostrar el
+                          // enlace (pedido explícito: "que desaparezca de ahí
+                          // ese apartado completo") — pasa a 'expirado', un
+                          // tercer estado, no de vuelta al enlace inicial.
+                          setTimeout(() => setPesoAnteriorEstado((p) => ({ ...p, [ej.id]: 'expirado' })), 30000);
                         }}
                         className="mt-1 text-xs font-medium text-[var(--text-tertiary)] underline underline-offset-2"
                       >
