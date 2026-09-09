@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-09 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (09/09/2026): **Mismo patrón de "hueco vacío" que en Historial, ahora en la pantalla de saludo "¡Hola!" (captura real del usuario marcando el espacio antes de la nav).**
+- `app/app/page.tsx`: el shell ya centraba con `flex-1`/`justify-center` correctamente (matemáticamente parejo arriba/abajo), pero el bloque de contenido se sentía chico dentro de tanto espacio disponible en pantallas altas. Se agrandó: ícono `size-16→24`, glifo `30→40`, título `text-2xl→3xl`, botón `h-14 w-56→h-16 w-64` con `text-lg`.
+- No se tocó la pantalla siguiente ("¡Vamos con toda!" con el GIF) — esa ya tiene su tamaño fijado a propósito (144px, casi 1:1 con la resolución real del archivo) para no volver a verse borrosa.
+- Verificado: tsc ✓ · eslint ✓ · build ✓ · maqueta HTML confirmando el centrado parejo con los tamaños nuevos.
+/ Siguiente acción exacta: ninguna — publicado.
+
 ⏸️ CHECKPOINT — Última acción completada (09/09/2026): **Espacio vacío muerto en el estado sin datos de Historial (hallazgo del usuario con captura real, justo después de limpiar su historial de prueba).**
 - `app/app/historial/page.tsx`: el ícono/texto/botón del estado "todavía no registras ningún peso" quedaban pegados arriba de la pantalla, dejando un hueco negro grande antes de la nav. Se cambió el shell de la página a `flex flex-col min-h-[calc(100dvh-5rem)]` (mismo patrón ya usado en `perfil/page.tsx`) y el bloque vacío a `flex-1` — así ocupa TODO el alto real disponible sin adivinar un número con `calc()` (un primer intento con `calc(100dvh-22rem)` no cuadró y se corrigió). Ícono, texto y botón también crecieron un poco (size-14→20, texto sm→base, botón h-12→h-14) para tener presencia real en el espacio ganado.
 - Verificado: tsc ✓ · eslint ✓ · build ✓ · comparación visual con maqueta HTML confirmando que ya no queda hueco antes de la nav.
