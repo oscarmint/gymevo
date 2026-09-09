@@ -1095,54 +1095,44 @@ function PlanDelDia({
             const ej = obtenerEjercicio(explicando);
             return (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 z-50 flex items-end justify-center bg-[color-mix(in_oklab,var(--text-primary)_35%,transparent)]"
-                onClick={() => setExplicando(null)}
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                // Pantalla completa a propósito (pedido explícito del
+                // usuario): antes era una hoja inferior con margen y fondo
+                // oscurecido alrededor — ahora aprovecha TODO el espacio para
+                // que la infografía se vea lo más grande posible.
+                className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-[var(--surface)] px-5 pt-[max(20px,env(safe-area-inset-top))] pb-10"
               >
-                <motion.div
-                  initial={{ y: '100%' }}
-                  animate={{ y: 0 }}
-                  exit={{ y: '100%' }}
-                  transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                  onClick={(e) => e.stopPropagation()}
-                  className="max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-t-[var(--radius-card)] bg-[var(--surface)] px-5 pt-4 pb-8"
-                >
-                  <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)]" />
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent-2)]">
-                        {MUSCULO_LABEL[ej.grupoMuscular]}
-                      </p>
-                      <h2 className="text-lg font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">{ej.nombre}</h2>
-                    </div>
-                    <button
-                      type="button"
-                      aria-label="Cerrar"
-                      onClick={() => setExplicando(null)}
-                      className="flex size-9 shrink-0 items-center justify-center rounded-full text-[var(--text-secondary)]"
-                    >
-                      <X size={18} />
-                    </button>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent-2)]">
+                      {MUSCULO_LABEL[ej.grupoMuscular]}
+                    </p>
+                    <h2 className="text-lg font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">{ej.nombre}</h2>
                   </div>
-                  <div className="mt-2 flex justify-center">
-                    {ej.imagenExplicacion ? (
-                      // Se muestra al ancho completo de la hoja (no achicada a
-                      // max-h-56) — el usuario va a LEER el texto técnico de
-                      // la imagen, no solo verla de referencia (hallazgo del
-                      // usuario: antes salía demasiado chica para leer).
-                      // eslint-disable-next-line @next/next/no-img-element -- ver AppPorDentro.tsx: <img> mantiene el kit portable
-                      <img
-                        src={ej.imagenExplicacion}
-                        alt={`Explicación del ejercicio ${ej.nombre}`}
-                        className="w-full rounded-[var(--radius-card)]"
-                      />
-                    ) : (
-                      <CuerpoMuscular musculo={ej.grupoMuscular} genero={generoIlustracion(ej.id)} />
-                    )}
-                  </div>
-                </motion.div>
+                  <button
+                    type="button"
+                    aria-label="Cerrar"
+                    onClick={() => setExplicando(null)}
+                    className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--chip-bg)] text-[var(--text-secondary)]"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+                <div className="mt-3 flex flex-1 items-start justify-center">
+                  {ej.imagenExplicacion ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- ver AppPorDentro.tsx: <img> mantiene el kit portable
+                    <img
+                      src={ej.imagenExplicacion}
+                      alt={`Explicación del ejercicio ${ej.nombre}`}
+                      className="w-full rounded-[var(--radius-card)]"
+                    />
+                  ) : (
+                    <CuerpoMuscular musculo={ej.grupoMuscular} genero={generoIlustracion(ej.id)} />
+                  )}
+                </div>
               </motion.div>
             );
           })()}
