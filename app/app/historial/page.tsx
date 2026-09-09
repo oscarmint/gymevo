@@ -95,7 +95,12 @@ export default function HistorialPage() {
   if (!progreso) return null;
 
   return (
-    <div className="px-5 pt-6 pb-10">
+    // flex flex-col + min-h-[calc(100dvh-5rem)] (mismo patrón ya usado en
+    // perfil/page.tsx y la pantalla de saludo): así el estado vacío de abajo
+    // puede usar flex-1 y llenar TODO el espacio real que sobre hasta la nav,
+    // sin necesidad de adivinar su alto con un cálculo aparte — antes eso
+    // dejaba un hueco muerto grande (hallazgo del usuario, captura real).
+    <div className="flex min-h-[calc(100dvh-5rem)] flex-col px-5 pt-6 pb-10">
       <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">Tu progreso</p>
       <h1 className="mt-1 text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Historial</h1>
 
@@ -106,16 +111,16 @@ export default function HistorialPage() {
       <TarjetaProgreso progreso={progreso} meta={progreso.meta} />
 
       {porFecha.size === 0 ? (
-        <div className="mt-10 flex flex-col items-center text-center">
-          <span className="flex size-14 items-center justify-center rounded-full bg-[var(--chip-bg)]">
-            <History size={24} color="var(--accent)" />
+        <div className="flex flex-1 flex-col items-center justify-center text-center">
+          <span className="flex size-20 items-center justify-center rounded-full bg-[var(--chip-bg)]">
+            <History size={32} color="var(--accent)" />
           </span>
-          <p className="mt-4 max-w-xs text-sm text-[var(--text-secondary)]">
+          <p className="mt-5 max-w-xs text-base text-[var(--text-secondary)]">
             Todavía no registras ningún peso. En cuanto termines tu primer ejercicio, aparece aquí.
           </p>
           <Link
             href="/app"
-            className="boton-3d mt-6 flex h-12 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
+            className="boton-3d mt-7 flex h-14 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
           >
             Ir a mi plan de hoy
           </Link>
