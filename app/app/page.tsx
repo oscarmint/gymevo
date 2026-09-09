@@ -200,6 +200,25 @@ function PlanDelDia({
     return () => clearTimeout(t);
   }, [etapa, reduce]);
 
+  // El useState de arriba solo corre UNA vez, al montar el componente — bug
+  // real encontrado por el usuario: al terminar el día y avanzar a uno nuevo
+  // (diaActual cambia sin recargar la página), "etapa" se quedaba en 'plan'
+  // para siempre, sin volver a mostrar el saludo/"vamos con toda". Este
+  // efecto SÍ reacciona a que diaActual cambió — recalcula la etapa con la
+  // misma regla de arriba cada vez que se avanza de día en la misma sesión.
+  const diaActualAnteriorRef = useRef(progreso.diaActual);
+  useEffect(() => {
+    if (diaActualAnteriorRef.current === progreso.diaActual) return;
+    diaActualAnteriorRef.current = progreso.diaActual;
+    if (esDiaDeDescanso(progreso.diaActual) || esDiaDeRecuperacionActiva(progreso.diaActual)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setEtapa('plan');
+      return;
+    }
+    const yaVisto = sessionStorage.getItem('gymevo_saludo_visto_dia') === String(progreso.diaActual);
+    setEtapa(yaVisto ? 'plan' : 'saludo');
+  }, [progreso.diaActual]);
+
   function iniciarEntrenamiento() {
     sessionStorage.setItem('gymevo_saludo_visto_dia', String(progreso.diaActual));
     setEtapa('entrenador');
