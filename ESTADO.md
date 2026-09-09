@@ -1,6 +1,11 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-09 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (09/09/2026): **Corrección sobre el ajuste de ayer: el recordatorio de peso debía DESAPARECER a los 30s, no volver a mostrar el enlace.**
+- `app/app/page.tsx`: `pesoAnteriorVisible` (boolean) se reemplaza por `pesoAnteriorEstado` con 3 valores (`undefined`/sin tocar, `'visible'`, `'expirado'`) — el timeout de 30s ahora pasa a `'expirado'` (el apartado completo desaparece, no reaparece el enlace), no de vuelta a `false` (que hacía reaparecer el botón, error del ajuste anterior).
+- Verificado: tsc ✓ · eslint ✓ · build ✓.
+/ Siguiente acción exacta: ninguna — publicado.
+
 ⏸️ CHECKPOINT — Última acción completada (09/09/2026): **Dos ajustes pequeños en Plan del día, ambos aprobados con vista previa antes de publicar.**
 - "Explicación del ejercicio" (pantalla completa): el usuario no quería el espacio vacío que quedaba debajo de la infografía cuando esta no llenaba todo el alto — se llenó con un botón real "Entendido, volver al ejercicio" (`mt-auto`, se pega al fondo solo si sobra espacio) en vez de dejarlo muerto.
 - El enlace "¿Cuánto usé la última vez?" cambia de texto a "¿Cuánto usé en la última rutina?", y ahora el peso que revela se oculta solo con un `setTimeout` de 30s tras mostrarse — no queda pegado en pantalla indefinidamente.
