@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-09 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (09/09/2026): **Resuelta de raíz una serie de capturas del usuario mostrando una franja negra debajo del menú — NO era un problema de espaciado (ya se habían agrandado elementos en 2 pantallas antes por esto), era que la app nunca ofrecía "Instalar aplicación" completa en Android, solo "Crear acceso directo".**
+- Causa raíz real: `activarAvisos()` (`lib/push-client.ts`) era el ÚNICO lugar que registraba el service worker (`/sw.js`), y solo corre si el usuario toca "Activar" en Recordatorio de racha (Perfil) — la mayoría nunca llega ahí. Sin un service worker activo en la primera visita, Chrome/Android no ofrece el instalador completo, solo el acceso directo (que abre en una pestaña normal CON la barra de Chrome visible — esa era la "franja negra" que el usuario reportaba insistentemente, no un tema de layout).
+- Fix: nuevo componente `components/RegistrarServiceWorker.tsx`, montado sin condición en `app/layout.tsx` — registra `/sw.js` desde la primera visita a cualquier pantalla. Se le agregó también un `fetch` handler de paso-directo a `public/sw.js` (no cachea nada, no cambia respuestas — su sola presencia es parte de lo que Chrome exige para el prompt de instalación completo).
+- Verificado: tsc ✓ · eslint ✓ · build ✓ · confirmado en el navegador con `navigator.serviceWorker.getRegistrations()` que el SW queda `activated` desde la carga inicial, sin tocar ningún botón.
+/ Siguiente acción exacta: el usuario debe borrar el acceso directo actual, volver a entrar a gymevoapp.com, y esta vez SÍ debería aparecer la opción "Instalar aplicación" (no solo "Crear acceso directo") — confirmar que la franja negra desaparece al instalarla así.
+
 ⏸️ CHECKPOINT — Última acción completada (09/09/2026): **Mismo patrón de "hueco vacío" que en Historial, ahora en la pantalla de saludo "¡Hola!" (captura real del usuario marcando el espacio antes de la nav).**
 - `app/app/page.tsx`: el shell ya centraba con `flex-1`/`justify-center` correctamente (matemáticamente parejo arriba/abajo), pero el bloque de contenido se sentía chico dentro de tanto espacio disponible en pantallas altas. Se agrandó: ícono `size-16→24`, glifo `30→40`, título `text-2xl→3xl`, botón `h-14 w-56→h-16 w-64` con `text-lg`.
 - No se tocó la pantalla siguiente ("¡Vamos con toda!" con el GIF) — esa ya tiene su tamaño fijado a propósito (144px, casi 1:1 con la resolución real del archivo) para no volver a verse borrosa.
