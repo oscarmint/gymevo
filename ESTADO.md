@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Dos bugs reales más, encontrados por el usuario con capturas: (1) la llama de racha salía "en riesgo" y vacía en el día de descanso; (2) el error de avisos en Perfil no tenía contraste contra "Zona de peligro".**
+- (1) `rachaEnRiesgo()` en `lib/routine.ts` no sabía que hoy era día de descanso — "hechosHoy vacío" (normal, no hay nada que registrar ese día) se leía como racha en peligro, y la llama se mostraba con color de alerta. Corregido: retorna `false` en día de descanso. El relleno de la llama (`progresoLlamaPct`) también se ajustó a 100% ese día (la racha sigue intacta, no vacía) — corregido en DOS lugares con la misma lógica duplicada: `app/app/page.tsx` (Plan de hoy) y `app/app/perfil/page.tsx` (Perfil), que también muestra la llama.
+- (2) El mensaje "No pudimos activar los avisos..." en Perfil era texto suelto sin ninguna caja de fondo — se mezclaba con lo que hubiera detrás y con la etiqueta "Zona de peligro". Ahora tiene su propia tarjeta tintada con borde (mismo patrón que el resto de errores de la app) y color `status-error` en vez de `status-warning` (es un error real, no una advertencia).
+- Verificado: tsc ✓ · eslint ✓ · build ✓ · comparación visual de ambas correcciones con maquetas HTML fuera del código real, confirmando contraste y relleno correctos.
+/ Siguiente acción exacta: ninguna — ambos publicados.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **5 tareas del usuario resueltas de una sola vez en Plan del día.**
 1. Bug real: "Tengo que cortar aquí" solo aparecía tras completar 1 ejercicio (`progreso.hechosHoy.length > 0`) — el usuario reportó que no le aparecía; se quitó esa condición, ahora está disponible desde el minuto 0 del día (a veces hay que cortar antes de alcanzar a terminar el primero).
 2. Nuevo: enlace "¿Cuánto usé la última vez?" en la primera serie de cada ejercicio — opt-in (pedido explícito: no mostrar el peso solo, debe ser algo que el usuario toque si quiere verlo). Nueva función `ultimoRegistro()` en `lib/routine.ts` que busca en `progreso.logs` (nunca se recorta) la entrada más reciente ANTES de hoy para ese ejercicio.
