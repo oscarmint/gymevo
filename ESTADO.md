@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-09 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (09/09/2026): **Dos ajustes pequeños en Plan del día, ambos aprobados con vista previa antes de publicar.**
+- "Explicación del ejercicio" (pantalla completa): el usuario no quería el espacio vacío que quedaba debajo de la infografía cuando esta no llenaba todo el alto — se llenó con un botón real "Entendido, volver al ejercicio" (`mt-auto`, se pega al fondo solo si sobra espacio) en vez de dejarlo muerto.
+- El enlace "¿Cuánto usé la última vez?" cambia de texto a "¿Cuánto usé en la última rutina?", y ahora el peso que revela se oculta solo con un `setTimeout` de 30s tras mostrarse — no queda pegado en pantalla indefinidamente.
+- Verificado: tsc ✓ · eslint ✓ · build ✓ · vista previa mostrada al usuario antes de publicar (pidió explícitamente no publicar sin ver).
+/ Siguiente acción exacta: ninguna — publicado.
+
 ⏸️ CHECKPOINT — Última acción completada (09/09/2026): **"Explicación del ejercicio" pasó de hoja inferior (bottom sheet) a pantalla completa real — pedido explícito del usuario, aprobado con vista previa antes de publicar.**
 - Antes: `fixed inset-0 flex items-end` + tarjeta `max-h-[90dvh]` con esquinas redondeadas arriba — dejaba ver un pedacito de la pantalla de atrás (el toggle "Descanso automático entre series"), que el usuario marcó en rojo en una captura.
 - Ahora en `app/app/page.tsx`: el propio `motion.div` con `fixed inset-0` ES la pantalla completa (sin contenedor hijo separado ni bottom-sheet), fondo `bg-[var(--surface)]` cubre TODO el viewport de una vez — el padding de seguridad (`pt-[max(20px,env(safe-area-inset-top))]`) solo empuja el contenido, nunca el fondo, así que no queda ningún hueco arriba sin importar notch/status bar.
