@@ -1,6 +1,12 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Nuevo asset recoloreado + reemplazo del emoji de celebración por la pesa de marca (pedido explícito: "le da más seriedad a la app").**
+- `public/animaciones/entrenador-verde.gif`: el usuario adjuntó un GIF real (150×150, 64 cuadros, pesa naranja sobre fondo negro sólido) y se recoloreó por código con `sharp` — fondo negro → transparencia real (alpha, no un parche de color), pesa naranja → verde de acento exacto (`#97d131`). 2 bugs reales encontrados y corregidos en el proceso: (1) `pageHeight` va DENTRO del objeto `raw:{...}`, no como opción hermana — si no, sharp escribe un GIF de 1 solo cuadro gigante; (2) sharp combina cuadros idénticos consecutivos por defecto (`keepDuplicateFrames` debe ir en `true`) y el `delay`/`loop` original solo se leen con `.metadata()`, nunca con `.raw()` — si no, el GIF queda con 0ms de velocidad.
+- `app/app/page.tsx`: el emoji 😅 de la pantalla "¡Muy bien!" (al terminar el entrenamiento del día) se reemplazó por este GIF.
+- Verificado: tsc ✓ · eslint ✓ · build ✓ · confirmado en el navegador que la animación corre completa y con fondo transparente real sobre el fondo oscuro de la app.
+/ Siguiente acción exacta: ninguna — publicado. El usuario mencionó que también podría querer usar este mismo GIF junto a "Tu plan" en Perfil — pendiente de que lo confirme (dijo explícitamente "aún no me decido").
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **CERRADO por decisión explícita del usuario: los colores del correo de acceso siguen viéndose apagados en una versión puntual de Outlook, pese a 3 capas de fix distintas (meta color-scheme, `[data-ogsc]`/`[data-ogsb]`, `:root{color-scheme}` en CSS). El usuario eligió "dejarlo así" en vez de seguir invirtiendo tiempo.**
 - Es un comportamiento propio de esa versión de Outlook, no documentado públicamente de forma confiable — no se pudo verificar en un Outlook real durante esta sesión (solo capturas del usuario).
 - El correo sigue siendo 100% funcional ahí (botón, código, texto) — solo cambia el tono exacto del verde en ese cliente puntual; en Gmail, Apple Mail, y el resto se ve con los colores reales de marca.
