@@ -1,6 +1,11 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **"Toca para continuar" (pantalla de inicio de rutina, "¡Vamos con toda!") reemplazado por un consejo educativo real.**
+- `app/app/page.tsx`: texto nuevo "Estirar antes de levantar te debilita. Prepara el músculo con series de acercamiento (peso ligero)." — mismo color (`--text-tertiary`, sin hex nuevo), `text-sm`, `max-w-xs mx-auto text-center` para que rompa en 2 líneas parejas. GIF, título y el gesto de tocar cualquier parte para continuar (el `onClick` sigue en el `<div>` contenedor, sin tocarlo) quedaron exactamente igual — pedido explícito del usuario.
+- Verificado: tsc ✓ · eslint ✓ · build ✓ · verificación visual a 375px confirmando el layout de 2 líneas.
+/ Siguiente acción exacta: ninguna — publicado.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **La "madera" de fondo en la captura del usuario NO era un bug — es el video real de Perfil (`/videos/hero-gimnasio.mp4`, gimnasio con luz cálida), sin capa de color encima por decisión explícita ya tomada. El fix del turno anterior (caja tintada al 10%) era casi invisible contra el video en movimiento.**
 - Corregido de raíz con el criterio correcto para "texto sobre video sin overlay": negrita + `text-shadow` oscuro (no una caja de fondo, que el usuario pidió no agregar) en `app/app/perfil/page.tsx` — tanto en el mensaje de error de avisos como en la etiqueta "Zona de peligro" (antes gris apagado, invisible contra el video). Mismo color `status-error` en ambos para que se lean como relacionados.
 - Verificado visualmente con el video REAL de fondo (no una imagen estática) — el texto se lee claramente en cualquier fotograma.
