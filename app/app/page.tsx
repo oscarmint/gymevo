@@ -196,7 +196,9 @@ function PlanDelDia({
 
   useEffect(() => {
     if (etapa !== 'entrenador') return;
-    const t = setTimeout(() => setEtapa('plan'), reduce ? 0 : 2000);
+    // 5s (antes 2s) — pedido explícito del usuario: 2s no alcanzaba a leer
+    // el consejo de calentamiento antes de que la pantalla avanzara sola.
+    const t = setTimeout(() => setEtapa('plan'), reduce ? 0 : 5000);
     return () => clearTimeout(t);
   }, [etapa, reduce]);
 
