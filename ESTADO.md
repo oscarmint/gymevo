@@ -1,6 +1,11 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-09 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (09/09/2026): **Espacio vacío muerto en el estado sin datos de Historial (hallazgo del usuario con captura real, justo después de limpiar su historial de prueba).**
+- `app/app/historial/page.tsx`: el ícono/texto/botón del estado "todavía no registras ningún peso" quedaban pegados arriba de la pantalla, dejando un hueco negro grande antes de la nav. Se cambió el shell de la página a `flex flex-col min-h-[calc(100dvh-5rem)]` (mismo patrón ya usado en `perfil/page.tsx`) y el bloque vacío a `flex-1` — así ocupa TODO el alto real disponible sin adivinar un número con `calc()` (un primer intento con `calc(100dvh-22rem)` no cuadró y se corrigió). Ícono, texto y botón también crecieron un poco (size-14→20, texto sm→base, botón h-12→h-14) para tener presencia real en el espacio ganado.
+- Verificado: tsc ✓ · eslint ✓ · build ✓ · comparación visual con maqueta HTML confirmando que ya no queda hueco antes de la nav.
+/ Siguiente acción exacta: ninguna — publicado.
+
 ⏸️ CHECKPOINT — Última acción completada (09/09/2026): **Limpieza de datos (no código): el Historial de la cuenta del usuario (`oskitarmint@gmail.com`) mostraba "Ejercicio anterior" en vez de nombres reales — logs guardados con IDs de ejercicio de un catálogo viejo (antes del reemplazo del catálogo de relleno por la rutina real, Sesión 8), que ya no existen. `EJERCICIO_DESCONOCIDO` en `lib/routine.ts` (fallback ya documentado ahí) evita que la app truene, pero no puede "adivinar" cuál era el ejercicio real.**
 - No hay fix de código posible (los IDs viejos no se pueden recuperar) — se confirmó con el usuario y se borraron los 38 registros de `workout_logs` de su cuenta directamente en Supabase (`delete from workout_logs where user_id = '879a7bb7-fdab-4220-a1cc-189d9bb86005'`). Verificado con un `count(*)` posterior: 0 filas.
 - `leerProgresoRemoto()` (`lib/supabase/sync.ts`) consulta `workout_logs` fresco cada vez que se abre Historial — no hace falta ningún otro paso, la próxima apertura ya sale limpia.
