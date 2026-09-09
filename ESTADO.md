@@ -1,6 +1,11 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-09 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (09/09/2026): **Limpieza de datos (no código): el Historial de la cuenta del usuario (`oskitarmint@gmail.com`) mostraba "Ejercicio anterior" en vez de nombres reales — logs guardados con IDs de ejercicio de un catálogo viejo (antes del reemplazo del catálogo de relleno por la rutina real, Sesión 8), que ya no existen. `EJERCICIO_DESCONOCIDO` en `lib/routine.ts` (fallback ya documentado ahí) evita que la app truene, pero no puede "adivinar" cuál era el ejercicio real.**
+- No hay fix de código posible (los IDs viejos no se pueden recuperar) — se confirmó con el usuario y se borraron los 38 registros de `workout_logs` de su cuenta directamente en Supabase (`delete from workout_logs where user_id = '879a7bb7-fdab-4220-a1cc-189d9bb86005'`). Verificado con un `count(*)` posterior: 0 filas.
+- `leerProgresoRemoto()` (`lib/supabase/sync.ts`) consulta `workout_logs` fresco cada vez que se abre Historial — no hace falta ningún otro paso, la próxima apertura ya sale limpia.
+/ Siguiente acción exacta: ninguna — resuelto. Si vuelve a pasar con otro usuario real (no debería, el catálogo ya no debería volver a cambiar de IDs), el mismo query sirve de plantilla.
+
 ⏸️ CHECKPOINT — Última acción completada (09/09/2026): **Corrección sobre el ajuste de ayer: el recordatorio de peso debía DESAPARECER a los 30s, no volver a mostrar el enlace.**
 - `app/app/page.tsx`: `pesoAnteriorVisible` (boolean) se reemplaza por `pesoAnteriorEstado` con 3 valores (`undefined`/sin tocar, `'visible'`, `'expirado'`) — el timeout de 30s ahora pasa a `'expirado'` (el apartado completo desaparece, no reaparece el enlace), no de vuelta a `false` (que hacía reaparecer el botón, error del ajuste anterior).
 - Verificado: tsc ✓ · eslint ✓ · build ✓.
