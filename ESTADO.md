@@ -1,5 +1,11 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
-Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
+Última actualización: 2026-09-09 | Sesión actual: 8 (en curso)
+
+⏸️ CHECKPOINT — Última acción completada (09/09/2026): **El fix de ayer del saludo de inicio (guardar por diaActual en vez de por fecha) no bastaba — el usuario probó de nuevo y seguía sin aparecer al terminar un día y avanzar al siguiente.**
+- Causa raíz real (más profunda que la de ayer): `etapa` se inicializaba con `useState(() => ...)`, que SOLO corre una vez al MONTAR el componente. Avanzar de día (`completarEntrenamiento` tras tocar "Seguir" en la pantalla de cierre) no remonta el componente — cambia `progreso.diaActual`, pero nada volvía a evaluar si tocaba mostrar el saludo. `etapa` quedaba en `'plan'` para siempre después del primer día de la sesión.
+- Fix en `app/app/page.tsx`: nuevo `useEffect` que reacciona específicamente a que `progreso.diaActual` cambió (comparando contra un `useRef` para no dispararse en el montaje inicial, que ya lo maneja el `useState`) y recalcula `etapa` con la misma regla (día de descanso/recuperación → 'plan' directo; si no, revisa `sessionStorage` por `diaActual` y decide 'saludo' o 'plan').
+- Verificado: tsc ✓ · eslint ✓ (incluyendo `react-hooks/set-state-in-effect`, silenciado explícitamente igual que otros casos legítimos ya existentes en el archivo) · build ✓. No se pudo verificar en vivo el flujo completo (requiere sesión real autenticada, `/app` está protegido) — verificación de código, no de captura.
+/ Siguiente acción exacta: el usuario debe confirmar terminando un día real y avanzando al siguiente que el saludo "¡Vamos con toda!" vuelve a aparecer.
 
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Dos bugs reales de progreso, encontrados por el usuario probando 5 días seguidos del plan el mismo día real.**
 - **Crítico**: el domingo (descanso hormonal completo) no tenía NINGÚN botón para avanzar el día. `diaActual` solo cambia dentro de `completarEntrenamiento()`, nunca solo por pasar la fecha real — el texto "mañana retomas tu plan" era falso, no pasaba nada solo. CUALQUIER usuario real habría quedado atascado en domingo para siempre, no solo en pruebas. Se agregó el botón "Ya descansé, continuar mi plan" en `app/app/page.tsx`, mismo patrón que el día de recuperación activa (jueves) ya tenía.
