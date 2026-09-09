@@ -480,6 +480,17 @@ export function seriesHechasHoy(p: Progreso, ejercicioId: string): number {
   return p.logs.filter((l) => l.ejercicioId === ejercicioId && l.fecha === hoy).length;
 }
 
+/** Último peso registrado para este ejercicio ANTES de hoy (pedido del
+ * usuario: recordar en la primera serie qué peso se usó la última vez, para
+ * no tener que adivinar o buscar en el historial). `logs` nunca se recorta,
+ * así que basta con filtrar por fecha < hoy y tomar la más reciente. */
+export function ultimoRegistro(p: Progreso, ejercicioId: string): RegistroLog | null {
+  const hoy = hoyISO();
+  const previos = p.logs.filter((l) => l.ejercicioId === ejercicioId && l.fecha < hoy);
+  if (previos.length === 0) return null;
+  return previos.reduce((mas, actual) => (actual.fecha >= mas.fecha ? actual : mas));
+}
+
 /** Deshace un registro de hoy (control y libertad — heurística 3): quita la
  * marca de "hecho" y el último log de ese ejercicio con fecha de hoy, para
  * poder corregir el peso sin arrastrar un dato erróneo al historial. */

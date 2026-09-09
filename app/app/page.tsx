@@ -31,6 +31,7 @@ import {
   registrarSerie,
   reemplazarEjercicio,
   seriesHechasHoy,
+  ultimoRegistro,
   type Progreso,
 } from '@/lib/routine';
 import { guardarLogRemoto, guardarProgresoRemoto, leerProgresoRemoto, sincronizarPerfilInicial } from '@/lib/supabase/sync';
@@ -150,6 +151,10 @@ function PlanDelDia({
   const [descanso, setDescanso] = useState<{ ejercicioId: string; restante: number; total: number } | null>(null);
   const [pesos, setPesos] = useState<Record<string, string>>({});
   const [repsHechas, setRepsHechas] = useState<Record<string, string>>({});
+  // Recordatorio del último peso usado (pedido del usuario): NO se muestra
+  // solo, es un enlace que la persona toca si quiere recordarlo — algunos
+  // prefieren no verlo y decidir el peso por su cuenta.
+  const [pesoAnteriorVisible, setPesoAnteriorVisible] = useState<Record<string, boolean>>({});
   // Aviso (no cronómetro) al TERMINAR un ejercicio completo — descansar
   // entre EJERCICIOS es distinto de descansar entre SERIES: aquí no se
   // impone un tiempo porque cada quien decide cuánto necesita, solo se
@@ -409,9 +414,13 @@ function PlanDelDia({
             className="flex flex-col items-center"
           >
             {/* GIF animado entregado por el usuario — el mismo para
-                cualquier persona, sin distinguir sexo (pedido explícito). */}
+                cualquier persona, sin distinguir sexo (pedido explícito).
+                El archivo real es de 150×150px; mostrarlo a h-56 (224px) lo
+                estiraba ~50% más de su tamaño real y se veía borroso
+                (hallazgo del usuario) — h-36 (144px) queda casi 1:1 con su
+                resolución nativa, nítido de verdad. */}
             {/* eslint-disable-next-line @next/next/no-img-element -- GIF propio, next/image no anima GIFs */}
-            <img src="/ilustraciones/entrenador-inicio.gif" alt="Entrenador animado entrenando con mancuernas" className="h-56 w-auto" />
+            <img src="/ilustraciones/entrenador-inicio.gif" alt="Entrenador animado entrenando con mancuernas" className="h-36 w-auto" />
             <p className="mt-3 text-lg font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Vamos con toda!</p>
             <p className="mt-1 text-xs text-[var(--text-tertiary)]">Toca para continuar</p>
           </motion.div>
@@ -443,8 +452,8 @@ function PlanDelDia({
           src={animacionFitness}
           autoplay
           loop
-          className="mt-0.5 shrink-0"
-          style={{ width: 36, height: 36 }}
+          className="shrink-0"
+          style={{ width: 56, height: 56 }}
         />
       </div>
 
@@ -633,6 +642,9 @@ function PlanDelDia({
             const opcionesReps = OPCIONES_REPS.includes(defaultReps)
               ? OPCIONES_REPS
               : [...OPCIONES_REPS, defaultReps].sort((a, b) => Number(a) - Number(b));
+            // Solo en la primera serie (seriesHechas===0): más adelante en el
+            // mismo ejercicio ya sabe qué peso está usando hoy.
+            const registroAnterior = seriesHechas === 0 ? ultimoRegistro(progreso, ej.id) : null;
             return (
             <motion.div
               key={ej.id}
@@ -657,6 +669,22 @@ function PlanDelDia({
                     <p className="mt-1 text-xs font-semibold text-[var(--accent)]">
                       Serie {serieActual} de {ej.series}
                     </p>
+                  )}
+                  {!hecho && registroAnterior && (
+                    pesoAnteriorVisible[ej.id] ? (
+                      <p className="mt-1 text-xs text-[var(--text-tertiary)]">
+                        Última vez: {registroAnterior.peso}
+                        {progreso.unidadPeso} × {registroAnterior.reps} reps
+                      </p>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setPesoAnteriorVisible((p) => ({ ...p, [ej.id]: true }))}
+                        className="mt-1 text-xs font-medium text-[var(--text-tertiary)] underline underline-offset-2"
+                      >
+                        ¿Cuánto usé la última vez?
+                      </button>
+                    )
                   )}
                   {!hecho && (
                     <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
@@ -783,8 +811,10 @@ function PlanDelDia({
 
         {/* Salida honesta para cuando de verdad hay que parar (llamada,
             máquina cerrada, lo que sea) — sin esto, la única forma de avanzar
-            de día era marcar TODO, aunque la persona ya no pudiera seguir. */}
-        {!todosHechos && progreso.hechosHoy.length > 0 && (
+            de día era marcar TODO, aunque la persona ya no pudiera seguir.
+            Disponible desde el día 0 hechos (hallazgo del usuario: a veces
+            hay que cortar ANTES de alcanzar a terminar el primer ejercicio). */}
+        {!todosHechos && (
           <button
             type="button"
             onClick={() => setPidiendoCortar(true)}
@@ -1026,7 +1056,7 @@ function PlanDelDia({
                   exit={{ y: '100%' }}
                   transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                   onClick={(e) => e.stopPropagation()}
-                  className="w-full max-w-md rounded-t-[var(--radius-card)] bg-[var(--surface)] px-5 pt-4 pb-8"
+                  className="max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-t-[var(--radius-card)] bg-[var(--surface)] px-5 pt-4 pb-8"
                 >
                   <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)]" />
                   <div className="flex items-start justify-between gap-3">
@@ -1047,11 +1077,15 @@ function PlanDelDia({
                   </div>
                   <div className="mt-2 flex justify-center">
                     {ej.imagenExplicacion ? (
+                      // Se muestra al ancho completo de la hoja (no achicada a
+                      // max-h-56) — el usuario va a LEER el texto técnico de
+                      // la imagen, no solo verla de referencia (hallazgo del
+                      // usuario: antes salía demasiado chica para leer).
                       // eslint-disable-next-line @next/next/no-img-element -- ver AppPorDentro.tsx: <img> mantiene el kit portable
                       <img
                         src={ej.imagenExplicacion}
                         alt={`Explicación del ejercicio ${ej.nombre}`}
-                        className="max-h-56 w-auto rounded-[var(--radius-card)]"
+                        className="w-full rounded-[var(--radius-card)]"
                       />
                     ) : (
                       <CuerpoMuscular musculo={ej.grupoMuscular} genero={generoIlustracion(ej.id)} />
