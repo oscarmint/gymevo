@@ -1,6 +1,11 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-09 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (09/09/2026): **Espacio vacío de más bajo el menú inferior, encontrado por el usuario comparando lado a lado con Instagram.**
+- `app/app/layout.tsx`: cada pestaña tenía `py-2.5` (aire arriba Y abajo del texto), que se sumaba al margen real de Android (`env(safe-area-inset-bottom)`) — el resultado se veía como espacio vacío de más antes del borde, aunque ya tenía el color correcto (fix anterior de `viewport-fit=cover`). Cambiado a `pt-2.5 pb-1`: el único margen de abajo que queda es el del sistema.
+- No simulable en el navegador de escritorio (`env(safe-area-inset-bottom)` es 0 sin gestos de Android) — verificado tsc ✓ build ✓, pendiente de confirmación visual real del usuario en su celular.
+/ Siguiente acción exacta: el usuario confirma si el espacio se ve más ajustado ahora.
+
 ⏸️ CHECKPOINT — Última acción completada (09/09/2026): **Segunda causa real de la franja negra, esta vez YA con la app instalada de verdad (confirmado con video del usuario: sin barra de Chrome, standalone real) — faltaba `viewport-fit=cover`.**
 - El usuario instaló la app correctamente (el fix del service worker de este mismo día funcionó — video real confirma standalone sin barra de navegador), pero seguía viendo una franja negra sólida entre el menú inferior y el borde real de la pantalla (captura con círculo rojo).
 - Causa raíz: `app/layout.tsx` no declaraba `viewport-fit=cover`. Sin eso, Android reserva el área de la barra de gestos en negro puro y NINGÚN color ni padding de la app puede pintar ahí — `env(safe-area-inset-bottom)` (ya usado en `app/app/layout.tsx` para el padding del menú) devolvía 0 en vez del alto real.
