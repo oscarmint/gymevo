@@ -583,7 +583,17 @@ export default function PerfilPage() {
           </button>
         </div>
       ) : null}
-      {errorAvisos && <p className="mt-2 text-xs text-[var(--status-warning)]">{errorAvisos}</p>}
+      {/* Antes era texto suelto sin fondo (se mezclaba con lo que hubiera
+          detrás, hallazgo del usuario: sin contraste contra "Zona de
+          peligro") — ahora es una tarjeta con su propio fondo tintado, igual
+          que los demás avisos de error de la app. También era el color
+          equivocado: esto es un ERROR real (no se pudo activar), no una
+          advertencia — status-error, no status-warning. */}
+      {errorAvisos && (
+        <p className="mt-2 rounded-xl border border-[color-mix(in_oklab,var(--status-error)_35%,transparent)] bg-[color-mix(in_oklab,var(--status-error)_10%,transparent)] px-4 py-2.5 text-xs font-medium text-[var(--status-error)]">
+          {errorAvisos}
+        </p>
+      )}
 
       <button
         type="button"
