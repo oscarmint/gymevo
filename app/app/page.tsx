@@ -426,7 +426,14 @@ function PlanDelDia({
             {/* eslint-disable-next-line @next/next/no-img-element -- GIF propio, next/image no anima GIFs */}
             <img src="/ilustraciones/entrenador-inicio.gif" alt="Entrenador animado entrenando con mancuernas" className="h-36 w-auto" />
             <p className="mt-3 text-lg font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Vamos con toda!</p>
-            <p className="mt-1 text-xs text-[var(--text-tertiary)]">Toca para continuar</p>
+            {/* Reemplaza "Toca para continuar" — el gesto de tocar sigue
+                funcionando igual (onClick vive en el contenedor padre, sin
+                cambios), pero ahora ese espacio enseña algo real en vez de
+                repetir una instrucción obvia. Mismo color que ya tenía el
+                texto secundario (text-tertiary), sin agregar hex nuevo. */}
+            <p className="mx-auto mt-3 max-w-xs text-center text-sm text-[var(--text-tertiary)]">
+              Estirar antes de levantar te debilita. Prepara el músculo con series de acercamiento (peso ligero).
+            </p>
           </motion.div>
         )}
       </div>
