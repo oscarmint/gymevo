@@ -1,6 +1,11 @@
 # ESTADO — GymEvo (nombre tentativo: Método Cero)
 Última actualización: 2026-09-08 | Sesión actual: 8 (en curso)
 
+⏸️ CHECKPOINT — Última acción completada (08/09/2026): **La "madera" de fondo en la captura del usuario NO era un bug — es el video real de Perfil (`/videos/hero-gimnasio.mp4`, gimnasio con luz cálida), sin capa de color encima por decisión explícita ya tomada. El fix del turno anterior (caja tintada al 10%) era casi invisible contra el video en movimiento.**
+- Corregido de raíz con el criterio correcto para "texto sobre video sin overlay": negrita + `text-shadow` oscuro (no una caja de fondo, que el usuario pidió no agregar) en `app/app/perfil/page.tsx` — tanto en el mensaje de error de avisos como en la etiqueta "Zona de peligro" (antes gris apagado, invisible contra el video). Mismo color `status-error` en ambos para que se lean como relacionados.
+- Verificado visualmente con el video REAL de fondo (no una imagen estática) — el texto se lee claramente en cualquier fotograma.
+/ Siguiente acción exacta: ninguna — publicado.
+
 ⏸️ CHECKPOINT — Última acción completada (08/09/2026): **Dos bugs reales más, encontrados por el usuario con capturas: (1) la llama de racha salía "en riesgo" y vacía en el día de descanso; (2) el error de avisos en Perfil no tenía contraste contra "Zona de peligro".**
 - (1) `rachaEnRiesgo()` en `lib/routine.ts` no sabía que hoy era día de descanso — "hechosHoy vacío" (normal, no hay nada que registrar ese día) se leía como racha en peligro, y la llama se mostraba con color de alerta. Corregido: retorna `false` en día de descanso. El relleno de la llama (`progresoLlamaPct`) también se ajustó a 100% ese día (la racha sigue intacta, no vacía) — corregido en DOS lugares con la misma lógica duplicada: `app/app/page.tsx` (Plan de hoy) y `app/app/perfil/page.tsx` (Perfil), que también muestra la llama.
 - (2) El mensaje "No pudimos activar los avisos..." en Perfil era texto suelto sin ninguna caja de fondo — se mezclaba con lo que hubiera detrás y con la etiqueta "Zona de peligro". Ahora tiene su propia tarjeta tintada con borde (mismo patrón que el resto de errores de la app) y color `status-error` en vez de `status-warning` (es un error real, no una advertencia).
