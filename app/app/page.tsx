@@ -178,13 +178,19 @@ function PlanDelDia({
 
   // Arranque del entrenamiento (pedido explícito): saludo → entrenador
   // animado → plan de hoy. Se salta en días de descanso/recuperación (no
-  // aplica "vamos con toda" sin pesas) y si ya se vio hoy (no repetir el
-  // ritual cada vez que el usuario entra y sale de la pantalla el mismo día).
+  // aplica "vamos con toda" sin pesas) y si ya se vio para ESTE día del plan
+  // (no repetir el ritual cada vez que el usuario entra y sale de la pantalla
+  // el mismo día del plan). Antes se guardaba por FECHA de calendario, no por
+  // día del plan — bug real encontrado por el usuario: si terminaba varios
+  // días del plan en la misma fecha real (probando), el saludo solo salía en
+  // el primero y los siguientes arrancaban directo en "plan", sin el "¡Vamos
+  // con toda!". Guardar por `diaActual` en vez de por fecha lo corrige sin
+  // cambiar el comportamiento normal (un usuario real solo avanza un día del
+  // plan por fecha real, así que sigue viéndolo una sola vez por día real).
   const [etapa, setEtapa] = useState<'saludo' | 'entrenador' | 'plan'>(() => {
     if (typeof window === 'undefined') return 'plan';
     if (esDiaDeDescanso(progreso.diaActual) || esDiaDeRecuperacionActiva(progreso.diaActual)) return 'plan';
-    const hoy = new Date().toISOString().slice(0, 10);
-    const yaVisto = sessionStorage.getItem('gymevo_saludo_visto') === hoy;
+    const yaVisto = sessionStorage.getItem('gymevo_saludo_visto_dia') === String(progreso.diaActual);
     return yaVisto ? 'plan' : 'saludo';
   });
 
@@ -195,7 +201,7 @@ function PlanDelDia({
   }, [etapa, reduce]);
 
   function iniciarEntrenamiento() {
-    sessionStorage.setItem('gymevo_saludo_visto', new Date().toISOString().slice(0, 10));
+    sessionStorage.setItem('gymevo_saludo_visto_dia', String(progreso.diaActual));
     setEtapa('entrenador');
   }
 
@@ -526,6 +532,19 @@ function PlanDelDia({
             En el reposo es cuando el músculo realmente crece y el equilibrio hormonal se restaura. Aprovecha para
             dormir bien y comer con calma: mañana retomas tu plan.
           </p>
+          {/* Bug real encontrado por el usuario: esta pantalla no tenía NINGÚN
+              botón — "mañana retomas tu plan" no pasaba solo, `diaActual`
+              nunca avanza por fecha de calendario, solo cuando se llama a
+              completarEntrenamiento(). Sin este botón, TODO usuario real
+              quedaba atascado en el domingo para siempre. */}
+          <motion.button
+            type="button"
+            onClick={finalizarEntrenamiento}
+            whileTap={{ scale: 0.97 }}
+            className="boton-3d mt-5 flex h-14 w-full items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
+          >
+            Ya descansé, continuar mi plan
+          </motion.button>
         </div>
       ) : diaRecuperacion ? (
         <div className="mt-6 flex flex-col gap-4">
