@@ -60,19 +60,6 @@ export default function HistorialPage() {
     });
   }, []);
 
-  // leerProgreso() lee localStorage de forma síncrona: `progreso` pasaba de
-  // null a lleno en menos de un cuadro de pantalla, así que el spinner de
-  // carga nunca alcanzaba a pintarse de verdad (hallazgo real del usuario:
-  // "el gif no se ve"). Un piso mínimo de 450ms (suficiente para 2-3 vueltas
-  // completas del aro) garantiza que el estado de carga sea visible siempre,
-  // no solo cuando la red esté lenta.
-  const [tiempoMinimoListo, setTiempoMinimoListo] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setTiempoMinimoListo(true), 450);
-    return () => clearTimeout(t);
-  }, []);
-  const listo = progreso !== null && tiempoMinimoListo;
-
   const porFecha = useMemo(() => {
     const mapa = new Map<string, RegistroLog[]>();
     for (const log of [...(progreso?.logs ?? [])].reverse()) {
@@ -129,24 +116,22 @@ export default function HistorialPage() {
       />
       <div className="relative z-10 flex flex-1 flex-col">
       <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">Tu progreso</p>
+      {/* Mismo patrón que el ícono de Lottie junto al título de Plan de hoy:
+          siempre visible (no es un spinner de carga condicional — pedido
+          explícito del usuario tras ver que desaparecía), en su propia
+          columna fuera del flujo del texto para no chocar si el título
+          crece. */}
       <div className="mt-1 flex items-center gap-2">
         <h1 className="text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Historial</h1>
-        {/* Indicador de carga real (antes esta pantalla no tenía ninguno —
-            simplemente quedaba en blanco mientras se leía localStorage/
-            Supabase). Con piso mínimo de 450ms (ver arriba): desaparece en
-            cuanto progreso llega Y ya pasó ese piso, sin bloquear ni mover
-            el resto del layout. */}
-        {!listo && (
-          <img
-            src="/animaciones/historial-cargando.gif"
-            alt=""
-            aria-hidden="true"
-            className="size-6 motion-reduce:hidden"
-          />
-        )}
+        <img
+          src="/animaciones/historial-spinner.gif"
+          alt=""
+          aria-hidden="true"
+          className="size-14 shrink-0 motion-reduce:hidden"
+        />
       </div>
 
-      {listo && (
+      {progreso && (
         <>
       {/* El progreso se ve DISTINTO según la ruta (pedido explícito): Ruta A
           compara el peso corporal contra el inicial (sube = éxito); Ruta B
