@@ -402,6 +402,7 @@ export default function OnboardingPage() {
               <motion.button
                 type="button"
                 onClick={() => ir(pasoIdx + 1)}
+                whileTap={{ scale: 0.97 }}
                 className="boton-3d mt-6 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
               >
                 Continuar
@@ -475,6 +476,7 @@ export default function OnboardingPage() {
               <motion.button
                 type="button"
                 onClick={terminar}
+                whileTap={{ scale: 0.97 }}
                 className="boton-3d mt-8 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
               >
                 Fijar mi meta

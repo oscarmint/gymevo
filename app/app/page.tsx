@@ -826,6 +826,7 @@ function PlanDelDia({
                   <motion.button
                     type="button"
                     onClick={() => registrar(ej.id)}
+                    whileTap={{ scale: 0.97 }}
                     className={`flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-semibold ${
                       esProxima
                         ? 'boton-3d bg-[var(--accent)] text-[var(--bg)]'
@@ -869,6 +870,7 @@ function PlanDelDia({
           type="button"
           disabled={!todosHechos}
           onClick={finalizarEntrenamiento}
+          whileTap={todosHechos ? { scale: 0.97 } : undefined}
           className="boton-3d mt-2 flex h-14 w-full items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)] disabled:opacity-35"
         >
           Terminar entrenamiento de hoy

@@ -15,6 +15,7 @@ import { History, TrendingDown, TrendingUp } from 'lucide-react';
 import type { Meta } from '@/lib/onboarding';
 import { leerProgreso, obtenerEjercicio, type Progreso, type RegistroLog } from '@/lib/routine';
 import { leerProgresoRemoto } from '@/lib/supabase/sync';
+import { useConteo } from '@/lib/useConteo';
 
 const NUM = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 });
 
@@ -92,6 +93,8 @@ export default function HistorialPage() {
       ? Math.round(((ultimaSesion - sesionAnterior) / sesionAnterior) * 100)
       : null;
 
+  const volumenMostrado = useConteo(volumenSemana);
+
   if (!progreso) return null;
 
   return (
@@ -100,7 +103,20 @@ export default function HistorialPage() {
     // puede usar flex-1 y llenar TODO el espacio real que sobre hasta la nav,
     // sin necesidad de adivinar su alto con un cálculo aparte — antes eso
     // dejaba un hueco muerto grande (hallazgo del usuario, captura real).
-    <div className="flex min-h-[calc(100dvh-5rem)] flex-col px-5 pt-6 pb-10">
+    // relative + fondo radial propio (mismo recurso de Hero/CtaFinal de la
+    // landing, mismos tokens de acento) — antes era un fill plano, la única
+    // pantalla de las 6 sin ningún elemento de profundidad (hallazgo craft).
+    <div className="relative flex min-h-[calc(100dvh-5rem)] flex-col overflow-hidden px-5 pt-6 pb-10">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          background:
+            'radial-gradient(560px 340px at 15% -8%, color-mix(in oklab, var(--accent) 9%, transparent) 0%, transparent 60%), ' +
+            'radial-gradient(420px 300px at 100% 10%, color-mix(in oklab, var(--accent-2) 8%, transparent) 0%, transparent 55%)',
+        }}
+      />
+      <div className="relative z-10 flex flex-1 flex-col">
       <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">Tu progreso</p>
       <h1 className="mt-1 text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Historial</h1>
 
@@ -133,7 +149,7 @@ export default function HistorialPage() {
               Volumen de tus últimas {sesiones.length} sesiones
             </p>
             <p className="mt-1 text-4xl font-bold tabular-nums leading-none text-[var(--text-primary)] [font-family:var(--font-display)]">
-              {NUM.format(volumenSemana)} <span className="text-lg font-semibold text-[var(--text-secondary)]">{progreso.unidadPeso}</span>
+              {NUM.format(Math.round(volumenMostrado))} <span className="text-lg font-semibold text-[var(--text-secondary)]">{progreso.unidadPeso}</span>
             </p>
             <p className="mt-1.5 text-sm font-medium text-[var(--text-secondary)]">
               {cambioPct === null
@@ -231,6 +247,7 @@ export default function HistorialPage() {
           </div>
         </>
       )}
+      </div>
     </div>
   );
 }
@@ -245,38 +262,52 @@ function formatearFecha(iso: string): string {
  * vez, sin nada con qué compararla), se lo dice tal cual en vez de mostrar
  * un 0 que parezca un dato real. */
 function TarjetaProgreso({ progreso, meta }: { progreso: Progreso; meta: Meta }) {
+  // Ruta A y Ruta B despachan a un componente propio cada una (no una rama
+  // if/else dentro de la MISMA función) para que useConteo() de cada delta
+  // se llame siempre igual — si `meta` cambia entre renders, alternar la
+  // rama aquí adentro habría cambiado el orden de hooks (regla de hooks).
+  return meta === 'musculo' ? (
+    <TarjetaProgresoMusculo progreso={progreso} />
+  ) : (
+    <TarjetaProgresoCintura progreso={progreso} />
+  );
+}
+
+function TarjetaProgresoMusculo({ progreso }: { progreso: Progreso }) {
   const desde = progreso.fechaInicioMedidas ? ` desde el ${formatearFecha(progreso.fechaInicioMedidas)}` : '';
-
-  if (meta === 'musculo') {
-    const hayDato = progreso.pesoInicialKg !== null && progreso.pesoKg !== null;
-    const deltaKg = hayDato ? Math.round((progreso.pesoKg! - progreso.pesoInicialKg!) * 10) / 10 : null;
-    return (
-      <div className="mt-5 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Tu progreso · Ruta A (ganar músculo)</p>
-        {deltaKg === null ? (
-          <p className="mt-2 text-sm text-[var(--text-secondary)]">
-            Registra tu peso en Perfil — la próxima vez que lo actualices, vas a ver aquí cuánto cambió.
-          </p>
-        ) : (
-          <>
-            <div className="mt-1 flex items-center gap-2">
-              {deltaKg >= 0 ? <TrendingUp size={20} color="var(--accent)" /> : <TrendingDown size={20} color="var(--status-warning)" />}
-              <p className="text-3xl font-bold tabular-nums leading-none text-[var(--text-primary)] [font-family:var(--font-display)]">
-                {deltaKg >= 0 ? '+' : ''}
-                {deltaKg} kg
-              </p>
-            </div>
-            <p className="mt-1.5 text-sm text-[var(--text-secondary)]">
-              de peso corporal{desde}. Meta sana: +300 a +800 g al mes — sube el peso que levantas cuando completes tus series con buena técnica.
+  const hayDato = progreso.pesoInicialKg !== null && progreso.pesoKg !== null;
+  const deltaKg = hayDato ? Math.round((progreso.pesoKg! - progreso.pesoInicialKg!) * 10) / 10 : null;
+  const deltaKgMostrado = useConteo(deltaKg ?? 0);
+  return (
+    <div className="mt-5 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
+      <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Tu progreso · Ruta A (ganar músculo)</p>
+      {deltaKg === null ? (
+        <p className="mt-2 text-sm text-[var(--text-secondary)]">
+          Registra tu peso en Perfil — la próxima vez que lo actualices, vas a ver aquí cuánto cambió.
+        </p>
+      ) : (
+        <>
+          <div className="mt-1 flex items-center gap-2">
+            {deltaKg >= 0 ? <TrendingUp size={20} color="var(--accent)" /> : <TrendingDown size={20} color="var(--status-warning)" />}
+            <p className="text-3xl font-bold tabular-nums leading-none text-[var(--text-primary)] [font-family:var(--font-display)]">
+              {deltaKg >= 0 ? '+' : ''}
+              {Math.round(deltaKgMostrado * 10) / 10} kg
             </p>
-          </>
-        )}
-      </div>
-    );
-  }
+          </div>
+          <p className="mt-1.5 text-sm text-[var(--text-secondary)]">
+            de peso corporal{desde}. Meta sana: +300 a +800 g al mes — sube el peso que levantas cuando completes tus series con buena técnica.
+          </p>
+        </>
+      )}
+    </div>
+  );
+}
 
+function TarjetaProgresoCintura({ progreso }: { progreso: Progreso }) {
+  const desde = progreso.fechaInicioMedidas ? ` desde el ${formatearFecha(progreso.fechaInicioMedidas)}` : '';
   const hayDato = progreso.cinturaInicialCm !== null && progreso.cinturaCm !== null;
   const deltaCm = hayDato ? Math.round((progreso.cinturaCm! - progreso.cinturaInicialCm!) * 10) / 10 : null;
+  const deltaCmMostrado = useConteo(deltaCm ?? 0);
   return (
     <div className="mt-5 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
       <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Tu progreso · Ruta B (bajar grasa)</p>
@@ -290,7 +321,7 @@ function TarjetaProgreso({ progreso, meta }: { progreso: Progreso; meta: Meta })
             {deltaCm <= 0 ? <TrendingDown size={20} color="var(--accent)" /> : <TrendingUp size={20} color="var(--status-warning)" />}
             <p className="text-3xl font-bold tabular-nums leading-none text-[var(--text-primary)] [font-family:var(--font-display)]">
               {deltaCm > 0 ? '+' : ''}
-              {deltaCm} cm
+              {Math.round(deltaCmMostrado * 10) / 10} cm
             </p>
           </div>
           <p className="mt-1.5 text-sm text-[var(--text-secondary)]">

@@ -6,10 +6,46 @@
 // alternancia base/elevado, reveal con reduced-motion): las secciones componen,
 // no re-estilan. Consume SOLO los tokens de tokens.css.
 
-import { useEffect, useState, type ReactNode } from 'react';
-import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { AnimatePresence, animate, motion, useInView, useReducedMotion, type Variants } from 'motion/react';
 import { ArrowUp, Check } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+
+// Baseline de movimiento #2 (obligatoria): un precio/número con formato de
+// texto ("$4.99") cuenta 0→N al entrar en vista, nunca estático. Parsea el
+// prefijo/sufijo no numérico para animar solo la cifra y devolverla con el
+// mismo formato de origen. Compartido entre Oferta.tsx (landing) y el paywall
+// — antes vivía solo dentro de Oferta.tsx, duplicarlo ahí hubiera repetido el
+// mismo parseo/timing en la segunda pantalla que también muestra precio.
+export function PrecioAnimado({ texto }: { texto: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const enVista = useInView(ref, { once: true, margin: '-40px' });
+  const reduce = useReducedMotion();
+  const partes = texto.match(/^([^\d]*)([\d]+(?:\.\d+)?)(.*)$/);
+  const numero = partes ? Number(partes[2]) : null;
+  const decimales = partes?.[2].includes('.') ? partes[2].split('.')[1].length : 0;
+  const [mostrado, setMostrado] = useState(0);
+
+  useEffect(() => {
+    if (!enVista || numero === null) return;
+    if (reduce) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setMostrado(numero);
+      return;
+    }
+    const controls = animate(0, numero, { duration: 0.8, ease: [0.16, 1, 0.3, 1], onUpdate: setMostrado });
+    return () => controls.stop();
+  }, [enVista, numero, reduce]);
+
+  if (!partes || numero === null) return <span ref={ref}>{texto}</span>;
+  return (
+    <span ref={ref}>
+      {partes[1]}
+      {mostrado.toFixed(decimales)}
+      {partes[3]}
+    </span>
+  );
+}
 
 /* ── <Accent> — la palabra que vende, en el acento del kit ─────────────────── */
 export function Accent({ children }: { children: ReactNode }) {

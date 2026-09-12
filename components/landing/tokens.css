@@ -53,6 +53,11 @@
   /* ── SOMBRAS (oscuras, sin tinte cálido — el fondo ya es oscuro) ── */
   --shadow-1: 0 1px 2px rgb(0 0 0 / 0.35);
   --shadow-2: 0 16px 40px -16px rgb(0 0 0 / 0.55);
+  /* Sombra de TEXTO (no de caja) para leer texto de color sobre el video de
+     fondo de Perfil sin capa/overlay encima (decisión previa del usuario:
+     "sin capa de color") — antes vivía repetida como rgba() literal en 2
+     sitios del mismo archivo. */
+  --text-shadow-legibilidad: 0 1px 6px rgba(0, 0, 0, 0.85);
 
   /* ── DERIVADOS (no se tocan) ── */
   --chip-bg: color-mix(in oklab, var(--accent) 14%, transparent);

@@ -17,6 +17,7 @@ import { motion, useReducedMotion } from 'motion/react';
 import { AlertTriangle, Check, Loader2, Lock, RefreshCcw, ShieldCheck, X } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { formatearCOP, useTRM } from '@/lib/trm';
+import { PrecioAnimado } from '@/components/landing/ui';
 
 type PlanId = 'mensual' | 'semestral' | 'anual';
 
@@ -139,8 +140,20 @@ export default function PaywallPage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[var(--bg)] px-5 py-6 [font-family:var(--font-body)]">
-      <div className="mx-auto flex w-full max-w-md flex-1 flex-col">
+    // relative + fondo radial propio (mismo recurso de Hero/CtaFinal de la
+    // landing, mismos tokens de acento) — antes era un fill plano, la única
+    // de las 4 pantallas del dinero sin ningún elemento de profundidad.
+    <div className="relative flex min-h-dvh flex-col overflow-hidden bg-[var(--bg)] px-5 py-6 [font-family:var(--font-body)]">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          background:
+            'radial-gradient(560px 340px at 85% -8%, color-mix(in oklab, var(--accent) 9%, transparent) 0%, transparent 60%), ' +
+            'radial-gradient(420px 300px at 0% 15%, color-mix(in oklab, var(--accent-2) 8%, transparent) 0%, transparent 55%)',
+        }}
+      />
+      <div className="relative z-10 mx-auto flex w-full max-w-md flex-1 flex-col">
         {/* (5) Cierre con retraso de 2.5s (pedido explícito) — nunca
             desaparece del todo, solo tarda en activarse: sigue en el mismo
             lugar todo el tiempo (heurística 3), pero no es tocable ni
@@ -284,6 +297,7 @@ export default function PaywallPage() {
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.24, duration: 0.3 }}
+          whileTap={redirigiendo ? undefined : { scale: 0.97 }}
           className="boton-3d mt-3 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-xl font-bold text-[var(--bg)] disabled:opacity-80"
         >
           {redirigiendo ? (
@@ -533,6 +547,7 @@ function PlanCard({
       type="button"
       onClick={onSelect}
       disabled={deshabilitado}
+      whileTap={{ scale: 0.97 }}
       className={`relative flex flex-col rounded-[var(--radius-card)] border px-5 py-4 text-left transition-colors disabled:opacity-50 ${
         seleccionado
           ? 'boton-3d-borde border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_6%,transparent)]'
@@ -575,7 +590,7 @@ function PlanCard({
               </p>
             )}
             <p className="text-2xl font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-              {precioMes}
+              <PrecioAnimado texto={precioMes} />
               <span className="text-xs font-normal text-[var(--text-secondary)]">/mes </span>
               <span className="text-[10.5px] font-semibold text-[var(--text-tertiary)]">USD</span>
             </p>

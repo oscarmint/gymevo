@@ -8,10 +8,9 @@
 // la card recomendada (el uso canónico de la técnica) · checkmarks custom.
 // El destino de los CTAs sigue al MODELO de 02C (checkout vs /onboarding).
 
-import { useEffect, useRef, useState } from 'react';
-import { animate, motion, useInView, useReducedMotion } from 'motion/react';
+import { motion } from 'motion/react';
 import { Star } from 'lucide-react';
-import { CheckCustom, CtaButton, Hairline, Kicker, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
+import { CheckCustom, CtaButton, Hairline, Kicker, PrecioAnimado, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy, warnCopy, warnRango } from './MarkedCopy';
 import { formatearCOP, useTRM } from '@/lib/trm';
 
@@ -63,39 +62,6 @@ function TrialBadge({ dias }: { dias: number }) {
     <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-[color-mix(in_oklab,var(--accent-2)_15%,transparent)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--accent-2)]">
       <Star size={12} strokeWidth={2.5} aria-hidden="true" />
       {dias} días gratis
-    </span>
-  );
-}
-
-// Baseline de movimiento #2 (obligatoria): el precio cuenta 0→N al entrar en
-// vista, nunca estático. Parsea el prefijo/sufijo no numérico ("$"/decimales)
-// para poder animar solo la cifra y devolverla con el mismo formato de origen.
-function PrecioAnimado({ texto }: { texto: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const enVista = useInView(ref, { once: true, margin: '-40px' });
-  const reduce = useReducedMotion();
-  const partes = texto.match(/^([^\d]*)([\d]+(?:\.\d+)?)(.*)$/);
-  const numero = partes ? Number(partes[2]) : null;
-  const decimales = partes?.[2].includes('.') ? partes[2].split('.')[1].length : 0;
-  const [mostrado, setMostrado] = useState(0);
-
-  useEffect(() => {
-    if (!enVista || numero === null) return;
-    if (reduce) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setMostrado(numero);
-      return;
-    }
-    const controls = animate(0, numero, { duration: 0.8, ease: [0.16, 1, 0.3, 1], onUpdate: setMostrado });
-    return () => controls.stop();
-  }, [enVista, numero, reduce]);
-
-  if (!partes || numero === null) return <span ref={ref}>{texto}</span>;
-  return (
-    <span ref={ref}>
-      {partes[1]}
-      {mostrado.toFixed(decimales)}
-      {partes[3]}
     </span>
   );
 }

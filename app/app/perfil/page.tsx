@@ -5,6 +5,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { AnimatePresence, motion } from 'motion/react';
 import { AlertTriangle, Bell, BellOff, Camera, Check, ExternalLink, Flame, Loader2, LogOut, Pencil, Trash2 } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { calcularMacros } from '@/lib/macros';
@@ -14,6 +15,7 @@ import { leerAvatarLocal, guardarAvatarLocal, leerNombreLocal, guardarNombreLoca
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { activarAvisos, desactivarAvisos, estaSuscrito, pushSoportado } from '@/lib/push-client';
 import { guardarNombreRemoto, guardarProgresoRemoto, leerAvatarRemoto, leerMembresiaRemota, leerNombreRemoto, subirAvatar } from '@/lib/supabase/sync';
+import { useConteo } from '@/lib/useConteo';
 
 const ESTADO_MEMBRESIA_LABEL: Record<string, string> = {
   trialing: 'En prueba gratis',
@@ -342,19 +344,20 @@ export default function PerfilPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">Nivel</p>
             <div className="mt-1.5 flex gap-2">
               {(['principiante', 'intermedio'] as const).map((n) => (
-                <button
+                <motion.button
                   key={n}
                   type="button"
                   onClick={() => n !== nivel && setPidiendoConfirmacion({ nivel: n, meta })}
                   aria-pressed={nivel === n}
-                  className={`flex-1 rounded-xl border px-3 py-2 text-sm font-semibold ${
+                  whileTap={{ scale: 0.97 }}
+                  className={`flex-1 rounded-xl border px-3 py-2 text-sm font-semibold transition-colors duration-150 ${
                     nivel === n
                       ? 'boton-3d-borde border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--accent)]'
                       : 'superficie-3d border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
                   }`}
                 >
                   {NIVEL_LABEL[n]}
-                </button>
+                </motion.button>
               ))}
             </div>
           </div>
@@ -362,19 +365,20 @@ export default function PerfilPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">Meta</p>
             <div className="mt-1.5 flex gap-2">
               {(['musculo', 'grasa'] as const).map((m) => (
-                <button
+                <motion.button
                   key={m}
                   type="button"
                   onClick={() => m !== meta && setPidiendoConfirmacion({ nivel, meta: m })}
                   aria-pressed={meta === m}
-                  className={`flex-1 rounded-xl border px-3 py-2 text-sm font-semibold capitalize ${
+                  whileTap={{ scale: 0.97 }}
+                  className={`flex-1 rounded-xl border px-3 py-2 text-sm font-semibold capitalize transition-colors duration-150 ${
                     meta === m
                       ? 'boton-3d-borde border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--accent)]'
                       : 'superficie-3d border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
                   }`}
                 >
                   {META_LABEL[m]}
-                </button>
+                </motion.button>
               ))}
             </div>
           </div>
@@ -534,7 +538,7 @@ export default function PerfilPage() {
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <div className="col-span-2 rounded-xl bg-[var(--chip-bg)] px-4 py-3">
                   <p className="text-2xl font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-                    {macros.kcal} <span className="text-sm font-semibold text-[var(--text-secondary)]">kcal/día</span>
+                    <KcalDato kcal={macros.kcal} /> <span className="text-sm font-semibold text-[var(--text-secondary)]">kcal/día</span>
                   </p>
                 </div>
                 <MacroDato label="Proteína" gramos={macros.proteinaG} />
@@ -591,19 +595,20 @@ export default function PerfilPage() {
       {errorAvisos && (
         <p
           className="mt-2 text-xs font-semibold text-[var(--status-error)]"
-          style={{ textShadow: '0 1px 6px rgba(0,0,0,0.85)' }}
+          style={{ textShadow: 'var(--text-shadow-legibilidad)' }}
         >
           {errorAvisos}
         </p>
       )}
 
-      <button
+      <motion.button
         type="button"
         onClick={cerrarSesion}
+        whileTap={{ scale: 0.97 }}
         className="superficie-3d mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] text-sm font-semibold text-[var(--text-secondary)]"
       >
         <LogOut size={16} /> Cerrar sesión
-      </button>
+      </motion.button>
 
       {/* Zona de peligro — derecho de eliminación real (47-LEGAL-FISCAL-Y-
           PRIVACIDAD): un botón que de verdad borra los datos, no solo la
@@ -615,105 +620,126 @@ export default function PerfilPage() {
             sección (mismo color que el borde de arriba y "Eliminar cuenta"). */}
         <p
           className="text-xs font-bold uppercase tracking-[0.06em] text-[var(--status-error)]"
-          style={{ textShadow: '0 1px 6px rgba(0,0,0,0.85)' }}
+          style={{ textShadow: 'var(--text-shadow-legibilidad)' }}
         >
           Zona de peligro
         </p>
-        <button
+        <motion.button
           type="button"
           onClick={() => setPidiendoEliminar(true)}
+          whileTap={{ scale: 0.97 }}
           className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-[color-mix(in_oklab,var(--status-error)_35%,transparent)] text-sm font-semibold text-[var(--status-error)]"
         >
           <Trash2 size={16} /> Eliminar mi cuenta
-        </button>
+        </motion.button>
       </div>
       </div>
 
-      {pidiendoConfirmacion && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="titulo-confirmar-ruta"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[color-mix(in_oklab,var(--text-primary)_35%,transparent)] px-6"
-          onClick={() => setPidiendoConfirmacion(null)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-xs rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-5"
+      <AnimatePresence>
+        {pidiendoConfirmacion && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-confirmar-ruta"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-[color-mix(in_oklab,var(--text-primary)_35%,transparent)] px-6"
+            onClick={() => setPidiendoConfirmacion(null)}
           >
-            <p id="titulo-confirmar-ruta" className="text-base font-semibold text-[var(--text-primary)]">
-              ¿Estás seguro?
-            </p>
-            <p className="mt-2 text-sm text-[var(--text-secondary)]">
-              Vas a cambiar tu plan a <strong>{tituloRuta(pidiendoConfirmacion.nivel, pidiendoConfirmacion.meta)}</strong>. Tus
-              ejercicios, macros y cardio de hoy en adelante se van a ajustar a esta nueva ruta.
-            </p>
-            <div className="mt-5 flex gap-3">
-              <button
-                type="button"
-                onClick={() => setPidiendoConfirmacion(null)}
-                className="superficie-3d flex h-12 flex-1 items-center justify-center rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-sm font-semibold text-[var(--text-primary)]"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={confirmarCambioRuta}
-                className="boton-3d flex h-12 flex-1 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
-              >
-                Sí, cambiar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {pidiendoEliminar && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="titulo-confirmar-eliminar"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[color-mix(in_oklab,var(--text-primary)_35%,transparent)] px-6"
-          onClick={() => !eliminandoCuenta && setPidiendoEliminar(false)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-xs rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-5"
-          >
-            <div className="flex items-center gap-2">
-              <AlertTriangle size={18} color="var(--status-error)" />
-              <p id="titulo-confirmar-eliminar" className="text-base font-semibold text-[var(--text-primary)]">
-                ¿Eliminar tu cuenta?
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-xs rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-5"
+            >
+              <p id="titulo-confirmar-ruta" className="text-base font-semibold text-[var(--text-primary)]">
+                ¿Estás seguro?
               </p>
-            </div>
-            <p className="mt-2 text-sm text-[var(--text-secondary)]">
-              Se borra tu perfil, tu historial de entrenamientos, tu foto y tus avisos activados —
-              de inmediato y para siempre. Esto no cancela una suscripción activa: si tienes una,
-              cancélala antes desde Hotmart para no seguir pagando.
-            </p>
-            {errorEliminar && <p className="mt-2 text-sm text-[var(--status-error)]">{errorEliminar}</p>}
-            <div className="mt-5 flex gap-3">
-              <button
-                type="button"
-                onClick={() => setPidiendoEliminar(false)}
-                disabled={eliminandoCuenta}
-                className="superficie-3d flex h-12 flex-1 items-center justify-center rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-sm font-semibold text-[var(--text-primary)] disabled:opacity-60"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={confirmarEliminarCuenta}
-                disabled={eliminandoCuenta}
-                className="flex h-12 flex-1 items-center justify-center gap-1.5 rounded-xl bg-[var(--status-error)] text-sm font-semibold text-white disabled:opacity-70"
-              >
-                {eliminandoCuenta ? <Loader2 size={15} className="animate-spin motion-reduce:animate-none" /> : null}
-                {eliminandoCuenta ? 'Eliminando…' : 'Sí, eliminar'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+              <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                Vas a cambiar tu plan a <strong>{tituloRuta(pidiendoConfirmacion.nivel, pidiendoConfirmacion.meta)}</strong>. Tus
+                ejercicios, macros y cardio de hoy en adelante se van a ajustar a esta nueva ruta.
+              </p>
+              <div className="mt-5 flex gap-3">
+                <motion.button
+                  type="button"
+                  onClick={() => setPidiendoConfirmacion(null)}
+                  whileTap={{ scale: 0.97 }}
+                  className="superficie-3d flex h-12 flex-1 items-center justify-center rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-sm font-semibold text-[var(--text-primary)]"
+                >
+                  Cancelar
+                </motion.button>
+                <motion.button
+                  type="button"
+                  onClick={confirmarCambioRuta}
+                  whileTap={{ scale: 0.97 }}
+                  className="boton-3d flex h-12 flex-1 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
+                >
+                  Sí, cambiar
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {pidiendoEliminar && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-confirmar-eliminar"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-[color-mix(in_oklab,var(--text-primary)_35%,transparent)] px-6"
+            onClick={() => !eliminandoCuenta && setPidiendoEliminar(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-xs rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-5"
+            >
+              <div className="flex items-center gap-2">
+                <AlertTriangle size={18} color="var(--status-error)" />
+                <p id="titulo-confirmar-eliminar" className="text-base font-semibold text-[var(--text-primary)]">
+                  ¿Eliminar tu cuenta?
+                </p>
+              </div>
+              <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                Se borra tu perfil, tu historial de entrenamientos, tu foto y tus avisos activados —
+                de inmediato y para siempre. Esto no cancela una suscripción activa: si tienes una,
+                cancélala antes desde Hotmart para no seguir pagando.
+              </p>
+              {errorEliminar && <p className="mt-2 text-sm text-[var(--status-error)]">{errorEliminar}</p>}
+              <div className="mt-5 flex gap-3">
+                <motion.button
+                  type="button"
+                  onClick={() => setPidiendoEliminar(false)}
+                  disabled={eliminandoCuenta}
+                  whileTap={eliminandoCuenta ? undefined : { scale: 0.97 }}
+                  className="superficie-3d flex h-12 flex-1 items-center justify-center rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-sm font-semibold text-[var(--text-primary)] disabled:opacity-60"
+                >
+                  Cancelar
+                </motion.button>
+                <motion.button
+                  type="button"
+                  onClick={confirmarEliminarCuenta}
+                  disabled={eliminandoCuenta}
+                  whileTap={eliminandoCuenta ? undefined : { scale: 0.97 }}
+                  className="flex h-12 flex-1 items-center justify-center gap-1.5 rounded-xl bg-[var(--status-error)] text-sm font-semibold text-white disabled:opacity-70"
+                >
+                  {eliminandoCuenta ? <Loader2 size={15} className="animate-spin motion-reduce:animate-none" /> : null}
+                  {eliminandoCuenta ? 'Eliminando…' : 'Sí, eliminar'}
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -728,10 +754,20 @@ function Fila({ label, valor }: { label: string; valor: string }) {
 }
 
 function MacroDato({ label, gramos }: { label: string; gramos: number }) {
+  const mostrado = useConteo(gramos);
   return (
     <div className="rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] px-3 py-2.5">
-      <p className="text-lg font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{gramos}g</p>
+      <p className="text-lg font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{Math.round(mostrado)}g</p>
       <p className="text-xs text-[var(--text-secondary)]">{label}</p>
     </div>
   );
+}
+
+// Número héroe de kcal — pieza propia (no inline en el JSX del padre) para
+// que su useConteo() se llame siempre igual, sin depender de la rama
+// condicional donde vive (reglas de hooks: un componente aparte, montado
+// solo cuando ya hay datos, puede llamar su propio hook sin problema).
+function KcalDato({ kcal }: { kcal: number }) {
+  const mostrado = useConteo(kcal);
+  return <>{Math.round(mostrado)}</>;
 }
