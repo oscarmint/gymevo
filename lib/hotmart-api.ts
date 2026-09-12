@@ -18,19 +18,33 @@
 const OAUTH_URL = 'https://api-sec-vlc.hotmart.com/security/oauth/token';
 const CANCEL_URL = 'https://developers.hotmart.com/payments/api/v1/subscriptions';
 
-function credencialesHotmart(): { clientId: string; clientSecret: string } {
+function credencialesHotmart(): { clientId: string; clientSecret: string; basicToken: string } {
   const clientId = process.env.HOTMART_CLIENT_ID;
   const clientSecret = process.env.HOTMART_CLIENT_SECRET;
-  if (!clientId || !clientSecret) {
-    throw new Error('FALTA HOTMART_CLIENT_ID / HOTMART_CLIENT_SECRET — no se puede cancelar la suscripción sin credenciales de la API de Hotmart');
+  const basicToken = process.env.HOTMART_BASIC_TOKEN;
+  if (!clientId || !clientSecret || !basicToken) {
+    throw new Error(
+      'FALTA HOTMART_CLIENT_ID / HOTMART_CLIENT_SECRET / HOTMART_BASIC_TOKEN — no se puede cancelar la suscripción sin las 3 credenciales de la API de Hotmart',
+    );
   }
-  return { clientId, clientSecret };
+  return { clientId, clientSecret, basicToken };
 }
 
-async function obtenerTokenHotmart(): Promise<string> {
-  const { clientId, clientSecret } = credencialesHotmart();
+/** Exportado además de usarse internamente: lo usa la ruta de diagnóstico
+ * temporal para confirmar que las 3 credenciales funcionan sin cancelar
+ * ninguna suscripción real. */
+export async function obtenerTokenHotmart(): Promise<string> {
+  // Hotmart exige las 3 credenciales a la vez para el OAuth: client_id y
+  // client_secret como query params, MÁS el token "Basic" (el 3er valor que
+  // Hotmart muestra junto a los otros dos al crear la credencial) como header
+  // Authorization — con solo los 2 primeros, Hotmart responde 401 (verificado
+  // en producción, 12/09/2026).
+  const { clientId, clientSecret, basicToken } = credencialesHotmart();
   const url = `${OAUTH_URL}?grant_type=client_credentials&client_id=${encodeURIComponent(clientId)}&client_secret=${encodeURIComponent(clientSecret)}`;
-  const res = await fetch(url, { method: 'POST' });
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { Authorization: `Basic ${basicToken}`, 'Content-Type': 'application/json' },
+  });
   if (!res.ok) {
     throw new Error(`Hotmart OAuth falló (${res.status}): ${await res.text()}`);
   }
