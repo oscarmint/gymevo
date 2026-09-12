@@ -48,6 +48,17 @@ export default function PerfilPage() {
   // Eliminar cuenta (derecho de eliminación real, 47-LEGAL-FISCAL-Y-PRIVACIDAD):
   // pide confirmación explícita, nunca se borra con un solo tap.
   const [pidiendoEliminar, setPidiendoEliminar] = useState(false);
+
+  // Gestión de la suscripción (12/09/2026, a pedido explícito): antes "Tu
+  // plan" enlazaba a purchases.hotmart.com, una URL rota (DNS_PROBE_FINISHED_
+  // NXDOMAIN — hallazgo real del usuario) y sacaba al comprador de la app
+  // para cancelar. Ahora "Editar" abre las 2 opciones reales; "Desactivar"
+  // cancela DE VERDAD contra la API de Hotmart (ver app/api/cuenta/
+  // cancelar-suscripcion/route.ts), nunca solo aparenta cancelar.
+  const [mostrandoOpcionesPlan, setMostrandoOpcionesPlan] = useState(false);
+  const [pidiendoCancelarSuscripcion, setPidiendoCancelarSuscripcion] = useState(false);
+  const [cancelandoSuscripcion, setCancelandoSuscripcion] = useState(false);
+  const [errorCancelar, setErrorCancelar] = useState<string | null>(null);
   const [eliminandoCuenta, setEliminandoCuenta] = useState(false);
   const [errorEliminar, setErrorEliminar] = useState<string | null>(null);
 
@@ -216,6 +227,26 @@ export default function PerfilPage() {
     } catch {
       setErrorEliminar('No pudimos eliminar tu cuenta. Intenta de nuevo o escríbenos a soporte.');
       setEliminandoCuenta(false);
+    }
+  }
+
+  async function confirmarCancelarSuscripcion() {
+    setCancelandoSuscripcion(true);
+    setErrorCancelar(null);
+    try {
+      const resp = await fetch('/api/cuenta/cancelar-suscripcion', { method: 'POST' });
+      const data = await resp.json().catch(() => null);
+      if (!resp.ok) {
+        setErrorCancelar(data?.error ?? 'No pudimos cancelar tu suscripción. Intenta de nuevo o escríbenos a soporte.');
+        setCancelandoSuscripcion(false);
+        return;
+      }
+      setMembresia((m) => (m ? { ...m, estado: 'cancelled' } : m));
+      setPidiendoCancelarSuscripcion(false);
+      setCancelandoSuscripcion(false);
+    } catch {
+      setErrorCancelar('No pudimos cancelar tu suscripción. Intenta de nuevo o escríbenos a soporte.');
+      setCancelandoSuscripcion(false);
     }
   }
 
@@ -402,18 +433,59 @@ export default function PerfilPage() {
 
       {membresia?.plan === 'pro' && (
         <div className="mt-4 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
-          <p className="text-sm font-semibold text-[var(--text-primary)]">Tu plan</p>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            {membresia.estado ? (ESTADO_MEMBRESIA_LABEL[membresia.estado] ?? membresia.estado) : 'Activo'}
-          </p>
-          <a
-            href="https://purchases.hotmart.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--accent)]"
-          >
-            Gestionar o cancelar mi suscripción <ExternalLink size={13} />
-          </a>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-[var(--text-primary)]">Tu plan</p>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                {membresia.estado ? (ESTADO_MEMBRESIA_LABEL[membresia.estado] ?? membresia.estado) : 'Activo'}
+              </p>
+            </div>
+            <motion.button
+              type="button"
+              onClick={() => setMostrandoOpcionesPlan((v) => !v)}
+              whileTap={{ scale: 0.97 }}
+              aria-expanded={mostrandoOpcionesPlan}
+              className="superficie-3d flex h-9 shrink-0 items-center gap-1.5 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] px-3 text-xs font-semibold text-[var(--text-secondary)]"
+            >
+              <Pencil size={13} /> Editar
+            </motion.button>
+          </div>
+
+          <AnimatePresence>
+            {mostrandoOpcionesPlan && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="mt-4 flex flex-col gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4">
+                  {/* Cambiar de plan (subir/bajar de Mensual/Semestral/Anual) es
+                      un cambio de facturación real — se hace en el área de
+                      Hotmart del propio comprador, no algo que esta app pueda
+                      aplicar por su cuenta. */}
+                  <a
+                    href="https://consumer.hotmart.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="superficie-3d flex h-11 items-center justify-center gap-1.5 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-sm font-medium text-[var(--text-primary)]"
+                  >
+                    Cambiar de plan <ExternalLink size={13} />
+                  </a>
+                  {membresia.estado !== 'cancelled' && (
+                    <motion.button
+                      type="button"
+                      onClick={() => setPidiendoCancelarSuscripcion(true)}
+                      whileTap={{ scale: 0.97 }}
+                      className="flex h-11 items-center justify-center rounded-xl border border-[color-mix(in_oklab,var(--status-error)_35%,transparent)] text-sm font-medium text-[var(--status-error)]"
+                    >
+                      Desactivar mi suscripción
+                    </motion.button>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       )}
 
@@ -734,6 +806,62 @@ export default function PerfilPage() {
                 >
                   {eliminandoCuenta ? <Loader2 size={15} className="animate-spin motion-reduce:animate-none" /> : null}
                   {eliminandoCuenta ? 'Eliminando…' : 'Sí, eliminar'}
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {pidiendoCancelarSuscripcion && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-confirmar-cancelar"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-[color-mix(in_oklab,var(--text-primary)_35%,transparent)] px-6"
+            onClick={() => !cancelandoSuscripcion && setPidiendoCancelarSuscripcion(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-xs rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-5"
+            >
+              <div className="flex items-center gap-2">
+                <AlertTriangle size={18} color="var(--status-error)" />
+                <p id="titulo-confirmar-cancelar" className="text-base font-semibold text-[var(--text-primary)]">
+                  ¿Estás seguro?
+                </p>
+              </div>
+              <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                Vas a desactivar tu suscripción. Dejamos de cobrarte desde tu próximo ciclo — tu acceso sigue activo
+                hasta que termine el período que ya pagaste.
+              </p>
+              {errorCancelar && <p className="mt-2 text-sm text-[var(--status-error)]">{errorCancelar}</p>}
+              <div className="mt-5 flex gap-3">
+                <motion.button
+                  type="button"
+                  onClick={() => setPidiendoCancelarSuscripcion(false)}
+                  disabled={cancelandoSuscripcion}
+                  whileTap={cancelandoSuscripcion ? undefined : { scale: 0.97 }}
+                  className="superficie-3d flex h-12 flex-1 items-center justify-center rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-sm font-semibold text-[var(--text-primary)] disabled:opacity-60"
+                >
+                  Cancelar
+                </motion.button>
+                <motion.button
+                  type="button"
+                  onClick={confirmarCancelarSuscripcion}
+                  disabled={cancelandoSuscripcion}
+                  whileTap={cancelandoSuscripcion ? undefined : { scale: 0.97 }}
+                  className="flex h-12 flex-1 items-center justify-center gap-1.5 rounded-xl bg-[var(--status-error)] text-sm font-semibold text-white disabled:opacity-70"
+                >
+                  {cancelandoSuscripcion ? <Loader2 size={15} className="animate-spin motion-reduce:animate-none" /> : null}
+                  {cancelandoSuscripcion ? 'Desactivando…' : 'Sí, desactivar'}
                 </motion.button>
               </div>
             </motion.div>
