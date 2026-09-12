@@ -95,8 +95,6 @@ export default function HistorialPage() {
 
   const volumenMostrado = useConteo(volumenSemana);
 
-  if (!progreso) return null;
-
   return (
     // flex flex-col + min-h-[calc(100dvh-5rem)] (mismo patrón ya usado en
     // perfil/page.tsx y la pantalla de saludo): así el estado vacío de abajo
@@ -118,8 +116,24 @@ export default function HistorialPage() {
       />
       <div className="relative z-10 flex flex-1 flex-col">
       <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">Tu progreso</p>
-      <h1 className="mt-1 text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Historial</h1>
+      <div className="mt-1 flex items-center gap-2">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Historial</h1>
+        {/* Indicador de carga real (antes esta pantalla no tenía ninguno —
+            simplemente quedaba en blanco mientras se leía localStorage/
+            Supabase). Solo un instante: desaparece en cuanto progreso
+            llega, sin bloquear ni mover el resto del layout. */}
+        {!progreso && (
+          <img
+            src="/animaciones/historial-cargando.gif"
+            alt=""
+            aria-hidden="true"
+            className="size-6 motion-reduce:hidden"
+          />
+        )}
+      </div>
 
+      {progreso && (
+        <>
       {/* El progreso se ve DISTINTO según la ruta (pedido explícito): Ruta A
           compara el peso corporal contra el inicial (sube = éxito); Ruta B
           compara la cintura (el objetivo ahí es MANTENER las cargas, no
@@ -245,6 +259,8 @@ export default function HistorialPage() {
               );
             })}
           </div>
+        </>
+      )}
         </>
       )}
       </div>
