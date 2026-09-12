@@ -30,10 +30,7 @@ function credencialesHotmart(): { clientId: string; clientSecret: string; basicT
   return { clientId, clientSecret, basicToken };
 }
 
-/** Exportado además de usarse internamente: lo usa la ruta de diagnóstico
- * temporal para confirmar que las 3 credenciales funcionan sin cancelar
- * ninguna suscripción real. */
-export async function obtenerTokenHotmart(): Promise<string> {
+async function obtenerTokenHotmart(): Promise<string> {
   // Hotmart exige las 3 credenciales a la vez para el OAuth: client_id y
   // client_secret como query params, MÁS el token "Basic" (el 3er valor que
   // Hotmart muestra junto a los otros dos al crear la credencial) como header
