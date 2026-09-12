@@ -40,10 +40,15 @@ export async function obtenerTokenHotmart(): Promise<string> {
   // Authorization — con solo los 2 primeros, Hotmart responde 401 (verificado
   // en producción, 12/09/2026).
   const { clientId, clientSecret, basicToken } = credencialesHotmart();
+  // A prueba de que la variable de entorno haya quedado guardada CON el
+  // prefijo "Basic " incluido (tal cual lo muestra Hotmart) — sin este
+  // recorte, el header terminaba en "Basic Basic xxxxx" y Hotmart respondía
+  // 401 "Full authentication is required" (visto en producción, 12/09/2026).
+  const basicLimpio = basicToken.replace(/^Basic\s+/i, '').trim();
   const url = `${OAUTH_URL}?grant_type=client_credentials&client_id=${encodeURIComponent(clientId)}&client_secret=${encodeURIComponent(clientSecret)}`;
   const res = await fetch(url, {
     method: 'POST',
-    headers: { Authorization: `Basic ${basicToken}`, 'Content-Type': 'application/json' },
+    headers: { Authorization: `Basic ${basicLimpio}`, 'Content-Type': 'application/json' },
   });
   if (!res.ok) {
     throw new Error(`Hotmart OAuth falló (${res.status}): ${await res.text()}`);
