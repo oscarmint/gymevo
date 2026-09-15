@@ -9,10 +9,13 @@ import { leerUTM } from './utm';
 
 export type EventoEmbudo = 'landing_view' | 'onboarding_start' | 'onboarding_complete';
 
-export function registrarEvento(tipo: EventoEmbudo) {
+// `variante` es opcional: solo la landing y el onboarding (que heredan la
+// variante ya asignada, ver lib/experimentos.ts) la mandan — sirve para
+// comparar LandingV1 vs LandingV2 en el panel de administrador (A/B, 12/09/2026).
+export function registrarEvento(tipo: EventoEmbudo, variante?: 'a' | 'b') {
   fetch('/api/analitica/visita', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ tipo, utm: leerUTM() }),
+    body: JSON.stringify({ tipo, utm: leerUTM(), variante }),
   }).catch(() => {});
 }

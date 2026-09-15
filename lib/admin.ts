@@ -324,6 +324,54 @@ export async function obtenerAtribucionUTM(): Promise<FilaAtribucionUTM[]> {
   return Array.from(porFuente.values()).sort((a, b) => b.visitas - a.visitas);
 }
 
+export interface FilaExperimentoLanding {
+  variante: 'a' | 'b';
+  nombre: string;
+  visitas: number;
+  onboardingIniciado: number;
+  onboardingCompletado: number;
+  tasaOnboarding: number; // % de visitas que iniciaron el onboarding
+}
+
+/** A/B de landing (12/09/2026, a pedido explícito del usuario): LandingV1
+ * ("a", mecanismo al frente) vs LandingV2 ("b", miedo a mala técnica) — misma
+ * lógica de agrupar en JS que obtenerAtribucionUTM, pero por
+ * `event_log.metadata.variante` en vez de `.utm.source`. */
+export async function obtenerExperimentoLanding(): Promise<FilaExperimentoLanding[]> {
+  const supabase = await crearClienteSupabaseServidor();
+  const hace30 = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+  const { data: eventos } = await supabase
+    .from('event_log')
+    .select('type, metadata')
+    .in('type', ['landing_view', 'onboarding_start', 'onboarding_complete'])
+    .gte('created_at', hace30);
+
+  const NOMBRES: Record<'a' | 'b', string> = { a: 'V1 · Botón de Rescate', b: 'V2 · Miedo a mala técnica' };
+  const porVariante = new Map<'a' | 'b', FilaExperimentoLanding>();
+  function fila(variante: 'a' | 'b'): FilaExperimentoLanding {
+    let f = porVariante.get(variante);
+    if (!f) {
+      f = { variante, nombre: NOMBRES[variante], visitas: 0, onboardingIniciado: 0, onboardingCompletado: 0, tasaOnboarding: 0 };
+      porVariante.set(variante, f);
+    }
+    return f;
+  }
+
+  for (const e of eventos ?? []) {
+    const variante = (e.metadata as { variante?: string } | null)?.variante;
+    if (variante !== 'a' && variante !== 'b') continue;
+    const f = fila(variante);
+    if (e.type === 'landing_view') f.visitas++;
+    else if (e.type === 'onboarding_start') f.onboardingIniciado++;
+    else if (e.type === 'onboarding_complete') f.onboardingCompletado++;
+  }
+
+  const filas = Array.from(porVariante.values());
+  for (const f of filas) f.tasaOnboarding = f.visitas > 0 ? Math.round((f.onboardingIniciado / f.visitas) * 100) : 0;
+  return filas.sort((a, b) => a.variante.localeCompare(b.variante));
+}
+
 export interface AvisoAdmin {
   tipo: 'aviso' | 'ok';
   mensaje: string;

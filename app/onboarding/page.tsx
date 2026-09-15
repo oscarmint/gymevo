@@ -21,6 +21,7 @@ import {
   type Sexo,
 } from '@/lib/onboarding';
 import { registrarEvento } from '@/lib/analitica';
+import { leerVarianteLanding } from '@/lib/experimentos';
 
 type PasoId = 'sexo' | 'nivel' | 'meta' | 'frustracion' | 'reconocimiento' | 'horario' | 'compromiso';
 
@@ -98,8 +99,10 @@ export default function OnboardingPage() {
 
   // Embudo del panel de admin (21-BACKOFFICE): cuántos empiezan el
   // cuestionario — se compara luego contra "onboarding_complete" en terminar().
+  // Se etiqueta con la variante de landing que trajo a esta persona (si vino
+  // de la landing — ver lib/experimentos.ts), para el A/B de landing (12/09/2026).
   useEffect(() => {
-    registrarEvento('onboarding_start');
+    registrarEvento('onboarding_start', leerVarianteLanding() ?? undefined);
   }, []);
 
   // Hallazgo revisor-visual: "Salir" borraba las respuestas ya dadas sin
@@ -195,7 +198,7 @@ export default function OnboardingPage() {
       horario: horario ?? 'tarde',
       diasSemana: dias,
     });
-    registrarEvento('onboarding_complete');
+    registrarEvento('onboarding_complete', leerVarianteLanding() ?? undefined);
     router.push('/onboarding/generando');
   }
 

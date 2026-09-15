@@ -29,10 +29,15 @@ export async function POST(req: NextRequest) {
     // pisa ese default y viola la restricción, así que el insert entero
     // fallaba en silencio (atrapado por el catch de abajo) para CUALQUIER
     // evento sin campaña. Real desde que se agregó el rastreo UTM hoy mismo.
-    const metadata =
+    const metadata: Record<string, unknown> =
       utm && typeof utm === 'object' && typeof utm.source === 'string'
         ? { utm: { source: utm.source, medium: utm.medium ?? null, campaign: utm.campaign ?? null } }
         : {};
+    // A/B de landing (12/09/2026) — lista blanca igual que `tipo`, nunca se
+    // inserta un valor arbitrario que alguien mande al endpoint.
+    if (body?.variante === 'a' || body?.variante === 'b') {
+      metadata.variante = body.variante;
+    }
     const admin = clienteAdmin();
     await admin.from('event_log').insert({ type: tipo, metadata });
   } catch {

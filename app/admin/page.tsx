@@ -3,7 +3,7 @@
 // inventa: lo que no tiene fuente real hoy se rotula "Sin datos".
 
 import { AlertTriangle, CheckCircle2, DollarSign, Dumbbell, Eye, Megaphone, NotebookPen, TrendingDown, TrendingUp, UserX, Users } from 'lucide-react';
-import { calcularAvisos, obtenerAtribucionUTM, obtenerChurn, obtenerResumenFunnel, obtenerResumenUso, obtenerResumenUsuarios, obtenerResumenVentas, obtenerVentasPorSemana } from '@/lib/admin';
+import { calcularAvisos, obtenerAtribucionUTM, obtenerChurn, obtenerExperimentoLanding, obtenerResumenFunnel, obtenerResumenUso, obtenerResumenUsuarios, obtenerResumenVentas, obtenerVentasPorSemana } from '@/lib/admin';
 import { GraficoVentas } from './GraficoVentas';
 
 const ESTADO_CHURN_LABEL: Record<string, string> = {
@@ -55,7 +55,7 @@ function CardSinDatos({ icono: Icono, titulo, motivo }: { icono: React.ElementTy
 }
 
 export default async function AdminPage() {
-  const [ventas, usuarios, uso, avisos, churn, ventasPorSemana, funnel, atribucion] = await Promise.all([
+  const [ventas, usuarios, uso, avisos, churn, ventasPorSemana, funnel, atribucion, experimentoLanding] = await Promise.all([
     obtenerResumenVentas(),
     obtenerResumenUsuarios(),
     obtenerResumenUso(),
@@ -64,6 +64,7 @@ export default async function AdminPage() {
     obtenerVentasPorSemana(),
     obtenerResumenFunnel(),
     obtenerAtribucionUTM(),
+    obtenerExperimentoLanding(),
   ]);
 
   const activos = ventas.porEstado.active ?? 0;
@@ -199,6 +200,50 @@ export default async function AdminPage() {
         )}
         <p className="mt-2 text-xs text-[var(--text-tertiary)]">
           &ldquo;Campaña&rdquo; es lo que pongas en <code>utm_source</code> de tu link (ej. facebook, instagram). Solo cuenta a quien haya usado un link con ese parámetro — el resto de las visitas ya sale arriba, en &ldquo;Embudo&rdquo;.
+        </p>
+      </section>
+
+      {/* A/B DE LANDING — LandingV1 (mecanismo) vs LandingV2 (miedo a mala
+          técnica), a pedido explícito del usuario (12/09/2026). La variante
+          se asigna 50/50 por navegador (lib/experimentos.ts) — aquí solo se
+          compara "de cada 100 que vieron esta versión, cuántos empezaron/
+          terminaron el cuestionario", el dato real que decide cuál ganó. */}
+      <section>
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">A/B de landing — cuál convierte más</h2>
+        {experimentoLanding.every((f) => f.visitas === 0) ? (
+          <CardSinDatos
+            icono={Eye}
+            titulo="Landing V1 vs V2"
+            motivo="Todavía no hay visitas registradas con ninguna de las 2 versiones — en cuanto entre la primera, aparece aquí."
+          />
+        ) : (
+          <div className="superficie-3d overflow-x-auto rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+                  <th className="pb-2 pr-3">Versión</th>
+                  <th className="pb-2 pr-3">Visitas</th>
+                  <th className="pb-2 pr-3">Empezaron cuestionario</th>
+                  <th className="pb-2 pr-3">Lo terminaron</th>
+                  <th className="pb-2">% que avanzó</th>
+                </tr>
+              </thead>
+              <tbody>
+                {experimentoLanding.map((f) => (
+                  <tr key={f.variante} className="border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)]">
+                    <td className="py-2 pr-3 font-semibold text-[var(--text-primary)]">{f.nombre}</td>
+                    <td className="py-2 pr-3 text-[var(--text-secondary)]">{f.visitas}</td>
+                    <td className="py-2 pr-3 text-[var(--text-secondary)]">{f.onboardingIniciado}</td>
+                    <td className="py-2 pr-3 text-[var(--text-secondary)]">{f.onboardingCompletado}</td>
+                    <td className="py-2 font-semibold text-[var(--accent)]">{f.tasaOnboarding}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        <p className="mt-2 text-xs text-[var(--text-tertiary)]">
+          Cada visitante nuevo queda asignado al azar a una de las 2 versiones y siempre ve la misma. Con pocas visitas el % puede saltar mucho — espera a tener al menos unas 50-100 visitas por versión antes de sacar una conclusión.
         </p>
       </section>
 
