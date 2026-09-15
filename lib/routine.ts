@@ -103,8 +103,8 @@ const NOMBRE_DIA: Record<DiaSemana, string> = {
 };
 
 export const CALENTAMIENTO_IMG: Record<TrenCalentamiento, string> = {
-  superior: '/explicaciones/calentamiento-tren-superior.jpg',
-  inferior: '/explicaciones/calentamiento-tren-inferior.jpg',
+  superior: '/explicaciones/calentamiento-tren-superior.png',
+  inferior: '/explicaciones/calentamiento-tren-inferior.png',
 };
 
 const CALENTAMIENTO_DIA: Record<DiaSemana, TrenCalentamiento | null> = {
