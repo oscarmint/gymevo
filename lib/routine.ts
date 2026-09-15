@@ -335,15 +335,12 @@ const CATALOGO: Record<string, Ejercicio> = {
   } },
   elevacion_piernas: { id: 'elevacion_piernas', nombre: 'Elevación de piernas', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/elevacion-piernas.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha_abdominal' },
 
-  press_banco_mancuernas: { id: 'press_banco_mancuernas', nombre: 'Press de banco plano con mancuernas', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/press-banco-mancuernas.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_inclinado_mancuerna', guia: {
-    indicaciones: [
-      'Acuéstate en el banco plano con una mancuerna en cada mano.',
-      'Baja las mancuernas a los costados del pecho con los codos a 45° respecto al torso.',
-      'Empuja hacia arriba sin bloquear los codos al extender.',
-    ],
-    musculos: [{ nombre: 'Pectoral', principal: true }, { nombre: 'Tríceps', principal: false }],
-    consejoTecnico: 'Codos a 45 grados respecto al torso, no pegados ni muy abiertos.',
-  } },
+  // Sin `guia` a propósito (15/09/2026): la imagen vieja de este ejercicio
+  // mezcla texto e ilustración en el mismo layout (no se puede recortar solo
+  // la ilustración sin cortar contenido real) — mostrar `guia` en vivo
+  // duplicaría las indicaciones que ya están dibujadas dentro de la imagen.
+  // Se agrega `guia` cuando llegue la ilustración nueva (ver ESTADO.md).
+  press_banco_mancuernas: { id: 'press_banco_mancuernas', nombre: 'Press de banco plano con mancuernas', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/press-banco-mancuernas.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_inclinado_mancuerna' },
   press_inclinado_mancuerna: { id: 'press_inclinado_mancuerna', nombre: 'Press inclinado con mancuerna', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/press-inclinado-mancuerna.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_banco_mancuernas', guia: {
     indicaciones: [
       'Ajusta el respaldo del banco entre 30 y 45 grados.',
@@ -362,15 +359,8 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Pectoral', principal: true }],
     consejoTecnico: 'Controla el retorno para no forzar la articulación del hombro.',
   } },
-  crossover_polea_alta: { id: 'crossover_polea_alta', nombre: 'Crossover en polea alta', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/crossover-polea-alta.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'aperturas_maquina', guia: {
-    indicaciones: [
-      'De pie en el centro de la máquina, un pie adelantado para estabilidad.',
-      'Con los codos semi flexionados, cruza las manos al centro del cuerpo.',
-      'Regresa controladamente hasta sentir el estiramiento del pectoral.',
-    ],
-    musculos: [{ nombre: 'Pectoral', principal: true }],
-    consejoTecnico: 'Postura adelantada, codos semi flexionados, cruce al centro.',
-  } },
+  // Sin `guia` a propósito — mismo motivo que press_banco_mancuernas arriba.
+  crossover_polea_alta: { id: 'crossover_polea_alta', nombre: 'Crossover en polea alta', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/crossover-polea-alta.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'aperturas_maquina' },
   press_frances_barra_z: { id: 'press_frances_barra_z', nombre: 'Press francés con barra Z', grupo: 'Tríceps', grupoMuscular: 'triceps', imagenExplicacion: '/explicaciones/press-frances-barra-z.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'extension_triceps_copa', guia: {
     indicaciones: [
       'Acostado en el banco, sujeta la barra Z con agarre cerrado sobre el pecho.',
@@ -426,15 +416,8 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Dorsales', principal: true }, { nombre: 'Trapecio medio', principal: false }],
     consejoTecnico: 'Pecho apoyado, juntar omóplatos al final del recorrido.',
   } },
-  jalon_pecho_cerrado_neutro: { id: 'jalon_pecho_cerrado_neutro', nombre: 'Jalón de pecho cerrado neutro', grupo: 'Espalda', grupoMuscular: 'dorsal', imagenExplicacion: '/explicaciones/jalon-pecho-cerrado-neutro.jpg', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'jalon_pecho', guia: {
-    indicaciones: [
-      'Sujeta la barra en V o agarre neutro, siéntate con las rodillas fijas.',
-      'Jala hacia el pecho superior manteniendo los codos pegados al cuerpo.',
-      'Sube controladamente hasta extender los brazos.',
-    ],
-    musculos: [{ nombre: 'Dorsal ancho', principal: true }, { nombre: 'Bíceps', principal: false }],
-    consejoTecnico: 'Jalar hacia el pecho superior manteniendo los codos pegados.',
-  } },
+  // Sin `guia` a propósito — mismo motivo que press_banco_mancuernas arriba.
+  jalon_pecho_cerrado_neutro: { id: 'jalon_pecho_cerrado_neutro', nombre: 'Jalón de pecho cerrado neutro', grupo: 'Espalda', grupoMuscular: 'dorsal', imagenExplicacion: '/explicaciones/jalon-pecho-cerrado-neutro.jpg', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'jalon_pecho' },
   curl_barra: { id: 'curl_barra', nombre: 'Curl con barra', grupo: 'Bíceps', grupoMuscular: 'biceps', imagenExplicacion: '/explicaciones/curl-barra.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_supinacion_maquina', guia: {
     indicaciones: [
       'De pie, sujeta la barra con agarre supino a la anchura de los hombros.',
@@ -462,15 +445,8 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Deltoides posterior', principal: true }],
     consejoTecnico: 'Torso inclinado, enfoque en el deltoide posterior, no en subir el peso rápido.',
   } },
-  elevaciones_laterales_mancuernas: { id: 'elevaciones_laterales_mancuernas', nombre: 'Elevaciones laterales con mancuernas', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/elevaciones-laterales-mancuernas.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'pajaros_pie_mancuerna', guia: {
-    indicaciones: [
-      'De pie, sujeta una mancuerna en cada mano a los costados.',
-      'Eleva los brazos hacia los lados hasta la altura de los hombros.',
-      'Baja controladamente sin usar impulso del cuerpo.',
-    ],
-    musculos: [{ nombre: 'Deltoides lateral', principal: true }],
-    consejoTecnico: 'Ligera flexión de codos, sin usar impulso del cuerpo para levantar el peso.',
-  } },
+  // Sin `guia` a propósito — mismo motivo que press_banco_mancuernas arriba.
+  elevaciones_laterales_mancuernas: { id: 'elevaciones_laterales_mancuernas', nombre: 'Elevaciones laterales con mancuernas', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/elevaciones-laterales-mancuernas.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'pajaros_pie_mancuerna' },
   plancha_abdominal: { id: 'plancha_abdominal', nombre: 'Plancha abdominal', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/plancha-abdominal.png', series: 3, reps: '30-60 seg', descansoSeg: 45, tempo: 'isométrico', alternativaId: 'crunch_lateral_inclinado', guia: {
     indicaciones: [
       'Apoya antebrazos y puntas de los pies en el suelo, cuerpo alineado de cabeza a talones.',

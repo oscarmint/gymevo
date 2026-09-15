@@ -1153,7 +1153,14 @@ function PlanDelDia({
                         <img
                           src={ej.imagenExplicacion}
                           alt={`Explicación del ejercicio ${ej.nombre}`}
-                          className="size-full object-cover object-[center_22%]"
+                          // object-contain (no object-cover): pedido explícito y repetido del
+                          // usuario en toda la sesión de ilustraciones — nunca se corta ninguna
+                          // parte del cuerpo del deportista. object-cover con una posición fija
+                          // (antes "center 22%") recortaba distinto según la geometría de cada
+                          // imagen (encontrado con "Sentadilla con barra": cortaba la cabeza de
+                          // la segunda figura). Con contain la imagen completa siempre es
+                          // visible, con un margen del mismo color de fondo si sobra espacio.
+                          className="size-full object-contain"
                         />
                       )}
                     </div>
