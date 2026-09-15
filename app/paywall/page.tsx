@@ -13,8 +13,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, useReducedMotion } from 'motion/react';
-import { AlertTriangle, Check, Loader2, Lock, RefreshCcw, ShieldCheck, X } from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { AlertTriangle, Check, ChevronDown, Loader2, Lock, RefreshCcw, ShieldCheck, X } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { formatearCOP, useTRM } from '@/lib/trm';
 import { PrecioAnimado } from '@/components/landing/ui';
@@ -67,6 +67,16 @@ export default function PaywallPage() {
   const [redirigiendo, setRedirigiendo] = useState(false);
   const [errorRedirect, setErrorRedirect] = useState<string | null>(null);
   const [puedeCerrar, setPuedeCerrar] = useState(false);
+  // FAQ colapsada por defecto (hallazgo revisor-visual, 14/09/2026): el
+  // scroll completo antes del CTA/cierre era muy largo — con solo 2
+  // preguntas esto ya no es información crítica para decidir, así que se
+  // pliega y el que quiera resolver una duda puntual la despliega.
+  const [faqAbierta, setFaqAbierta] = useState(false);
+  // Feedback real al tocar el botón "X" antes de tiempo (hallazgo
+  // revisor-visual: verse atenuado pero no responder a un toque se sentía
+  // roto — un pequeño meneo deja claro que el botón SÍ registró el toque,
+  // solo que todavía no hace nada, sin acortar el tiempo de lectura pedido).
+  const [cerrarMeneo, setCerrarMeneo] = useState(false);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   // sessionStorage no existe en el servidor: leerlo en el initializer de
@@ -80,11 +90,12 @@ export default function PaywallPage() {
     if (guardado === 'mensual' || guardado === 'semestral' || guardado === 'anual') {
       setPlan(guardado);
     }
-    // Cierre con retraso (pedido explícito): 2.5s para que la oferta se
-    // alcance a leer antes de poder salir — el botón sigue ahí, solo tarda
-    // en activarse, nunca se esconde ni se elimina la salida por completo
-    // (heurística 3: control y libertad, con un límite de tiempo razonable).
-    const t = setTimeout(() => setPuedeCerrar(true), 2500);
+    // Cierre con retraso (pedido explícito): antes 2.5s, bajado a 1.5s
+    // (14/09/2026, hallazgo revisor-visual: ya se ve atenuado al 40% desde
+    // el día 0, así que el usuario SABE que ahí hay una salida — no hace
+    // falta hacerlo esperar tanto para activarla). El botón sigue ahí todo
+    // el tiempo, solo tarda en activarse (heurística 3: control y libertad).
+    const t = setTimeout(() => setPuedeCerrar(true), 1500);
     return () => clearTimeout(t);
   }, []);
 
@@ -154,23 +165,33 @@ export default function PaywallPage() {
         }}
       />
       <div className="relative z-10 mx-auto flex w-full max-w-md flex-1 flex-col">
-        {/* (5) Cierre con retraso de 2.5s (pedido explícito) — nunca
+        {/* (5) Cierre con retraso de 1.5s (pedido explícito) — nunca
             desaparece del todo, solo tarda en activarse: sigue en el mismo
-            lugar todo el tiempo (heurística 3), pero no es tocable ni
-            visible hasta que el usuario tuvo tiempo de leer la oferta. */}
-        <button
+            lugar todo el tiempo (heurística 3), atenuado pero SIEMPRE
+            visible (hallazgo revisor-visual: invisible del todo se sentía
+            como una pantalla sin salida al abrir). Sigue siendo clickeable
+            antes de tiempo (ya no pointer-events-none) para poder dar
+            feedback real al toque — un meneo, en vez de no responder nada,
+            que se sentía roto. */}
+        <motion.button
           type="button"
           aria-label="Cerrar"
-          onClick={() => puedeCerrar && router.push('/')}
-          disabled={!puedeCerrar}
-          aria-hidden={!puedeCerrar}
-          tabIndex={puedeCerrar ? 0 : -1}
+          onClick={() => {
+            if (puedeCerrar) {
+              router.push('/');
+              return;
+            }
+            setCerrarMeneo(true);
+          }}
+          animate={cerrarMeneo && !reduce ? { x: [0, -4, 4, -3, 3, 0] } : {}}
+          transition={{ duration: 0.35 }}
+          onAnimationComplete={() => setCerrarMeneo(false)}
           className={`flex size-11 items-center justify-center self-start rounded-full text-[var(--text-secondary)] transition-opacity duration-300 ${
-            puedeCerrar ? 'opacity-100' : 'pointer-events-none opacity-0'
+            puedeCerrar ? 'opacity-100' : 'opacity-40'
           }`}
         >
           <X size={22} />
-        </button>
+        </motion.button>
 
         {/* (1) Titular orientado al mecanismo de supervivencia en el gym —
             no "Suscríbete" — + prueba visual del Botón de Rescate. */}
@@ -184,11 +205,11 @@ export default function PaywallPage() {
           </p>
         </motion.div>
 
-        {/* Prueba visual pedida en el prompt ("una imagen o ilustración
-            CLARA de la app"): el mismo video real de gimnasio que ya usan
-            la landing y Plan de hoy — nunca una captura o ilustración
-            inventada (32-DEL-MVP-AL-PRODUCTO: no fingir producto que no
-            existe). Debajo, el ícono + copy explican el mecanismo exacto. */}
+        {/* Mecanismo + timeline fusionados en UNA sola tarjeta (14/09/2026,
+            hallazgo revisor-visual: eran 2 tarjetas con borde+padding+margen
+            propios, sumando altura sin sumar información distinta — el
+            video de prueba visual y el timeline del trial son dos pasos de
+            la MISMA historia "por qué confiar en esto", no dos temas). */}
         <motion.div
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -202,14 +223,14 @@ export default function PaywallPage() {
             loop
             playsInline
             preload="auto"
-            className="h-36 w-full object-cover motion-reduce:hidden"
+            className="h-32 w-full object-cover motion-reduce:hidden"
           >
             <source src="/videos/hero-gimnasio.mp4" type="video/mp4" />
           </video>
           {/* Respaldo sin video para prefers-reduced-motion: mismo alto, sin
               movimiento, para que la tarjeta nunca se vea rota o vacía. */}
-          <div className="hidden h-36 w-full bg-[var(--surface-2)] motion-reduce:block" />
-          <div className="flex items-center gap-3 p-4">
+          <div className="hidden h-32 w-full bg-[var(--surface-2)] motion-reduce:block" />
+          <div className="flex items-center gap-3 border-b border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] p-4">
             <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--chip-bg)]">
               <RefreshCcw size={22} color="var(--accent)" />
             </span>
@@ -220,17 +241,7 @@ export default function PaywallPage() {
               </p>
             </div>
           </div>
-        </motion.div>
-
-        {/* (3) Visual del valor: timeline del trial (solo si el plan
-            elegido lo tiene) o el cobro directo (Mensual, sin trial). */}
-        <motion.div
-          initial={reduce ? {} : { opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.08, duration: 0.3 }}
-          className="mt-5 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-5"
-        >
-          {infoPlan.trialDias > 0 ? <TimelineTrial plan={plan} /> : <TimelineSinTrial plan={plan} />}
+          <div className="p-5">{infoPlan.trialDias > 0 ? <TimelineTrial plan={plan} /> : <TimelineSinTrial plan={plan} />}</div>
         </motion.div>
 
         {/* (2) Estructura de precios — Anual primero y pre-seleccionado
@@ -257,7 +268,6 @@ export default function PaywallPage() {
                 deshabilitado={redirigiendo}
                 badge={id === 'anual' ? 'MÁS POPULAR' : undefined}
                 ahorro={ahorroPct > 0 ? `Ahorra ${ahorroPct}%` : undefined}
-                trialDias={info.trialDias}
                 nombre={info.nombre}
                 precioTachado={id === 'anual' ? `$${PLANES.mensual.precioTotal.toFixed(2)}` : undefined}
                 precioMes={`$${precioMes.toFixed(2)}`}
@@ -326,9 +336,9 @@ export default function PaywallPage() {
           initial={reduce ? {} : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.3 }}
-          className="mt-2 flex items-center justify-center gap-1.5 text-center text-xs font-medium text-[var(--accent-2)]"
+          className="mt-2 flex items-center justify-center gap-1.5 text-center text-xs font-medium text-[var(--accent)]"
         >
-          <ShieldCheck size={13} /> Garantía Hotmart de 7 días — sin preguntas
+          <ShieldCheck size={13} /> Garantía Hotmart: 7 días después de tu primer cobro, sin preguntas
         </motion.p>
 
         {/* Si la redirección no ocurrió en unos segundos (red caída,
@@ -363,47 +373,53 @@ export default function PaywallPage() {
           transition={{ delay: 0.32, duration: 0.3 }}
           className="mt-8 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-5"
         >
-          <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent-2)]">Antes de empezar</p>
-          <div className="mt-3 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-4">
-            <ul className="flex flex-col gap-2 text-sm text-[var(--text-secondary)]">
-              {[
-                infoPlan.trialDias > 0 ? 'Hoy no pagas nada' : 'Pagas hoy, sin trial en este plan',
-                infoPlan.trialDias > 0
-                  ? `Te avisamos el ${fechaEnDias(infoPlan.trialDias - 2)} — el cobro es al día siguiente, el ${fechaEnDias(infoPlan.trialDias - 1)}`
-                  : 'Nunca un cobro extra sin avisarte antes',
-                'Cancela con un solo toque, cuando quieras',
-              ].map((texto) => (
-                <li key={texto} className="flex items-center gap-2">
-                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_12%,transparent)]">
-                    <Check size={12} color="var(--accent)" strokeWidth={3} />
-                  </span>
-                  {texto}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-4 flex flex-col gap-3 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4">
-              <div>
-                <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Me cobrarán hoy?</p>
-                <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                  {infoPlan.trialDias > 0
-                    ? `No. Tienes ${infoPlan.trialDias} días gratis. Te avisamos por correo antes de que termine tu prueba.`
-                    : 'Sí — este plan se cobra desde hoy, sin período de prueba.'}
-                </p>
-              </div>
-              <div>
-                <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Puedo cancelar fácil?</p>
-                <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                  Sí, cuando quieras, con un toque desde tu perfil — sin llamadas ni trámites.
-                </p>
-              </div>
-              <div>
-                <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Hay cobros escondidos?</p>
-                <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                  Cero. El precio que ves arriba es el único que se cobra — nada de cargos extra ni renovaciones sorpresa.
-                </p>
-              </div>
-            </div>
-          </div>
+          {/* Antes vivía aquí también un bloque de 3 viñetas (hoy no pagas /
+              fecha de aviso / cancela cuando quieras) — el revisor-visual lo
+              marcó como redundante casi palabra por palabra con el timeline
+              de arriba (mismo plan, mismas fechas, dos veces). Se elimina y
+              queda solo lo que el timeline NO cubre: las 3 dudas concretas
+              en formato pregunta-respuesta. */}
+          <button
+            type="button"
+            onClick={() => setFaqAbierta((v) => !v)}
+            aria-expanded={faqAbierta}
+            className="flex w-full items-center justify-between text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]"
+          >
+            Antes de empezar
+            <ChevronDown size={16} className={`transition-transform duration-200 ${faqAbierta ? 'rotate-180' : ''}`} />
+          </button>
+          <AnimatePresence initial={false}>
+            {faqAbierta && (
+              <motion.div
+                initial={reduce ? {} : { height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={reduce ? {} : { height: 0, opacity: 0 }}
+                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                className="overflow-hidden"
+              >
+                <div className="mt-3 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-4">
+                  <div className="flex flex-col gap-3">
+                    {/* "¿Me cobrarán hoy?" vivía aquí — se quitó (14/09/2026,
+                        hallazgo revisor-visual): repetía casi palabra por
+                        palabra el timeline de arriba y la línea "Hoy no
+                        pagas nada" sobre el CTA. */}
+                    <div>
+                      <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Puedo cancelar fácil?</p>
+                      <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                        Sí, cuando quieras, con un toque desde tu perfil — sin llamadas ni trámites.
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Hay cobros escondidos?</p>
+                      <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                        Cero. El precio que ves arriba es el único que se cobra — nada de cargos extra ni renovaciones sorpresa.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         {/* (8) Salida limpia — el enlace es un correo a soporte real, no una
@@ -511,7 +527,6 @@ function PlanCard({
   deshabilitado,
   badge,
   ahorro,
-  trialDias,
   nombre,
   precioTachado,
   precioMes,
@@ -526,9 +541,6 @@ function PlanCard({
   /** "Ahorra N%" frente al precio mensual — la razón real para elegir un
    * plan más largo, no solo un adorno (curva de descuento de 02C). */
   ahorro?: string;
-  /** El gancho "N días gratis" va SOLO en los planes que de verdad tienen
-   * trial — 0 lo apaga (transparencia: nunca fingir un trial que no existe). */
-  trialDias: number;
   nombre: string;
   /** Precio de referencia tachado (el dispositivo ownable de FICHA-ARTE:
    * el mismo tachado verde que marca un ejercicio completado, aplicado aquí
@@ -551,11 +563,14 @@ function PlanCard({
       className={`relative flex flex-col rounded-[var(--radius-card)] border px-5 py-4 text-left transition-colors disabled:opacity-50 ${
         seleccionado
           ? 'boton-3d-borde border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_6%,transparent)]'
-          : 'superficie-3d border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] bg-[var(--surface)]'
+          : 'superficie-3d border-2 border-dashed border-[color-mix(in_oklab,var(--accent-2)_45%,var(--text-tertiary)_55%)] bg-[var(--surface)]'
       }`}
     >
       {badge && (
-        <span className="absolute -top-2.5 left-4 rounded-full bg-[var(--accent-2)] px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--bg)]">
+        // bg-[var(--accent-2)] + texto --bg medía 3.68:1 (bajo el 4.5:1 de
+        // AA para texto chico) — accent-2-deep + texto primario da 7.6:1,
+        // misma familia tonal, ya pasa (hallazgo revisor-visual, 14/09/2026).
+        <span className="absolute -top-2.5 left-4 rounded-full bg-[var(--accent-2-deep)] px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--text-primary)]">
           {badge}
         </span>
       )}
@@ -568,16 +583,26 @@ function PlanCard({
       )}
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex flex-wrap items-center gap-1.5">
+          {/* min-h-7 (hallazgo revisor-visual, 14/09/2026): Anual lleva 2
+              chips, Semestral 1, Mensual ninguno — sin un alto mínimo
+              reservado, las 3 cabeceras quedaban de distinto alto y el
+              conjunto se sentía asimétrico. Con el piso, alinean igual
+              tengan chip o no. */}
+          <div className="flex min-h-7 flex-wrap items-center gap-1.5">
             <p className="text-[16px] font-semibold text-[var(--text-primary)]">{nombre}</p>
+            {/* El chip "N días gratis" vivía aquí también — se quitó
+                (hallazgo revisor-visual, 14/09/2026): desde que los 3 planes
+                tienen trial, ya no diferencia nada y solo sumaba un tercer
+                color de chip compitiendo con "Ahorra %" y "MÁS POPULAR". El
+                dato del trial sigue presente, una sola vez, en la línea de
+                detalle de abajo ("Tras tus N días gratis..."). */}
+            {/* Mismo bug de contraste que ya se corrigió en el badge "MÁS
+                POPULAR" (hallazgo revisor-visual, 14/09/2026): texto
+                --accent-2 sobre su propio 16% de fondo medía ~2.8:1, bajo
+                AA — accent-2-deep sólido + texto primario da 7.6:1. */}
             {ahorro && (
-              <span className="whitespace-nowrap rounded-full bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--accent)]">
+              <span className="whitespace-nowrap rounded-full bg-[var(--accent-2-deep)] px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--text-primary)]">
                 {ahorro}
-              </span>
-            )}
-            {trialDias > 0 && (
-              <span className="whitespace-nowrap rounded-full bg-[color-mix(in_oklab,var(--accent-2)_16%,transparent)] px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--accent-2)]">
-                {trialDias} días gratis
               </span>
             )}
           </div>
@@ -585,20 +610,30 @@ function PlanCard({
         <div className="flex items-center gap-3">
           <div className="text-right">
             {precioTachado && (
-              <p className="text-base font-bold tabular-nums text-[var(--text-secondary)] line-through decoration-[var(--accent)] decoration-4">
-                {precioTachado}/mes USD
+              <p className="text-base font-bold tabular-nums text-[var(--text-tertiary)] line-through decoration-[var(--accent)] decoration-2">
+                {precioTachado}/mes
               </p>
             )}
-            <p className="text-2xl font-bold leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+            {/* Un solo número héroe por tarjeta (hallazgo revisor-visual: el
+                "USD" repetido dos veces + la conversión en su propia línea
+                competían con el precio grande) — "USD" y la conversión a
+                pesos ahora comparten una sola línea chica debajo. El precio
+                de las tarjetas NO seleccionadas baja un escalón de tamaño y
+                peso (hallazgo revisor-visual, 14/09/2026: los 3 precios
+                pesaban casi igual entre sí y frente al héroe real de la
+                pantalla, diluyendo la jerarquía) — el plan elegido sigue
+                siendo el único número realmente protagonista. */}
+            <p
+              className={`leading-none tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)] ${
+                seleccionado ? 'text-2xl font-bold' : 'text-lg font-semibold'
+              }`}
+            >
               <PrecioAnimado texto={precioMes} />
-              <span className="text-xs font-normal text-[var(--text-secondary)]">/mes </span>
-              <span className="text-[10.5px] font-semibold text-[var(--text-tertiary)]">USD</span>
+              <span className="text-xs font-normal text-[var(--text-secondary)]">/mes</span>
             </p>
-            {/* Precio en pesos colombianos (TRM oficial del día) — la mayoría
-                de la venta es en Colombia; ver solo USD ahuyenta clientes que
-                no saben cuánto es en su moneda. Se omite en silencio si la TRM
-                no cargó (nunca bloquea ni rompe la tarjeta por esto). */}
-            {precioCOP && <p className="mt-0.5 text-xs tabular-nums text-[var(--text-secondary)]">≈ {precioCOP}</p>}
+            <p className="mt-0.5 text-xs tabular-nums text-[var(--text-tertiary)]">
+              USD{precioCOP ? ` · ≈ ${precioCOP}` : ''}
+            </p>
           </div>
           <span
             className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${
