@@ -335,12 +335,15 @@ const CATALOGO: Record<string, Ejercicio> = {
   } },
   elevacion_piernas: { id: 'elevacion_piernas', nombre: 'Elevación de piernas', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/elevacion-piernas.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha_abdominal' },
 
-  // Sin `guia` a propósito (15/09/2026): la imagen vieja de este ejercicio
-  // mezcla texto e ilustración en el mismo layout (no se puede recortar solo
-  // la ilustración sin cortar contenido real) — mostrar `guia` en vivo
-  // duplicaría las indicaciones que ya están dibujadas dentro de la imagen.
-  // Se agrega `guia` cuando llegue la ilustración nueva (ver ESTADO.md).
-  press_banco_mancuernas: { id: 'press_banco_mancuernas', nombre: 'Press de banco plano con mancuernas', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/press-banco-mancuernas.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_inclinado_mancuerna' },
+  press_banco_mancuernas: { id: 'press_banco_mancuernas', nombre: 'Press de banco plano con mancuernas', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/press-banco-mancuernas.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_inclinado_mancuerna', guia: {
+    indicaciones: [
+      'Acuéstate en el banco plano con una mancuerna en cada mano.',
+      'Baja las mancuernas a los costados del pecho con los codos a 45° respecto al torso.',
+      'Empuja hacia arriba sin bloquear los codos al extender.',
+    ],
+    musculos: [{ nombre: 'Pectorales Mayores', principal: true }, { nombre: 'Deltoides Anteriores', principal: false }],
+    consejoTecnico: 'Evita que las mancuernas se toquen en la parte superior; controla el descenso.',
+  } },
   press_inclinado_mancuerna: { id: 'press_inclinado_mancuerna', nombre: 'Press inclinado con mancuerna', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/press-inclinado-mancuerna.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_banco_mancuernas', guia: {
     indicaciones: [
       'Ajusta el respaldo del banco entre 30 y 45 grados.',
@@ -359,8 +362,16 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Pectoral', principal: true }],
     consejoTecnico: 'Controla el retorno para no forzar la articulación del hombro.',
   } },
-  // Sin `guia` a propósito — mismo motivo que press_banco_mancuernas arriba.
-  crossover_polea_alta: { id: 'crossover_polea_alta', nombre: 'Crossover en polea alta', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/crossover-polea-alta.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'aperturas_maquina' },
+  crossover_polea_alta: { id: 'crossover_polea_alta', nombre: 'Crossover en polea alta', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/crossover-polea-alta.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'aperturas_maquina', guia: {
+    indicaciones: [
+      'Sujeta las poleas altas y da un paso al frente.',
+      'Inclina ligeramente el torso hacia adelante.',
+      'Tira de las asas hacia abajo y crúzalas frente al cuerpo.',
+      'Regresa de forma controlada hasta sentir el estiramiento.',
+    ],
+    musculos: [{ nombre: 'Pectorales', principal: true }, { nombre: 'Deltoides Anteriores', principal: false }],
+    consejoTecnico: 'Mantén una ligera flexión en los codos constante durante todo el recorrido.',
+  } },
   press_frances_barra_z: { id: 'press_frances_barra_z', nombre: 'Press francés con barra Z', grupo: 'Tríceps', grupoMuscular: 'triceps', imagenExplicacion: '/explicaciones/press-frances-barra-z.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'extension_triceps_copa', guia: {
     indicaciones: [
       'Acostado en el banco, sujeta la barra Z con agarre cerrado sobre el pecho.',
@@ -416,8 +427,15 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Dorsales', principal: true }, { nombre: 'Trapecio medio', principal: false }],
     consejoTecnico: 'Pecho apoyado, juntar omóplatos al final del recorrido.',
   } },
-  // Sin `guia` a propósito — mismo motivo que press_banco_mancuernas arriba.
-  jalon_pecho_cerrado_neutro: { id: 'jalon_pecho_cerrado_neutro', nombre: 'Jalón de pecho cerrado neutro', grupo: 'Espalda', grupoMuscular: 'dorsal', imagenExplicacion: '/explicaciones/jalon-pecho-cerrado-neutro.jpg', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'jalon_pecho' },
+  jalon_pecho_cerrado_neutro: { id: 'jalon_pecho_cerrado_neutro', nombre: 'Jalón de pecho cerrado neutro', grupo: 'Espalda', grupoMuscular: 'dorsal', imagenExplicacion: '/explicaciones/jalon-pecho-cerrado-neutro.png', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'jalon_pecho', guia: {
+    indicaciones: [
+      'Sujeta la barra en V o agarre neutro, siéntate con las rodillas fijas.',
+      'Jala hacia el pecho superior manteniendo los codos pegados al cuerpo.',
+      'Sube controladamente hasta extender los brazos por completo.',
+    ],
+    musculos: [{ nombre: 'Dorsales', principal: true }, { nombre: 'Bíceps', principal: false }],
+    consejoTecnico: 'Jalar hacia el pecho superior manteniendo los codos pegados, sin balancear el torso.',
+  } },
   curl_barra: { id: 'curl_barra', nombre: 'Curl con barra', grupo: 'Bíceps', grupoMuscular: 'biceps', imagenExplicacion: '/explicaciones/curl-barra.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_supinacion_maquina', guia: {
     indicaciones: [
       'De pie, sujeta la barra con agarre supino a la anchura de los hombros.',
@@ -459,13 +477,21 @@ const CATALOGO: Record<string, Ejercicio> = {
 
   elevacion_frontal_mancuernas: { id: 'elevacion_frontal_mancuernas', nombre: 'Elevación frontal con mancuernas', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/elevacion-frontal-mancuernas.jpg', series: 4, reps: '8-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'elevaciones_laterales_mancuernas' },
   encogimientos_mancuernas: { id: 'encogimientos_mancuernas', nombre: 'Encogimientos con mancuernas', grupo: 'Trapecio', grupoMuscular: 'trapecio', imagenExplicacion: '/explicaciones/encogimientos-mancuernas.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'elevacion_frontal_mancuernas' },
-  crunch_superior_horizontal: { id: 'crunch_superior_horizontal', nombre: 'Crunch superior horizontal (máquina)', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-superior-horizontal.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_lateral_inclinado' },
+  crunch_superior_horizontal: { id: 'crunch_superior_horizontal', nombre: 'Crunch superior horizontal (máquina)', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-superior-horizontal.png', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_lateral_inclinado', guia: {
+    indicaciones: [
+      'Acuéstate en el banco con las rodillas flexionadas y las manos detrás de la cabeza.',
+      'Sube el torso contrayendo el abdomen, sin tirar del cuello.',
+      'Baja controladamente sin apoyar completamente la espalda.',
+    ],
+    musculos: [{ nombre: 'Recto abdominal (zona superior)', principal: true }],
+    consejoTecnico: 'Enfócate en la contracción abdominal, no en la velocidad del movimiento.',
+  } },
   lumbares_maquina: { id: 'lumbares_maquina', nombre: 'Lumbares (máquina)', grupo: 'Espalda baja', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/lumbares.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha_abdominal' },
 
   // Ejercicios NUEVOS agregados 15/09/2026 con la rutina de Principiante (ver
   // ESTADO.md) — sin ilustración real todavía, usan la silueta de respaldo
   // (CuerpoMuscular) hasta que se genere el asset.
-  zancadas: { id: 'zancadas', nombre: 'Zancadas', grupo: 'Pierna', grupoMuscular: 'cuadriceps', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'prensa_inclinada', guia: {
+  zancadas: { id: 'zancadas', nombre: 'Zancadas', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/zancadas.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'prensa_inclinada', guia: {
     indicaciones: [
       'Da un paso largo hacia adelante, bajando la rodilla trasera casi hasta el suelo.',
       'Mantén el torso erguido y controlado durante todo el movimiento.',
@@ -474,7 +500,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Cuádriceps', principal: true }, { nombre: 'Glúteo', principal: true }],
     consejoTecnico: 'Paso profundo, control del torso para mayor estabilidad.',
   } },
-  extension_triceps_polea_alta: { id: 'extension_triceps_polea_alta', nombre: 'Extensión de tríceps en polea alta', grupo: 'Tríceps', grupoMuscular: 'triceps', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'extension_triceps_copa', guia: {
+  extension_triceps_polea_alta: { id: 'extension_triceps_polea_alta', nombre: 'Extensión de tríceps en polea alta', grupo: 'Tríceps', grupoMuscular: 'triceps', imagenExplicacion: '/explicaciones/extension-triceps-polea-alta.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'extension_triceps_copa', guia: {
     indicaciones: [
       'De pie frente a la polea alta, sujeta la barra o cuerda con agarre firme.',
       'Extiende los codos hacia abajo manteniéndolos fijos a los costados del torso.',
@@ -483,7 +509,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Tríceps', principal: true }],
     consejoTecnico: 'Codos fijos a los costados del torso durante todo el recorrido.',
   } },
-  curl_martillo_mancuernas: { id: 'curl_martillo_mancuernas', nombre: 'Curl martillo con mancuernas', grupo: 'Bíceps', grupoMuscular: 'biceps', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_supinacion_maquina', guia: {
+  curl_martillo_mancuernas: { id: 'curl_martillo_mancuernas', nombre: 'Curl martillo con mancuernas', grupo: 'Bíceps', grupoMuscular: 'biceps', imagenExplicacion: '/explicaciones/curl-martillo-mancuernas.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_supinacion_maquina', guia: {
     indicaciones: [
       'De pie, sujeta una mancuerna en cada mano con agarre neutro (palmas enfrentadas).',
       'Flexiona los codos subiendo el peso sin girar la muñeca.',
