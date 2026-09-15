@@ -193,7 +193,7 @@ function PlanDelDia({
   // plan por fecha real, así que sigue viéndolo una sola vez por día real).
   const [etapa, setEtapa] = useState<'saludo' | 'entrenador' | 'plan'>(() => {
     if (typeof window === 'undefined') return 'plan';
-    if (esDiaDeDescanso(progreso.diaActual) || esDiaDeRecuperacionActiva(progreso.diaActual)) return 'plan';
+    if (esDiaDeDescanso(progreso.diaActual) || esDiaDeRecuperacionActiva(progreso.diaActual, progreso.nivel)) return 'plan';
     const yaVisto = sessionStorage.getItem('gymevo_saludo_visto_dia') === String(progreso.diaActual);
     return yaVisto ? 'plan' : 'saludo';
   });
@@ -397,7 +397,7 @@ function PlanDelDia({
   const todosHechos = idsHoy.every((e) => progreso.hechosHoy.includes(e.id));
   const enRiesgo = rachaEnRiesgo(progreso);
   const diaDescanso = esDiaDeDescanso(progreso.diaActual);
-  const diaRecuperacion = esDiaDeRecuperacionActiva(progreso.diaActual);
+  const diaRecuperacion = esDiaDeRecuperacionActiva(progreso.diaActual, nivel);
   // La llama se llena según el progreso REAL de hoy (ejercicios ya marcados
   // hechos / total de hoy) — a pedido explícito del usuario, no es decorativa.
   // En el día de descanso no hay ejercicios que marcar, pero la racha sigue
@@ -408,8 +408,8 @@ function PlanDelDia({
       ? Math.round((idsHoy.filter((e) => progreso.hechosHoy.includes(e.id)).length / idsHoy.length) * 100)
       : 0;
   const recuperacion = recuperacionActivaDeHoy(meta);
-  const tren = calentamientoDeHoy(progreso.diaActual);
-  const cardio = cardioDeHoy(progreso.diaActual, meta);
+  const tren = calentamientoDeHoy(progreso.diaActual, nivel);
+  const cardio = cardioDeHoy(progreso.diaActual, meta, nivel);
 
   if (etapa !== 'plan') {
     return (
@@ -434,7 +434,7 @@ function PlanDelDia({
             </span>
             <h1 className="mt-6 text-3xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Hola!</h1>
             <p className="mt-3 max-w-sm text-base text-[var(--text-secondary)]">
-              Hoy vamos a iniciar el entrenamiento de <strong className="text-[var(--text-primary)]">{nombreDeHoy(progreso.diaActual)}</strong>. ¡Vamos con toda!
+              Hoy vamos a iniciar el entrenamiento de <strong className="text-[var(--text-primary)]">{nombreDeHoy(progreso.diaActual, nivel)}</strong>. ¡Vamos con toda!
             </p>
             <button
               type="button"
@@ -491,7 +491,7 @@ function PlanDelDia({
           última palabra. */}
       <div className="mt-1 flex items-start gap-2">
         <h1 className="min-w-0 flex-1 text-balance text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
-          {diaDescanso ? 'Hoy es tu día de descanso' : `Hoy vamos con: ${nombreDeHoy(progreso.diaActual)}`}
+          {diaDescanso ? 'Hoy es tu día de descanso' : `Hoy vamos con: ${nombreDeHoy(progreso.diaActual, nivel)}`}
         </h1>
         <Lottie
           src={animacionFitness}
@@ -1137,25 +1137,92 @@ function PlanDelDia({
                     <X size={18} />
                   </button>
                 </div>
-                <div className="mt-3 flex justify-center">
-                  {ej.imagenExplicacion ? (
-                    // eslint-disable-next-line @next/next/no-img-element -- ver AppPorDentro.tsx: <img> mantiene el kit portable
-                    <img
-                      src={ej.imagenExplicacion}
-                      alt={`Explicación del ejercicio ${ej.nombre}`}
-                      className="w-full rounded-[var(--radius-card)]"
-                    />
-                  ) : (
-                    <CuerpoMuscular musculo={ej.grupoMuscular} genero={generoIlustracion(ej.id)} />
-                  )}
-                </div>
-                {/* La infografía casi nunca llena la pantalla completa
-                    (proporción vertical distinta a la del celular) — en vez
-                    de dejar el resto como vacío muerto (hallazgo del
-                    usuario), ese espacio se llena con una acción real que
-                    cierra la pantalla. mt-auto la empuja al fondo solo
-                    cuando sobra alto; si el contenido ya llena todo, queda
-                    pegada justo debajo sin superponerse. */}
+                {ej.guia ? (
+                  // Plantilla premium (14/09/2026): texto real + ilustración
+                  // que se estira (object-fit:cover) para llenar exactamente
+                  // el espacio que sobra — el hallazgo del usuario fue que un
+                  // hueco vacío antes del botón se siente incompleto, y una
+                  // imagen de ancho completo nunca calza igual en todos los
+                  // ejercicios (el texto de cada uno mide distinto). Con
+                  // flex-1 en la ilustración y min-h-0 en el contenedor, cero
+                  // espacio muerto sin importar cuánto texto tenga cada uno.
+                  <div className="mt-4 flex min-h-0 flex-1 flex-col gap-4">
+                    <div className="min-h-36 flex-1 overflow-hidden rounded-[var(--radius-card)] bg-[var(--bg)]">
+                      {ej.imagenExplicacion && (
+                        // eslint-disable-next-line @next/next/no-img-element -- ver AppPorDentro.tsx: <img> mantiene el kit portable
+                        <img
+                          src={ej.imagenExplicacion}
+                          alt={`Explicación del ejercicio ${ej.nombre}`}
+                          className="size-full object-cover object-[center_22%]"
+                        />
+                      )}
+                    </div>
+                    <div className="flex shrink-0 flex-col gap-4">
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-[0.04em] text-[var(--accent)]">Indicaciones</p>
+                        <ul className="mt-2 flex flex-col gap-1.5">
+                          {ej.guia.indicaciones.map((linea) => (
+                            <li key={linea} className="flex gap-2 text-sm leading-snug text-[var(--text-primary)]">
+                              <Check size={14} className="mt-0.5 shrink-0 text-[var(--accent)]" />
+                              <span>{linea}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="flex items-start gap-6">
+                        <div className="flex-1">
+                          <p className="text-xs font-bold uppercase tracking-[0.04em] text-[var(--accent)]">Músculos trabajados</p>
+                          <ul className="mt-2 flex flex-col gap-1.5">
+                            {ej.guia.musculos.map((m) => (
+                              <li key={m.nombre} className="flex items-center gap-2 text-sm text-[var(--text-primary)]">
+                                <span className="size-1.5 shrink-0 rounded-full bg-[var(--accent)]" />
+                                <span>
+                                  {m.nombre}
+                                  {m.principal ? ' (principal)' : ''}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="shrink-0 text-right">
+                          <p className="text-xs font-bold uppercase tracking-[0.04em] text-[var(--accent)]">Volumen</p>
+                          <p className="mt-1 text-2xl font-extrabold leading-none text-[var(--accent)]">{ej.series}</p>
+                          <p className="text-[11px] uppercase tracking-[0.04em] text-[var(--text-secondary)]">Series</p>
+                          <p className="mt-1 text-2xl font-extrabold leading-none text-[var(--accent)]">{ej.reps}</p>
+                          <p className="text-[11px] uppercase tracking-[0.04em] text-[var(--text-secondary)]">Repeticiones</p>
+                        </div>
+                      </div>
+                      <div className="rounded-2xl border border-[color-mix(in_oklab,var(--accent)_30%,transparent)] bg-[color-mix(in_oklab,var(--accent)_6%,transparent)] px-4 py-3">
+                        <p className="flex gap-2 text-sm leading-snug text-[var(--text-primary)]">
+                          <Check size={14} className="mt-0.5 shrink-0 text-[var(--accent)]" />
+                          <span>{ej.guia.consejoTecnico}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-3 flex justify-center">
+                    {ej.imagenExplicacion ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- ver AppPorDentro.tsx: <img> mantiene el kit portable
+                      <img
+                        src={ej.imagenExplicacion}
+                        alt={`Explicación del ejercicio ${ej.nombre}`}
+                        className="w-full rounded-[var(--radius-card)]"
+                      />
+                    ) : (
+                      <CuerpoMuscular musculo={ej.grupoMuscular} genero={generoIlustracion(ej.id)} />
+                    )}
+                  </div>
+                )}
+                {/* Sin guía premium: la infografía casi nunca llena la
+                    pantalla completa (proporción vertical distinta a la del
+                    celular) — en vez de dejar el resto como vacío muerto
+                    (hallazgo del usuario), ese espacio se llena con una
+                    acción real que cierra la pantalla. mt-auto la empuja al
+                    fondo solo cuando sobra alto. Con guía premium, la
+                    ilustración con flex-1 ya consume todo el sobrante, así
+                    que mt-auto no hace nada (0 espacio libre) y el botón
+                    queda pegado justo debajo del bloque de texto. */}
                 <button
                   type="button"
                   onClick={() => setExplicando(null)}
