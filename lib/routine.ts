@@ -464,7 +464,15 @@ const CATALOGO: Record<string, Ejercicio> = {
     consejoTecnico: 'Torso inclinado, enfoque en el deltoide posterior, no en subir el peso rápido.',
   } },
   // Sin `guia` a propósito — mismo motivo que press_banco_mancuernas arriba.
-  elevaciones_laterales_mancuernas: { id: 'elevaciones_laterales_mancuernas', nombre: 'Elevaciones laterales con mancuernas', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/elevaciones-laterales-mancuernas.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'pajaros_pie_mancuerna' },
+  elevaciones_laterales_mancuernas: { id: 'elevaciones_laterales_mancuernas', nombre: 'Elevaciones laterales con mancuernas', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/elevaciones-laterales-mancuernas.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'pajaros_pie_mancuerna', guia: {
+    indicaciones: [
+      'De pie, sujeta una mancuerna en cada mano a los costados.',
+      'Eleva los brazos hacia los lados hasta la altura de los hombros.',
+      'Baja controladamente sin usar impulso del cuerpo.',
+    ],
+    musculos: [{ nombre: 'Deltoides Laterales', principal: true }],
+    consejoTecnico: 'Ligera flexión de codos, sin usar impulso del cuerpo para levantar el peso.',
+  } },
   plancha_abdominal: { id: 'plancha_abdominal', nombre: 'Plancha abdominal', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/plancha-abdominal.png', series: 3, reps: '30-60 seg', descansoSeg: 45, tempo: 'isométrico', alternativaId: 'crunch_lateral_inclinado', guia: {
     indicaciones: [
       'Apoya antebrazos y puntas de los pies en el suelo, cuerpo alineado de cabeza a talones.',
