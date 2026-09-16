@@ -18,7 +18,6 @@ import {
   deshacerHecho,
   ejerciciosDeHoy,
   esDiaDeDescanso,
-  esDiaDeRecuperacionActiva,
   generoIlustracion,
   guardarProgreso,
   leerProgreso,
@@ -27,7 +26,6 @@ import {
   nombreDeHoy,
   obtenerEjercicio,
   rachaEnRiesgo,
-  recuperacionActivaDeHoy,
   registrarSerie,
   reemplazarEjercicio,
   seriesHechasHoy,
@@ -193,7 +191,7 @@ function PlanDelDia({
   // plan por fecha real, así que sigue viéndolo una sola vez por día real).
   const [etapa, setEtapa] = useState<'saludo' | 'entrenador' | 'plan'>(() => {
     if (typeof window === 'undefined') return 'plan';
-    if (esDiaDeDescanso(progreso.diaActual) || esDiaDeRecuperacionActiva(progreso.diaActual, progreso.nivel)) return 'plan';
+    if (esDiaDeDescanso(progreso.diaActual)) return 'plan';
     const yaVisto = sessionStorage.getItem('gymevo_saludo_visto_dia') === String(progreso.diaActual);
     return yaVisto ? 'plan' : 'saludo';
   });
@@ -216,7 +214,7 @@ function PlanDelDia({
   useEffect(() => {
     if (diaActualAnteriorRef.current === progreso.diaActual) return;
     diaActualAnteriorRef.current = progreso.diaActual;
-    if (esDiaDeDescanso(progreso.diaActual) || esDiaDeRecuperacionActiva(progreso.diaActual)) {
+    if (esDiaDeDescanso(progreso.diaActual)) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setEtapa('plan');
       return;
@@ -393,11 +391,21 @@ function PlanDelDia({
     setCelebrarFin(true);
   }
 
-  const idsHoy = ejercicios.map((e) => obtenerEjercicio(progreso.reemplazosHoy[e.id] ?? e.id));
+  // Bug real encontrado al agregar Ruta Intermedio (15/09/2026): esto antes
+  // volvía a buscar cada ejercicio en `obtenerEjercicio` (catálogo base),
+  // descartando los series/reps/tempo propios de hoy que ya trae `ejercicios`
+  // (ej. Ruta Intermedio los sobrescribe con más peso/menos reps). Se
+  // resuelve con un mapa de "lo de hoy" — el sustituto SÍ usa el catálogo
+  // base si no es parte del plan de hoy (no tiene un override que aplicar).
+  const mapaEjerciciosHoy = useMemo(() => new Map(ejercicios.map((e) => [e.id, e])), [ejercicios]);
+  const idsHoy = ejercicios.map((e) => {
+    const sustitutoId = progreso.reemplazosHoy[e.id];
+    if (!sustitutoId) return e;
+    return mapaEjerciciosHoy.get(sustitutoId) ?? obtenerEjercicio(sustitutoId);
+  });
   const todosHechos = idsHoy.every((e) => progreso.hechosHoy.includes(e.id));
   const enRiesgo = rachaEnRiesgo(progreso);
   const diaDescanso = esDiaDeDescanso(progreso.diaActual);
-  const diaRecuperacion = esDiaDeRecuperacionActiva(progreso.diaActual, nivel);
   // La llama se llena según el progreso REAL de hoy (ejercicios ya marcados
   // hechos / total de hoy) — a pedido explícito del usuario, no es decorativa.
   // En el día de descanso no hay ejercicios que marcar, pero la racha sigue
@@ -407,8 +415,7 @@ function PlanDelDia({
     : idsHoy.length
       ? Math.round((idsHoy.filter((e) => progreso.hechosHoy.includes(e.id)).length / idsHoy.length) * 100)
       : 0;
-  const recuperacion = recuperacionActivaDeHoy(meta);
-  const tren = calentamientoDeHoy(progreso.diaActual, nivel);
+  const tren = calentamientoDeHoy(progreso.diaActual);
   const cardio = cardioDeHoy(progreso.diaActual, meta, nivel);
 
   if (etapa !== 'plan') {
@@ -434,7 +441,7 @@ function PlanDelDia({
             </span>
             <h1 className="mt-6 text-3xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Hola!</h1>
             <p className="mt-3 max-w-sm text-base text-[var(--text-secondary)]">
-              Hoy vamos a iniciar el entrenamiento de <strong className="text-[var(--text-primary)]">{nombreDeHoy(progreso.diaActual, nivel)}</strong>. ¡Vamos con toda!
+              Hoy vamos a iniciar el entrenamiento de <strong className="text-[var(--text-primary)]">{nombreDeHoy(progreso.diaActual)}</strong>. ¡Vamos con toda!
             </p>
             <button
               type="button"
@@ -491,7 +498,7 @@ function PlanDelDia({
           última palabra. */}
       <div className="mt-1 flex items-start gap-2">
         <h1 className="min-w-0 flex-1 text-balance text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
-          {diaDescanso ? 'Hoy es tu día de descanso' : `Hoy vamos con: ${nombreDeHoy(progreso.diaActual, nivel)}`}
+          {diaDescanso ? 'Hoy es tu día de descanso' : `Hoy vamos con: ${nombreDeHoy(progreso.diaActual)}`}
         </h1>
         <Lottie
           src={animacionFitness}
@@ -572,35 +579,6 @@ function PlanDelDia({
             className="boton-3d mt-5 flex h-14 w-full items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
           >
             Ya descansé, continuar mi plan
-          </motion.button>
-        </div>
-      ) : diaRecuperacion ? (
-        <div className="mt-6 flex flex-col gap-4">
-          <div className="rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5 text-center">
-            <p className="text-base font-semibold text-[var(--text-primary)]">Hoy no levantas pesas — es parte del plan.</p>
-            <p className="mt-2 text-sm text-[var(--text-secondary)]">
-              Un día de movimiento ligero favorece el flujo sanguíneo de recuperación sin sumar más fatiga muscular.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[var(--chip-bg)] p-4">
-            <p className="text-sm font-semibold text-[var(--text-primary)]">Meta de hoy: {recuperacion.pasosObjetivo}</p>
-            <p className="mt-1 text-xs text-[var(--text-secondary)]">Camina a tu ritmo durante el día — no hace falta que sea de una sola vez.</p>
-          </div>
-          {recuperacion.cardioExtra && (
-            <div className="rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-4">
-              <p className="text-sm font-semibold text-[var(--text-primary)]">
-                {recuperacion.cardioExtra.titulo}
-                {recuperacion.cardioExtra.opcional && <span className="ml-1.5 font-normal text-[var(--text-tertiary)]">(opcional)</span>}
-              </p>
-              <p className="mt-0.5 text-xs text-[var(--text-secondary)]">{recuperacion.cardioExtra.duracion}</p>
-            </div>
-          )}
-          <motion.button
-            type="button"
-            onClick={finalizarEntrenamiento}
-            className="boton-3d flex h-14 w-full items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
-          >
-            Ya cumplí mi recuperación activa
           </motion.button>
         </div>
       ) : (

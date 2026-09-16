@@ -92,42 +92,20 @@ export type DiaSemana = 'lunes' | 'martes' | 'miercoles' | 'jueves' | 'viernes' 
 
 const ORDEN_DIAS: DiaSemana[] = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
 
-const NOMBRE_DIA: Record<DiaSemana, string> = {
-  lunes: 'Pierna (cuádriceps) y abdomen',
-  martes: 'Empuje (pecho, hombro y tríceps)',
-  miercoles: 'Tracción (espalda, bíceps y hombro)',
-  jueves: 'Recuperación activa',
-  viernes: 'Pierna (isquiotibiales y glúteos)',
-  sabado: 'Tren superior híbrido (pecho, espalda y hombro)',
-  domingo: 'Descanso hormonal',
-};
-
 export const CALENTAMIENTO_IMG: Record<TrenCalentamiento, string> = {
   superior: '/explicaciones/calentamiento-tren-superior.png',
   inferior: '/explicaciones/calentamiento-tren-inferior.png',
 };
 
-const CALENTAMIENTO_DIA: Record<DiaSemana, TrenCalentamiento | null> = {
-  lunes: 'inferior',
-  martes: 'superior',
-  miercoles: 'superior',
-  jueves: null, // recuperación activa: sin pesas, no aplica calentamiento de gimnasio
-  viernes: 'inferior',
-  sabado: 'superior',
-  domingo: null,
-};
-
-// ── Ruta Principiante (15/09/2026) — rutina propia dada a especificación
-// exacta por el usuario (JSON "app_config"/"rutina_semanal"): calendario de 6
-// días con cardio TODOS los días de pesas (no solo martes/jueves como en
-// Ruta Intermedio) y SIN sustitución de ejercicios avanzados — a un
-// principiante se le enseña la técnica del ejercicio real (sentadilla, peso
-// muerto, press militar) desde el día 1, con las notas técnicas de `guia`;
-// que un ejercicio use barra libre o máquina no depende del nivel del
-// usuario. Nivel Intermedio sigue con el split "REAL FISIC" de arriba, sin
-// cambios (pendiente: aplicar la misma actualización a Intermedio más
-// adelante, ver ESTADO.md).
-const NOMBRE_DIA_PRINCIPIANTE: Record<DiaSemana, string> = {
+// ── Rutina 15/09/2026 — a especificación exacta del usuario (JSON
+// "rutina_semanal" para Principiante y "rutina_semanal_intermedio" para
+// Intermedio): mismo calendario de 6 días + mismo enfoque por día + mismo
+// calentamiento para AMBAS rutas (reemplaza el split "REAL FISIC" anterior,
+// que tenía un día de recuperación activa sin pesas — ya no existe: el
+// jueves es un día de pierna real en las dos rutas). Lo que cambia entre
+// Principiante e Intermedio es SOLO la selección/parámetros de ejercicios
+// (ver SPLIT_PRINCIPIANTE / SPLIT_INTERMEDIO más abajo) y el cardio.
+const NOMBRE_DIA_RUTINA: Record<DiaSemana, string> = {
   lunes: 'Pierna completa',
   martes: 'Pecho, tríceps y hombro',
   miercoles: 'Espalda, bíceps y glúteo',
@@ -140,8 +118,8 @@ const NOMBRE_DIA_PRINCIPIANTE: Record<DiaSemana, string> = {
 /** Calentamiento por día: depende de qué se entrena hoy, no es fijo — un día
  * de pierna calienta tren inferior, uno de empuje/tracción calienta tren
  * superior, y sábado (full body) calienta como pierna porque arranca con
- * sentadilla (mismo criterio que Ruta Intermedio arriba). */
-const CALENTAMIENTO_DIA_PRINCIPIANTE: Record<DiaSemana, TrenCalentamiento | null> = {
+ * sentadilla. */
+const CALENTAMIENTO_DIA_RUTINA: Record<DiaSemana, TrenCalentamiento | null> = {
   lunes: 'inferior', // pierna completa
   martes: 'superior', // pecho, tríceps, hombro
   miercoles: 'superior', // espalda, bíceps (aunque incluye hip thrust, el grueso es tren superior)
@@ -175,12 +153,12 @@ const CARDIO_ZONA2: CardioDelDia = {
   imagen: '/explicaciones/cardio-zona2.jpg',
 };
 
-/** Cardio de cada día para Ruta Principiante — a diferencia de Ruta
- * Intermedio, aquí NO depende de la meta (Hipertrofia/Pérdida de grasa): el
- * mismo tipo y duración de cardio aplica a ambas rutas, tal como especifica
- * el JSON del usuario (lo que cambia por meta es solo nutrición y manejo de
- * cargas, no el cardio). Sábado es "a elección" del usuario según su fatiga
- * acumulada — se marca `opcional` para que la UI lo deje claro. */
+/** Cardio de cada día para Ruta Principiante — NO depende de la meta
+ * (Hipertrofia/Pérdida de grasa): el mismo tipo y duración de cardio aplica
+ * a ambas metas, tal como especifica el JSON del usuario (lo que cambia por
+ * meta es solo nutrición y manejo de cargas, no el cardio). Sábado es "a
+ * elección" del usuario según su fatiga acumulada — se marca `opcional`
+ * para que la UI lo deje claro. */
 const CARDIO_DIA_PRINCIPIANTE: Record<DiaSemana, CardioDelDia | null> = {
   lunes: { ...CARDIO_ZONA2, duracion: '30-40 min · intensidad moderada (60-70% FCM)' },
   martes: { ...CARDIO_HIIT, duracion: '15-20 min · intervalos intensos (30s sprint / 1 min descanso)' },
@@ -191,39 +169,27 @@ const CARDIO_DIA_PRINCIPIANTE: Record<DiaSemana, CardioDelDia | null> = {
   domingo: null,
 };
 
-/** El cardio del Día 2 (empuje) cambia según la ruta — a especificación
- * exacta del usuario: Zona 2 para no interferir con el volumen muscular en
- * Ruta A (ganar músculo), HIIT para acelerar el metabolismo en Ruta B (bajar
- * grasa). Los demás días de pesas no llevan cardio (solo Día 2 y Día 4).
- * Ruta Principiante usa `CARDIO_DIA_PRINCIPIANTE` en su lugar (cardio todos
- * los días de pesas, igual para ambas metas). */
+/** Cardio de cada día para Ruta Intermedio (15/09/2026) — mismo tipo/duración
+ * que Principiante casi siempre, pero con las indicaciones EXACTAS que dio
+ * el usuario para esta ruta (más orientadas a intensidad/RIR que a
+ * principiante), y tampoco depende de la meta. Reemplaza la lógica anterior
+ * (cardio solo el martes, Zona 2 o HIIT según meta). */
+const CARDIO_DIA_INTERMEDIO: Record<DiaSemana, CardioDelDia | null> = {
+  lunes: { ...CARDIO_ZONA2, duracion: '30-40 min · recuperación activa, 60-70% FCM' },
+  martes: { ...CARDIO_HIIT, duracion: '15-20 min · intervalos explosivos (30s al 90% / 1 min descanso activo)' },
+  miercoles: { ...CARDIO_ZONA2, duracion: '30 min · caminata o bicicleta ligera' },
+  jueves: { ...CARDIO_ZONA2, duracion: '40 min · ritmo sostenido, sin impacto' },
+  viernes: { ...CARDIO_HIIT, duracion: '15-20 min · protocolo exigente para forzar adaptación cardiovascular' },
+  sabado: { ...CARDIO_ZONA2, titulo: 'Cardio a elección (HIIT o Zona 2)', duracion: '15-30 min · autorregulación según la fatiga muscular acumulada', opcional: true },
+  domingo: null,
+};
+
+/** Cardio del día — ninguna ruta lo hace depender de la meta (Hipertrofia/
+ * Pérdida de grasa) desde el 15/09/2026: cada ruta entrena cardio todos los
+ * días de pesas, con su propio tipo/duración/indicaciones fijas. */
 export function cardioDeHoy(diaActual: number, meta: Meta, nivel: Nivel = 'intermedio'): CardioDelDia | null {
   const dia = diaSemanaDeHoy(diaActual);
-  if (nivel === 'principiante') return CARDIO_DIA_PRINCIPIANTE[dia];
-  if (dia !== 'martes') return null;
-  return meta === 'musculo' ? CARDIO_ZONA2 : CARDIO_HIIT;
-}
-
-export interface RecuperacionActiva {
-  pasosObjetivo: string;
-  /** Solo Ruta B: sesión de cardio Zona 2 adicional orientada a quema de grasa. */
-  cardioExtra?: CardioDelDia;
-}
-
-/** Día 4 — recuperación activa: nunca es entrenamiento de fuerza, solo
- * movimiento ligero. Ruta A camina para favorecer el flujo sanguíneo de
- * recuperación; Ruta B suma una sesión de Zona 2 orientada a quemar grasa.
- * Solo aplica a Ruta Intermedio — en Ruta Principiante el jueves es un día
- * de pesas real (pierna, énfasis glúteo), nunca dispara esta función (ver
- * `esDiaDeRecuperacionActiva`). */
-export function recuperacionActivaDeHoy(meta: Meta): RecuperacionActiva {
-  return {
-    pasosObjetivo: '7.000–10.000 pasos',
-    cardioExtra:
-      meta === 'grasa'
-        ? { ...CARDIO_ZONA2, titulo: 'Zona 2 extra', duracion: '30-60 min · orientado a quema de grasa', opcional: true }
-        : undefined,
-  };
+  return nivel === 'principiante' ? CARDIO_DIA_PRINCIPIANTE[dia] : CARDIO_DIA_INTERMEDIO[dia];
 }
 
 // Catálogo real del programa de 90 días — Sesión 8. Dentro de cada día el
@@ -551,36 +517,15 @@ export function generoIlustracion(id: string): 'masculino' | 'femenino' {
   return indice % 2 === 0 ? 'masculino' : 'femenino';
 }
 
-// SPLIT semanal — reestructurado 03/09/2026 a especificación exacta del
-// usuario (arquitectura "REAL FISIC"): cada grupo muscular vive en UN solo
-// día (antes cuádriceps e isquios/glúteos se mezclaban lunes+jueves). El
-// orden de cada arreglo es el orden en que se entrenan: músculo grande/
-// compuesto primero, aislados y accesorios después.
-const SPLIT: Record<DiaSemana, string[]> = {
-  // Día 1 — pierna (cuádriceps) y abdomen.
-  lunes: ['sentadilla_barra', 'prensa_inclinada', 'extension_cuadriceps', 'aductor_externo', 'aductor_interno', 'elevacion_talon', 'crunch_lateral_inclinado'],
-  // Día 2 — empuje: pecho, hombro anterior y tríceps (+ cardio por ruta, ver cardioDeHoy).
-  martes: ['press_banco_mancuernas', 'press_inclinado_mancuerna', 'aperturas_maquina', 'crossover_polea_alta', 'press_militar_barra', 'press_frances_barra_z', 'extension_triceps_copa'],
-  // Día 3 — tracción: dorsales, bíceps, trapecio y deltoides posterior + abdomen.
-  miercoles: ['remo_barra', 'jalon_pecho', 'remo_cerrado_maquina', 'jalon_pecho_cerrado_neutro', 'curl_barra', 'curl_supinacion_maquina', 'pajaros_pie_mancuerna', 'encogimientos_mancuernas', 'plancha_abdominal'],
-  // Día 4 — recuperación activa: SIN pesas (ver recuperacionActivaDeHoy).
-  jueves: [],
-  // Día 5 — pierna (isquiotibiales y glúteos), cadena posterior.
-  viernes: ['peso_muerto_barra', 'hip_thrust_barra', 'curl_femoral_maquina', 'elevacion_piernas'],
-  // Día 6 — tren superior híbrido (empuje/tracción), sin piernas, menor carga articular.
-  sabado: ['crossover_polea_alta', 'jalon_pecho', 'remo_cerrado_maquina', 'jalon_pecho_cerrado_neutro', 'elevacion_frontal_mancuernas', 'crunch_superior_horizontal', 'lumbares_maquina'],
-  // Día 7 — descanso hormonal.
-  domingo: [],
-};
-
 // SPLIT de Ruta Principiante (15/09/2026) — a especificación exacta del
-// usuario, ver comentario de NOMBRE_DIA_PRINCIPIANTE arriba. Los ejercicios
-// se usan TAL CUAL (barra libre incluida, con su `guia` de técnica): que un
-// ejercicio requiera barra o máquina no depende del nivel del usuario.
-// Repetir un id en más de un día es intencional (ej. `hip_thrust_barra` cae
-// en miércoles Y jueves, `sentadilla_barra` en lunes, jueves Y sábado) — así
-// lo pide el programa original, y como cada día se calcula por separado no
-// genera ninguna tarjeta duplicada dentro del mismo día.
+// usuario. Los ejercicios se usan TAL CUAL vienen del programa (barra libre
+// incluida, con su `guia` de técnica, series/reps del catálogo sin
+// modificar) — que un ejercicio requiera barra o máquina no depende del
+// nivel del usuario. Repetir un id en más de un día es intencional (ej.
+// `hip_thrust_barra` cae en miércoles Y jueves, `sentadilla_barra` en
+// lunes, jueves Y sábado) — así lo pide el programa original, y como cada
+// día se calcula por separado no genera ninguna tarjeta duplicada dentro
+// del mismo día.
 const SPLIT_PRINCIPIANTE: Record<DiaSemana, string[]> = {
   // Lunes — pierna completa.
   lunes: ['sentadilla_barra', 'prensa_inclinada', 'peso_muerto_barra', 'zancadas', 'extension_cuadriceps', 'curl_femoral_maquina', 'elevacion_talon'],
@@ -598,43 +543,117 @@ const SPLIT_PRINCIPIANTE: Record<DiaSemana, string[]> = {
   domingo: [],
 };
 
+/** Un ejercicio del día para Ruta Intermedio, con sus PROPIOS series/reps/
+ * tempo (más pesado, menos repeticiones, RIR bajo) — a diferencia de
+ * Principiante, que usa los valores del catálogo tal cual. `restPause`
+ * marca los ejercicios de aislamiento con la técnica "Rest-Pause en la
+ * última serie" que pidió el usuario (10s al fallo antes de re-intentar). */
+interface EjercicioIntermedio {
+  id: string;
+  series: number;
+  reps: string;
+  tempo: string;
+  restPause?: boolean;
+}
+
+function ejercicioIntermedio(id: string, series: number, reps: string, tempo: string, restPause?: boolean): EjercicioIntermedio {
+  return { id, series, reps, tempo, restPause };
+}
+
+// SPLIT de Ruta Intermedio (15/09/2026) — a especificación exacta del
+// usuario: mismos días/enfoques que Principiante, pero con series/reps más
+// bajas (fuerza-hipertrofia, RIR 0-1 en compuestos), tempo con más control
+// excéntrico, y algunos ejercicios de aislamiento con Rest-Pause en la
+// última serie. La selección de ejercicios difiere un poco de Principiante
+// en martes (sin extensión de tríceps en polea alta) y jueves (sin
+// sentadilla) — tal como especifica el programa.
+const SPLIT_INTERMEDIO: Record<DiaSemana, EjercicioIntermedio[]> = {
+  lunes: [
+    ejercicioIntermedio('sentadilla_barra', 4, '6-8', '2-0-1'),
+    ejercicioIntermedio('prensa_inclinada', 4, '8-10', '2-0-1'),
+    ejercicioIntermedio('peso_muerto_barra', 4, '6-8', '2-0-1'),
+    ejercicioIntermedio('zancadas', 3, '10-12 por pierna', '2-0-1'),
+    ejercicioIntermedio('extension_cuadriceps', 3, '12-15', '3-0-1', true),
+    ejercicioIntermedio('curl_femoral_maquina', 3, '12-15', '3-0-1', true),
+    ejercicioIntermedio('elevacion_talon', 4, '12-15', '3-0-1'),
+  ],
+  martes: [
+    ejercicioIntermedio('press_banco_mancuernas', 4, '6-8', '2-0-1'),
+    ejercicioIntermedio('press_inclinado_mancuerna', 3, '8-10', '2-0-1'),
+    ejercicioIntermedio('aperturas_maquina', 3, '12-15', '3-0-1', true),
+    ejercicioIntermedio('crossover_polea_alta', 3, '12-15', '3-0-1'),
+    ejercicioIntermedio('press_frances_barra_z', 4, '8-10', '2-0-1'),
+    ejercicioIntermedio('extension_triceps_copa', 3, '12-15', '3-0-1', true),
+    ejercicioIntermedio('elevaciones_laterales_mancuernas', 4, '12-15', '3-0-1', true),
+    ejercicioIntermedio('crunch_superior_horizontal', 4, '15-20', '2-0-1'),
+  ],
+  miercoles: [
+    ejercicioIntermedio('remo_barra', 4, '6-8', '2-0-1'),
+    ejercicioIntermedio('jalon_pecho', 4, '8-10', '2-0-1'),
+    ejercicioIntermedio('remo_cerrado_maquina', 3, '10-12', '2-0-1'),
+    ejercicioIntermedio('jalon_pecho_cerrado_neutro', 3, '12-15', '3-0-1', true),
+    ejercicioIntermedio('curl_barra', 4, '8-10', '2-0-1'),
+    ejercicioIntermedio('curl_supinacion_maquina', 3, '12-15', '3-0-1', true),
+    ejercicioIntermedio('pajaros_pie_mancuerna', 4, '12-15', '3-0-1', true),
+    ejercicioIntermedio('hip_thrust_barra', 4, '8-10', '2-0-1'),
+    ejercicioIntermedio('plancha_abdominal', 3, 'Hasta el fallo', 'isométrico'),
+  ],
+  jueves: [
+    ejercicioIntermedio('hip_thrust_barra', 4, '6-8', '2-0-1'),
+    ejercicioIntermedio('peso_muerto_barra', 4, '6-8', '2-0-1'),
+    ejercicioIntermedio('prensa_inclinada', 3, '10-12', '2-0-1'),
+    ejercicioIntermedio('zancadas', 3, '10-12 por pierna', '2-0-1'),
+    ejercicioIntermedio('aductor_externo', 3, '12-15', '3-0-1', true),
+    ejercicioIntermedio('aductor_interno', 3, '12-15', '3-0-1', true),
+  ],
+  viernes: [
+    ejercicioIntermedio('press_banco_mancuernas', 4, '6-8', '2-0-1'),
+    ejercicioIntermedio('remo_barra', 4, '6-8', '2-0-1'),
+    ejercicioIntermedio('jalon_pecho', 3, '8-10', '2-0-1'),
+    ejercicioIntermedio('crossover_polea_alta', 3, '12-15', '3-0-1', true),
+    ejercicioIntermedio('crunch_lateral_inclinado', 4, '15-20', '2-0-1'),
+  ],
+  sabado: [
+    ejercicioIntermedio('sentadilla_barra', 4, '6-8', '2-0-1'),
+    ejercicioIntermedio('press_inclinado_mancuerna', 3, '8-10', '2-0-1'),
+    ejercicioIntermedio('remo_cerrado_maquina', 3, '8-10', '2-0-1'),
+    ejercicioIntermedio('press_militar_barra', 3, '8-10', '2-0-1'),
+    ejercicioIntermedio('curl_barra', 3, '10-12', '3-0-1'),
+    ejercicioIntermedio('extension_triceps_copa', 3, '10-12', '3-0-1'),
+  ],
+  domingo: [],
+};
+
 export function diaSemanaDeHoy(diaActual: number): DiaSemana {
   return ORDEN_DIAS[(diaActual - 1) % ORDEN_DIAS.length];
 }
 
-export function nombreDeHoy(diaActual: number, nivel: Nivel = 'intermedio'): string {
-  const dia = diaSemanaDeHoy(diaActual);
-  return nivel === 'principiante' ? NOMBRE_DIA_PRINCIPIANTE[dia] : NOMBRE_DIA[dia];
+export function nombreDeHoy(diaActual: number): string {
+  return NOMBRE_DIA_RUTINA[diaSemanaDeHoy(diaActual)];
 }
 
-export function calentamientoDeHoy(diaActual: number, nivel: Nivel = 'intermedio'): TrenCalentamiento | null {
-  const dia = diaSemanaDeHoy(diaActual);
-  return nivel === 'principiante' ? CALENTAMIENTO_DIA_PRINCIPIANTE[dia] : CALENTAMIENTO_DIA[dia];
+export function calentamientoDeHoy(diaActual: number): TrenCalentamiento | null {
+  return CALENTAMIENTO_DIA_RUTINA[diaSemanaDeHoy(diaActual)];
 }
 
 export function esDiaDeDescanso(diaActual: number): boolean {
   return diaSemanaDeHoy(diaActual) === 'domingo';
 }
 
-/** Día 4 del split de Ruta Intermedio — recuperación activa (pasos o cardio
- * suave), nunca pesas. Distinto de `esDiaDeDescanso` (domingo, descanso
- * total). En Ruta Principiante NO existe día de recuperación activa: el
- * jueves es un día de pesas real (pierna, énfasis glúteo) — por eso siempre
- * devuelve `false` para ese nivel. */
-export function esDiaDeRecuperacionActiva(diaActual: number, nivel: Nivel = 'intermedio'): boolean {
-  if (nivel === 'principiante') return false;
-  return diaSemanaDeHoy(diaActual) === 'jueves';
-}
-
-/** Ruta Principiante usa su propio split (`SPLIT_PRINCIPIANTE`) con los
- * ejercicios TAL CUAL vienen del programa — sin sustituir barra libre por
- * máquina, sin reducir series: el nivel del usuario no decide si un
- * ejercicio usa barra o no (ver ESTADO.md, 15/09/2026). Ruta Intermedio (o
- * sin nivel, por compatibilidad) sigue usando `SPLIT` tal cual. */
+/** Ruta Principiante usa `SPLIT_PRINCIPIANTE` (ids tal cual, series/reps del
+ * catálogo). Ruta Intermedio usa `SPLIT_INTERMEDIO`, con sus propios
+ * series/reps/tempo más exigentes y la nota de Rest-Pause cuando aplica —
+ * el resto del ejercicio (imagen, guía, músculos) sigue viniendo del
+ * catálogo compartido, solo se sobrescribe el volumen de entrenamiento. */
 export function ejerciciosDeHoy(diaActual: number, nivel: Nivel = 'intermedio'): Ejercicio[] {
   const dia = diaSemanaDeHoy(diaActual);
-  const split = nivel === 'principiante' ? SPLIT_PRINCIPIANTE : SPLIT;
-  return split[dia].map((id) => CATALOGO[id]);
+  if (nivel === 'principiante') return SPLIT_PRINCIPIANTE[dia].map((id) => CATALOGO[id]);
+  return SPLIT_INTERMEDIO[dia].map((cfg) => ({
+    ...CATALOGO[cfg.id],
+    series: cfg.series,
+    reps: cfg.restPause ? `${cfg.reps} (Rest-Pause en la última serie)` : cfg.reps,
+    tempo: cfg.tempo,
+  }));
 }
 
 /** Ejercicio de respaldo para ids que ya no existen en el catálogo actual —
