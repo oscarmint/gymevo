@@ -26,16 +26,20 @@ const HOY = new Date().toISOString().slice(0, 10);
 const AYER = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
 const ANTEAYER = new Date(Date.now() - 2 * 86400000).toISOString().slice(0, 10);
 
+// Estructura completa de `Progreso` (lib/routine.ts) — actualizado 16/09/2026
+// tras la reestructuración de rutinas: antes faltaban nivel/meta/medidas y
+// algunos campos quedaban `undefined` en el screenshot (ej. macros de Perfil
+// no calculaban sin pesoKg/estaturaCm/edad).
 const PROGRESO_APP = {
+  nivel: 'principiante',
+  meta: 'musculo',
   sexo: 'hombre',
   diaActual: 12,
   racha: 6,
   ultimaFecha: HOY,
   hechosHoy: ['hip_thrust_barra'],
   reemplazosHoy: {},
-  // ids reales del catálogo actual (Sesión 8, "REAL FISIC") — con ids viejos
-  // ya retirados, Historial cae al respaldo "Ejercicio anterior" para los 3,
-  // que se ve como un catálogo roto en el screenshot de la landing.
+  // ids reales del catálogo actual (16/09/2026, rutina de 6 días).
   logs: [
     { fecha: ANTEAYER, ejercicioId: 'press_banco_mancuernas', peso: 38, reps: 8, series: 4 },
     { fecha: AYER, ejercicioId: 'sentadilla_barra', peso: 55, reps: 8, series: 4 },
@@ -43,6 +47,16 @@ const PROGRESO_APP = {
     { fecha: HOY, ejercicioId: 'hip_thrust_barra', peso: 45, reps: 10, series: 3 },
   ],
   descansoAutomatico: true,
+  descansoDuracionSeg: 60,
+  sonidoDescanso: true,
+  pesoKg: 78,
+  unidadPeso: 'lb',
+  estaturaCm: 175,
+  edad: 27,
+  pesoInicialKg: 75, // Ruta A (ganar músculo): +3kg desde el inicio, coherente con la meta del screenshot
+  cinturaCm: 84,
+  cinturaInicialCm: 88,
+  fechaInicioMedidas: ANTEAYER,
 };
 
 const browser = await chromium.launch();
@@ -95,7 +109,8 @@ async function nuevaPagina() {
       localStorage.setItem('gymevo_progreso', JSON.stringify(p));
       // Salta el saludo previo al entrenamiento ("Iniciar entrenamiento") —
       // el carrusel de la landing quiere el plan ya cargado, no el ritual.
-      sessionStorage.setItem('gymevo_saludo_visto', new Date().toISOString().slice(0, 10));
+      // La clave es por número de día del plan, no por fecha (ver app/app/page.tsx).
+      sessionStorage.setItem('gymevo_saludo_visto_dia', String(p.diaActual));
     },
     { r: RESPUESTAS_ONBOARDING, p: PROGRESO_APP },
   );

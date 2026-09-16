@@ -23,7 +23,7 @@
 - Motion signature: sin cambios (ease-out corto, bounce 0.05, stagger 60-80ms) — la energía nueva la dan el color y la tipografía, no animaciones más agresivas
 
 ## Pendiente de esta redecisión (anotado para no declarar "terminado" antes de tiempo)
-- Los 4 screenshots reales de la landing (`public/screenshots/frame-*.png`, sección "La app por dentro") se capturaron con la identidad ANTERIOR (clara) — quedan desactualizados visualmente contra el nuevo fondo oscuro. Hay que re-capturarlos con la app ya en el nuevo tema antes de dar la landing por completamente consistente.
+- ~~Los 4 screenshots reales de la landing...~~ RESUELTO 16/09/2026: re-capturados con `scripts/capturar-frames-carrusel.mjs` (actualizado para la nueva rutina de 6 días y el `Progreso` completo) — ya muestran la identidad oscura, la rutina de Principiante vigente y el calentamiento nuevo. Ver ESTADO.md.
 - Todas las pantallas se verificaron por CASCADA de tokens CSS (arquitectura ya 100% var(...), confirmado por auditoría de grep — cero hex hardcodeados en `.tsx`), no una por una con sesión autenticada real. Antes de vender, correr el TEST DE FIDELIDAD (screenshot a 375px) en las 4 pantallas del dinero + panel de administrador cuando se construya.
 - El panel de administrador (aún no construido) debe nacer YA con este brand kit — no heredar el anterior.
 
