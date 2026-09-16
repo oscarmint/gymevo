@@ -296,7 +296,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Aductores', principal: true }],
     consejoTecnico: 'Pausa en el punto de contracción máxima antes de volver.',
   } },
-  elevacion_talon: { id: 'elevacion_talon', nombre: 'Elevación de talón (de pie)', grupo: 'Pierna', grupoMuscular: 'pantorrilla', imagenExplicacion: '/explicaciones/elevacion-talon.png', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'extension_cuadriceps', guia: {
+  elevacion_talon: { id: 'elevacion_talon', nombre: 'Elevación de talón (de pie)', grupo: 'Pierna', grupoMuscular: 'pantorrilla', imagenExplicacion: '/explicaciones/elevacion-talon.png', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'elevacion_talon_sentado', guia: {
     indicaciones: [
       'De pie sobre la plataforma, con los talones colgando del borde.',
       'Sube lo más alto posible apoyándote en las puntas de los pies.',
@@ -304,6 +304,19 @@ const CATALOGO: Record<string, Ejercicio> = {
     ],
     musculos: [{ nombre: 'Gastrocnemio', principal: true }, { nombre: 'Sóleo', principal: false }],
     consejoTecnico: 'Movimiento completo fluido, sin balanceo del cuerpo.',
+  } },
+  // Ejercicio nuevo (15/09/2026) — variante SENTADA: rodilla flexionada aísla
+  // más el sóleo (a diferencia de la de pie, que enfatiza el gastrocnemio).
+  // Ejercicio distinto por equipo/objetivo, no un reemplazo del de arriba.
+  elevacion_talon_sentado: { id: 'elevacion_talon_sentado', nombre: 'Elevación de talón sentado', grupo: 'Pierna', grupoMuscular: 'pantorrilla', imagenExplicacion: '/explicaciones/elevacion-talon-sentado.png', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'elevacion_talon', guia: {
+    indicaciones: [
+      'Siéntate en la máquina con la espalda apoyada en el respaldo.',
+      'Coloca las puntas de los pies en la plataforma, con los talones colgando.',
+      'Baja los talones lentamente hasta sentir el estiramiento del gemelo.',
+      'Empuja con las puntas de los pies, elevando los talones lo más alto posible.',
+    ],
+    musculos: [{ nombre: 'Gastrocnemio', principal: true }, { nombre: 'Sóleo', principal: true }],
+    consejoTecnico: 'Evita rebotar en la posición baja: controla el descenso para aprovechar todo el estiramiento del gemelo.',
   } },
   hip_thrust_barra: { id: 'hip_thrust_barra', nombre: 'Hip thrust con barra', grupo: 'Pierna', grupoMuscular: 'gluteo', imagenExplicacion: '/explicaciones/hip-thrust-barra.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '2-1-1', alternativaId: 'peso_muerto_barra', guia: {
     indicaciones: [
