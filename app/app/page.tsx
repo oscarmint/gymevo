@@ -6,7 +6,7 @@
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { Lottie } from 'lottie-react';
 import { motion, AnimatePresence, useReducedMotion, animate } from 'motion/react';
-import { Check, Dumbbell, Flame, Info, PlayCircle, RefreshCcw, Undo2, Volume2, VolumeX, WifiOff, X, Zap } from 'lucide-react';
+import { Check, Dumbbell, Flame, Info, PlayCircle, RefreshCcw, TrendingUp, Undo2, Volume2, VolumeX, WifiOff, X, Zap } from 'lucide-react';
 import { leerRespuestas } from '@/lib/onboarding';
 import animacionFitness from '@/public/animaciones/fitness.json';
 import { CuerpoMuscular } from '@/components/CuerpoMuscular';
@@ -29,6 +29,7 @@ import {
   registrarSerie,
   reemplazarEjercicio,
   seriesHechasHoy,
+  sugerenciaPeso,
   ultimoRegistro,
   type Progreso,
 } from '@/lib/routine';
@@ -37,6 +38,16 @@ import { guardarLogRemoto, guardarProgresoRemoto, leerProgresoRemoto, sincroniza
 /** Opciones de duración del descanso — el usuario elige una al empezar el
  * plan del día (no por ejercicio: un solo cronómetro para todo hoy). */
 const DURACIONES_DESCANSO = [30, 60, 120, 180];
+
+/** Chips de esfuerzo (RIR, Repeticiones en Reserva) — solo Ruta Intermedio,
+ * ver `sugerenciaPeso` en lib/routine.ts. 4 opciones (no 5) para que quepan
+ * cómodas en una fila a 375px sin scroll horizontal. */
+const RIR_OPCIONES: { rir: number; etiqueta: string }[] = [
+  { rir: 4, etiqueta: 'Fácil' },
+  { rir: 2, etiqueta: 'Normal' },
+  { rir: 1, etiqueta: 'Duro' },
+  { rir: 0, etiqueta: 'Al fallo' },
+];
 
 function etiquetaDuracion(seg: number): string {
   return seg < 60 ? `${seg}s` : `${seg / 60} min`;
@@ -149,6 +160,11 @@ function PlanDelDia({
   const [descanso, setDescanso] = useState<{ ejercicioId: string; restante: number; total: number } | null>(null);
   const [pesos, setPesos] = useState<Record<string, string>>({});
   const [repsHechas, setRepsHechas] = useState<Record<string, string>>({});
+  // RIR (Repeticiones en Reserva) de la serie que se va a registrar — solo
+  // Ruta Intermedio la pregunta (autorregulación, 15/09/2026, ver
+  // ESTADO.md). Sin selección no se manda `rir` al log: la sugerencia de
+  // peso simplemente no aparece la próxima vez, no bloquea nada.
+  const [rirElegido, setRirElegido] = useState<Record<string, number>>({});
   // Recordatorio del último peso usado (pedido del usuario): NO se muestra
   // solo, es un enlace que la persona toca si quiere recordarlo — algunos
   // prefieren no verlo y decidir el peso por su cuenta. Tres estados por
@@ -302,7 +318,8 @@ function PlanDelDia({
     const pesoTexto = pesos[ejercicioId];
     const peso = pesoTexto ? Number(pesoTexto) : 0;
     const repsTexto = repsHechas[ejercicioId] ?? repsPorDefecto(ej.reps);
-    const log = { ejercicioId, peso, reps: Number(repsTexto) || 0, series: 1 };
+    const rir = rirElegido[ejercicioId];
+    const log = { ejercicioId, peso, reps: Number(repsTexto) || 0, series: 1, ...(rir !== undefined ? { rir } : {}) };
     const yaHechas = seriesHechasHoy(progreso, ejercicioId);
     const esUltimaSerie = yaHechas + 1 >= ej.series;
 
@@ -317,6 +334,10 @@ function PlanDelDia({
     // pero no debería quedar prellenado por accidente.
     setPesos((p) => ({ ...p, [ejercicioId]: '' }));
     setRepsHechas((p) => ({ ...p, [ejercicioId]: repsPorDefecto(ej.reps) }));
+    setRirElegido((p) => {
+      const { [ejercicioId]: _quitado, ...resto } = p;
+      return resto;
+    });
 
     if (esUltimaSerie) {
       // Entre EJERCICIOS no hay cronómetro (cada quien decide cuánto
@@ -681,6 +702,9 @@ function PlanDelDia({
             // Solo en la primera serie (seriesHechas===0): más adelante en el
             // mismo ejercicio ya sabe qué peso está usando hoy.
             const registroAnterior = seriesHechas === 0 ? ultimoRegistro(progreso, ej.id) : null;
+            // Autorregulación (Ruta Intermedio, 15/09/2026): solo en la
+            // primera serie, y solo si la vez pasada quedó un RIR guardado.
+            const sugerencia = nivel === 'intermedio' && seriesHechas === 0 ? sugerenciaPeso(progreso, ej.id) : null;
             return (
             <motion.div
               key={ej.id}
@@ -729,6 +753,18 @@ function PlanDelDia({
                       </button>
                     )
                   )}
+                  {/* Autorregulación (Ruta Intermedio): si la vez pasada
+                      quedó registrado qué tan duro se sintió, se sugiere
+                      subir el peso o mantenerlo — nunca bajarlo solo, eso
+                      lo decide la persona si de verdad lo necesita. */}
+                  {!hecho && sugerencia && (
+                    <p className="mt-1 flex items-center gap-1 text-xs font-medium text-[var(--accent)]">
+                      <TrendingUp size={13} />
+                      {sugerencia.subio
+                        ? `Te sobró margen — prueba con ${sugerencia.pesoSugerido}${progreso.unidadPeso} hoy.`
+                        : `Mantén ${sugerencia.pesoSugerido}${progreso.unidadPeso} — la vez pasada costó.`}
+                    </p>
+                  )}
                   {!hecho && (
                     <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
                       <a
@@ -763,6 +799,30 @@ function PlanDelDia({
               </div>
 
               {!hecho ? (
+                <>
+                {/* Autorregulación (Ruta Intermedio, 15/09/2026): pregunta
+                    qué tan duro se sintió la serie que está por registrar —
+                    un principiante todavía no puede juzgar su esfuerzo con
+                    precisión, así que nunca se le pregunta. Opcional: si no
+                    se toca ningún chip, el log se guarda igual, sin `rir`. */}
+                {nivel === 'intermedio' && (
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {RIR_OPCIONES.map((op) => (
+                      <button
+                        key={op.rir}
+                        type="button"
+                        onClick={() => setRirElegido((p) => ({ ...p, [ej.id]: op.rir }))}
+                        className={`h-8 rounded-full px-3 text-xs font-semibold transition-colors ${
+                          rirElegido[ej.id] === op.rir
+                            ? 'bg-[var(--accent)] text-[var(--bg)]'
+                            : 'border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
+                        }`}
+                      >
+                        {op.etiqueta}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 <div className="mt-3 flex items-end gap-2">
                   {/* Etiqueta SIEMPRE visible arriba de cada campo — el reps
                       viene prellenado con la meta, así que su placeholder
@@ -815,6 +875,7 @@ function PlanDelDia({
                     {esUltimaSerie ? 'Registrar última serie' : progreso.descansoAutomatico ? `Registrar serie ${serieActual} y descansar` : `Registrar serie ${serieActual}`}
                   </motion.button>
                 </div>
+                </>
               ) : (
                 <div className="mt-2 flex items-center justify-between">
                   <p className="flex items-center gap-1.5 text-xs font-medium text-[var(--accent)]">

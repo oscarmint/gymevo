@@ -693,6 +693,14 @@ export interface RegistroLog {
   peso: number;
   reps: number;
   series: number;
+  /** Repeticiones en Reserva (RIR, 15/09/2026) — cuántas repeticiones más
+   * cree el usuario que podía hacer antes de fallar (0 = al fallo, 4 = muy
+   * fácil). Solo se pide en Ruta Intermedio (ver `registrar` en
+   * app/app/page.tsx); un principiante todavía no puede juzgar su esfuerzo
+   * con precisión, así que no se le pregunta. Opcional para que los logs
+   * viejos (sin esta pregunta) sigan siendo válidos sin migración. Se usa
+   * en `sugerenciaPeso` para decidir si subir el peso la próxima vez. */
+  rir?: number;
 }
 
 export interface Progreso {
@@ -858,6 +866,27 @@ export function ultimoRegistro(p: Progreso, ejercicioId: string): RegistroLog | 
   const previos = p.logs.filter((l) => l.ejercicioId === ejercicioId && l.fecha < hoy);
   if (previos.length === 0) return null;
   return previos.reduce((mas, actual) => (actual.fecha >= mas.fecha ? actual : mas));
+}
+
+/** Cuánto subir el peso incremento de "sube el peso" — pequeño y fijo para no
+ * proponer saltos peligrosos, distinto según la unidad (2.5 kg ≈ 5 lb, los
+ * incrementos de disco más chicos que existen en un gimnasio real). */
+const INCREMENTO_SUGERIDO: Record<'kg' | 'lb', number> = { kg: 2.5, lb: 5 };
+
+/** Sugerencia de peso para la próxima vez, basada en el RIR (Repeticiones en
+ * Reserva) que el usuario reportó la última vez — autorregulación simple
+ * (15/09/2026, Ruta Intermedio): si sobró margen (RIR 3-4, "fácil"/"muy
+ * fácil"), sugiere subir un incremento chico; si costó (RIR 0-1, "al fallo"/
+ * "duro"), sugiere mantener el mismo peso para consolidar la técnica; RIR 2
+ * ("moderado") también mantiene, es la zona correcta para seguir ahí. Sin
+ * RIR registrado (log viejo, o Ruta Principiante que no lo pregunta) no hay
+ * sugerencia — se usa el dato plano de `ultimoRegistro` como hasta ahora. */
+export function sugerenciaPeso(p: Progreso, ejercicioId: string): { pesoSugerido: number; subio: boolean } | null {
+  const ultimo = ultimoRegistro(p, ejercicioId);
+  if (!ultimo || ultimo.rir === undefined || ultimo.peso <= 0) return null;
+  const incremento = INCREMENTO_SUGERIDO[p.unidadPeso];
+  const subio = ultimo.rir >= 3;
+  return { pesoSugerido: subio ? ultimo.peso + incremento : ultimo.peso, subio };
 }
 
 /** Deshace un registro de hoy (control y libertad — heurística 3): quita la

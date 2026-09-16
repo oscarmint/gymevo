@@ -11,9 +11,10 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useReducedMotion } from 'motion/react';
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
-import { History, TrendingDown, TrendingUp } from 'lucide-react';
+import { Award, History, TrendingDown, TrendingUp } from 'lucide-react';
 import type { Meta } from '@/lib/onboarding';
 import { leerProgreso, obtenerEjercicio, type Progreso, type RegistroLog } from '@/lib/routine';
+import { progresionPorEjercicio, recordMasReciente, volumenPorGrupoMuscular } from '@/lib/analiticaAvanzada';
 import { leerProgresoRemoto } from '@/lib/supabase/sync';
 import { useConteo } from '@/lib/useConteo';
 
@@ -258,11 +259,107 @@ export default function HistorialPage() {
               );
             })}
           </div>
+
+          {/* Opción B de "sentir la diferencia entre niveles" (15/09/2026,
+              ver ESTADO.md): solo Ruta Intermedio ve esta sección — un
+              principiante se motiva con la racha de arriba, no con datos.
+              Intermedio ya viene con `guia`/RIR, así que la analítica que le
+              sirve es distinta: qué músculo trabajó más, si su fuerza sube
+              de verdad, y cuándo bate una marca real. */}
+          {progreso.nivel === 'intermedio' && <ProgresoAvanzado logs={progreso.logs} unidadPeso={progreso.unidadPeso} />}
         </>
       )}
         </>
       )}
       </div>
+    </div>
+  );
+}
+
+/** Analítica avanzada de Ruta Intermedio — ver lib/analiticaAvanzada.ts. Se
+ * calcula con TODOS los logs (no solo los últimos 7 días como el gráfico de
+ * arriba): el volumen por músculo sí se acota a la semana adentro de
+ * `volumenPorGrupoMuscular`, pero la progresión de fuerza necesita ver desde
+ * el primer registro para tener un "antes" real con el que comparar. */
+function ProgresoAvanzado({ logs, unidadPeso }: { logs: RegistroLog[]; unidadPeso: 'kg' | 'lb' }) {
+  const volumenGrupos = useMemo(() => volumenPorGrupoMuscular(logs), [logs]);
+  const progresiones = useMemo(() => progresionPorEjercicio(logs), [logs]);
+  const record = useMemo(() => recordMasReciente(progresiones), [progresiones]);
+  const maxVolumen = volumenGrupos[0]?.volumen ?? 0;
+
+  if (volumenGrupos.length === 0 && progresiones.length === 0) return null;
+
+  return (
+    <div className="mt-8 flex flex-col gap-5">
+      <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">Tu progreso avanzado</p>
+
+      {record && (
+        <div className="rounded-2xl border border-[color-mix(in_oklab,var(--accent)_35%,transparent)] bg-[var(--chip-bg)] p-4">
+          <div className="flex items-center gap-2">
+            <Award size={18} color="var(--accent)" />
+            <p className="text-sm font-semibold text-[var(--text-primary)]">Nueva marca en {record.nombre}</p>
+          </div>
+          <p className="mt-1 text-xs text-[var(--text-secondary)]">
+            Tu fuerza estimada llegó a {record.e1rmActual}
+            {unidadPeso} — la mejor que has registrado en este ejercicio.
+          </p>
+        </div>
+      )}
+
+      {volumenGrupos.length > 0 && (
+        <div className="rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Qué trabajaste más esta semana</p>
+          <div className="mt-3 flex flex-col gap-2.5">
+            {volumenGrupos.slice(0, 6).map((g) => (
+              <div key={g.grupo}>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-[var(--text-primary)]">{g.etiqueta}</span>
+                  <span className="text-xs tabular-nums text-[var(--text-secondary)]">
+                    {new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(g.volumen)} {unidadPeso}
+                  </span>
+                </div>
+                <div className="mt-1 h-2 overflow-hidden rounded-full bg-[var(--chip-bg)]">
+                  <div
+                    className="h-full rounded-full bg-[var(--accent)]"
+                    style={{ width: `${maxVolumen > 0 ? Math.max(4, Math.round((g.volumen / maxVolumen) * 100)) : 0}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {progresiones.length > 0 && (
+        <div className="rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Progresión de fuerza estimada</p>
+          <div className="mt-3 flex flex-col gap-3">
+            {progresiones.map((p) => (
+              <div key={p.ejercicioId} className="flex items-center justify-between gap-3">
+                <span className="text-sm text-[var(--text-primary)]">{p.nombre}</span>
+                <div className="flex items-center gap-1.5">
+                  {p.deltaPct !== null && p.deltaPct !== 0 && (
+                    p.deltaPct > 0 ? <TrendingUp size={14} color="var(--accent)" /> : <TrendingDown size={14} color="var(--status-warning)" />
+                  )}
+                  <span className="text-sm font-semibold tabular-nums text-[var(--text-primary)]">
+                    {p.e1rmActual}
+                    {unidadPeso}
+                  </span>
+                  {p.deltaPct !== null && (
+                    <span className="text-xs tabular-nums text-[var(--text-tertiary)]">
+                      ({p.deltaPct >= 0 ? '+' : ''}
+                      {p.deltaPct}%)
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 text-xs text-[var(--text-tertiary)]">
+            Fuerza estimada = el peso máximo que podrías levantar 1 vez, calculado desde tus series reales — no hace falta probarlo de verdad.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
