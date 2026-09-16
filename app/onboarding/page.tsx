@@ -7,7 +7,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { animate, AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
-import { Activity, Check, ChevronLeft, NotebookPen, PlayCircle, RefreshCcw, ShieldAlert, Users, X, Zap } from 'lucide-react';
+import { Activity, Check, ChevronLeft, NotebookPen, PlayCircle, RefreshCcw, ShieldAlert, TrendingUp, Users, X, Zap } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
   guardarRespuestas,
@@ -57,12 +57,12 @@ const OPCIONES_FRUSTRACION: Opcion<string>[] = [
 
 const RECONOCIMIENTO_POR_FRUSTRACION: Record<string, string> = {
   maquinas:
-    'No es que te falte constancia: cada vez que la máquina está ocupada, pierdes el hilo de tu plan y terminas improvisando. Por eso existe el Botón de Rescate — otro ejercicio al instante, sin perder el día.',
+    'No te falta constancia: cuando la máquina está ocupada, pierdes el hilo del plan. Por eso existe el Botón de Rescate — otro ejercicio al instante.',
   entrenadores:
-    'No es que no merezcas ayuda: un entrenador de planta no puede darte atención personalizada a las 6 PM con el gimnasio lleno. GymEvo es el entrenador que sí está pendiente de ti, todos los días.',
+    'No es que no merezcas ayuda: nadie te atiende igual a las 6 PM con el gimnasio lleno. GymEvo sí está pendiente de ti, todos los días.',
   lesion:
-    'Ese miedo es válido — casi nadie te explica bien la técnica en un gimnasio comercial. Por eso cada ejercicio de tu plan trae la forma correcta de hacerlo, sin que tengas que adivinar.',
-  apps: 'Cada vez que una app te cambió la rutina de la nada, no aprendiste nada nuevo — solo te confundiste más. GymEvo no hace eso: tu plan es fijo, con salida cuando la necesitas, no un algoritmo caótico.',
+    'Ese miedo es válido — casi nadie explica bien la técnica en un gimnasio comercial. Cada ejercicio de tu plan trae la forma correcta, sin adivinar.',
+  apps: 'Cada app te cambió la rutina sin avisar y solo te confundió más. GymEvo no hace eso: tu plan es fijo, con salida cuando la necesitas.',
 };
 
 const OPCIONES_HORARIO: Opcion<Horario>[] = [
@@ -156,6 +156,18 @@ export default function OnboardingPage() {
   const paso = PASOS[pasoIdx];
   const progreso = Math.round(((pasoIdx + 1) / PASOS.length) * 100);
   const progresoMostrado = Math.max(progreso, 8); // truco de arranque (50 → A2)
+
+  // Enter = "Continuar" (hallazgo revisor-visual, heurística 7): los pasos de
+  // chips auto-avanzan al hacer clic/tap, pero "reconocimiento" es el único
+  // paso manual sin equivalente de teclado para su CTA.
+  useEffect(() => {
+    if (paso !== 'reconocimiento' || confirmandoSalida) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Enter') ir(pasoIdx + 1);
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [paso, pasoIdx, confirmandoSalida]);
 
   // Conteo ascendente al entrar al paso "compromiso" (baseline de movimiento
   // #2, hallazgo revisor-visual: el número solo cruzaba-desvanecía entre
@@ -335,13 +347,24 @@ export default function OnboardingPage() {
             <PantallaPregunta key="nivel" dir={dir} variants={variants}>
               <Pregunta titulo="¿Cuál es tu situación hoy?" micro="Esto decide tu ruta: Principiante o Intermedio" />
               <Chips opciones={OPCIONES_NIVEL} valor={nivel} onSelect={(v) => seleccionarYAvanzar(setNivel, v)} />
+              {/* Beneficio reactivo al nivel elegido (16/09/2026): antes era
+                  fijo (siempre "técnica explicada"), pero eso no distinguía
+                  nada para quien ya no es principiante — el sub-avatar
+                  Intermedio de FICHA-AVATAR busca "romper el estancamiento",
+                  no aprender técnica de cero. Este primer vistazo es breve
+                  (avanza solo a los 320ms); el mensaje completo se repite en
+                  "Te entendemos" más abajo, donde sí hay tiempo de leerlo. */}
               <TarjetaRuta
                 sexo={sexo}
                 nivel={nivel}
                 meta={meta}
                 horario={horario}
                 dias={null}
-                beneficio={{ icono: PlayCircle, texto: 'Cada ejercicio de tu plan trae la técnica explicada — nunca vas a tener que adivinar cómo se hace.' }}
+                beneficio={
+                  nivel === 'intermedio'
+                    ? { icono: TrendingUp, texto: 'Se acabó adivinar si subir el peso: te preguntamos qué tan duro sintió cada serie y ajustamos tu próximo peso sugerido.' }
+                    : { icono: PlayCircle, texto: 'Cada ejercicio de tu plan trae la técnica explicada — nunca vas a tener que adivinar cómo se hace.' }
+                }
               />
             </PantallaPregunta>
           )}
@@ -375,32 +398,108 @@ export default function OnboardingPage() {
 
           {paso === 'reconocimiento' && (
             <PantallaPregunta key="reconocimiento" dir={dir} variants={variants}>
-              <div className="flex flex-1 flex-col items-center justify-center text-center">
-                <span
-                  aria-hidden="true"
-                  className="mb-6 flex size-16 items-center justify-center rounded-full bg-[var(--chip-bg)]"
-                >
-                  {/* Celebración N1 de FICHA-ARTE: "trazo verde" que se dibuja,
-                      no un ícono estático — único momento emocional del flujo. */}
-                  <motion.svg width={28} height={28} viewBox="0 0 28 28" fill="none">
-                    <motion.path
-                      d="M6 14.5l5.5 5.5L22 9"
-                      stroke="var(--accent)"
-                      strokeWidth={2.5}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      initial={{ pathLength: reduce ? 1 : 0 }}
-                      animate={{ pathLength: 1 }}
-                      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
-                    />
-                  </motion.svg>
-                </span>
-                <h1 className="text-balance text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
-                  Te entendemos
-                </h1>
-                <p className="mt-4 max-w-xs text-base leading-relaxed text-[var(--text-secondary)]">
-                  {RECONOCIMIENTO_POR_FRUSTRACION[frustracion ?? 'apps']}
-                </p>
+              <div className="flex flex-1 flex-col items-center justify-start pt-2 text-center">
+                <div className="flex flex-col items-center">
+                  <motion.span
+                    aria-hidden="true"
+                    initial={{ opacity: reduce ? 1 : 0, y: reduce ? 0 : 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: reduce ? 0 : 0, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    className="mb-6 flex size-16 items-center justify-center rounded-full border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[var(--chip-bg)]"
+                  >
+                    {/* Celebración N1 de FICHA-ARTE: "trazo verde" que se dibuja,
+                        no un ícono estático — único momento emocional del flujo. */}
+                    <motion.svg width={28} height={28} viewBox="0 0 28 28" fill="none">
+                      <motion.path
+                        d="M6 14.5l5.5 5.5L22 9"
+                        stroke="var(--accent)"
+                        strokeWidth={2.5}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        initial={{ pathLength: reduce ? 1 : 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+                      />
+                    </motion.svg>
+                  </motion.span>
+                  <motion.h1
+                    initial={{ opacity: reduce ? 1 : 0, y: reduce ? 0 : 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: reduce ? 0 : 0.08, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    className="text-balance text-3xl font-bold leading-[1.1] tracking-[-0.02em] text-[var(--text-primary)] [font-family:var(--font-display)]"
+                  >
+                    Te entendemos
+                  </motion.h1>
+                  <motion.p
+                    initial={{ opacity: reduce ? 1 : 0, y: reduce ? 0 : 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: reduce ? 0 : 0.16, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    className="mt-6 max-w-xs text-base leading-relaxed text-[var(--text-secondary)]"
+                  >
+                    {RECONOCIMIENTO_POR_FRUSTRACION[frustracion ?? 'apps']}
+                  </motion.p>
+                </div>
+                {/* Refuerzo SIEMPRE visible, ahora 2 tarjetas (16/09/2026,
+                    hallazgo revisor-visual: con 1 sola tarjeta seguía sobrando
+                    ~30% de la pantalla — el vacío no era un problema de
+                    reparto de espacio sino de masa de contenido real; 3
+                    rondas moviendo el mismo hueco de sitio lo confirmaron).
+                    Intermedio ve el mecanismo de autorregulación (RIR) —
+                    sub-avatar de FICHA-AVATAR que busca "salir de la meseta".
+                    No-Intermedio ve el ángulo de "plan fijo" (distinto del
+                    Botón de Rescate ya mostrado en "meta"). La 2ª tarjeta es
+                    igual para ambas rutas — racha/progreso real es el loop de
+                    retención central de la app (ver ESTADO.md), información
+                    nueva y verdadera, no relleno. */}
+                <div className="mt-8 flex w-full max-w-xs flex-col gap-3">
+                  <motion.div
+                    initial={{ opacity: reduce ? 1 : 0, y: reduce ? 0 : 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: reduce ? 0 : 0.24, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    style={{
+                      borderImage: 'linear-gradient(90deg, var(--accent), color-mix(in oklab, var(--accent-2) 70%, var(--accent))) 1',
+                    }}
+                    className="flex items-start gap-3 rounded-[var(--radius-card)] border-t-2 bg-[var(--surface)] p-4 text-left"
+                  >
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-[color-mix(in_oklab,var(--accent)_30%,transparent)] bg-[var(--chip-bg)]">
+                      {nivel === 'intermedio' ? (
+                        <TrendingUp size={17} color="var(--accent)" />
+                      ) : (
+                        <ShieldAlert size={17} color="var(--accent)" />
+                      )}
+                    </span>
+                    <p className="text-sm leading-relaxed text-[var(--text-primary)]">
+                      {nivel === 'intermedio' ? (
+                        <>
+                          <span className="font-semibold">Ajuste Automático de Peso:</span> subimos tu
+                          carga cuando el esfuerzo lo permite.
+                        </>
+                      ) : (
+                        <>
+                          <span className="font-semibold">Tu plan no cambia de la nada:</span> mismos
+                          ejercicios cada semana, para ver tu progreso real.
+                        </>
+                      )}
+                    </p>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: reduce ? 1 : 0, y: reduce ? 0 : 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: reduce ? 0 : 0.32, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    style={{
+                      borderImage: 'linear-gradient(90deg, var(--accent-2), color-mix(in oklab, var(--accent) 70%, var(--accent-2))) 1',
+                    }}
+                    className="flex items-start gap-3 rounded-[var(--radius-card)] border-t-2 bg-[var(--surface)] p-4 text-left"
+                  >
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-[color-mix(in_oklab,var(--accent-2)_30%,transparent)] bg-[var(--chip-bg)]">
+                      <Activity size={17} color="var(--accent-2)" />
+                    </span>
+                    <p className="text-sm leading-relaxed text-[var(--text-primary)]">
+                      <span className="font-semibold">Tu constancia queda registrada:</span> ves tu
+                      racha y tu progreso reales, sesión a sesión.
+                    </p>
+                  </motion.div>
+                </div>
               </div>
               <motion.button
                 type="button"
