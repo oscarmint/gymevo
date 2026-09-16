@@ -61,49 +61,47 @@ export function calcularBMR(pesoKg: number, estaturaCm: number, edad: number, se
   return sexo === 'hombre' ? base + 5 : base - 161;
 }
 
-/** Factor de actividad (PAL) derivado de cuántos días entrena por semana —
- * ya respondido en el onboarding, no hace falta una pregunta aparte. */
-export function factorActividad(diasSemana: number): number {
-  if (diasSemana <= 2) return 1.375;
-  if (diasSemana <= 5) return 1.55;
-  return 1.725;
+/** Factor de actividad (PAL) — 15/09/2026: fijo en 1.55 (moderado/alto),
+ * especificación exacta dada por el usuario ("calculadora_nutricional",
+ * validada por medicina deportiva) porque el programa real de GymEvo
+ * entrena 6 días a la semana sin importar la ruta (Principiante o
+ * Intermedio) — ya no depende de la respuesta de onboarding `diasSemana`
+ * (esa sigue existiendo solo para mostrarla en Perfil, no para este cálculo).
+ * Antes variaba 1.375/1.55/1.725 según los días que el usuario decía
+ * entrenar; se simplifica porque el programa ya no es una elección libre. */
+const FACTOR_ACTIVIDAD = 1.55;
+
+export function factorActividad(): number {
+  return FACTOR_ACTIVIDAD;
 }
 
-// Rangos 03/09/2026 — especificación exacta dada por el usuario (arquitectura
-// "REAL FISIC"), dentro del mismo marco de evidencia ISSN citado arriba. Se
-// usa el punto medio de cada rango.
+// Especificación exacta dada por el usuario 15/09/2026 ("calculadora_nutricional",
+// validada por medicina deportiva) — reemplaza los rangos del 03/09/2026.
 const PROTEINA_G_KG: Record<Meta, number> = {
-  musculo: 1.8, // Ruta A: 1.6-2.0 g/kg — punto medio
-  grasa: 2.1, // Ruta B (protección anticatabólica): 1.8-2.4 g/kg — punto medio
+  musculo: 1.8, // Ruta A: hipertrofia
+  grasa: 2.1, // Ruta B: protección anticatabólica en déficit
 };
 
-const CARBOHIDRATOS_G_KG: Record<Meta, number> = {
-  musculo: 4, // Ruta A: 3-5 g/kg — punto medio
-  grasa: 3, // Ruta B: reducidos, concentrados peri-entreno — sin rango exacto dado, se mantiene como piso
-};
-
-// Ruta A: fats 0.6-1.0 g/kg (regulación hormonal) — punto medio. Ruta B:
-// 0.6-0.8 g/kg (saciedad y sistema nervioso, sin exceso calórico) — punto
-// medio. Antes se calculaba como % de las calorías; ahora es directo por
-// kg, tal como lo especifica la ruta.
+// Antes se calculaba como % de las calorías; ahora es directo por kg.
 const GRASA_G_KG: Record<Meta, number> = {
-  musculo: 0.8,
+  musculo: 0.9,
   grasa: 0.7,
 };
 
-// Ruta A: superávit leve (+150/+300 kcal, punto medio +225). Ruta B: déficit
-// moderado (-300/-500 kcal, punto medio -400) — ambos sobre el TDEE real de
-// la persona. Un déficit más agresivo (ej. -800) queda BLOQUEADO por diseño:
-// el ajuste es fijo, la app nunca deja elegir un déficit mayor al de aquí.
+// Ruta A: superávit moderado para hipertrofia minimizando ganancia de grasa.
+// Ruta B: déficit moderado para oxidar grasa protegiendo la masa muscular.
+// Ambos sobre el TDEE real de la persona. Un déficit más agresivo (ej. -800)
+// queda BLOQUEADO por diseño: el ajuste es fijo, la app nunca deja elegir un
+// déficit mayor al de aquí.
 const AJUSTE_KCAL: Record<Meta, number> = {
-  musculo: 225,
+  musculo: 250,
   grasa: -400,
 };
 
 export function calcularMacros(datos: DatosParaMacros): Macros {
-  const { pesoKg, estaturaCm, edad, sexo, diasSemana, meta } = datos;
+  const { pesoKg, estaturaCm, edad, sexo, meta } = datos;
   const bmr = calcularBMR(pesoKg, estaturaCm, edad, sexo);
-  const tdee = bmr * factorActividad(diasSemana);
+  const tdee = bmr * FACTOR_ACTIVIDAD;
   // Piso de seguridad: nunca por debajo del BMR (el gasto en reposo), sin
   // importar qué tan agresivo sea el déficit — evitar una restricción
   // calórica insegura es más importante que respetar el número exacto.
@@ -112,9 +110,10 @@ export function calcularMacros(datos: DatosParaMacros): Macros {
   const proteinaG = Math.round(pesoKg * PROTEINA_G_KG[meta]);
   const grasasG = Math.round(pesoKg * GRASA_G_KG[meta]);
 
-  const kcalRestantes = kcal - proteinaG * 4 - grasasG * 9;
-  const carbohidratosMinimoG = Math.round(pesoKg * CARBOHIDRATOS_G_KG[meta] * 0.5);
-  const carbohidratosG = Math.max(carbohidratosMinimoG, Math.round(kcalRestantes / 4));
+  // Los carbohidratos son el remanente calórico (kcal totales − proteína −
+  // grasa) — sin piso de g/kg: la especificación 15/09/2026 los deja como
+  // la variable de ajuste, no como un macro con mínimo propio.
+  const carbohidratosG = Math.round((kcal - proteinaG * 4 - grasasG * 9) / 4);
 
   return { kcal, proteinaG, carbohidratosG, grasasG };
 }
