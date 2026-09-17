@@ -194,6 +194,78 @@ function PlanDelDia({
   const audioCtxRef = useRef<AudioContext | null>(null);
   const reduce = useReducedMotion();
 
+  // Bug real encontrado por el usuario: "Terminar entrenamiento" (incluido el
+  // corte anticipado) avanza `diaActual`, lo que dispara el efecto de más
+  // abajo que resetea `etapa` a 'saludo' para el día nuevo — y como este
+  // overlay antes vivía SOLO dentro del `return` de la etapa 'plan', quedaba
+  // oculto detrás de "Iniciar entrenamiento" y el gif de calentamiento hasta
+  // que `etapa` volvía a 'plan' varios pasos después. Se saca a una variable
+  // para poder mostrarlo en CUALQUIER etapa — así "¡Muy bien!" aparece de
+  // inmediato, sin importar qué muestre la pantalla de debajo, y al cerrarlo
+  // (botón "Seguir" o la X) la pantalla ya quedó en "Iniciar entrenamiento"
+  // del día siguiente, como se espera.
+  const overlayCelebracionFin = (
+    <AnimatePresence>
+      {celebrarFin && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-[var(--bg)] px-6"
+        >
+          {!reduce &&
+            piezasConfeti.map((pieza, i) => (
+              <motion.span
+                key={i}
+                aria-hidden="true"
+                className="absolute top-0 rounded-sm"
+                style={{ left: `${pieza.izquierda}%`, width: pieza.tamano, height: pieza.tamano, backgroundColor: pieza.color }}
+                initial={{ y: -20, rotate: pieza.giroInicial, opacity: 0 }}
+                animate={{ y: '110vh', rotate: pieza.giroInicial + pieza.giroTotal, opacity: [0, 1, 1, 0.8] }}
+                transition={{ duration: pieza.duracion, delay: pieza.retraso, ease: 'linear' }}
+              />
+            ))}
+
+          <button
+            type="button"
+            aria-label="Cerrar"
+            onClick={() => setCelebrarFin(false)}
+            className="absolute top-6 right-6 z-10 flex size-11 items-center justify-center text-[var(--text-secondary)]"
+          >
+            <X size={22} />
+          </button>
+          <div className="relative z-10 flex flex-col items-center">
+            <h2 className="text-5xl font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Muy bien!</h2>
+            {/* Pesa animada en el verde de la app en vez del emoji — le da
+                más seriedad a la app (pedido explícito del usuario). GIF
+                propio (recoloreado desde el original naranja), next/image
+                no anima GIFs. Grande a propósito (180px, no un ícono
+                chiquito) — el usuario pidió que el bloque completo ocupe
+                buena parte de la pantalla, no solo un detalle discreto. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/animaciones/entrenador-verde.gif"
+              alt=""
+              aria-hidden="true"
+              className="my-9 size-44"
+            />
+            <p className="text-center text-lg font-semibold text-[var(--text-primary)]">Entrenamiento completado.</p>
+            <p className="mt-3 max-w-xs text-center text-base text-[var(--text-tertiary)]">
+              Recuerda: el músculo se estimula aquí, pero crece mientras descansas.
+            </p>
+            <button
+              type="button"
+              onClick={() => setCelebrarFin(false)}
+              className="boton-3d mt-8 flex h-12 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
+            >
+              Seguir
+            </button>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+
   // Arranque del entrenamiento (pedido explícito): saludo → entrenador
   // animado → plan de hoy. Se salta en días de descanso/recuperación (no
   // aplica "vamos con toda" sin pesas) y si ya se vio para ESTE día del plan
@@ -441,6 +513,7 @@ function PlanDelDia({
 
   if (etapa !== 'plan') {
     return (
+      <>
       <div
         className="flex min-h-[calc(100dvh-5rem)] flex-col items-center justify-center overflow-hidden px-6 text-center"
         onClick={etapa === 'entrenador' ? () => setEtapa('plan') : undefined}
@@ -499,6 +572,8 @@ function PlanDelDia({
           </motion.div>
         )}
       </div>
+      {overlayCelebracionFin}
+      </>
     );
   }
 
@@ -1081,66 +1156,7 @@ function PlanDelDia({
         )}
       </AnimatePresence>
 
-      {/* Cierre del entrenamiento de hoy — confeti cayendo + "¡Muy bien!" */}
-      <AnimatePresence>
-        {celebrarFin && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-[var(--bg)] px-6"
-          >
-            {!reduce &&
-              piezasConfeti.map((pieza, i) => (
-                <motion.span
-                  key={i}
-                  aria-hidden="true"
-                  className="absolute top-0 rounded-sm"
-                  style={{ left: `${pieza.izquierda}%`, width: pieza.tamano, height: pieza.tamano, backgroundColor: pieza.color }}
-                  initial={{ y: -20, rotate: pieza.giroInicial, opacity: 0 }}
-                  animate={{ y: '110vh', rotate: pieza.giroInicial + pieza.giroTotal, opacity: [0, 1, 1, 0.8] }}
-                  transition={{ duration: pieza.duracion, delay: pieza.retraso, ease: 'linear' }}
-                />
-              ))}
-
-            <button
-              type="button"
-              aria-label="Cerrar"
-              onClick={() => setCelebrarFin(false)}
-              className="absolute top-6 right-6 z-10 flex size-11 items-center justify-center text-[var(--text-secondary)]"
-            >
-              <X size={22} />
-            </button>
-            <div className="relative z-10 flex flex-col items-center">
-              <h2 className="text-5xl font-extrabold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Muy bien!</h2>
-              {/* Pesa animada en el verde de la app en vez del emoji — le da
-                  más seriedad a la app (pedido explícito del usuario). GIF
-                  propio (recoloreado desde el original naranja), next/image
-                  no anima GIFs. Grande a propósito (180px, no un ícono
-                  chiquito) — el usuario pidió que el bloque completo ocupe
-                  buena parte de la pantalla, no solo un detalle discreto. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/animaciones/entrenador-verde.gif"
-                alt=""
-                aria-hidden="true"
-                className="my-9 size-44"
-              />
-              <p className="text-center text-lg font-semibold text-[var(--text-primary)]">Entrenamiento completado.</p>
-              <p className="mt-3 max-w-xs text-center text-base text-[var(--text-tertiary)]">
-                Recuerda: el músculo se estimula aquí, pero crece mientras descansas.
-              </p>
-              <button
-                type="button"
-                onClick={() => setCelebrarFin(false)}
-                className="boton-3d mt-8 flex h-12 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
-              >
-                Seguir
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {overlayCelebracionFin}
 
       {/* "Explicación del ejercicio" — silueta propia con el músculo
           resaltado (nunca fotos de terceros con licencia ajena). */}
