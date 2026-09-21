@@ -110,9 +110,9 @@ export default function LandingV1() {
         ctaHref={CTA_HREF}
       />
 
-      {/* 6. OFERTA — anual primero, con trial de 7 días; Mensual es el
-          ancla SIN trial (mismo esquema del paywall in-app — nunca prometer
-          en la landing algo que el paywall no cumple). */}
+      {/* 6. OFERTA — anual primero, con trial de 7 días; Mensual con 3 días
+          (mismo esquema del paywall in-app — nunca prometer en la landing
+          algo que el paywall no cumple). */}
       <Oferta
         tituloMarked="Empieza gratis. Sigue por menos de [acento]$0.09/día[/acento]"
         stack={{
@@ -130,7 +130,7 @@ export default function LandingV1() {
           precioMes: '$2.50',
           trialDias: 7,
           totalAnual: 'Se cobra $29.99 USD/año',
-          ahorro: '6 meses gratis',
+          ahorro: 'Ahorra 50%',
           descomposicionDia: 'menos de $0.09 al día',
           ctaLabel: 'Empezar mis 7 días gratis',
           ctaHref: CTA_HREF,
@@ -144,7 +144,8 @@ export default function LandingV1() {
         mensual={{
           nombre: 'Mensual',
           precioMes: '$4.99',
-          ctaLabel: 'Elegir mensual',
+          trialDias: 3,
+          ctaLabel: 'Empezar mis 3 días gratis',
           ctaHref: CTA_HREF,
           features: [
             'Tu plan de hoy, listo cada día',
@@ -155,14 +156,13 @@ export default function LandingV1() {
         }}
       />
 
-      {/* 7. GARANTÍA — el trial de 7 días SOLO existe en Semestral/Anual (Mensual
-          cobra desde el día 1, a pedido explícito del usuario en el paywall) —
-          la garantía de devolución de 7 días desde el cobro sí aplica a los 3
-          planes por igual (auditoría legal 04/09/2026: el copy anterior prometía
-          "7 días de prueba" como si fuera universal, contradiciendo al Mensual). */}
+      {/* 7. GARANTÍA — trial de 7 días en Semestral/Anual y de 3 en Mensual
+          (paywall, 08/09/2026); la garantía de devolución de 7 días desde el
+          cobro aplica a los 3 planes por igual. Copy alineado 21/09/2026 con
+          el paywall (decía que Mensual no tenía trial). */}
       <Garantia
         nombre="la Garantía del Primer Plan Claro"
-        condicionMarked="Elige Semestral o Anual y entras 7 días gratis, sin que se te cobre nada. ¿Ya pagaste y no sabes qué hacer? Tienes [b]7 días desde tu cobro[/b] para pedir tu dinero de vuelta, en cualquier plan. Sin preguntas."
+        condicionMarked="Pruébalo gratis: 7 días en Anual y Semestral, 3 días en Mensual, sin que se te cobre nada. Y si ya pagaste y no te convence, tienes [b]7 días desde tu cobro[/b] para pedir tu dinero de vuelta, en cualquier plan. Sin preguntas."
         pisoLegal="Respaldada por la garantía Hotmart"
       />
 
@@ -187,7 +187,7 @@ export default function LandingV1() {
           {
             pregunta: '¿Me van a cobrar algo oculto la próxima tarjeta?',
             respuestaMarked:
-              'No. El precio que ves es el que pagas. Con Semestral o Anual tienes 7 días gratis antes del primer cobro; con Mensual se cobra desde hoy — en los 3 planes tienes 7 días desde tu cobro para pedir devolución si algo no te convence — [b]sin sorpresas[/b].',
+              'No. El precio que ves es el que pagas. Tienes 7 días gratis antes del primer cobro en Anual y Semestral (3 días en Mensual), y en los 3 planes 7 días desde tu cobro para pedir devolución si algo no te convence — [b]sin sorpresas[/b].',
           },
           {
             pregunta: '¿Y qué pasa después de los 90 días de la Ruta Principiante?',
@@ -209,7 +209,7 @@ export default function LandingV1() {
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
         recap="Garantía del Primer Plan Claro · desde 7 días gratis"
-        psMarked="PS: GymEvo te dice exactamente qué hacer en el gimnasio, con el Botón de Rescate para cuando la máquina está ocupada. Elige Semestral o Anual y entra gratis 7 días — cualquier plan que elijas queda respaldado por la Garantía del Primer Plan Claro."
+        psMarked="PS: GymEvo te dice exactamente qué hacer en el gimnasio, con el Botón de Rescate para cuando la máquina está ocupada. Empieza gratis: 7 días en Anual o Semestral, 3 en Mensual — cualquier plan que elijas queda respaldado por la Garantía del Primer Plan Claro."
       />
 
       {/* 10. FOOTER LEGAL */}

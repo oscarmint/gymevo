@@ -338,7 +338,7 @@ export default function PaywallPage() {
           transition={{ delay: 0.3, duration: 0.3 }}
           className="mt-2 flex items-center justify-center gap-1.5 text-center text-xs font-medium text-[var(--accent)]"
         >
-          <ShieldCheck size={13} /> Garantía Hotmart: 7 días después de tu primer cobro, sin preguntas
+          <ShieldCheck size={13} /> Y tras el primer cobro: garantía de devolución de 7 días, sin preguntas
         </motion.p>
 
         {/* Si la redirección no ocurrió en unos segundos (red caída,
@@ -466,7 +466,7 @@ function TimelineTrial({ plan }: { plan: PlanId }) {
   const diaAviso = info.trialDias - 1;
   const diaCobro = info.trialDias;
   const nodos = [
-    { estado: 'lleno' as const, titulo: 'Hoy — acceso completo', sub: 'Todo tu plan, sin límites' },
+    { estado: 'lleno' as const, titulo: 'Hoy — acceso completo', sub: 'Los 6 días de tu plan, Botón de Rescate y registro de tus pesos' },
     {
       estado: 'lleno' as const,
       titulo: `Día ${diaAviso} — te avisamos el ${fechaEnDias(diaAviso - 1)}`,
