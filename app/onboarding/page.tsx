@@ -14,29 +14,22 @@ import {
   HORARIO_LABEL,
   META_LABEL,
   NIVEL_LABEL,
-  SEXO_LABEL,
   type Horario,
   type Meta,
   type Nivel,
-  type Sexo,
 } from '@/lib/onboarding';
 import { registrarEvento } from '@/lib/analitica';
 import { leerVarianteLanding } from '@/lib/experimentos';
 
-type PasoId = 'sexo' | 'nivel' | 'meta' | 'frustracion' | 'reconocimiento' | 'horario' | 'compromiso';
+type PasoId = 'meta' | 'nivel' | 'frustracion' | 'reconocimiento' | 'horario' | 'compromiso';
 
-const PASOS: PasoId[] = ['sexo', 'nivel', 'meta', 'frustracion', 'reconocimiento', 'horario', 'compromiso'];
+const PASOS: PasoId[] = ['meta', 'nivel', 'frustracion', 'reconocimiento', 'horario', 'compromiso'];
 
 interface Opcion<T extends string> {
   value: T;
   label: string;
   icon?: LucideIcon;
 }
-
-const OPCIONES_SEXO: Opcion<Sexo>[] = [
-  { value: 'hombre', label: 'Hombre' },
-  { value: 'mujer', label: 'Mujer' },
-];
 
 const OPCIONES_NIVEL: Opcion<Nivel>[] = [
   { value: 'principiante', label: 'Recién empiezo, no sé qué hacer' },
@@ -84,7 +77,6 @@ export default function OnboardingPage() {
   const [pasoIdx, setPasoIdx] = useState(0);
   const [dir, setDir] = useState<1 | -1>(1);
 
-  const [sexo, setSexo] = useState<Sexo | null>(null);
   const [nivel, setNivel] = useState<Nivel | null>(null);
   const [meta, setMeta] = useState<Meta | null>(null);
   const [frustracion, setFrustracion] = useState<string | null>(null);
@@ -203,7 +195,6 @@ export default function OnboardingPage() {
 
   function terminar() {
     guardarRespuestas({
-      sexo: sexo ?? 'hombre',
       nivel: nivel ?? 'principiante',
       meta: meta ?? 'musculo',
       frustracion: frustracion ?? 'apps',
@@ -325,20 +316,16 @@ export default function OnboardingPage() {
 
       <div className="mx-auto mt-10 flex w-full max-w-md flex-1 flex-col">
         <AnimatePresence mode="wait" custom={dir} initial={false}>
-          {paso === 'sexo' && (
-            <PantallaPregunta key="sexo" dir={dir} variants={variants}>
-              <Pregunta titulo="¿Cuál es tu sexo biológico?" micro="Lo usamos para calcular tus calorías y macros con mayor precisión." />
-              <Chips opciones={OPCIONES_SEXO} valor={sexo} onSelect={(v) => seleccionarYAvanzar(setSexo, v)} />
+          {paso === 'meta' && (
+            <PantallaPregunta key="meta" dir={dir} variants={variants}>
+              <Pregunta titulo="¿Cuál es tu meta ahora?" micro="Esto define el enfoque de tu plan" />
+              <Chips opciones={OPCIONES_META} valor={meta} onSelect={(v) => seleccionarYAvanzar(setMeta, v)} />
               <TarjetaRuta
-                sexo={sexo}
                 nivel={nivel}
                 meta={meta}
                 horario={horario}
                 dias={null}
-                beneficio={{
-                  icono: Activity,
-                  texto: 'El gasto calórico en reposo varía según el sexo. Sin este dato, tus macros serían un promedio genérico y no 100% adaptados a ti.',
-                }}
+                beneficio={{ icono: RefreshCcw, texto: '¿Se ocupó la máquina que necesitas? El Botón de Rescate te da otro ejercicio al instante, sin perder el día.' }}
               />
             </PantallaPregunta>
           )}
@@ -355,7 +342,6 @@ export default function OnboardingPage() {
                   (avanza solo a los 320ms); el mensaje completo se repite en
                   "Te entendemos" más abajo, donde sí hay tiempo de leerlo. */}
               <TarjetaRuta
-                sexo={sexo}
                 nivel={nivel}
                 meta={meta}
                 horario={horario}
@@ -369,21 +355,6 @@ export default function OnboardingPage() {
             </PantallaPregunta>
           )}
 
-          {paso === 'meta' && (
-            <PantallaPregunta key="meta" dir={dir} variants={variants}>
-              <Pregunta titulo="¿Cuál es tu meta ahora?" micro="Esto define el enfoque de tu plan" />
-              <Chips opciones={OPCIONES_META} valor={meta} onSelect={(v) => seleccionarYAvanzar(setMeta, v)} />
-              <TarjetaRuta
-                sexo={sexo}
-                nivel={nivel}
-                meta={meta}
-                horario={horario}
-                dias={null}
-                beneficio={{ icono: RefreshCcw, texto: '¿Se ocupó la máquina que necesitas? El Botón de Rescate te da otro ejercicio al instante, sin perder el día.' }}
-              />
-            </PantallaPregunta>
-          )}
-
           {paso === 'frustracion' && (
             <PantallaPregunta key="frustracion" dir={dir} variants={variants}>
               <Pregunta titulo="¿Qué es lo que más te frustra hoy?" />
@@ -392,7 +363,7 @@ export default function OnboardingPage() {
                 valor={frustracion}
                 onSelect={(v) => seleccionarYAvanzar(setFrustracion, v)}
               />
-              <TarjetaRuta sexo={sexo} nivel={nivel} meta={meta} horario={horario} dias={null} />
+              <TarjetaRuta nivel={nivel} meta={meta} horario={horario} dias={null} />
             </PantallaPregunta>
           )}
 
@@ -516,7 +487,7 @@ export default function OnboardingPage() {
             <PantallaPregunta key="horario" dir={dir} variants={variants}>
               <Pregunta titulo="¿A qué hora entrenas normalmente?" micro="Así te avisamos a la hora que sí revisas la app" />
               <Chips opciones={OPCIONES_HORARIO} valor={horario} onSelect={(v) => seleccionarYAvanzar(setHorario, v)} />
-              <TarjetaRuta sexo={sexo} nivel={nivel} meta={meta} horario={horario} dias={null} />
+              <TarjetaRuta nivel={nivel} meta={meta} horario={horario} dias={null} />
             </PantallaPregunta>
           )}
 
@@ -583,7 +554,7 @@ export default function OnboardingPage() {
               >
                 Fijar mi meta
               </motion.button>
-              <TarjetaRuta sexo={sexo} nivel={nivel} meta={meta} horario={horario} dias={dias} />
+              <TarjetaRuta nivel={nivel} meta={meta} horario={horario} dias={dias} />
             </PantallaPregunta>
           )}
         </AnimatePresence>
@@ -622,14 +593,12 @@ function PantallaPregunta({
  * previa de lo que se está personalizando, con el mismo lenguaje de "cuaderno
  * que se va llenando" del dispositivo ownable de FICHA-ARTE (check = tachado). */
 function TarjetaRuta({
-  sexo,
   nivel,
   meta,
   horario,
   dias,
   beneficio,
 }: {
-  sexo: Sexo | null;
   nivel: Nivel | null;
   meta: Meta | null;
   horario: Horario | null;
@@ -640,11 +609,10 @@ function TarjetaRuta({
   beneficio?: { icono: LucideIcon; texto: string };
 }) {
   const capitalizar = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-  const hayAlgunaRespuesta = sexo !== null || nivel !== null || meta !== null || horario !== null;
+  const hayAlgunaRespuesta = nivel !== null || meta !== null || horario !== null;
   const filas: { label: string; valor: string | null }[] = [
-    { label: 'Sexo', valor: sexo ? SEXO_LABEL[sexo] : null },
-    { label: 'Nivel', valor: nivel ? NIVEL_LABEL[nivel] : null },
     { label: 'Meta', valor: meta ? capitalizar(META_LABEL[meta]) : null },
+    { label: 'Nivel', valor: nivel ? NIVEL_LABEL[nivel] : null },
     { label: 'Horario', valor: horario ? capitalizar(HORARIO_LABEL[horario]) : null },
     { label: 'Días/semana', valor: dias ? String(dias) : null },
   ];

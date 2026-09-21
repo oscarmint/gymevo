@@ -6,8 +6,7 @@ export type Nivel = "principiante" | "intermedio";
 export type Meta = "musculo" | "grasa";
 export type Horario = "manana" | "mediodia" | "tarde" | "noche";
 /** Sexo biológico — solo se usa para la fórmula de gasto calórico
- * (Mifflin-St Jeor) en la calculadora de macros; no se muestra en ninguna
- * otra parte de la app. */
+ * (Mifflin-St Jeor) en la calculadora de macros (se pide en Perfil). */
 export type Sexo = "hombre" | "mujer";
 
 export interface RespuestasOnboarding {
@@ -16,7 +15,9 @@ export interface RespuestasOnboarding {
   frustracion: string;
   horario: Horario;
   diasSemana: number;
-  sexo: Sexo;
+  /** Ya no se pregunta en el onboarding (21/09/2026): se pide en Perfil junto
+   * a peso/estatura/edad. Puede venir de sesiones antiguas. */
+  sexo?: Sexo;
 }
 
 const KEY = "gymevo_onboarding";

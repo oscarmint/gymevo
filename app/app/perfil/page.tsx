@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
 import { AlertTriangle, Bell, BellOff, Camera, Check, ExternalLink, Flame, Loader2, LogOut, Pencil, Trash2 } from 'lucide-react';
-import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
+import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, SEXO_LABEL, leerRespuestas, type RespuestasOnboarding, type Sexo } from '@/lib/onboarding';
 import { calcularMacros } from '@/lib/macros';
 import { cambiarRuta, ejerciciosDeHoy, esDiaDeDescanso, guardarProgreso, leerProgreso, obtenerEjercicio, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
 import type { Meta, Nivel } from '@/lib/onboarding';
@@ -35,6 +35,7 @@ export default function PerfilPage() {
   const [pesoBorrador, setPesoBorrador] = useState('');
   const [estaturaBorrador, setEstaturaBorrador] = useState('');
   const [edadBorrador, setEdadBorrador] = useState('');
+  const [sexoBorrador, setSexoBorrador] = useState<Sexo | null>(null);
   const [cinturaBorrador, setCinturaBorrador] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [subiendoAvatar, setSubiendoAvatar] = useState(false);
@@ -81,6 +82,7 @@ export default function PerfilPage() {
     setPesoBorrador(p.pesoKg ? String(p.pesoKg) : '');
     setEstaturaBorrador(p.estaturaCm ? String(p.estaturaCm) : '');
     setEdadBorrador(p.edad ? String(p.edad) : '');
+    setSexoBorrador(p.sexo);
     setCinturaBorrador(p.cinturaCm ? String(p.cinturaCm) : '');
     setNombre(leerNombreLocal());
     leerNombreRemoto().then((remoto) => {
@@ -142,12 +144,12 @@ export default function PerfilPage() {
     const kg = Number(pesoBorrador);
     const cm = Number(estaturaBorrador);
     const anios = Number(edadBorrador);
-    if (!progreso || !kg || kg <= 0 || !cm || cm <= 0 || !anios || anios <= 0) return;
+    if (!progreso || !sexoBorrador || !kg || kg <= 0 || !cm || cm <= 0 || !anios || anios <= 0) return;
     // Cintura es opcional (solo importa de verdad para Ruta B) — si el
     // usuario la deja vacía, no se pierde ni se fuerza a poner algo.
     const cinturaCm = cinturaBorrador ? Number(cinturaBorrador) : null;
     const conMedidas = registrarMedidasIniciales(progreso, kg, cinturaCm && cinturaCm > 0 ? cinturaCm : progreso.cinturaCm);
-    const next = { ...conMedidas, estaturaCm: cm, edad: anios };
+    const next = { ...conMedidas, estaturaCm: cm, edad: anios, sexo: sexoBorrador };
     setProgreso(next);
     guardarProgreso(next);
     guardarProgresoRemoto(next);
@@ -525,6 +527,30 @@ export default function PerfilPage() {
         <p className="text-sm font-semibold text-[var(--text-primary)]">
           Tus macros · {meta === 'musculo' ? 'Ruta A, ganar músculo' : 'Ruta B, bajar grasa'}
         </p>
+        {/* El sexo biológico se pide aquí (no en el onboarding, 21/09/2026):
+            solo sirve para la fórmula de calorías, y aquí el usuario ve el
+            resultado al instante. Sin valor por defecto. */}
+        <div className="mt-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">Sexo biológico</p>
+          <div className="mt-1 grid grid-cols-2 gap-2" role="radiogroup" aria-label="Sexo biológico">
+            {(['hombre', 'mujer'] as const).map((op) => (
+              <button
+                key={op}
+                type="button"
+                role="radio"
+                aria-checked={sexoBorrador === op}
+                onClick={() => setSexoBorrador(op)}
+                className={`h-11 rounded-xl border text-sm font-semibold ${
+                  sexoBorrador === op
+                    ? 'border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--accent)]'
+                    : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-primary)]'
+                }`}
+              >
+                {SEXO_LABEL[op]}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className={`mt-3 grid gap-2 ${meta === 'grasa' ? 'grid-cols-2' : 'grid-cols-3'}`}>
           <div className="flex flex-col gap-1">
             <label htmlFor="peso-macros" className="flex min-h-8 items-end text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
@@ -596,13 +622,13 @@ export default function PerfilPage() {
           Calcular mis macros
         </button>
 
-        {progreso.pesoKg && progreso.estaturaCm && progreso.edad ? (
+        {progreso.pesoKg && progreso.estaturaCm && progreso.edad && progreso.sexo ? (
           (() => {
             const macros = calcularMacros({
               pesoKg: progreso.pesoKg!,
               estaturaCm: progreso.estaturaCm!,
               edad: progreso.edad!,
-              sexo: respuestas?.sexo ?? 'hombre',
+              sexo: progreso.sexo!,
               diasSemana: respuestas?.diasSemana ?? 4,
               meta,
             });
@@ -621,7 +647,7 @@ export default function PerfilPage() {
           })()
         ) : (
           <p className="mt-3 text-xs text-[var(--text-secondary)]">
-            Pon tu peso, estatura y edad para calcular tu gasto calórico real y cuánta proteína, carbohidratos y grasa te conviene comer cada día según tu ruta.
+            Elige tu sexo biológico y pon tu peso, estatura y edad para calcular tu gasto calórico real y cuánta proteína, carbohidratos y grasa te conviene comer cada día según tu ruta.
           </p>
         )}
       </div>

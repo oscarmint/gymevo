@@ -39,7 +39,7 @@ export async function sincronizarPerfilInicial(respuestas: RespuestasOnboarding 
       .update({
         nivel: respuestas.nivel,
         meta: respuestas.meta,
-        sexo: respuestas.sexo,
+        ...(respuestas.sexo ? { sexo: respuestas.sexo } : {}),
         horario: respuestas.horario,
         dias_semana: respuestas.diasSemana,
         ...(utm
@@ -83,7 +83,7 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
   return {
     nivel: perfil.nivel === 'intermedio' ? 'intermedio' : 'principiante',
     meta: perfil.meta === 'grasa' ? 'grasa' : 'musculo',
-    sexo: perfil.sexo === 'mujer' ? 'mujer' : 'hombre',
+    sexo: perfil.sexo === 'mujer' ? 'mujer' : perfil.sexo === 'hombre' ? 'hombre' : null,
     diaActual: perfil.dia_actual,
     racha: perfil.racha,
     ultimaFecha: perfil.ultimo_dia_completado,
@@ -117,7 +117,7 @@ export function guardarProgresoRemoto(p: Progreso, onError?: () => void) {
       .update({
         nivel: p.nivel,
         meta: p.meta,
-        sexo: p.sexo,
+        ...(p.sexo ? { sexo: p.sexo } : {}),
         dia_actual: p.diaActual,
         racha: p.racha,
         ultimo_dia_completado: p.ultimaFecha,
