@@ -6,6 +6,9 @@
 // Anual, todos con trial) de la ronda anterior. El Mensual pasó de "sin
 // trial" a 3 días gratis el 08/09/2026 (a pedido explícito, para probar si
 // mejora su conversión — cada plan define su propia duración en `PLANES`).
+// 21/09/2026: se eliminó la prueba gratis y la suscripción — ahora es PAGO
+// ÚNICO por N meses de acceso (PSE, Nequi, Efecty, tarjeta o PayPal), sin
+// cobro automático; el usuario renueva pagando de nuevo (ver lib/planes.ts).
 // El CTA abre el checkout REAL de Hotmart si las variables
 // NEXT_PUBLIC_HOTMART_CHECKOUT_{MENSUAL,SEMESTRAL,ANUAL} están configuradas
 // (públicas, no secretas — son la URL del link de pago). Sin ellas todavía,
@@ -29,27 +32,18 @@ const KEY_PLAN = 'gymevo_plan_elegido';
  * sobra para engancharse. `trialDias: 0` significa "cobra de inmediato, sin
  * prueba" — el Mensual pasó de 0 a 3 días (07/09/2026, a pedido explícito,
  * para probar si un trial corto también mejora su conversión). */
-const PLANES: Record<PlanId, { nombre: string; meses: number; precioTotal: number; trialDias: number }> = {
-  mensual: { nombre: 'Mensual', meses: 1, precioTotal: 4.99, trialDias: 7 },
-  semestral: { nombre: 'Semestral', meses: 6, precioTotal: 19.99, trialDias: 7 },
-  anual: { nombre: 'Anual', meses: 12, precioTotal: 29.99, trialDias: 7 },
+const PLANES: Record<PlanId, { nombre: string; meses: number; precioTotal: number }> = {
+  mensual: { nombre: 'Mensual', meses: 1, precioTotal: 4.99 },
+  semestral: { nombre: 'Semestral', meses: 6, precioTotal: 19.99 },
+  anual: { nombre: 'Anual', meses: 12, precioTotal: 29.99 },
 };
 
-/** "/mes" · "/6 meses" · "/año" — evita el texto largo y con saltos raros de
- * "cada N meses" en tarjetas angostas de 375px. */
-function periodoLabel(meses: number): string {
-  if (meses === 1) return '/mes';
-  if (meses === 12) return '/año';
-  return `/${meses} meses`;
-}
-
-/** Fecha exacta (no relativa) para el aviso y el cobro del trial — pedido de
- * la revisión externa: "1 día antes" es una regla, no algo que la mente
- * ansiosa pueda anotar en su calendario; una fecha concreta sí. */
-function fechaEnDias(dias: number): string {
+/** Fecha exacta hasta la que llegaría el acceso si pagas hoy — una fecha
+ * concreta se puede anotar; "6 meses" se siente abstracto. */
+function fechaEnMeses(meses: number): string {
   const f = new Date();
-  f.setDate(f.getDate() + dias);
-  return new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'long' }).format(f);
+  f.setMonth(f.getMonth() + meses);
+  return new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }).format(f);
 }
 
 const CHECKOUT_ENV: Record<PlanId, string | undefined> = {
@@ -77,6 +71,7 @@ export default function PaywallPage() {
   // roto — un pequeño meneo deja claro que el botón SÍ registró el toque,
   // solo que todavía no hace nada, sin acortar el tiempo de lectura pedido).
   const [cerrarMeneo, setCerrarMeneo] = useState(false);
+  const [renovando, setRenovando] = useState(false);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   // sessionStorage no existe en el servidor: leerlo en el initializer de
@@ -84,6 +79,7 @@ export default function PaywallPage() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setRespuestas(leerRespuestas());
+    setRenovando(new URLSearchParams(window.location.search).get('renovar') === '1');
     // Recuerda la última elección entre visitas (hallazgo revisor-visual:
     // sin esto, un usuario que cierra y vuelve pierde su plan preferido).
     const guardado = localStorage.getItem(KEY_PLAN);
@@ -108,7 +104,7 @@ export default function PaywallPage() {
     localStorage.setItem(KEY_PLAN, id);
   }
 
-  function empezarTrial() {
+  function pagar() {
     const checkoutUrl = CHECKOUT_ENV[plan];
 
     if (checkoutUrl) {
@@ -196,12 +192,24 @@ export default function PaywallPage() {
         {/* (1) Titular orientado al mecanismo de supervivencia en el gym —
             no "Suscríbete" — + prueba visual del Botón de Rescate. */}
         <motion.div initial={reduce ? {} : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-          <p className="text-sm font-semibold text-[var(--text-tertiary)]">Se acabó adivinar qué máquina usar</p>
+          <p className="text-sm font-semibold text-[var(--text-tertiary)]">
+            {renovando ? 'Sigue donde ibas' : 'Se acabó adivinar qué máquina usar'}
+          </p>
           <h1 className="mt-1 text-balance text-3xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
-            Desbloquea tu <span className="whitespace-nowrap text-[var(--accent)]">Botón de Rescate</span>
+            {renovando ? (
+              <>
+                Renueva tu <span className="whitespace-nowrap text-[var(--accent)]">acceso</span>
+              </>
+            ) : (
+              <>
+                Desbloquea tu <span className="whitespace-nowrap text-[var(--accent)]">Botón de Rescate</span>
+              </>
+            )}
           </h1>
           <p className="mt-2 text-[14.5px] text-[var(--text-secondary)]">
-            Tu plan para {meta} ya está hecho con tus respuestas — listo para cuando entrenes {horario}
+            {renovando
+              ? 'Los meses que elijas se suman a los que te queden. Tu racha y tu progreso siguen intactos.'
+              : `Tu plan para ${meta} ya está hecho con tus respuestas — listo para cuando entrenes ${horario}`}
           </p>
         </motion.div>
 
@@ -241,7 +249,9 @@ export default function PaywallPage() {
               </p>
             </div>
           </div>
-          <div className="p-5">{infoPlan.trialDias > 0 ? <TimelineTrial plan={plan} /> : <TimelineSinTrial plan={plan} />}</div>
+          <div className="p-5">
+            <LineaDePago plan={plan} />
+          </div>
         </motion.div>
 
         {/* (2) Estructura de precios — Anual primero y pre-seleccionado
@@ -272,11 +282,9 @@ export default function PaywallPage() {
                 precioTachado={id === 'anual' ? `$${PLANES.mensual.precioTotal.toFixed(2)}` : undefined}
                 precioMes={`$${precioMes.toFixed(2)}`}
                 detalle={
-                  info.trialDias === 0
-                    ? `Se cobra $${info.precioTotal.toFixed(2)} USD${periodoLabel(info.meses)}, desde hoy`
-                    : info.meses === 1
-                      ? `Tras tus ${info.trialDias} días gratis: $${info.precioTotal.toFixed(2)} USD/mes`
-                      : `Tras tus ${info.trialDias} días gratis: 1 cobro de $${info.precioTotal.toFixed(2)} USD${periodoLabel(info.meses)} (equivale a $${precioMes.toFixed(2)}/mes)`
+                  info.meses === 1
+                    ? `Pagas $${info.precioTotal.toFixed(2)} USD una vez · acceso por 1 mes`
+                    : `Pagas $${info.precioTotal.toFixed(2)} USD una vez · acceso por ${info.meses} meses (equivale a $${precioMes.toFixed(2)}/mes)`
                 }
                 trm={trm}
               />
@@ -294,7 +302,7 @@ export default function PaywallPage() {
           className="mt-6 flex items-center justify-center gap-1.5 text-center text-sm font-semibold text-[var(--text-primary)]"
         >
           <Check size={15} color="var(--accent)" strokeWidth={3} />
-          {infoPlan.trialDias > 0 ? 'Hoy no pagas nada' : `Pagas $${infoPlan.precioTotal.toFixed(2)} USD hoy, sin trial en este plan`}
+          Pago único · PSE, Nequi, tarjeta, Efecty o PayPal
         </motion.p>
 
         {/* (6) CTA — nunca dice "Suscríbete"; el texto cambia según si el
@@ -302,7 +310,7 @@ export default function PaywallPage() {
             exactamente lo que va a pasar). */}
         <motion.button
           type="button"
-          onClick={empezarTrial}
+          onClick={pagar}
           disabled={redirigiendo}
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -314,10 +322,8 @@ export default function PaywallPage() {
             <>
               <Loader2 size={18} className="animate-spin motion-reduce:animate-none" /> Te llevamos a Hotmart, pago seguro…
             </>
-          ) : infoPlan.trialDias > 0 ? (
-            `Empezar mis ${infoPlan.trialDias} días gratis`
           ) : (
-            'Activar mi Botón de Rescate'
+            `${renovando ? 'Renovar' : 'Activar'} mi plan · $${infoPlan.precioTotal.toFixed(2)} USD`
           )}
         </motion.button>
 
@@ -338,7 +344,7 @@ export default function PaywallPage() {
           transition={{ delay: 0.3, duration: 0.3 }}
           className="mt-2 flex items-center justify-center gap-1.5 text-center text-xs font-medium text-[var(--accent)]"
         >
-          <ShieldCheck size={13} /> Y tras el primer cobro: garantía de devolución de 7 días, sin preguntas
+          <ShieldCheck size={13} /> Garantía de devolución de 7 días desde tu pago, sin preguntas
         </motion.p>
 
         {/* Si la redirección no ocurrió en unos segundos (red caída,
@@ -404,15 +410,15 @@ export default function PaywallPage() {
                         palabra el timeline de arriba y la línea "Hoy no
                         pagas nada" sobre el CTA. */}
                     <div>
-                      <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Puedo cancelar fácil?</p>
+                      <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Se renueva solo?</p>
                       <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                        Sí, cuando quieras, con un toque desde tu perfil — sin llamadas ni trámites.
+                        No. Pagas una vez y tu acceso dura lo que elegiste. Te avisamos antes de que venza para que renueves si quieres.
                       </p>
                     </div>
                     <div>
                       <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Hay cobros escondidos?</p>
                       <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                        Cero. El precio que ves arriba es el único que se cobra — nada de cargos extra ni renovaciones sorpresa.
+                        Cero. El precio que ves arriba es lo único que pagas — no guardamos tu tarjeta ni hay cobros automáticos.
                       </p>
                     </div>
                   </div>
@@ -458,25 +464,18 @@ export default function PaywallPage() {
   );
 }
 
-function TimelineTrial({ plan }: { plan: PlanId }) {
+/** Cómo funciona el pago único, en 3 pasos con fecha real (reemplaza el
+ * timeline de prueba gratis, 21/09/2026). */
+function LineaDePago({ plan }: { plan: PlanId }) {
   const info = PLANES[plan];
-  // Día de aviso = el día antes del cobro; día de cobro = el propio trialDias
-  // (ej. con 3 días gratis: "Hoy" es el día 1, se avisa el día 2, se cobra el
-  // día 3). Generalizado para que cada plan pueda tener su propia duración.
-  const diaAviso = info.trialDias - 1;
-  const diaCobro = info.trialDias;
   const nodos = [
-    { estado: 'lleno' as const, titulo: 'Hoy — acceso completo', sub: 'Los 6 días de tu plan, Botón de Rescate y registro de tus pesos' },
+    { estado: 'lleno' as const, titulo: 'Hoy — pagas una sola vez', sub: 'Sin tarjeta guardada: PSE, Nequi, Efecty, tarjeta o PayPal' },
     {
       estado: 'lleno' as const,
-      titulo: `Día ${diaAviso} — te avisamos el ${fechaEnDias(diaAviso - 1)}`,
-      sub: 'Correo antes de cualquier cobro',
+      titulo: `Acceso hasta el ${fechaEnMeses(info.meses)}`,
+      sub: 'Los 6 días de tu plan, Botón de Rescate y registro de tus pesos',
     },
-    {
-      estado: 'vacio' as const,
-      titulo: `Día ${diaCobro} (${fechaEnDias(diaCobro - 1)}) — 1er cobro: $${info.precioTotal.toFixed(2)} USD${periodoLabel(info.meses)}`,
-      sub: 'Cancela antes sin costo',
-    },
+    { estado: 'vacio' as const, titulo: 'Antes de vencer — te avisamos', sub: 'Renuevas cuando quieras; nada se cobra solo' },
   ];
   return (
     <div className="flex flex-col">
@@ -496,27 +495,6 @@ function TimelineTrial({ plan }: { plan: PlanId }) {
           </div>
         </div>
       ))}
-    </div>
-  );
-}
-
-/** Para un plan sin trial (`trialDias: 0`, ninguno hoy pero la estructura lo
- * sigue soportando): el timeline de días no aplica — se reemplaza por una
- * sola línea honesta de "cobro hoy", nunca fingiendo un trial que ese plan
- * no tiene (transparencia radical, pedido explícito). */
-function TimelineSinTrial({ plan }: { plan: PlanId }) {
-  const info = PLANES[plan];
-  return (
-    <div className="flex items-center gap-3">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--accent)]">
-        <Check size={16} color="var(--bg)" strokeWidth={3} />
-      </span>
-      <div>
-        <p className="text-base font-semibold text-[var(--text-primary)]">
-          Hoy — cobro de ${info.precioTotal.toFixed(2)} USD, acceso completo
-        </p>
-        <p className="text-xs text-[var(--text-secondary)]">Sin trial en este plan. Cancela cuando quieras, sin costo.</p>
-      </div>
     </div>
   );
 }

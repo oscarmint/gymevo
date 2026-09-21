@@ -14,12 +14,12 @@ import type { Meta, Nivel } from '@/lib/onboarding';
 import { leerAvatarLocal, guardarAvatarLocal, leerNombreLocal, guardarNombreLocal } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { activarAvisos, desactivarAvisos, estaSuscrito, pushSoportado } from '@/lib/push-client';
-import { guardarNombreRemoto, guardarProgresoRemoto, leerAvatarRemoto, leerMembresiaRemota, leerNombreRemoto, subirAvatar } from '@/lib/supabase/sync';
+import { guardarNombreRemoto, guardarProgresoRemoto, leerAvatarRemoto, leerMembresiaRemota, leerNombreRemoto, leerVencimientoRemoto, subirAvatar } from '@/lib/supabase/sync';
 import { useConteo } from '@/lib/useConteo';
 
 const ESTADO_MEMBRESIA_LABEL: Record<string, string> = {
   trialing: 'En prueba gratis',
-  active: 'Activa',
+  active: 'Activo',
   past_due: 'Pago pendiente',
   cancelled: 'Cancelada (activa hasta el fin del período)',
 };
@@ -32,6 +32,7 @@ export default function PerfilPage() {
   const [editando, setEditando] = useState(false);
   const [borrador, setBorrador] = useState('');
   const [membresia, setMembresia] = useState<{ plan: string; estado: string | null } | null>(null);
+  const [vencimiento, setVencimiento] = useState<Date | null>(null);
   const [pesoBorrador, setPesoBorrador] = useState('');
   const [estaturaBorrador, setEstaturaBorrador] = useState('');
   const [edadBorrador, setEdadBorrador] = useState('');
@@ -99,6 +100,7 @@ export default function PerfilPage() {
       }
     });
     leerMembresiaRemota().then(setMembresia);
+    leerVencimientoRemoto().then(setVencimiento);
     if (pushSoportado()) {
       estaSuscrito().then(setAvisosActivos);
     } else {
@@ -439,7 +441,11 @@ export default function PerfilPage() {
             <div>
               <p className="text-sm font-semibold text-[var(--text-primary)]">Tu plan</p>
               <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                {membresia.estado ? (ESTADO_MEMBRESIA_LABEL[membresia.estado] ?? membresia.estado) : 'Activo'}
+                {vencimiento
+                  ? `Acceso hasta el ${vencimiento.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })}`
+                  : membresia.estado
+                    ? (ESTADO_MEMBRESIA_LABEL[membresia.estado] ?? membresia.estado)
+                    : 'Activo'}
               </p>
             </div>
             <motion.button
@@ -462,19 +468,29 @@ export default function PerfilPage() {
                 className="overflow-hidden"
               >
                 <div className="mt-4 flex flex-col gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4">
-                  {/* Cambiar de plan (subir/bajar de Mensual/Semestral/Anual) es
-                      un cambio de facturación real — se hace en el área de
-                      Hotmart del propio comprador, no algo que esta app pueda
-                      aplicar por su cuenta. */}
-                  <a
-                    href="https://consumer.hotmart.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="superficie-3d flex h-11 items-center justify-center gap-1.5 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-sm font-medium text-[var(--text-primary)]"
-                  >
-                    Cambiar de plan <ExternalLink size={13} />
-                  </a>
-                  {membresia.estado !== 'cancelled' && (
+                  {/* Pago único (21/09/2026): renovar = volver a pagar un plan.
+                      Los meses nuevos se suman a los que ya le quedan. */}
+                  {vencimiento && (
+                    <a
+                      href="/paywall?renovar=1"
+                      className="boton-3d flex h-11 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
+                    >
+                      Renovar mi acceso
+                    </a>
+                  )}
+                  {/* Cuentas antiguas de suscripción (sin vencimiento propio): siguen
+                      gestionándose en Hotmart. */}
+                  {!vencimiento && (
+                    <a
+                      href="https://consumer.hotmart.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="superficie-3d flex h-11 items-center justify-center gap-1.5 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-sm font-medium text-[var(--text-primary)]"
+                    >
+                      Cambiar de plan <ExternalLink size={13} />
+                    </a>
+                  )}
+                  {!vencimiento && membresia.estado !== 'cancelled' && (
                     <motion.button
                       type="button"
                       onClick={() => setPidiendoCancelarSuscripcion(true)}

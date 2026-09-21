@@ -118,14 +118,14 @@ export default function LandingV2() {
       {/* 6. OFERTA — idéntica a V1 (precio y estructura no son parte del experimento) */}
       <Oferta
         comoFunciona={{
-          titulo: 'Así funcionan tus 7 días gratis (en cualquier plan)',
+          titulo: 'Así funciona el pago (sin tarjeta guardada)',
           pasos: [
-            { titulo: 'Hoy: entras sin pagar', detalle: 'Acceso completo desde el primer minuto: tu plan de 6 días, el Botón de Rescate y el registro de tus pesos.' },
-            { titulo: 'Día 6: te avisamos', detalle: 'Te llega un correo antes de cualquier cobro, con la fecha exacta.' },
-            { titulo: 'Día 7: primer cobro', detalle: 'Si no quieres seguir, cancelas antes desde tu Perfil y no pagas nada.' },
+            { titulo: 'Pagas una sola vez', detalle: 'Con PSE, Nequi, tarjeta, Efecty o PayPal. Sin suscripción ni cobros automáticos.' },
+            { titulo: 'Entrenas todo tu periodo', detalle: 'Tu plan de 6 días, el Botón de Rescate y el registro de tus pesos, sin límites.' },
+            { titulo: 'Te avisamos antes de vencer', detalle: 'Renuevas cuando quieras y los meses se suman a los que te queden.' },
           ],
         }}
-        tituloMarked="Empieza gratis. Sigue por menos de [acento]$0.09/día[/acento]"
+        tituloMarked="Tu plan completo por menos de [acento]$0.09/día[/acento]"
         stack={{
           lineas: [
             { resultado: 'GymEvo Pro con el Botón de Rescate (12 meses)', valor: '$60 USD' },
@@ -133,18 +133,17 @@ export default function LandingV2() {
             { resultado: 'Guía de nutrición sin fórmulas complicadas', valor: '$19 USD' },
           ],
           totalTachado: '$108 USD',
-          nota: 'Hoy: $2.50 USD/mes (se cobra $29.99 USD/año)',
+          nota: 'Hoy: $2.50 USD/mes (pago único de $29.99 USD por 12 meses)',
         }}
         anual={{
           nombre: 'Anual',
           badge: 'MÁS POPULAR',
           precioMes: '$2.50',
-          trialDias: 7,
-          totalAnual: 'Se cobra $29.99 USD/año',
+          totalAnual: 'Pago único de $29.99 USD por 12 meses',
           ahorro: 'Como tener 6 meses gratis',
-          ahorroDetalle: 'Pagas $29.99 el año completo, en vez de $59.88 si pagaras mes a mes.',
+          ahorroDetalle: 'Pagas $29.99 una sola vez por 12 meses, en vez de $59.88 si pagaras mes a mes.',
           descomposicionDia: 'menos de $0.09 al día',
-          ctaLabel: 'Empezar mis 7 días gratis',
+          ctaLabel: 'Elegir anual',
           ctaHref: CTA_HREF,
           features: [
             'Tu plan de hoy, listo (Principiante o Intermedio)',
@@ -156,10 +155,9 @@ export default function LandingV2() {
         semestral={{
           nombre: 'Semestral',
           precioMes: '$3.33',
-          trialDias: 7,
-          totalSemestral: 'Se cobra $19.99 USD cada 6 meses',
+          totalSemestral: 'Pago único de $19.99 USD por 6 meses',
           ahorro: 'Ahorras 33% vs. mensual',
-          ctaLabel: 'Empezar mis 7 días gratis',
+          ctaLabel: 'Elegir semestral',
           ctaHref: CTA_HREF,
           features: [
             'Tu plan de hoy, listo cada día',
@@ -171,14 +169,14 @@ export default function LandingV2() {
         mensual={{
           nombre: 'Mensual',
           precioMes: '$4.99',
-          trialDias: 7,
-          ctaLabel: 'Empezar mis 7 días gratis',
+          totalPago: 'Pago único de $4.99 USD por 1 mes',
+          ctaLabel: 'Elegir mensual',
           ctaHref: CTA_HREF,
           features: [
             'Tu plan de hoy, listo cada día',
             'Botón de Rescate ilimitado',
             'Registro de pesos y progreso',
-            'Cancelas cuando quieras',
+            'Sin tarjeta guardada ni cobros automáticos',
           ],
         }}
       />
@@ -186,7 +184,7 @@ export default function LandingV2() {
       {/* 7. GARANTÍA — idéntica a V1 */}
       <Garantia
         nombre="la Garantía del Primer Plan Claro"
-        condicionMarked="Pruébalo 7 días gratis en cualquier plan, sin que se te cobre nada. Y si ya pagaste y no te convence, tienes [b]7 días desde tu cobro[/b] para pedir tu dinero de vuelta, en cualquier plan. Sin preguntas."
+        condicionMarked="Pagas una sola vez, sin tarjeta guardada ni cobros automáticos. Y si no te convence, tienes [b]7 días desde tu pago[/b] para pedir tu dinero de vuelta, en cualquier plan. Sin preguntas."
         pisoLegal="Respaldada por la garantía Hotmart"
       />
 
@@ -208,9 +206,9 @@ export default function LandingV2() {
               'Tocas el Botón de Rescate y te damos otro ejercicio equivalente al instante, con peso libre incluido.',
           },
           {
-            pregunta: '¿Me van a cobrar algo oculto la próxima tarjeta?',
+            pregunta: '¿Me van a cobrar algo oculto o renovar solo?',
             respuestaMarked:
-              'No. El precio que ves es el que pagas. Tienes 7 días gratis antes del primer cobro en los 3 planes, y después 7 días desde tu cobro para pedir devolución si algo no te convence — [b]sin sorpresas[/b].',
+              'No. El precio que ves es el que pagas. Pagas una sola vez y no guardamos tu tarjeta: nada se renueva solo, y tienes 7 días desde tu pago para pedir devolución si algo no te convence — [b]sin sorpresas[/b].',
           },
           {
             pregunta: '¿Y qué pasa después de los 90 días de la Ruta Principiante?',
@@ -231,8 +229,8 @@ export default function LandingV2() {
         futurePacingMarked="Llegas a tu gimnasio, abres GymEvo, ves tu ejercicio de hoy y ejecutas con la técnica correcta — sin adivinar, sin miedo, sin vergüenza."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
-        recap="Garantía del Primer Plan Claro · desde 7 días gratis"
-        psMarked="PS: GymEvo te dice exactamente qué hacer y cómo hacerlo bien en el gimnasio, con el Botón de Rescate para cuando la máquina está ocupada. Empieza gratis: 7 días en cualquier plan — cualquier plan que elijas queda respaldado por la Garantía del Primer Plan Claro."
+        recap="Garantía del Primer Plan Claro · 7 días desde tu pago"
+        psMarked="PS: GymEvo te dice exactamente qué hacer y cómo hacerlo bien en el gimnasio, con el Botón de Rescate para cuando la máquina está ocupada. Pagas una sola vez, sin tarjeta guardada — cualquier plan que elijas queda respaldado por la Garantía del Primer Plan Claro."
       />
 
       {/* 10. FOOTER LEGAL — idéntico a V1 */}

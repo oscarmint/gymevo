@@ -33,7 +33,7 @@ import {
   ultimoRegistro,
   type Progreso,
 } from '@/lib/routine';
-import { BannerTrial } from '@/components/BannerTrial';
+import { BannerRenovacion } from '@/components/BannerRenovacion';
 import { guardarLogRemoto, guardarProgresoRemoto, leerProgresoRemoto, sincronizarPerfilInicial } from '@/lib/supabase/sync';
 
 /** Opciones de duración del descanso — el usuario elige una al empezar el
@@ -627,7 +627,7 @@ function PlanDelDia({
         </div>
       )}
 
-      <BannerTrial sesionesCompletadas={new Set(progreso.logs.map((l) => l.fecha)).size} />
+      <BannerRenovacion />
 
       {/* (3) ESTADO DE LA RACHA — M4 racha en riesgo si aplica (color de aviso
           real de FICHA-ARTE, no un gris tenue — la alerta debe leerse como tal) */}

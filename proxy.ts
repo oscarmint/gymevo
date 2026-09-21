@@ -1,3 +1,4 @@
+import { DIAS_DE_GRACIA } from '@/lib/planes';
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
@@ -42,10 +43,16 @@ export default async function proxy(request: NextRequest) {
     // paywall no verificaba nada. `plan` lo fija reconciliar_membresia()
     // (ver lib/supabase/sync.ts y app/auth/callback/route.ts) según lo que
     // el webhook de Hotmart haya recibido para este correo.
-    const { data: perfil } = await supabase.from('profiles').select('plan').eq('id', user.id).maybeSingle();
-    if (perfil?.plan !== 'pro') {
+    const { data: perfil } = await supabase.from('profiles').select('plan, access_until').eq('id', user.id).maybeSingle();
+    // Pago único (21/09/2026): el plan 'pro' de la BD no se apaga solo al vencer,
+    // así que aquí también se compara el vencimiento (+ días de gracia).
+    // access_until null = cuenta antigua de suscripción, sin vencimiento propio.
+    const vencido =
+      !!perfil?.access_until && new Date(perfil.access_until).getTime() + DIAS_DE_GRACIA * 86_400_000 < Date.now();
+    if (perfil?.plan !== 'pro' || vencido) {
       const url = request.nextUrl.clone();
       url.pathname = '/paywall';
+      if (vencido) url.searchParams.set('renovar', '1');
       return NextResponse.redirect(url);
     }
   }

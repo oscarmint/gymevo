@@ -42,7 +42,7 @@ export default function TerminosPage() {
         <section>
           <h2 className="text-lg font-semibold">Edad mínima</h2>
           <p className="mt-2">
-            Debes tener al menos 18 años para crear una cuenta y contratar una suscripción en GymEvo.
+            Debes tener al menos 18 años para crear una cuenta y contratar un plan en GymEvo.
             Si tienes entre 13 y 17 años, necesitas la autorización de tu representante legal antes de usar
             la app.
           </p>
@@ -52,20 +52,20 @@ export default function TerminosPage() {
           <h2 className="text-lg font-semibold">Licencia de uso</h2>
           <p className="mt-2">
             Te damos una licencia personal, intransferible y no exclusiva para usar GymEvo mientras tengas
-            una suscripción activa. Las rutinas, textos e ilustraciones de la app son propiedad de GymEvo o
+            un plan con acceso vigente. Las rutinas, textos e ilustraciones de la app son propiedad de GymEvo o
             de sus licenciantes — no puedes copiarlas, revenderlas ni redistribuirlas fuera de tu uso
             personal.
           </p>
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold">Suscripción y pagos</h2>
+          <h2 className="text-lg font-semibold">Planes y pagos</h2>
           <p className="mt-2">
-            GymEvo se ofrece por suscripción Mensual, Semestral o Anual, con renovación automática. Los
-            planes Semestral y Anual incluyen 7 días de prueba gratuita antes del primer cobro; el plan
-            Mensual se cobra desde el día de la compra, sin período de prueba. El pago lo procesa Hotmart.
-            Salvo que canceles antes de la fecha de renovación, el cobro se repite automáticamente por el
-            mismo período y precio vigente en tu plan.
+            GymEvo se ofrece en planes de pago único: Mensual (1 mes de acceso), Semestral (6 meses) o Anual
+            (12 meses). Pagas una sola vez por el período elegido, con los medios de pago que ofrece
+            Hotmart (por ejemplo PSE, Nequi, Efecty, tarjeta o PayPal). No hay renovación automática ni
+            cobros recurrentes: cuando tu acceso termine, decides si renuevas pagando de nuevo. Los meses
+            de una renovación se suman al tiempo de acceso que aún te quede. El pago lo procesa Hotmart.
           </p>
         </section>
 
@@ -81,12 +81,12 @@ export default function TerminosPage() {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold">Cancelación</h2>
+          <h2 className="text-lg font-semibold">Vencimiento y renovación</h2>
           <p className="mt-2">
-            Puedes cancelar tu suscripción cuando quieras, con un solo toque, desde tu Perfil dentro de la
-            app (te lleva directo al portal de Hotmart) o escribiendo a soporte. La cancelación evita el
-            próximo cobro; no genera reembolsos automáticos del período ya pagado, salvo lo indicado en
-            nuestra Política de Reembolsos.
+            Tu acceso dura hasta la fecha que ves en tu Perfil. Te avisamos antes de que venza para que
+            puedas renovar, y después del vencimiento tienes unos días de gracia antes de que la app se
+            bloquee. Como no hay cobros automáticos, no hay nada que cancelar: si no renuevas, el acceso
+            simplemente termina. Los reembolsos se rigen por nuestra Política de Reembolsos.
           </p>
         </section>
 
@@ -104,7 +104,7 @@ export default function TerminosPage() {
           <p className="mt-2">
             GymEvo se ofrece &quot;tal cual&quot;. Dentro de lo permitido por la ley, no somos responsables por
             daños indirectos derivados del uso de la app. Nuestra responsabilidad total frente a ti nunca
-            supera el monto que pagaste en los últimos 3 meses de suscripción.
+            supera el monto que pagaste por tu plan vigente.
           </p>
         </section>
 

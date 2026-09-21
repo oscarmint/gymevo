@@ -8,6 +8,7 @@ import { createClient } from '@supabase/supabase-js';
 import crypto from 'node:crypto';
 import { verifyHotmart, isFresh } from '@/lib/hotmart-verify';
 import { statusForEvent } from '@/lib/membership-fsm';
+import { calcularVencimiento, mesesDeOferta } from '@/lib/planes';
 
 export const runtime = 'nodejs'; // necesitamos node:crypto y el raw body (no Edge)
 
@@ -30,7 +31,7 @@ interface PayloadHotmart {
   creation_date?: number;
   data?: {
     buyer?: { email?: string };
-    purchase?: { transaction?: string; approved_date?: number };
+    purchase?: { transaction?: string; approved_date?: number; offer?: { code?: string } };
     subscription?: { subscriber?: { code?: string }; trial?: { end_date?: number } };
   };
 }
@@ -85,6 +86,22 @@ export async function POST(req: NextRequest) {
     ? new Date(payload.data.subscription.trial.end_date).toISOString()
     : null;
 
+  // Pago único (21/09/2026): cada compra aprobada da N meses de acceso según
+  // la oferta comprada, sumados al acceso que ya tenía (renovación anticipada
+  // no pierde días). Sin esto un pago daría acceso para siempre.
+  let accessUntil: string | null = null;
+  if (newStatus === 'active') {
+    const meses = mesesDeOferta(payload.data?.purchase?.offer?.code);
+    if (meses === null) {
+      // Oferta que no reconocemos: acceso mínimo de 1 mes en vez de ilimitado,
+      // y queda en logs para corregir la variable de checkout que falte.
+      console.error('webhook hotmart: oferta desconocida', { event });
+    }
+    const { data: previa } = await admin.from('hotmart_purchases').select('access_until').eq('email', email).maybeSingle();
+    const actual = previa?.access_until ? new Date(previa.access_until) : null;
+    accessUntil = calcularVencimiento(meses ?? 1, actual).toISOString();
+  }
+
   // 5. Idempotencia + transición legal + cambio de estado, TODO atómico en la RPC.
   const { data, error } = await admin.rpc('apply_hotmart_event', {
     p_event_id: eventId,
@@ -94,7 +111,7 @@ export async function POST(req: NextRequest) {
     p_subscriber_code: subscriberCode ?? null,
     p_new_status: newStatus,
     p_trial_ends_at: trialEndsAt,
-    p_access_until: null,
+    p_access_until: accessUntil,
   });
 
   if (error) {

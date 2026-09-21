@@ -26,6 +26,8 @@ export interface PlanOferta {
    * = este plan en particular no tiene trial → sin badge. Nunca mostrar el
    * badge en un plan que de verdad no lo incluye (transparencia radical). */
   trialDias?: number;
+  /** Línea de pago bajo el precio ("Pago único de $X por N meses"). */
+  totalPago?: string;
   ctaLabel: string;
   ctaHref: string;
   /** 4-6 features en lenguaje de RESULTADO, máx 12 palabras c/u. */
@@ -270,6 +272,7 @@ export function Oferta({
             </div>
             <div className="mt-4">
               <Precio plan={mensual} />
+              {mensual.totalPago && <p className="mt-1 text-[12px] text-[var(--text-secondary)]">{mensual.totalPago}</p>}
             </div>
             <Features items={mensual.features} origen="Oferta → mensual" />
             <motion.a

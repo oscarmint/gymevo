@@ -154,21 +154,18 @@ export async function leerMembresiaRemota(): Promise<{ plan: string; estado: str
   return { plan: perfil.plan, estado: perfil.membership_status };
 }
 
-/** Fecha en que termina la prueba gratis, solo si la membresía está en prueba
- * (BannerTrial de "Plan de hoy"). null si no hay prueba activa o no hay sesión. */
-export async function leerFinDePruebaRemoto(): Promise<Date | null> {
+/** Fecha hasta la que tiene acceso pagado (pago único). Perfil y el aviso de
+ * renovación de "Plan de hoy" la usan. null si no hay sesión o no hay vencimiento
+ * (cuentas antiguas de suscripción, sin fecha propia). */
+export async function leerVencimientoRemoto(): Promise<Date | null> {
   const supabase = crearClienteSupabase();
   const { data: userData } = await supabase.auth.getUser();
   const user = userData.user;
   if (!user) return null;
 
-  const { data: perfil } = await supabase
-    .from('profiles')
-    .select('membership_status, trial_ends_at')
-    .eq('id', user.id)
-    .maybeSingle();
-  if (!perfil || perfil.membership_status !== 'trialing' || !perfil.trial_ends_at) return null;
-  const fin = new Date(perfil.trial_ends_at);
+  const { data: perfil } = await supabase.from('profiles').select('access_until').eq('id', user.id).maybeSingle();
+  if (!perfil?.access_until) return null;
+  const fin = new Date(perfil.access_until);
   return Number.isNaN(fin.getTime()) ? null : fin;
 }
 

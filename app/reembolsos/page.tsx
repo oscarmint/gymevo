@@ -28,13 +28,11 @@ export default function ReembolsosPage() {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold">Prueba gratuita (solo Semestral y Anual)</h2>
+          <h2 className="text-lg font-semibold">Pago único, sin cobros automáticos</h2>
           <p className="mt-2">
-            Si eliges el plan Semestral o Anual, tienes 7 días de prueba antes de que se te cobre nada — te
-            avisamos por correo un día antes de que termine, y puedes cancelar sin costo en cualquier
-            momento durante esos 7 días. El plan Mensual no tiene período de prueba: el cobro ocurre el
-            mismo día en que te suscribes, y ahí empieza a correr la Garantía del Primer Plan Claro descrita
-            arriba.
+            Todos los planes (Mensual, Semestral y Anual) son de pago único: pagas una vez por el período
+            elegido y no guardamos tu tarjeta ni hacemos cobros recurrentes. La Garantía del Primer Plan
+            Claro descrita arriba corre desde la fecha de tu pago.
           </p>
         </section>
 
@@ -54,7 +52,7 @@ export default function ReembolsosPage() {
             <a href="mailto:soporte@gymevo.app" className="underline underline-offset-4">
               soporte@gymevo.app
             </a>{" "}
-            indicando el correo con el que te suscribiste, o pide el reembolso directamente desde tu
+            indicando el correo con el que compraste, o pide el reembolso directamente desde tu
             portal de compras de Hotmart. Procesamos las solicitudes que nos llegan por correo en un
             máximo de 5 días hábiles.
           </p>
@@ -63,9 +61,9 @@ export default function ReembolsosPage() {
         <section>
           <h2 className="text-lg font-semibold">Después del período de garantía</h2>
           <p className="mt-2">
-            Pasados los 7 días desde tu cobro, puedes cancelar tu suscripción en cualquier momento para
-            evitar el próximo cobro (con un toque desde tu Perfil), pero el período ya pagado no es
-            reembolsable salvo que la ley aplicable indique lo contrario.
+            Pasados los 7 días desde tu pago, el período ya pagado no es reembolsable salvo que la ley
+            aplicable indique lo contrario. Como no hay renovación automática, no tienes que cancelar
+            nada: tu acceso termina solo al vencer el período.
           </p>
         </section>
       </div>

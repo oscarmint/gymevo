@@ -38,7 +38,7 @@ export default function PrivacidadPage() {
         <section>
           <h2 className="text-lg font-semibold">Qué datos recogemos</h2>
           <ul className="mt-2 list-disc pl-5 flex flex-col gap-1">
-            <li>Tu correo electrónico, para crear tu cuenta y enviarte información sobre tu suscripción.</li>
+            <li>Tu correo electrónico, para crear tu cuenta y enviarte información sobre tu plan y sus vencimientos.</li>
             <li>El nivel que elegiste (Principiante o Intermedio), tu meta (músculo o pérdida de grasa) y tu progreso dentro del plan.</li>
             <li>Tu historial de ejercicios: pesos, series y repeticiones que registras tú mismo.</li>
             <li>Datos corporales que ingresas voluntariamente para calcular tus macros (peso, estatura, edad, cintura) — nunca obligatorios para usar la app.</li>
@@ -70,7 +70,7 @@ export default function PrivacidadPage() {
           <h2 className="text-lg font-semibold">Con quién compartimos datos</h2>
           <p className="mt-2">Compartimos datos únicamente con los proveedores que necesitamos para operar el servicio:</p>
           <ul className="mt-2 list-disc pl-5 flex flex-col gap-1">
-            <li><strong>Hotmart</strong> — procesa tu pago y tu suscripción.</li>
+            <li><strong>Hotmart</strong> — procesa tu pago.</li>
             <li><strong>Supabase</strong> — guarda tu cuenta, tu progreso y tu foto de perfil (base de datos, autenticación y almacenamiento de archivos).</li>
             <li><strong>Vercel</strong> — aloja y sirve la aplicación web.</li>
             <li><strong>Resend</strong> — envía los correos de tu cuenta (enlace de acceso, avisos de cobro).</li>
@@ -126,7 +126,7 @@ export default function PrivacidadPage() {
             Desde tu Perfil dentro de la app puedes eliminar tu cuenta con un botón directo. Al hacerlo
             borramos tu perfil, tu historial de entrenamientos, tu foto y tus suscripciones a
             notificaciones — de inmediato y sin necesidad de escribirnos. La única excepción es el registro
-            de tu compra en Hotmart (correo, fechas y estado de la suscripción), que conservamos porque la
+            de tu compra en Hotmart (correo, fechas y estado del plan), que conservamos porque la
             ley nos obliga a llevar contabilidad de nuestros ingresos; nunca lo usamos para otra cosa.
           </p>
         </section>
