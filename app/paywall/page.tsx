@@ -30,7 +30,7 @@ const KEY_PLAN = 'gymevo_plan_elegido';
  * prueba" — el Mensual pasó de 0 a 3 días (07/09/2026, a pedido explícito,
  * para probar si un trial corto también mejora su conversión). */
 const PLANES: Record<PlanId, { nombre: string; meses: number; precioTotal: number; trialDias: number }> = {
-  mensual: { nombre: 'Mensual', meses: 1, precioTotal: 4.99, trialDias: 3 },
+  mensual: { nombre: 'Mensual', meses: 1, precioTotal: 4.99, trialDias: 7 },
   semestral: { nombre: 'Semestral', meses: 6, precioTotal: 19.99, trialDias: 7 },
   anual: { nombre: 'Anual', meses: 12, precioTotal: 29.99, trialDias: 7 },
 };

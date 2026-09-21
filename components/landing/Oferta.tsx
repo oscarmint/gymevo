@@ -9,7 +9,7 @@
 // El destino de los CTAs sigue al MODELO de 02C (checkout vs /onboarding).
 
 import { motion } from 'motion/react';
-import { Star } from 'lucide-react';
+import { BellRing, Gift, Star, XCircle } from 'lucide-react';
 import { CheckCustom, CtaButton, Hairline, Kicker, PrecioAnimado, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy, warnCopy, warnRango } from './MarkedCopy';
 import { formatearCOP, useTRM } from '@/lib/trm';
@@ -42,9 +42,15 @@ export interface OfertaProps {
     totalAnual: string;
     /** Ahorro en meses ("2 meses gratis") — el elemento más ruidoso tras el CTA. */
     ahorro: string;
+    /** Aclara de dónde sale el ahorro ("$29.99 en vez de $59.88 mes a mes"). */
+    ahorroDetalle?: string;
     badge?: string;
   };
+  /** Plan de compromiso medio, entre Anual y Mensual (opcional). */
+  semestral?: PlanOferta & { totalSemestral: string; ahorro: string };
   mensual: PlanOferta;
+  /** Cómo funciona la prueba gratis, paso a paso (opcional, va sobre las cards). */
+  comoFunciona?: { titulo: string; pasos: { titulo: string; detalle: string }[] };
   /** Stack de valor Hormozi opcional — total TACHADO del stack, jamás precio falso. */
   stack?: {
     lineas: { resultado: string; valor: string }[];
@@ -63,6 +69,32 @@ function TrialBadge({ dias }: { dias: number }) {
       <Star size={12} strokeWidth={2.5} aria-hidden="true" />
       {dias} días gratis
     </span>
+  );
+}
+
+const ICONOS_PASO = [Gift, BellRing, XCircle];
+
+function ComoFunciona({ datos }: { datos: NonNullable<OfertaProps['comoFunciona']> }) {
+  return (
+    <div className="mx-auto mt-8 max-w-[880px] rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent-2)_30%,transparent)] bg-[var(--surface)] p-6">
+      <p className="text-center text-[16px] font-semibold text-[var(--text-primary)]">{datos.titulo}</p>
+      <ol className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+        {datos.pasos.map((p, i) => {
+          const Icono = ICONOS_PASO[i % ICONOS_PASO.length];
+          return (
+            <li key={p.titulo} className="flex items-start gap-3">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_oklab,var(--accent-2)_15%,transparent)]">
+                <Icono size={17} color="var(--accent-2)" aria-hidden="true" />
+              </span>
+              <div>
+                <p className="text-[15px] font-semibold text-[var(--text-primary)]">{p.titulo}</p>
+                <p className="mt-0.5 text-[13.5px] leading-snug text-[var(--text-secondary)]">{p.detalle}</p>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
   );
 }
 
@@ -109,8 +141,10 @@ export function Oferta({
   kicker = 'LA OFERTA',
   tituloMarked,
   anual,
+  semestral,
   mensual,
   stack,
+  comoFunciona,
   id = 'oferta',
 }: OfertaProps) {
   warnCopy('Oferta → título', tituloMarked, 8);
@@ -155,8 +189,18 @@ export function Oferta({
           </motion.div>
         )}
 
+        {comoFunciona && (
+          <motion.div variants={item}>
+            <ComoFunciona datos={comoFunciona} />
+          </motion.div>
+        )}
+
         {/* Cards: ANUAL PRIMERO en el DOM — en mobile apilado arriba, nunca scroll horizontal */}
-        <div className="mx-auto mt-10 grid max-w-[880px] grid-cols-1 items-start gap-6 md:grid-cols-2">
+        <div
+          className={`mx-auto mt-10 grid grid-cols-1 items-start gap-6 ${
+            semestral ? 'max-w-[1040px] md:grid-cols-3' : 'max-w-[880px] md:grid-cols-2'
+          }`}
+        >
           {/* ── ANUAL (recomendado): hairline 2px + fondo acento sutil + sombra tintada ── */}
           <motion.div variants={item} className="relative md:-translate-y-2">
             {anual.badge && (
@@ -175,6 +219,9 @@ export function Oferta({
                   {/* El total anual SIEMPRE visible — regla de oro de 02C */}
                   <p className="mt-1 text-[12px] text-[var(--text-secondary)]">{anual.totalAnual}</p>
                   <p className="mt-2 text-[15px] font-semibold text-[var(--accent)]">{anual.ahorro}</p>
+                  {anual.ahorroDetalle && (
+                    <p className="mt-0.5 text-[12.5px] leading-snug text-[var(--text-secondary)]">{anual.ahorroDetalle}</p>
+                  )}
                 </div>
                 <Features items={anual.features} origen="Oferta → anual" />
                 <div className="mt-6">
@@ -185,6 +232,32 @@ export function Oferta({
               </div>
             </Hairline>
           </motion.div>
+
+          {/* ── SEMESTRAL: card base, compromiso medio ── */}
+          {semestral && (
+            <motion.div
+              variants={item}
+              className="rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_28%,transparent)] bg-[var(--surface)] p-6 shadow-[var(--shadow-1)] md:p-7"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-[18px] font-semibold text-[var(--text-primary)]">{semestral.nombre}</h3>
+                {semestral.trialDias !== undefined && <TrialBadge dias={semestral.trialDias} />}
+              </div>
+              <div className="mt-4">
+                <Precio plan={semestral} />
+                <p className="mt-1 text-[12px] text-[var(--text-secondary)]">{semestral.totalSemestral}</p>
+                <p className="mt-2 text-[15px] font-semibold text-[var(--accent)]">{semestral.ahorro}</p>
+              </div>
+              <Features items={semestral.features} origen="Oferta → semestral" />
+              <motion.a
+                whileTap={{ scale: 0.97 }}
+                href={semestral.ctaHref}
+                className="mt-6 flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-[16px] font-semibold text-[var(--accent)] transition-colors duration-150 hover:bg-[var(--chip-bg)] [touch-action:manipulation]"
+              >
+                {semestral.ctaLabel}
+              </motion.a>
+            </motion.div>
+          )}
 
           {/* ── MENSUAL: card base, CTA outline — menos peso visual ── */}
           <motion.div

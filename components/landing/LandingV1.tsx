@@ -110,10 +110,18 @@ export default function LandingV1() {
         ctaHref={CTA_HREF}
       />
 
-      {/* 6. OFERTA — anual primero, con trial de 7 días; Mensual con 3 días
+      {/* 6. OFERTA — anual primero, con trial de 7 días en los 3 planes
           (mismo esquema del paywall in-app — nunca prometer en la landing
           algo que el paywall no cumple). */}
       <Oferta
+        comoFunciona={{
+          titulo: 'Así funcionan tus 7 días gratis (en cualquier plan)',
+          pasos: [
+            { titulo: 'Hoy: entras sin pagar', detalle: 'Acceso completo desde el primer minuto: tu plan de 6 días, el Botón de Rescate y el registro de tus pesos.' },
+            { titulo: 'Día 6: te avisamos', detalle: 'Te llega un correo antes de cualquier cobro, con la fecha exacta.' },
+            { titulo: 'Día 7: primer cobro', detalle: 'Si no quieres seguir, cancelas antes desde tu Perfil y no pagas nada.' },
+          ],
+        }}
         tituloMarked="Empieza gratis. Sigue por menos de [acento]$0.09/día[/acento]"
         stack={{
           lineas: [
@@ -130,7 +138,8 @@ export default function LandingV1() {
           precioMes: '$2.50',
           trialDias: 7,
           totalAnual: 'Se cobra $29.99 USD/año',
-          ahorro: 'Ahorra 50%',
+          ahorro: 'Como tener 6 meses gratis',
+          ahorroDetalle: 'Pagas $29.99 el año completo, en vez de $59.88 si pagaras mes a mes.',
           descomposicionDia: 'menos de $0.09 al día',
           ctaLabel: 'Empezar mis 7 días gratis',
           ctaHref: CTA_HREF,
@@ -141,11 +150,26 @@ export default function LandingV1() {
             'Ruta Intermedio para romper el estancamiento',
           ],
         }}
+        semestral={{
+          nombre: 'Semestral',
+          precioMes: '$3.33',
+          trialDias: 7,
+          totalSemestral: 'Se cobra $19.99 USD cada 6 meses',
+          ahorro: 'Ahorras 33% vs. mensual',
+          ctaLabel: 'Empezar mis 7 días gratis',
+          ctaHref: CTA_HREF,
+          features: [
+            'Tu plan de hoy, listo cada día',
+            'Botón de Rescate ilimitado',
+            'Registro de pesos y progreso',
+            'Compromiso medio, sin atarte un año',
+          ],
+        }}
         mensual={{
           nombre: 'Mensual',
           precioMes: '$4.99',
-          trialDias: 3,
-          ctaLabel: 'Empezar mis 3 días gratis',
+          trialDias: 7,
+          ctaLabel: 'Empezar mis 7 días gratis',
           ctaHref: CTA_HREF,
           features: [
             'Tu plan de hoy, listo cada día',
@@ -156,13 +180,13 @@ export default function LandingV1() {
         }}
       />
 
-      {/* 7. GARANTÍA — trial de 7 días en Semestral/Anual y de 3 en Mensual
-          (paywall, 08/09/2026); la garantía de devolución de 7 días desde el
+      {/* 7. GARANTÍA — trial de 7 días en los 3 planes
+          (21/09/2026, a pedido del usuario); la garantía de devolución de 7 días desde el
           cobro aplica a los 3 planes por igual. Copy alineado 21/09/2026 con
           el paywall (decía que Mensual no tenía trial). */}
       <Garantia
         nombre="la Garantía del Primer Plan Claro"
-        condicionMarked="Pruébalo gratis: 7 días en Anual y Semestral, 3 días en Mensual, sin que se te cobre nada. Y si ya pagaste y no te convence, tienes [b]7 días desde tu cobro[/b] para pedir tu dinero de vuelta, en cualquier plan. Sin preguntas."
+        condicionMarked="Pruébalo 7 días gratis en cualquier plan, sin que se te cobre nada. Y si ya pagaste y no te convence, tienes [b]7 días desde tu cobro[/b] para pedir tu dinero de vuelta, en cualquier plan. Sin preguntas."
         pisoLegal="Respaldada por la garantía Hotmart"
       />
 
@@ -187,7 +211,7 @@ export default function LandingV1() {
           {
             pregunta: '¿Me van a cobrar algo oculto la próxima tarjeta?',
             respuestaMarked:
-              'No. El precio que ves es el que pagas. Tienes 7 días gratis antes del primer cobro en Anual y Semestral (3 días en Mensual), y en los 3 planes 7 días desde tu cobro para pedir devolución si algo no te convence — [b]sin sorpresas[/b].',
+              'No. El precio que ves es el que pagas. Tienes 7 días gratis antes del primer cobro en los 3 planes, y después 7 días desde tu cobro para pedir devolución si algo no te convence — [b]sin sorpresas[/b].',
           },
           {
             pregunta: '¿Y qué pasa después de los 90 días de la Ruta Principiante?',
@@ -209,7 +233,7 @@ export default function LandingV1() {
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
         recap="Garantía del Primer Plan Claro · desde 7 días gratis"
-        psMarked="PS: GymEvo te dice exactamente qué hacer en el gimnasio, con el Botón de Rescate para cuando la máquina está ocupada. Empieza gratis: 7 días en Anual o Semestral, 3 en Mensual — cualquier plan que elijas queda respaldado por la Garantía del Primer Plan Claro."
+        psMarked="PS: GymEvo te dice exactamente qué hacer en el gimnasio, con el Botón de Rescate para cuando la máquina está ocupada. Empieza gratis: 7 días en cualquier plan — cualquier plan que elijas queda respaldado por la Garantía del Primer Plan Claro."
       />
 
       {/* 10. FOOTER LEGAL */}
