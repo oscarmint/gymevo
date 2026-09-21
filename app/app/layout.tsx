@@ -1,14 +1,15 @@
 'use client';
 
-// SHELL DE LA APP INTERNA — 3 secciones máximo (04-ARQUITECTURA): Plan del día
-// (protagonista), Historial, Perfil. Tab bar inferior, siempre visible.
+// SHELL DE LA APP INTERNA — Plan del día (protagonista), Calendario (21/09/2026,
+// pedido del usuario), Historial, Perfil. Tab bar inferior, siempre visible.
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Dumbbell, History, User } from 'lucide-react';
+import { CalendarDays, Dumbbell, History, User } from 'lucide-react';
 
 const TABS = [
   { href: '/app', label: 'Plan de hoy', icon: Dumbbell },
+  { href: '/app/calendario', label: 'Calendario', icon: CalendarDays },
   { href: '/app/historial', label: 'Historial', icon: History },
   { href: '/app/perfil', label: 'Perfil', icon: User },
 ];

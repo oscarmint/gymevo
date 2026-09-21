@@ -975,12 +975,25 @@ export interface Progreso {
   /** Fecha (YYYY-MM-DD) de la primera medida registrada (peso o cintura) —
    * para poder decir "desde el [fecha]" en el progreso, no solo "un cambio". */
   fechaInicioMedidas: string | null;
+  /** Fechas (YYYY-MM-DD) en las que se cerró un día de DESCANSO — el
+   * calendario las distingue de un día que se dejó pasar sin entrenar. Solo
+   * local (no se sincroniza): opcional para que el progreso guardado antes de
+   * este campo siga siendo válido. */
+  diasDescanso?: string[];
 }
 
 const KEY = 'gymevo_progreso';
 
-function hoyISO(): string {
-  return new Date().toISOString().slice(0, 10);
+/** Fecha LOCAL del dispositivo (YYYY-MM-DD). Antes se usaba la fecha UTC, y en
+ * Colombia (UTC-5) un entrenamiento de las 7 pm en adelante quedaba guardado
+ * con la fecha del día siguiente — el calendario lo habría mostrado un día
+ * corrido justo para quien entrena de noche. */
+export function fechaLocalISO(d: Date = new Date()): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+export function hoyISO(): string {
+  return fechaLocalISO();
 }
 
 function diasEntre(a: string, b: string): number {
@@ -1124,7 +1137,8 @@ export function completarEntrenamiento(p: Progreso): Progreso {
     const gap = diasEntre(p.ultimaFecha, hoy);
     racha = gap <= 1 ? p.racha + 1 : 1; // mismo día o consecutivo: suma; si no, reinicia
   }
-  return { ...p, diaActual: p.diaActual + 1, racha, ultimaFecha: hoy };
+  const descansos = esDiaDeDescanso(p.diaActual) ? [...new Set([...(p.diasDescanso ?? []), hoy])] : p.diasDescanso;
+  return { ...p, diaActual: p.diaActual + 1, racha, ultimaFecha: hoy, ...(descansos ? { diasDescanso: descansos } : {}) };
 }
 
 /** Racha en riesgo (M4 de 56): ya pasó ≥1 día completo sin entrenar y aún no

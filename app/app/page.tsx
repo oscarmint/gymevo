@@ -20,6 +20,7 @@ import {
   esDiaDeDescanso,
   generoIlustracion,
   guardarProgreso,
+  hoyISO,
   leerProgreso,
   marcarHecho,
   MUSCULO_LABEL,
@@ -401,7 +402,7 @@ function PlanDelDia({
       const conNuevaSerie = registrarSerie(p, log);
       return esUltimaSerie ? marcarHecho(conNuevaSerie, ejercicioId) : conNuevaSerie;
     });
-    guardarLogRemoto({ ...log, fecha: new Date().toISOString().slice(0, 10) }, () => setErrorSync(true));
+    guardarLogRemoto({ ...log, fecha: hoyISO() }, () => setErrorSync(true));
 
     // Limpia los inputs para que la siguiente serie no arrastre el peso/reps
     // de la anterior — el usuario puede repetir el mismo valor a propósito,

@@ -8,7 +8,7 @@
 // poder probarlas aisladas.
 
 import type { GrupoMuscular } from './routine';
-import { MUSCULO_LABEL, obtenerEjercicio, type RegistroLog } from './routine';
+import { MUSCULO_LABEL, fechaLocalISO, obtenerEjercicio, type RegistroLog } from './routine';
 
 /** 1RM estimado con la fórmula de Epley — la más usada en apps de fuerza
  * (Fitbod, Strong) porque es simple y razonablemente precisa hasta ~10 reps.
@@ -31,7 +31,7 @@ export interface VolumenGrupo {
 export function volumenPorGrupoMuscular(logs: RegistroLog[], dias = 7): VolumenGrupo[] {
   const desde = new Date();
   desde.setDate(desde.getDate() - dias);
-  const desdeISO = desde.toISOString().slice(0, 10);
+  const desdeISO = fechaLocalISO(desde);
 
   const acumulado = new Map<GrupoMuscular, number>();
   for (const log of logs) {
