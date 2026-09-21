@@ -47,6 +47,19 @@ function fechaEnMeses(meses: number): string {
   return new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }).format(f);
 }
 
+/** El checkout de Hotmart solo muestra el diseño de GymEvo (Checkout Builder)
+ * cuando el link lleva `checkoutMode=10`; sin él sale el diseño por defecto.
+ * Se agrega aquí para no depender de cómo estén escritos los links en Vercel. */
+function conDisenoGymEvo(url: string): string {
+  try {
+    const u = new URL(url);
+    if (!u.searchParams.has('checkoutMode')) u.searchParams.set('checkoutMode', '10');
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
 const CHECKOUT_ENV: Record<PlanId, string | undefined> = {
   mensual: process.env.NEXT_PUBLIC_HOTMART_CHECKOUT_MENSUAL,
   semestral: process.env.NEXT_PUBLIC_HOTMART_CHECKOUT_SEMESTRAL,
@@ -109,7 +122,8 @@ export default function PaywallPage() {
   }
 
   function pagar() {
-    const checkoutUrl = CHECKOUT_ENV[plan];
+    const enlace = CHECKOUT_ENV[plan];
+    const checkoutUrl = enlace ? conDisenoGymEvo(enlace) : undefined;
 
     if (checkoutUrl) {
       // Hallazgo revisor-visual: saltar en silencio a un dominio externo en
