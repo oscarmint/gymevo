@@ -218,7 +218,7 @@ export default function PaywallPage() {
             {renovando
               ? 'Los meses que elijas se suman a los que te queden. Tu racha y tu progreso siguen intactos.'
               : finPrueba
-                ? 'Tu racha y tu progreso te esperan. Paga una sola vez, sin tarjeta guardada.'
+                ? 'Tu racha y tu progreso te esperan. Elige un plan y realiza el pago para seguir entrenando.'
                 : `Tu plan para ${meta} ya está hecho con tus respuestas — listo para cuando entrenes ${horario}`}
           </p>
         </motion.div>
@@ -293,8 +293,8 @@ export default function PaywallPage() {
                 precioMes={`$${precioMes.toFixed(2)}`}
                 detalle={
                   info.meses === 1
-                    ? `Pagas $${info.precioTotal.toFixed(2)} USD una vez · acceso por 1 mes`
-                    : `Pagas $${info.precioTotal.toFixed(2)} USD una vez · acceso por ${info.meses} meses (equivale a $${precioMes.toFixed(2)}/mes)`
+                    ? `$${info.precioTotal.toFixed(2)} USD por 1 mes de acceso`
+                    : `$${info.precioTotal.toFixed(2)} USD por ${info.meses} meses de acceso (equivale a $${precioMes.toFixed(2)}/mes)`
                 }
                 trm={trm}
               />
@@ -305,15 +305,6 @@ export default function PaywallPage() {
         {/* Confianza justo en el momento de la duda (hallazgo de revisión
             externa): la misma promesa de "Antes de empezar" vivía solo más
             abajo, lejos del botón — el usuario decide ACÁ, no en el FAQ. */}
-        <motion.p
-          initial={reduce ? {} : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.3 }}
-          className="mt-6 flex items-center justify-center gap-1.5 text-center text-sm font-semibold text-[var(--text-primary)]"
-        >
-          <Check size={15} color="var(--accent)" strokeWidth={3} />
-          Pago único · PSE, Nequi, tarjeta, Efecty o PayPal
-        </motion.p>
 
         {/* (6) CTA — nunca dice "Suscríbete"; el texto cambia según si el
             plan elegido tiene trial o no (transparencia: el botón dice
@@ -357,7 +348,7 @@ export default function PaywallPage() {
           <ShieldCheck size={13} /> Garantía de devolución de 7 días desde tu pago, sin preguntas
         </motion.p>
 
-        {/* Prueba gratis SIN tarjeta (21/09/2026): siempre disponible para quien
+        {/* Prueba gratis (21/09/2026): siempre disponible para quien
             todavía no eligió pagar; cuando termina, proxy.ts lo devuelve aquí
             con ?fin_prueba=1 y este botón deja de mostrarse. */}
         {!renovando && !finPrueba && (
@@ -372,10 +363,10 @@ export default function PaywallPage() {
               onClick={() => router.push('/login?desde=prueba')}
               className="flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-base font-semibold text-[var(--accent)]"
             >
-              {`Probar ${DIAS_DE_PRUEBA} días gratis, sin tarjeta`}
+              {`Probar ${DIAS_DE_PRUEBA} días gratis`}
             </button>
             <p className="mt-1.5 text-center text-xs text-[var(--text-secondary)]">
-              Sin cobros. Al terminar, la app te pide elegir un plan.
+              Al terminar los {DIAS_DE_PRUEBA} días gratis, para seguir entrenando debes elegir un plan y realizar el pago.
             </p>
           </motion.div>
         )}
@@ -445,19 +436,19 @@ export default function PaywallPage() {
                     <div>
                       <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Puedo probar antes de pagar?</p>
                       <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                        Sí: {DIAS_DE_PRUEBA} días gratis con acceso completo, sin dejar tarjeta. Cuando terminan, la app te pide elegir un plan.
+                        Sí: {DIAS_DE_PRUEBA} días gratis con acceso completo. Cuando terminan, para seguir entrenando eliges un plan y realizas el pago.
                       </p>
                     </div>
                     <div>
                       <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Se renueva solo?</p>
                       <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                        No. Pagas una vez y tu acceso dura lo que elegiste. Te avisamos antes de que venza para que renueves si quieres.
+                        No. Tu acceso dura el tiempo del plan que elijas y te avisamos antes de que venza para que renueves si quieres.
                       </p>
                     </div>
                     <div>
                       <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Hay cobros escondidos?</p>
                       <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                        Cero. El precio que ves arriba es lo único que pagas — no guardamos tu tarjeta ni hay cobros automáticos.
+                        Cero. El precio que ves arriba es lo único que pagas — nada de cargos extra.
                       </p>
                     </div>
                   </div>
@@ -503,18 +494,18 @@ export default function PaywallPage() {
   );
 }
 
-/** Cómo funciona el pago único, en 3 pasos con fecha real (reemplaza el
+/** Cómo funciona tu plan, en 3 pasos con fecha real (reemplaza el
  * timeline de prueba gratis, 21/09/2026). */
 function LineaDePago({ plan }: { plan: PlanId }) {
   const info = PLANES[plan];
   const nodos = [
-    { estado: 'lleno' as const, titulo: 'Hoy — pagas una sola vez', sub: 'Sin tarjeta guardada: PSE, Nequi, Efecty, tarjeta o PayPal' },
+    { estado: 'lleno' as const, titulo: 'Hoy — activas tu plan', sub: 'Acceso completo de inmediato' },
     {
       estado: 'lleno' as const,
       titulo: `Acceso hasta el ${fechaEnMeses(info.meses)}`,
       sub: 'Los 6 días de tu plan, Botón de Rescate y registro de tus pesos',
     },
-    { estado: 'vacio' as const, titulo: 'Antes de vencer — te avisamos', sub: 'Renuevas cuando quieras; nada se cobra solo' },
+    { estado: 'vacio' as const, titulo: 'Antes de vencer — te avisamos', sub: 'Renuevas cuando quieras' },
   ];
   return (
     <div className="flex flex-col">

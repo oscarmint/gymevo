@@ -12,9 +12,9 @@ const AVISAR_DESDE_DIAS = 7;
 type Aviso = { tipo: 'prueba' | 'pago'; dias: number };
 
 /** Aviso de acceso dentro de la app, con dos casos:
- *  - prueba gratis sin tarjeta: siempre visible mientras dure, con los días
+ *  - prueba gratis: siempre visible mientras dure, con los días
  *    que quedan y la invitación a elegir plan antes de que termine;
- *  - plan pago (pago único): aparece cuando faltan 7 días o menos para que
+ *  - plan pago: aparece cuando faltan 7 días o menos para que
  *    venza, y durante los días de gracia después de vencer. */
 export function BannerRenovacion() {
   const [aviso, setAviso] = useState<Aviso | null>(null);
@@ -43,7 +43,7 @@ export function BannerRenovacion() {
         <div className="min-w-0">
           <p className="text-sm font-semibold text-[var(--text-primary)]">{titulo}</p>
           <p className="mt-0.5 text-xs leading-relaxed text-[var(--text-secondary)]">
-            Sin tarjeta y sin cobros. Cuando termine, elige un plan para seguir con tu racha y tu progreso.
+            Cuando termine, elige un plan y realiza el pago para seguir con tu racha y tu progreso.
           </p>
           <Link href="/paywall" className="mt-1.5 inline-block text-xs font-semibold text-[var(--accent)]">
             Ver planes
@@ -58,7 +58,7 @@ export function BannerRenovacion() {
   const titulo = vencido ? 'Tu acceso venció' : aviso.dias === 1 ? 'Tu acceso vence mañana' : `Tu acceso vence en ${aviso.dias} días`;
   const detalle = vencido
     ? `Renueva ahora: tienes hasta ${DIAS_DE_GRACIA} días de gracia antes de perder el acceso.`
-    : 'Renueva con PSE, Nequi, tarjeta o Efecty y sigue sin perder tu racha ni tu progreso. Los meses se suman a los que te quedan.';
+    : 'Renueva y sigue sin perder tu racha ni tu progreso. Los meses se suman a los que te quedan.';
 
   return (
     <div className="mt-4 flex items-start gap-3 rounded-2xl border border-[color-mix(in_oklab,var(--status-warning)_35%,transparent)] bg-[var(--surface)] p-4">

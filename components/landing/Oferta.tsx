@@ -9,7 +9,7 @@
 // El destino de los CTAs sigue al MODELO de 02C (checkout vs /onboarding).
 
 import { motion } from 'motion/react';
-import { BellRing, Gift, Star, XCircle } from 'lucide-react';
+import { BellRing, CheckCircle2, Gift, Star } from 'lucide-react';
 import { CheckCustom, CtaButton, Hairline, Kicker, PrecioAnimado, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy, warnCopy, warnRango } from './MarkedCopy';
 import { formatearCOP, useTRM } from '@/lib/trm';
@@ -26,10 +26,12 @@ export interface PlanOferta {
    * = este plan en particular no tiene trial → sin badge. Nunca mostrar el
    * badge en un plan que de verdad no lo incluye (transparencia radical). */
   trialDias?: number;
-  /** Línea de pago bajo el precio ("Pago único de $X por N meses"). */
+  /** Línea bajo el precio ("$X USD por N meses de acceso"). */
   totalPago?: string;
-  ctaLabel: string;
-  ctaHref: string;
+  /** Botón propio de la tarjeta — opcional: en la landing hay UN solo botón
+   * de prueba debajo de los planes (`ctaGlobal`). */
+  ctaLabel?: string;
+  ctaHref?: string;
   /** 4-6 features en lenguaje de RESULTADO, máx 12 palabras c/u. */
   features: string[];
 }
@@ -51,6 +53,9 @@ export interface OfertaProps {
   /** Plan de compromiso medio, entre Anual y Mensual (opcional). */
   semestral?: PlanOferta & { totalSemestral: string; ahorro: string };
   mensual: PlanOferta;
+  /** Botón único bajo las tarjetas (p. ej. "Probar 7 días gratis") con una
+   * nota corta debajo (qué pasa al terminar la prueba). */
+  ctaGlobal?: { label: string; href: string; nota?: string };
   /** Cómo funciona la prueba gratis, paso a paso (opcional, va sobre las cards). */
   comoFunciona?: { titulo: string; pasos: { titulo: string; detalle: string }[] };
   /** Stack de valor Hormozi opcional — total TACHADO del stack, jamás precio falso. */
@@ -74,7 +79,7 @@ function TrialBadge({ dias }: { dias: number }) {
   );
 }
 
-const ICONOS_PASO = [Gift, BellRing, XCircle];
+const ICONOS_PASO = [Gift, BellRing, CheckCircle2];
 
 function ComoFunciona({ datos }: { datos: NonNullable<OfertaProps['comoFunciona']> }) {
   return (
@@ -147,6 +152,7 @@ export function Oferta({
   mensual,
   stack,
   comoFunciona,
+  ctaGlobal,
   id = 'oferta',
 }: OfertaProps) {
   warnCopy('Oferta → título', tituloMarked, 8);
@@ -226,11 +232,13 @@ export function Oferta({
                   )}
                 </div>
                 <Features items={anual.features} origen="Oferta → anual" />
-                <div className="mt-6">
-                  <CtaButton href={anual.ctaHref} fullMobile>
-                    {anual.ctaLabel}
-                  </CtaButton>
-                </div>
+                {anual.ctaLabel && anual.ctaHref && (
+                  <div className="mt-6">
+                    <CtaButton href={anual.ctaHref} fullMobile>
+                      {anual.ctaLabel}
+                    </CtaButton>
+                  </div>
+                )}
               </div>
             </Hairline>
           </motion.div>
@@ -251,13 +259,15 @@ export function Oferta({
                 <p className="mt-2 text-[15px] font-semibold text-[var(--accent)]">{semestral.ahorro}</p>
               </div>
               <Features items={semestral.features} origen="Oferta → semestral" />
-              <motion.a
-                whileTap={{ scale: 0.97 }}
-                href={semestral.ctaHref}
-                className="mt-6 flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-[16px] font-semibold text-[var(--accent)] transition-colors duration-150 hover:bg-[var(--chip-bg)] [touch-action:manipulation]"
-              >
-                {semestral.ctaLabel}
-              </motion.a>
+              {semestral.ctaLabel && semestral.ctaHref && (
+                <motion.a
+                  whileTap={{ scale: 0.97 }}
+                  href={semestral.ctaHref}
+                  className="mt-6 flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-[16px] font-semibold text-[var(--accent)] transition-colors duration-150 hover:bg-[var(--chip-bg)] [touch-action:manipulation]"
+                >
+                  {semestral.ctaLabel}
+                </motion.a>
+              )}
             </motion.div>
           )}
 
@@ -275,15 +285,26 @@ export function Oferta({
               {mensual.totalPago && <p className="mt-1 text-[12px] text-[var(--text-secondary)]">{mensual.totalPago}</p>}
             </div>
             <Features items={mensual.features} origen="Oferta → mensual" />
-            <motion.a
-              whileTap={{ scale: 0.97 }}
-              href={mensual.ctaHref}
-              className="mt-6 flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-[16px] font-semibold text-[var(--accent)] transition-colors duration-150 hover:bg-[var(--chip-bg)] [touch-action:manipulation]"
-            >
-              {mensual.ctaLabel}
-            </motion.a>
+            {mensual.ctaLabel && mensual.ctaHref && (
+              <motion.a
+                whileTap={{ scale: 0.97 }}
+                href={mensual.ctaHref}
+                className="mt-6 flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-[16px] font-semibold text-[var(--accent)] transition-colors duration-150 hover:bg-[var(--chip-bg)] [touch-action:manipulation]"
+              >
+                {mensual.ctaLabel}
+              </motion.a>
+            )}
           </motion.div>
         </div>
+
+        {ctaGlobal && (
+          <motion.div variants={item} className="mx-auto mt-10 max-w-[560px] text-center">
+            <CtaButton href={ctaGlobal.href}>{ctaGlobal.label}</CtaButton>
+            {ctaGlobal.nota && (
+              <p className="mt-3 text-[14px] leading-snug text-[var(--text-secondary)]">{ctaGlobal.nota}</p>
+            )}
+          </motion.div>
+        )}
       </motion.div>
     </SectionShell>
   );

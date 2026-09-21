@@ -115,12 +115,17 @@ export default function LandingV1() {
           algo que el paywall no cumple). */}
       <Oferta
         comoFunciona={{
-          titulo: 'Pruébalo 7 días gratis, sin tarjeta',
+          titulo: 'Así funcionan tus 7 días gratis',
           pasos: [
-            { titulo: 'Pruebas 7 días gratis', detalle: 'Acceso completo desde el primer minuto: tu plan de 6 días, el Botón de Rescate y tus pesos. Sin dejar tarjeta.' },
-            { titulo: 'Si te gusta, pagas una sola vez', detalle: 'Con PSE, Nequi, tarjeta, Efecty o PayPal. Sin suscripción ni cobros automáticos.' },
-            { titulo: 'Si no, no pasa nada', detalle: 'La app te avisa que terminó tu prueba y no se te cobra nada.' },
+            { titulo: 'Empiezas tu prueba', detalle: 'Creas tu plan, te registras con tu correo y entrenas con acceso completo: tu plan de 6 días, el Botón de Rescate y tus pesos.' },
+            { titulo: 'Entrenas 7 días', detalle: 'Te avisamos antes de que termine para que no pierdas tu racha.' },
+            { titulo: 'Al terminar, realizas el pago', detalle: 'Cuando se acaben los 7 días, eliges tu plan y pagas para seguir entrenando con tu progreso intacto.' },
           ],
+        }}
+        ctaGlobal={{
+          label: 'Probar 7 días gratis',
+          href: CTA_HREF,
+          nota: 'Al terminar los 7 días gratis, para seguir entrenando debes elegir un plan y realizar el pago.',
         }}
         tituloMarked="Tu plan completo por menos de [acento]$0.09/día[/acento]"
         stack={{
@@ -130,18 +135,16 @@ export default function LandingV1() {
             { resultado: 'Guía de nutrición sin fórmulas complicadas', valor: '$19 USD' },
           ],
           totalTachado: '$108 USD',
-          nota: 'Hoy: $2.50 USD/mes (pago único de $29.99 USD por 12 meses)',
+          nota: 'Hoy: $2.50 USD/mes ($29.99 USD por 12 meses de acceso)',
         }}
         anual={{
           nombre: 'Anual',
           badge: 'MÁS POPULAR',
           precioMes: '$2.50',
-          totalAnual: 'Pago único de $29.99 USD por 12 meses',
+          totalAnual: '$29.99 USD por 12 meses de acceso',
           ahorro: 'Como tener 6 meses gratis',
-          ahorroDetalle: 'Pagas $29.99 una sola vez por 12 meses, en vez de $59.88 si pagaras mes a mes.',
+          ahorroDetalle: 'Son $29.99 por 12 meses, en vez de $59.88 si pagaras mes a mes.',
           descomposicionDia: 'menos de $0.09 al día',
-          ctaLabel: 'Probar 7 días gratis',
-          ctaHref: CTA_HREF,
           features: [
             'Tu plan de hoy, listo (Principiante o Intermedio)',
             'Botón de Rescate ilimitado',
@@ -152,10 +155,8 @@ export default function LandingV1() {
         semestral={{
           nombre: 'Semestral',
           precioMes: '$3.33',
-          totalSemestral: 'Pago único de $19.99 USD por 6 meses',
+          totalSemestral: '$19.99 USD por 6 meses de acceso',
           ahorro: 'Ahorras 33% vs. mensual',
-          ctaLabel: 'Probar 7 días gratis',
-          ctaHref: CTA_HREF,
           features: [
             'Tu plan de hoy, listo cada día',
             'Botón de Rescate ilimitado',
@@ -166,24 +167,22 @@ export default function LandingV1() {
         mensual={{
           nombre: 'Mensual',
           precioMes: '$4.99',
-          totalPago: 'Pago único de $4.99 USD por 1 mes',
-          ctaLabel: 'Probar 7 días gratis',
-          ctaHref: CTA_HREF,
+          totalPago: '$4.99 USD por 1 mes de acceso',
           features: [
             'Tu plan de hoy, listo cada día',
             'Botón de Rescate ilimitado',
             'Registro de pesos y progreso',
-            'Sin tarjeta guardada ni cobros automáticos',
+            'Renuévalo cuando quieras',
           ],
         }}
       />
 
-      {/* 7. GARANTÍA — pago único (sin trial ni suscripción, 21/09/2026); la
+      {/* 7. GARANTÍA — pago único (prueba de 7 días y luego pago, 21/09/2026); la
           garantía de devolución de 7 días desde el pago aplica a los 3 planes
           por igual. */}
       <Garantia
         nombre="la Garantía del Primer Plan Claro"
-        condicionMarked="Pruébalo 7 días gratis, sin tarjeta. Si luego pagas y no te convence, tienes [b]7 días desde tu pago[/b] para pedir tu dinero de vuelta, en cualquier plan. Sin preguntas."
+        condicionMarked="Pruébalo 7 días gratis. Al terminar, eliges tu plan y realizas el pago para seguir; y si no te convence, tienes [b]7 días desde tu pago[/b] para pedir tu dinero de vuelta, en cualquier plan. Sin preguntas."
         pisoLegal="Respaldada por la garantía Hotmart"
       />
 
@@ -208,7 +207,7 @@ export default function LandingV1() {
           {
             pregunta: '¿Me van a cobrar algo oculto o renovar solo?',
             respuestaMarked:
-              'No. El precio que ves es el que pagas. Pruebas 7 días gratis sin dejar tarjeta; si pagas, es una sola vez y nada se renueva solo, y tienes 7 días desde tu pago para pedir devolución si algo no te convence — [b]sin sorpresas[/b].',
+              'No. El precio que ves es el que pagas. Pruebas 7 días gratis y, al terminar, tú decides si eliges un plan y realizas el pago; nada se cobra sin que lo decidas, y tienes 7 días desde tu pago para pedir devolución si algo no te convence — [b]sin sorpresas[/b].',
           },
           {
             pregunta: '¿Y qué pasa después de los 90 días de la Ruta Principiante?',
@@ -229,8 +228,8 @@ export default function LandingV1() {
         futurePacingMarked="Llegas a tu gimnasio, abres GymEvo, ves tu ejercicio de hoy y empiezas — sin buscar al entrenador, sin improvisar."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
-        recap="Garantía del Primer Plan Claro · 7 días gratis, sin tarjeta"
-        psMarked="PS: GymEvo te dice exactamente qué hacer en el gimnasio, con el Botón de Rescate para cuando la máquina está ocupada. Pruébalo 7 días gratis, sin tarjeta — cualquier plan que elijas queda respaldado por la Garantía del Primer Plan Claro."
+        recap="Garantía del Primer Plan Claro · 7 días gratis"
+        psMarked="PS: GymEvo te dice exactamente qué hacer en el gimnasio, con el Botón de Rescate para cuando la máquina está ocupada. Pruébalo 7 días gratis — cualquier plan que elijas queda respaldado por la Garantía del Primer Plan Claro."
       />
 
       {/* 10. FOOTER LEGAL */}

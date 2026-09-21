@@ -23,14 +23,14 @@ const DIA_MS = 86_400_000;
 
 const AVISOS: { dias: number; titulo: string; cuerpo: string }[] = [
   { dias: 7, titulo: 'Tu acceso a GymEvo vence en 7 días', cuerpo: 'Renueva cuando quieras y no pierdas tu racha ni tu progreso.' },
-  { dias: 3, titulo: 'Te quedan 3 días de acceso', cuerpo: 'Renueva con PSE, Nequi, tarjeta o Efecty en un minuto.' },
+  { dias: 3, titulo: 'Te quedan 3 días de acceso', cuerpo: 'Renueva en un minuto y no pierdas tu racha.' },
   { dias: 1, titulo: 'Tu acceso vence mañana', cuerpo: 'Renueva hoy y sigue entrenando sin interrupciones.' },
   { dias: 0, titulo: 'Tu acceso a GymEvo vence hoy', cuerpo: 'Renueva ahora — te damos unos días de gracia, pero no lo dejes pasar.' },
 ];
 
 const AVISOS_PRUEBA: { dias: number; titulo: string; cuerpo: string }[] = [
   { dias: 2, titulo: 'Te quedan 2 días de prueba gratis', cuerpo: 'Sigue entrenando y, si te gusta, elige un plan para no perder tu racha.' },
-  { dias: 1, titulo: 'Mañana termina tu prueba gratis', cuerpo: 'Elige un plan con PSE, Nequi o tarjeta y sigue sin interrupciones.' },
+  { dias: 1, titulo: 'Mañana termina tu prueba gratis', cuerpo: 'Elige tu plan y sigue sin interrupciones.' },
   { dias: 0, titulo: 'Hoy termina tu prueba gratis', cuerpo: 'Elige tu plan para conservar tu progreso y tu racha.' },
 ];
 

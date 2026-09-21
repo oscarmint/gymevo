@@ -61,11 +61,12 @@ export default function TerminosPage() {
         <section>
           <h2 className="text-lg font-semibold">Planes y pagos</h2>
           <p className="mt-2">
-            GymEvo se ofrece en planes de pago único: Mensual (1 mes de acceso), Semestral (6 meses) o Anual
-            (12 meses). Al crear tu cuenta recibes 7 días de prueba gratuita con acceso completo, sin dejar tarjeta; al terminar, la app se bloquea hasta que elijas un plan. Pagas una sola vez por el período elegido, con los medios de pago que ofrece
-            Hotmart (por ejemplo PSE, Nequi, Efecty, tarjeta o PayPal). No hay renovación automática ni
-            cobros recurrentes: cuando tu acceso termine, decides si renuevas pagando de nuevo. Los meses
-            de una renovación se suman al tiempo de acceso que aún te quede. El pago lo procesa Hotmart.
+            GymEvo se ofrece en planes de acceso: Mensual (1 mes), Semestral (6 meses) o Anual (12 meses).
+            Al crear tu cuenta recibes 7 días de prueba gratuita con acceso completo; al terminar, para
+            seguir usando la app debes elegir un plan y realizar el pago. Pagas por el período elegido con
+            los medios de pago que ofrece Hotmart. No hay renovación automática: cuando tu acceso termine,
+            decides si renuevas pagando de nuevo. Los meses de una renovación se suman al tiempo de acceso
+            que aún te quede. El pago lo procesa Hotmart.
           </p>
         </section>
 
