@@ -28,9 +28,10 @@ export default function ReembolsosPage() {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold">Pago único, sin cobros automáticos</h2>
+          <h2 className="text-lg font-semibold">Prueba gratis y pago único, sin cobros automáticos</h2>
           <p className="mt-2">
-            Todos los planes (Mensual, Semestral y Anual) son de pago único: pagas una vez por el período
+            Al crear tu cuenta tienes 7 días de prueba con acceso completo, sin dejar tarjeta y sin ningún
+            cobro; al terminar, la app te pide elegir un plan. Todos los planes (Mensual, Semestral y Anual) son de pago único: pagas una vez por el período
             elegido y no guardamos tu tarjeta ni hacemos cobros recurrentes. La Garantía del Primer Plan
             Claro descrita arriba corre desde la fecha de tu pago.
           </p>

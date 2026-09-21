@@ -169,6 +169,24 @@ export async function leerVencimientoRemoto(): Promise<Date | null> {
   return Number.isNaN(fin.getTime()) ? null : fin;
 }
 
+/** Estado de acceso para el aviso de "Plan de hoy": si tiene un plan pago
+ * (con su vencimiento) o si sigue en la prueba gratis sin tarjeta. */
+export async function leerEstadoAccesoRemoto(): Promise<{ plan: string; accessUntil: Date | null; trialEndsAt: Date | null } | null> {
+  const supabase = crearClienteSupabase();
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData.user;
+  if (!user) return null;
+
+  const { data: perfil } = await supabase.from('profiles').select('plan, access_until, trial_ends_at').eq('id', user.id).maybeSingle();
+  if (!perfil) return null;
+  const fecha = (v: string | null) => {
+    if (!v) return null;
+    const d = new Date(v);
+    return Number.isNaN(d.getTime()) ? null : d;
+  };
+  return { plan: perfil.plan, accessUntil: fecha(perfil.access_until), trialEndsAt: fecha(perfil.trial_ends_at) };
+}
+
 /** Nombre que el usuario eligió para que le llamemos (Perfil). Separado de
  * `Progreso`: no es progreso de entrenamiento, es identidad. */
 export async function leerNombreRemoto(): Promise<string | null> {

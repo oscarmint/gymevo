@@ -21,6 +21,7 @@ import { AlertTriangle, Check, ChevronDown, Loader2, Lock, RefreshCcw, ShieldChe
 import { HORARIO_LABEL, META_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { formatearCOP, useTRM } from '@/lib/trm';
 import { PrecioAnimado } from '@/components/landing/ui';
+import { DIAS_DE_PRUEBA } from '@/lib/planes';
 
 type PlanId = 'mensual' | 'semestral' | 'anual';
 
@@ -72,6 +73,7 @@ export default function PaywallPage() {
   // solo que todavía no hace nada, sin acortar el tiempo de lectura pedido).
   const [cerrarMeneo, setCerrarMeneo] = useState(false);
   const [renovando, setRenovando] = useState(false);
+  const [finPrueba, setFinPrueba] = useState(false);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   // sessionStorage no existe en el servidor: leerlo en el initializer de
@@ -79,7 +81,9 @@ export default function PaywallPage() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setRespuestas(leerRespuestas());
-    setRenovando(new URLSearchParams(window.location.search).get('renovar') === '1');
+    const params = new URLSearchParams(window.location.search);
+    setRenovando(params.get('renovar') === '1');
+    setFinPrueba(params.get('fin_prueba') === '1');
     // Recuerda la última elección entre visitas (hallazgo revisor-visual:
     // sin esto, un usuario que cierra y vuelve pierde su plan preferido).
     const guardado = localStorage.getItem(KEY_PLAN);
@@ -193,12 +197,16 @@ export default function PaywallPage() {
             no "Suscríbete" — + prueba visual del Botón de Rescate. */}
         <motion.div initial={reduce ? {} : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
           <p className="text-sm font-semibold text-[var(--text-tertiary)]">
-            {renovando ? 'Sigue donde ibas' : 'Se acabó adivinar qué máquina usar'}
+            {renovando ? 'Sigue donde ibas' : finPrueba ? 'Tu prueba gratis terminó' : 'Se acabó adivinar qué máquina usar'}
           </p>
           <h1 className="mt-1 text-balance text-3xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
             {renovando ? (
               <>
                 Renueva tu <span className="whitespace-nowrap text-[var(--accent)]">acceso</span>
+              </>
+            ) : finPrueba ? (
+              <>
+                Elige tu <span className="whitespace-nowrap text-[var(--accent)]">plan</span> y sigue
               </>
             ) : (
               <>
@@ -209,7 +217,9 @@ export default function PaywallPage() {
           <p className="mt-2 text-[14.5px] text-[var(--text-secondary)]">
             {renovando
               ? 'Los meses que elijas se suman a los que te queden. Tu racha y tu progreso siguen intactos.'
-              : `Tu plan para ${meta} ya está hecho con tus respuestas — listo para cuando entrenes ${horario}`}
+              : finPrueba
+                ? 'Tu racha y tu progreso te esperan. Paga una sola vez, sin tarjeta guardada.'
+                : `Tu plan para ${meta} ya está hecho con tus respuestas — listo para cuando entrenes ${horario}`}
           </p>
         </motion.div>
 
@@ -347,6 +357,29 @@ export default function PaywallPage() {
           <ShieldCheck size={13} /> Garantía de devolución de 7 días desde tu pago, sin preguntas
         </motion.p>
 
+        {/* Prueba gratis SIN tarjeta (21/09/2026): siempre disponible para quien
+            todavía no eligió pagar; cuando termina, proxy.ts lo devuelve aquí
+            con ?fin_prueba=1 y este botón deja de mostrarse. */}
+        {!renovando && !finPrueba && (
+          <motion.div
+            initial={reduce ? {} : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.34, duration: 0.3 }}
+            className="mt-5"
+          >
+            <button
+              type="button"
+              onClick={() => router.push('/login?desde=prueba')}
+              className="flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-base font-semibold text-[var(--accent)]"
+            >
+              {`Probar ${DIAS_DE_PRUEBA} días gratis, sin tarjeta`}
+            </button>
+            <p className="mt-1.5 text-center text-xs text-[var(--text-secondary)]">
+              Sin cobros. Al terminar, la app te pide elegir un plan.
+            </p>
+          </motion.div>
+        )}
+
         {/* Si la redirección no ocurrió en unos segundos (red caída,
             bloqueador de popups, etc.) — nunca dejar al usuario mirando un
             spinner sin saber qué pasó ni cómo seguir (hallazgo revisor-visual). */}
@@ -409,6 +442,12 @@ export default function PaywallPage() {
                         hallazgo revisor-visual): repetía casi palabra por
                         palabra el timeline de arriba y la línea "Hoy no
                         pagas nada" sobre el CTA. */}
+                    <div>
+                      <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Puedo probar antes de pagar?</p>
+                      <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                        Sí: {DIAS_DE_PRUEBA} días gratis con acceso completo, sin dejar tarjeta. Cuando terminan, la app te pide elegir un plan.
+                      </p>
+                    </div>
                     <div>
                       <p className="text-[13.5px] font-semibold text-[var(--text-primary)]">¿Se renueva solo?</p>
                       <p className="mt-0.5 text-xs text-[var(--text-secondary)]">

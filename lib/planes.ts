@@ -7,6 +7,10 @@ export type PlanId = 'mensual' | 'semestral' | 'anual';
 
 export const MESES_POR_PLAN: Record<PlanId, number> = { mensual: 1, semestral: 6, anual: 12 };
 
+/** Prueba gratis SIN tarjeta que da la app al crear la cuenta (la fija la
+ * migración 0019 en `profiles.trial_ends_at`; este número es solo para textos). */
+export const DIAS_DE_PRUEBA = 7;
+
 /** Días extra tras vencer antes de bloquear la app — margen para que alguien
  * con pago pendiente (PSE/Efecty) o distraído no pierda el acceso de golpe. */
 export const DIAS_DE_GRACIA = 3;

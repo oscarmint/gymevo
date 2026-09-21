@@ -43,16 +43,27 @@ export default async function proxy(request: NextRequest) {
     // paywall no verificaba nada. `plan` lo fija reconciliar_membresia()
     // (ver lib/supabase/sync.ts y app/auth/callback/route.ts) según lo que
     // el webhook de Hotmart haya recibido para este correo.
-    const { data: perfil } = await supabase.from('profiles').select('plan, access_until').eq('id', user.id).maybeSingle();
-    // Pago único (21/09/2026): el plan 'pro' de la BD no se apaga solo al vencer,
-    // así que aquí también se compara el vencimiento (+ días de gracia).
-    // access_until null = cuenta antigua de suscripción, sin vencimiento propio.
-    const vencido =
-      !!perfil?.access_until && new Date(perfil.access_until).getTime() + DIAS_DE_GRACIA * 86_400_000 < Date.now();
-    if (perfil?.plan !== 'pro' || vencido) {
+    const { data: perfil } = await supabase
+      .from('profiles')
+      .select('plan, access_until, trial_ends_at')
+      .eq('id', user.id)
+      .maybeSingle();
+    // Pago único + prueba gratis sin tarjeta (21/09/2026). Entra a /app quien:
+    //  (a) tiene un plan pago vigente (access_until + gracia; null = cuenta
+    //      antigua de suscripción, sin vencimiento propio), o
+    //  (b) está dentro de su prueba gratis (trial_ends_at, que fija la
+    //      migración 0019 al crear la cuenta). El resto va al paywall, con un
+    //      motivo para que la pantalla diga qué pasó.
+    const ahora = Date.now();
+    const pagoVigente =
+      perfil?.plan === 'pro' &&
+      (!perfil.access_until || new Date(perfil.access_until).getTime() + DIAS_DE_GRACIA * 86_400_000 >= ahora);
+    const enPrueba = !!perfil?.trial_ends_at && new Date(perfil.trial_ends_at).getTime() > ahora;
+    if (!pagoVigente && !enPrueba) {
       const url = request.nextUrl.clone();
       url.pathname = '/paywall';
-      if (vencido) url.searchParams.set('renovar', '1');
+      if (perfil?.plan === 'pro') url.searchParams.set('renovar', '1');
+      else if (perfil?.trial_ends_at) url.searchParams.set('fin_prueba', '1');
       return NextResponse.redirect(url);
     }
   }

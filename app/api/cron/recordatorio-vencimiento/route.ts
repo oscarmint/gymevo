@@ -1,6 +1,7 @@
 // Cron diario (ver vercel.json): avisa por push a quien le quedan 7, 3 o 1
 // días de acceso — y el mismo día que vence — para que renueve (pago único,
-// sin cobro automático). Protegido con CRON_SECRET, igual que los otros crons.
+// sin cobro automático), y a quien está en la prueba gratis sin tarjeta cuando
+// le quedan 2 o 1 días y el día que termina. Protegido con CRON_SECRET, igual que los otros crons.
 // Como corre una vez al día y cada ventana cubre exactamente un día calendario
 // (UTC), cada persona recibe cada aviso una sola vez sin necesitar columnas
 // de "ya avisado".
@@ -27,6 +28,12 @@ const AVISOS: { dias: number; titulo: string; cuerpo: string }[] = [
   { dias: 0, titulo: 'Tu acceso a GymEvo vence hoy', cuerpo: 'Renueva ahora — te damos unos días de gracia, pero no lo dejes pasar.' },
 ];
 
+const AVISOS_PRUEBA: { dias: number; titulo: string; cuerpo: string }[] = [
+  { dias: 2, titulo: 'Te quedan 2 días de prueba gratis', cuerpo: 'Sigue entrenando y, si te gusta, elige un plan para no perder tu racha.' },
+  { dias: 1, titulo: 'Mañana termina tu prueba gratis', cuerpo: 'Elige un plan con PSE, Nequi o tarjeta y sigue sin interrupciones.' },
+  { dias: 0, titulo: 'Hoy termina tu prueba gratis', cuerpo: 'Elige tu plan para conservar tu progreso y tu racha.' },
+];
+
 export async function GET(req: NextRequest) {
   const secret = process.env.CRON_SECRET;
   if (!secret) {
@@ -43,15 +50,19 @@ export async function GET(req: NextRequest) {
   let procesados = 0;
   let enviados = 0;
 
-  for (const aviso of AVISOS) {
+  const lotes = [
+    ...AVISOS.map((a) => ({ ...a, tipo: 'pago' as const })),
+    ...AVISOS_PRUEBA.map((a) => ({ ...a, tipo: 'prueba' as const })),
+  ];
+
+  for (const aviso of lotes) {
     const desde = new Date(inicioHoy + aviso.dias * DIA_MS).toISOString();
     const hasta = new Date(inicioHoy + (aviso.dias + 1) * DIA_MS).toISOString();
-    const { data: usuarios, error } = await admin
-      .from('profiles')
-      .select('id')
-      .eq('membership_status', 'active')
-      .gte('access_until', desde)
-      .lt('access_until', hasta);
+    const base = admin.from('profiles').select('id');
+    const { data: usuarios, error } =
+      aviso.tipo === 'pago'
+        ? await base.eq('membership_status', 'active').gte('access_until', desde).lt('access_until', hasta)
+        : await base.eq('plan', 'free').gte('trial_ends_at', desde).lt('trial_ends_at', hasta);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
     for (const u of usuarios ?? []) {
@@ -65,7 +76,7 @@ export async function GET(req: NextRequest) {
         try {
           const ok = await enviarPush(
             { endpoint: sub.endpoint, p256dh: sub.p256dh, auth: sub.auth },
-            { titulo: aviso.titulo, cuerpo: aviso.cuerpo, url: '/paywall?renovar=1' }
+            { titulo: aviso.titulo, cuerpo: aviso.cuerpo, url: aviso.tipo === 'pago' ? '/paywall?renovar=1' : '/paywall' }
           );
           if (ok) enviados++;
           else await admin.from('push_subscriptions').delete().eq('id', sub.id);
