@@ -7,7 +7,12 @@
 -- volver a iniciar sesión no la reinicia. Quien ya tiene una compra en
 -- hotmart_purchases (aunque esté reembolsada) no recibe prueba nueva.
 --
--- APLICAR en Supabase junto con 0018, antes de publicar.
+-- APLICADA en Supabase (proyecto GymEvo) el 21/09/2026, después de 0018.
+--
+-- La BD protege plan/vencimiento/prueba con el trigger proteger_columnas_sensibles
+-- (migración aplicada directo en Supabase, no está en un archivo local): solo
+-- deja escribir esas columnas si la función activa `gymevo.escritura_confiable`.
+-- Sin ese `set_config` estas funciones fallarían con 42501.
 
 create or replace function public.reconciliar_membresia()
 returns void
@@ -36,6 +41,8 @@ begin
 
   -- Sin ninguna compra: abrir la prueba gratis de 7 días.
   v_prueba := case when v_status is null then now() + interval '7 days' else null end;
+
+  perform set_config('gymevo.escritura_confiable', 'on', true);
 
   insert into public.profiles (id, email, plan, membership_status, trial_ends_at, access_until, grace_ends_at)
   values ((select auth.uid()), v_email, v_plan, v_status, coalesce(v_trial_ends_at, v_prueba), v_access_until, v_grace_ends_at)

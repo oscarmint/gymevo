@@ -12,7 +12,12 @@
 --                              (pago anterior todavía cubre), nunca por sí solo.
 --   cualquier otro           → free.
 --
--- APLICAR en Supabase antes de publicar el código de pago único.
+-- APLICADA en Supabase (proyecto GymEvo) el 21/09/2026.
+--
+-- La BD protege plan/vencimiento/prueba con el trigger proteger_columnas_sensibles
+-- (migración aplicada directo en Supabase, no está en un archivo local): solo
+-- deja escribir esas columnas si la función activa `gymevo.escritura_confiable`.
+-- Sin ese `set_config` estas funciones fallarían con 42501.
 
 create or replace function public.plan_segun_estado(p_status text, p_access_until timestamptz)
 returns text
@@ -26,6 +31,8 @@ as $$
     else 'free'
   end
 $$;
+
+revoke execute on function public.plan_segun_estado from public, anon, authenticated;
 
 create or replace function public.apply_hotmart_event(
   p_event_id text,
@@ -71,6 +78,8 @@ begin
 
   select access_until into v_access_until from public.hotmart_purchases where email = p_email;
 
+  perform set_config('gymevo.escritura_confiable', 'on', true);
+
   update public.profiles
   set plan = public.plan_segun_estado(p_new_status, v_access_until),
       membership_status = p_new_status,
@@ -107,6 +116,8 @@ begin
   where email = v_email;
 
   v_plan := public.plan_segun_estado(v_status, v_access_until);
+
+  perform set_config('gymevo.escritura_confiable', 'on', true);
 
   insert into public.profiles (id, email, plan, membership_status, trial_ends_at, access_until, grace_ends_at)
   values ((select auth.uid()), v_email, v_plan, v_status, v_trial_ends_at, v_access_until, v_grace_ends_at)
