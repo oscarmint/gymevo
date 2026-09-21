@@ -180,6 +180,7 @@ function PlanDelDia({
   const [avisoCambioEjercicio, setAvisoCambioEjercicio] = useState<string | null>(null);
   const [celebrarHito, setCelebrarHito] = useState<number | null>(null);
   const [celebrarFin, setCelebrarFin] = useState(false);
+  const [cardioAbierto, setCardioAbierto] = useState(false);
   // celebrarFin como dependencia es intencional: regenera las posiciones del
   // confeti cada vez que se abre la celebración, no solo la primera vez.
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -977,6 +978,33 @@ function PlanDelDia({
               {cardio.opcional && <span className="ml-1.5 font-normal text-[var(--text-tertiary)]">(opcional)</span>}
             </p>
             <p className="mt-0.5 text-xs text-[var(--text-secondary)]">{cardio.duracion}</p>
+            <button
+              type="button"
+              onClick={() => setCardioAbierto(true)}
+              className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-sm font-semibold text-[var(--accent)]"
+            >
+              <Info size={16} />
+              Explicación del cardio
+            </button>
+          </div>
+        )}
+
+        {cardio && cardioAbierto && (
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Explicación de ${cardio.titulo}`}
+            className="fixed inset-0 z-50 flex flex-col items-center overflow-y-auto bg-[var(--bg)]/95 px-4 pb-6 pt-4"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element -- mismo criterio que la explicación de ejercicios */}
+            <img src={cardio.imagen} alt={`Explicación de ${cardio.titulo}`} className="w-full max-w-md rounded-[var(--radius-card)]" />
+            <button
+              type="button"
+              onClick={() => setCardioAbierto(false)}
+              className="boton-3d mt-4 flex h-12 w-full max-w-md shrink-0 items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
+            >
+              Entendido, volver al plan
+            </button>
           </div>
         )}
 
