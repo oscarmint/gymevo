@@ -561,7 +561,7 @@ function PlanDelDia({
             </span>
             <h1 className="mt-6 text-3xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Hola!</h1>
             <p className="mt-3 max-w-sm text-base text-[var(--text-secondary)]">
-              Hoy vamos a iniciar el entrenamiento de <strong className="text-[var(--text-primary)]">{nombreDeHoy(progreso.diaActual)}</strong>. ¡Vamos con toda!
+              Hoy vamos a iniciar el entrenamiento de <strong className="text-[var(--text-primary)]">{nombreDeHoy(progreso.diaActual)}</strong>.
             </p>
             <button
               type="button"
@@ -586,7 +586,14 @@ function PlanDelDia({
                 resolución nativa, nítido de verdad. */}
             {/* eslint-disable-next-line @next/next/no-img-element -- GIF propio, next/image no anima GIFs */}
             <img src="/ilustraciones/entrenador-inicio.gif" alt="Entrenador animado entrenando con mancuernas" className="h-36 w-auto" />
-            <p className="mt-3 text-lg font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Vamos con toda!</p>
+            {/* Copy conectado al objetivo real del usuario, no una porra
+                genérica (hallazgo del usuario, 22/09/2026): "¡Vamos con
+                toda!" no sonaba natural en todos los mercados hispanos y
+                desperdiciaba el espacio del titular sin decir nada del
+                objetivo. Usa `meta` (ya disponible en este scope, línea 374). */}
+            <p className="mt-3 text-lg font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">
+              {meta === 'grasa' ? 'Hoy trabajamos para perder grasa sin perder músculo.' : 'Hoy toca construir.'}
+            </p>
             {/* Reemplaza "Toca para continuar" — el gesto de tocar sigue
                 funcionando igual (onClick vive en el contenedor padre, sin
                 cambios), pero ahora ese espacio enseña algo real en vez de
