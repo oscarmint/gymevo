@@ -667,7 +667,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Pectoral superior', principal: true }, { nombre: 'Deltoides anteriores', principal: false }],
     consejoTecnico: 'Movimiento en arco, sin bajar más de lo que tu hombro tolere.',
   } },
-  fondos_barra: { id: 'fondos_barra', nombre: 'Fondos en barra (con o sin lastre)', grupo: 'Pecho', grupoMuscular: 'pecho', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'crossover_polea_alta', guia: {
+  fondos_barra: { id: 'fondos_barra', nombre: 'Fondos en barra (con o sin lastre)', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/fondos-barra.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'crossover_polea_alta', guia: {
     indicaciones: [
       'Sujétate en las barras paralelas con los brazos extendidos.',
       'Baja inclinando el torso hacia adelante hasta sentir el pecho.',
