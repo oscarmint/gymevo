@@ -1003,7 +1003,7 @@ function diasEntre(a: string, b: string): number {
 
 export function leerProgreso(): Progreso {
   if (typeof window === 'undefined') {
-    return { nivel: 'principiante', meta: 'musculo', sexo: null, diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
+    return { nivel: 'principiante', meta: 'musculo', sexo: null, diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: false, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
   }
   const raw = localStorage.getItem(KEY);
   if (!raw) {
@@ -1011,7 +1011,7 @@ export function leerProgreso(): Progreso {
     // su nivel/meta (evita que el primer progreso guardado nazca con los
     // valores por defecto pisando lo que el usuario acaba de elegir).
     const respuestas = leerRespuestas();
-    const inicial: Progreso = { nivel: respuestas?.nivel ?? 'principiante', meta: respuestas?.meta ?? 'musculo', sexo: respuestas?.sexo ?? null, diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: true, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
+    const inicial: Progreso = { nivel: respuestas?.nivel ?? 'principiante', meta: respuestas?.meta ?? 'musculo', sexo: respuestas?.sexo ?? null, diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: false, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
     localStorage.setItem(KEY, JSON.stringify(inicial));
     return inicial;
   }
@@ -1020,7 +1020,7 @@ export function leerProgreso(): Progreso {
   if (p.nivel === undefined) p.nivel = leerRespuestas()?.nivel ?? 'principiante';
   if (p.meta === undefined) p.meta = leerRespuestas()?.meta ?? 'musculo';
   if (p.sexo === undefined) p.sexo = leerRespuestas()?.sexo ?? null;
-  if (p.descansoAutomatico === undefined) p.descansoAutomatico = true;
+  if (p.descansoAutomatico === undefined) p.descansoAutomatico = false;
   if (p.descansoDuracionSeg === undefined) p.descansoDuracionSeg = 60;
   if (p.sonidoDescanso === undefined) p.sonidoDescanso = true;
   if (p.pesoKg === undefined) p.pesoKg = null;
