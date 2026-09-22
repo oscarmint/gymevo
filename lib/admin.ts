@@ -403,3 +403,135 @@ export async function calcularAvisos(): Promise<AvisoAdmin[]> {
   }
   return avisos;
 }
+
+export interface FichaUsuario {
+  id: string;
+  email: string | null;
+  nombre: string | null;
+  plan: string;
+  membershipStatus: string | null;
+  role: string;
+  createdAt: string;
+  accessUntil: string | null;
+  trialEndsAt: string | null;
+  /** Nivel/meta de su rutina actual — para dar contexto al soporte sin tener
+   * que pedirle capturas al usuario. */
+  nivel: string | null;
+  meta: string | null;
+  racha: number | null;
+  compras: { status: string; firstPaidAt: string | null; accessUntil: string | null; updatedAt: string; agregadoManualmente: boolean }[];
+  ultimosRegistros: { fecha: string; ejercicioId: string; peso: number; reps: number; series: number }[];
+}
+
+/** Ficha de un usuario (equivalente a `users.$id.tsx` de MeritGO, adaptado
+ * al dominio de GymEvo: en vez de "objetivo y preparación", muestra nivel/
+ * meta/racha de la rutina). Todo por email — es la clave que comparten
+ * `profiles` y `hotmart_purchases` (18-VENTA-HOTMART). */
+export async function obtenerFichaUsuario(id: string): Promise<FichaUsuario | null> {
+  const supabase = await crearClienteSupabaseServidor();
+  const { data: perfil } = await supabase
+    .from('profiles')
+    .select('id, email, nombre, plan, membership_status, role, created_at, access_until, trial_ends_at, nivel, meta, racha')
+    .eq('id', id)
+    .maybeSingle();
+  if (!perfil) return null;
+
+  const [{ data: compras }, { data: logs }] = await Promise.all([
+    perfil.email
+      ? supabase
+          .from('hotmart_purchases')
+          .select('status, first_paid_at, access_until, updated_at, agregado_manualmente')
+          .eq('email', perfil.email)
+          .order('updated_at', { ascending: false })
+      : Promise.resolve({ data: [] }),
+    supabase.from('workout_logs').select('fecha, ejercicio_id, peso, reps, series').eq('user_id', id).order('fecha', { ascending: false }).limit(10),
+  ]);
+
+  return {
+    id: perfil.id,
+    email: perfil.email,
+    nombre: perfil.nombre,
+    plan: perfil.plan,
+    membershipStatus: perfil.membership_status,
+    role: perfil.role,
+    createdAt: perfil.created_at,
+    accessUntil: perfil.access_until,
+    trialEndsAt: perfil.trial_ends_at,
+    nivel: perfil.nivel,
+    meta: perfil.meta,
+    racha: perfil.racha,
+    compras: (compras ?? []).map((c) => ({
+      status: c.status,
+      firstPaidAt: c.first_paid_at,
+      accessUntil: c.access_until,
+      updatedAt: c.updated_at,
+      agregadoManualmente: c.agregado_manualmente ?? false,
+    })),
+    ultimosRegistros: (logs ?? []).map((l) => ({ fecha: l.fecha, ejercicioId: l.ejercicio_id, peso: Number(l.peso), reps: l.reps, series: l.series })),
+  };
+}
+
+export interface PagoFila {
+  email: string;
+  status: string;
+  firstPaidAt: string | null;
+  accessUntil: string | null;
+  updatedAt: string;
+  agregadoManualmente: boolean;
+}
+
+/** Listado de compras (equivalente a `payments.tsx` de MeritGO) — a
+ * diferencia del Resumen del dashboard (solo conteos agregados), acá se ve
+ * cada compra individual para poder investigar un caso puntual de soporte. */
+export async function obtenerPagos(filtroEstado: string, query: string): Promise<PagoFila[]> {
+  const supabase = await crearClienteSupabaseServidor();
+  let q = supabase
+    .from('hotmart_purchases')
+    .select('email, status, first_paid_at, access_until, updated_at, agregado_manualmente')
+    .order('updated_at', { ascending: false })
+    .limit(200);
+  if (filtroEstado) q = q.eq('status', filtroEstado);
+  if (query.trim()) q = q.ilike('email', `%${query.trim()}%`);
+  const { data } = await q;
+  return (data ?? []).map((f) => ({
+    email: f.email,
+    status: f.status,
+    firstPaidAt: f.first_paid_at,
+    accessUntil: f.access_until,
+    updatedAt: f.updated_at,
+    agregadoManualmente: f.agregado_manualmente ?? false,
+  }));
+}
+
+export interface FilaAuditoria {
+  id: string;
+  adminEmail: string;
+  accion: string;
+  detalle: string | null;
+  motivo: string | null;
+  createdAt: string;
+}
+
+/** Registra una acción sensible del admin (dar/quitar acceso, borrar un
+ * costo) — equivalente a `writeAudit()` de MeritGO. Nunca lanza: un fallo al
+ * auditar no debe tumbar la acción real que se estaba haciendo. */
+export async function registrarAuditoria(accion: string, detalle: string, motivo?: string | null): Promise<void> {
+  const supabase = await crearClienteSupabaseServidor();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  await supabase.from('admin_audit_log').insert({
+    admin_email: user?.email ?? 'desconocido',
+    accion,
+    detalle,
+    motivo: motivo || null,
+  });
+}
+
+/** Historial de auditoría (equivalente a `audit.tsx` de MeritGO) — de solo
+ * lectura, nunca se edita ni se borra. */
+export async function obtenerAuditoria(): Promise<FilaAuditoria[]> {
+  const supabase = await crearClienteSupabaseServidor();
+  const { data } = await supabase.from('admin_audit_log').select('id, admin_email, accion, detalle, motivo, created_at').order('created_at', { ascending: false }).limit(300);
+  return (data ?? []).map((f) => ({ id: f.id, adminEmail: f.admin_email, accion: f.accion, detalle: f.detalle, motivo: f.motivo, createdAt: f.created_at }));
+}

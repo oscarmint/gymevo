@@ -7,6 +7,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
+import { registrarAuditoria } from '@/lib/admin';
 
 export interface ResultadoCosto {
   ok: boolean;
@@ -32,6 +33,7 @@ export async function agregarCostoServicio(formData: FormData): Promise<Resultad
 
   if (error) return { ok: false, mensaje: `No se pudo guardar: ${error.message}` };
 
+  await registrarAuditoria('COSTO_AGREGADO', `${servicio}: ${monto} ${moneda}/mes`);
   revalidatePath('/admin/costos');
   revalidatePath('/admin');
   return { ok: true, mensaje: `Agregado: ${servicio}.` };
@@ -39,7 +41,9 @@ export async function agregarCostoServicio(formData: FormData): Promise<Resultad
 
 export async function eliminarCostoServicio(id: string): Promise<void> {
   const supabase = await crearClienteSupabaseServidor();
+  const { data: servicio } = await supabase.from('costos_servicios').select('servicio').eq('id', id).maybeSingle();
   await supabase.from('costos_servicios').delete().eq('id', id);
+  await registrarAuditoria('COSTO_ELIMINADO', servicio?.servicio ?? id);
   revalidatePath('/admin/costos');
   revalidatePath('/admin');
 }

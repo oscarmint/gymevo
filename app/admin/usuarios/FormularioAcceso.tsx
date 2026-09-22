@@ -4,7 +4,7 @@ import { useRef, useState, useTransition } from 'react';
 import { UserPlus } from 'lucide-react';
 import { agregarAccesoManual } from './actions';
 
-export function FormularioAcceso() {
+export function FormularioAcceso({ emailFijo, id }: { emailFijo?: string | null; id?: string } = {}) {
   const [pending, startTransition] = useTransition();
   const [resultado, setResultado] = useState<{ ok: boolean; mensaje: string } | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -24,6 +24,7 @@ export function FormularioAcceso() {
         Para cuando alguien pagó pero el aviso automático de Hotmart no le dio acceso. En cuanto entre con este correo, va a tener el plan completo.
       </p>
       <form ref={formRef} action={enviar} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
+        {id && <input type="hidden" name="id" value={id} />}
         <div className="flex flex-1 flex-col gap-1">
           <label htmlFor="email-acceso" className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
             Correo
@@ -33,8 +34,10 @@ export function FormularioAcceso() {
             name="email"
             type="email"
             required
+            defaultValue={emailFijo ?? ''}
+            readOnly={!!emailFijo}
             placeholder="persona@correo.com"
-            className="h-11 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+            className="h-11 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-3 text-sm text-[var(--text-primary)] outline-none read-only:opacity-70 focus:border-[var(--accent)]"
           />
         </div>
         <div className="flex flex-1 flex-col gap-1">

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { buscarUsuarios } from '@/lib/admin';
 import { FormularioAcceso } from './FormularioAcceso';
 
@@ -33,8 +34,9 @@ export default async function AdminUsuariosPage({ searchParams }: { searchParams
         ) : (
           <div className="flex flex-col gap-2">
             {usuarios.map((u) => (
-              <div
+              <Link
                 key={u.id}
+                href={`/admin/usuarios/${u.id}`}
                 className="flex items-center justify-between gap-3 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] bg-[var(--bg)] px-4 py-3"
               >
                 <div className="min-w-0">
@@ -50,7 +52,7 @@ export default async function AdminUsuariosPage({ searchParams }: { searchParams
                 >
                   {PLAN_LABEL[u.plan] ?? u.plan}
                 </span>
-              </div>
+              </Link>
             ))}
           </div>
         )}
