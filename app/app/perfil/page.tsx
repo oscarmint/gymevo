@@ -46,6 +46,12 @@ export default function PerfilPage() {
   // usuario): es un cambio real de plan, no un ajuste de un campo cualquiera
   // — nunca se aplica con un solo tap.
   const [pidiendoConfirmacion, setPidiendoConfirmacion] = useState<{ nivel: Nivel; meta: Meta } | null>(null);
+  // Ruta y Macros: solo el resumen a la vista por defecto, las casillas para
+  // elegir/editar aparecen al tocar "Editar" (pedido explícito del usuario,
+  // para que la pantalla quede prolija en vez de mostrar todos los controles
+  // siempre abiertos).
+  const [editandoRuta, setEditandoRuta] = useState(false);
+  const [editandoMacros, setEditandoMacros] = useState(false);
 
   // Eliminar cuenta (derecho de eliminación real, 47-LEGAL-FISCAL-Y-PRIVACIDAD):
   // pide confirmación explícita, nunca se borra con un solo tap.
@@ -155,6 +161,7 @@ export default function PerfilPage() {
     setProgreso(next);
     guardarProgreso(next);
     guardarProgresoRemoto(next);
+    setEditandoMacros(false);
   }
 
   async function elegirFoto(e: React.ChangeEvent<HTMLInputElement>) {
@@ -180,6 +187,7 @@ export default function PerfilPage() {
     guardarProgreso(next);
     guardarProgresoRemoto(next);
     setPidiendoConfirmacion(null);
+    setEditandoRuta(false);
   }
 
   function cambiarUnidadPeso(unidad: 'kg' | 'lb') {
@@ -365,59 +373,130 @@ export default function PerfilPage() {
       )}
 
       <div className="mt-6 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
-        <p className="text-lg font-semibold text-[var(--text-primary)]">{tituloRuta(nivel, meta)}</p>
-        <p className="mt-1 text-sm text-[var(--text-secondary)]">
-          Entrenas {respuestas ? HORARIO_LABEL[respuestas.horario] : 'en la tarde'} · {respuestas?.diasSemana ?? 4} días/semana
-        </p>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-lg font-semibold text-[var(--text-primary)]">{tituloRuta(nivel, meta)}</p>
+            <p className="mt-1 text-sm text-[var(--text-secondary)]">
+              Entrenas {respuestas ? HORARIO_LABEL[respuestas.horario] : 'en la tarde'} · {respuestas?.diasSemana ?? 4} días/semana
+            </p>
+          </div>
+          <motion.button
+            type="button"
+            onClick={() => setEditandoRuta((v) => !v)}
+            whileTap={{ scale: 0.97 }}
+            aria-expanded={editandoRuta}
+            className="superficie-3d flex h-9 shrink-0 items-center gap-1.5 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] px-3 text-xs font-semibold text-[var(--text-secondary)]"
+          >
+            <Pencil size={13} /> Editar
+          </motion.button>
+        </div>
+
+        {/* Resumen siempre a la vista (pedido explícito): días de
+            entrenamiento, nivel, meta y unidad de registro — sin tocar
+            "Editar". Las casillas para CAMBIARLos solo aparecen al editar. */}
+        <dl className="mt-4 flex flex-col gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4 text-sm">
+          <div className="flex items-center justify-between">
+            <dt className="text-[var(--text-secondary)]">Días de entrenamiento</dt>
+            <dd className="font-medium text-[var(--text-primary)]">{respuestas?.diasSemana ?? 4} por semana</dd>
+          </div>
+          <div className="flex items-center justify-between">
+            <dt className="text-[var(--text-secondary)]">Nivel</dt>
+            <dd className="font-medium text-[var(--text-primary)]">{NIVEL_LABEL[nivel]}</dd>
+          </div>
+          <div className="flex items-center justify-between">
+            <dt className="text-[var(--text-secondary)]">Meta</dt>
+            <dd className="font-medium text-[var(--text-primary)]">{META_LABEL[meta]}</dd>
+          </div>
+          <div className="flex items-center justify-between">
+            <dt className="text-[var(--text-secondary)]">Registro de peso</dt>
+            <dd className="font-medium uppercase text-[var(--text-primary)]">{progreso.unidadPeso}</dd>
+          </div>
+        </dl>
 
         {/* Nivel y meta se pueden cambiar cuando el usuario quiera — no
             siempre va a querer lo mismo, o cambia de parecer (pedido
             explícito). Cada cambio pide confirmación porque reordena TODO
-            el plan (ejercicios, macros, cardio), no es un ajuste menor. */}
-        <div className="mt-4 flex flex-col gap-3 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">Nivel</p>
-            <div className="mt-1.5 flex gap-2">
-              {(['principiante', 'intermedio'] as const).map((n) => (
-                <motion.button
-                  key={n}
-                  type="button"
-                  onClick={() => n !== nivel && setPidiendoConfirmacion({ nivel: n, meta })}
-                  aria-pressed={nivel === n}
-                  whileTap={{ scale: 0.97 }}
-                  className={`flex-1 rounded-xl border px-3 py-2 text-sm font-semibold transition-colors duration-150 ${
-                    nivel === n
-                      ? 'boton-3d-borde border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--accent)]'
-                      : 'superficie-3d border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
-                  }`}
-                >
-                  {NIVEL_LABEL[n]}
-                </motion.button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">Meta</p>
-            <div className="mt-1.5 flex gap-2">
-              {(['musculo', 'grasa'] as const).map((m) => (
-                <motion.button
-                  key={m}
-                  type="button"
-                  onClick={() => m !== meta && setPidiendoConfirmacion({ nivel, meta: m })}
-                  aria-pressed={meta === m}
-                  whileTap={{ scale: 0.97 }}
-                  className={`flex-1 rounded-xl border px-3 py-2 text-sm font-semibold capitalize transition-colors duration-150 ${
-                    meta === m
-                      ? 'boton-3d-borde border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--accent)]'
-                      : 'superficie-3d border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
-                  }`}
-                >
-                  {META_LABEL[m]}
-                </motion.button>
-              ))}
-            </div>
-          </div>
-        </div>
+            el plan (ejercicios, macros, cardio), no es un ajuste menor.
+            Las casillas para elegir solo aparecen al tocar "Editar" (pedido
+            explícito del usuario, para no saturar la pantalla). */}
+        <AnimatePresence>
+          {editandoRuta && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="mt-3 flex flex-col gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">Nivel</p>
+                  <div className="mt-1.5 flex gap-2">
+                    {(['principiante', 'intermedio'] as const).map((n) => (
+                      <motion.button
+                        key={n}
+                        type="button"
+                        onClick={() => n !== nivel && setPidiendoConfirmacion({ nivel: n, meta })}
+                        aria-pressed={nivel === n}
+                        whileTap={{ scale: 0.97 }}
+                        className={`flex-1 rounded-xl border px-3 py-2 text-sm font-semibold transition-colors duration-150 ${
+                          nivel === n
+                            ? 'boton-3d-borde border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--accent)]'
+                            : 'superficie-3d border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
+                        }`}
+                      >
+                        {NIVEL_LABEL[n]}
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">Meta</p>
+                  <div className="mt-1.5 flex gap-2">
+                    {(['musculo', 'grasa'] as const).map((m) => (
+                      <motion.button
+                        key={m}
+                        type="button"
+                        onClick={() => m !== meta && setPidiendoConfirmacion({ nivel, meta: m })}
+                        aria-pressed={meta === m}
+                        whileTap={{ scale: 0.97 }}
+                        className={`flex-1 rounded-xl border px-3 py-2 text-sm font-semibold capitalize transition-colors duration-150 ${
+                          meta === m
+                            ? 'boton-3d-borde border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--accent)]'
+                            : 'superficie-3d border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
+                        }`}
+                      >
+                        {META_LABEL[m]}
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+                {/* El picker de unidad de peso vive aquí (y no en una tarjeta
+                    aparte solo para esto, pedido explícito): es una
+                    preferencia del entrenamiento, no un dato de macros. */}
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">Registrar peso en</p>
+                  <div className="mt-1.5 flex gap-2">
+                    {(['lb', 'kg'] as const).map((u) => (
+                      <button
+                        key={u}
+                        type="button"
+                        onClick={() => cambiarUnidadPeso(u)}
+                        aria-pressed={progreso.unidadPeso === u}
+                        className={`flex-1 rounded-xl border px-3 py-2 text-sm font-semibold uppercase transition-colors duration-150 ${
+                          progreso.unidadPeso === u
+                            ? 'boton-3d-borde border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--accent)]'
+                            : 'superficie-3d border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
+                        }`}
+                      >
+                        {u}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <div className="mt-4 flex items-center gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4">
           <div className="relative" style={{ width: 18, height: 18 }}>
@@ -507,136 +586,25 @@ export default function PerfilPage() {
         </div>
       )}
 
-      <div className="mt-4 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
-        <p className="text-sm font-semibold text-[var(--text-primary)]">Tu perfil de entrenamiento</p>
-        <dl className="mt-3 flex flex-col gap-2 text-sm">
-          <Fila label="Nivel" valor={NIVEL_LABEL[nivel]} />
-          <Fila label="Meta" valor={META_LABEL[meta]} />
-        </dl>
-        <div className="mt-4 flex items-center justify-between border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4">
-          <span className="text-sm text-[var(--text-secondary)]">Registrar peso de cada serie en:</span>
-          <div className="flex gap-1.5">
-            {(['lb', 'kg'] as const).map((u) => (
-              <button
-                key={u}
-                type="button"
-                onClick={() => cambiarUnidadPeso(u)}
-                aria-pressed={progreso.unidadPeso === u}
-                className={`rounded-lg border px-3 py-1.5 text-sm font-semibold uppercase ${
-                  progreso.unidadPeso === u
-                    ? 'boton-3d border-[var(--accent)] bg-[var(--accent)] text-[var(--bg)]'
-                    : 'superficie-3d border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
-                }`}
-              >
-                {u}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* Tus macros — método completo de nutrición deportiva (Mifflin-St
           Jeor + ISSN, ver lib/macros.ts), no un promedio por g/kg. Ruta A
           (ganar músculo) / Ruta B (bajar grasa) del ebook cap. 3 — ambas
           rutas comparten el mismo entrenamiento; lo que cambia es esto. */}
       <div className="mt-4 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
-        <p className="text-sm font-semibold text-[var(--text-primary)]">
-          Tus macros · {meta === 'musculo' ? 'Ruta A, ganar músculo' : 'Ruta B, bajar grasa'}
-        </p>
-        {/* El sexo biológico se pide aquí (no en el onboarding, 21/09/2026):
-            solo sirve para la fórmula de calorías, y aquí el usuario ve el
-            resultado al instante. Sin valor por defecto. */}
-        <div className="mt-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">Sexo biológico</p>
-          <div className="mt-1 grid grid-cols-2 gap-2" role="radiogroup" aria-label="Sexo biológico">
-            {(['hombre', 'mujer'] as const).map((op) => (
-              <button
-                key={op}
-                type="button"
-                role="radio"
-                aria-checked={sexoBorrador === op}
-                onClick={() => setSexoBorrador(op)}
-                className={`h-11 rounded-xl border text-sm font-semibold ${
-                  sexoBorrador === op
-                    ? 'border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--accent)]'
-                    : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-primary)]'
-                }`}
-              >
-                {SEXO_LABEL[op]}
-              </button>
-            ))}
-          </div>
+        <div className="flex items-start justify-between gap-3">
+          <p className="text-sm font-semibold text-[var(--text-primary)]">
+            Tus macros · {meta === 'musculo' ? 'Ruta A, ganar músculo' : 'Ruta B, bajar grasa'}
+          </p>
+          <motion.button
+            type="button"
+            onClick={() => setEditandoMacros((v) => !v)}
+            whileTap={{ scale: 0.97 }}
+            aria-expanded={editandoMacros}
+            className="superficie-3d flex h-9 shrink-0 items-center gap-1.5 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] px-3 text-xs font-semibold text-[var(--text-secondary)]"
+          >
+            <Pencil size={13} /> Editar
+          </motion.button>
         </div>
-        <div className={`mt-3 grid gap-2 ${meta === 'grasa' ? 'grid-cols-2' : 'grid-cols-3'}`}>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="peso-macros" className="flex min-h-8 items-end text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
-              Peso (kg)
-            </label>
-            <input
-              id="peso-macros"
-              type="number"
-              inputMode="decimal"
-              placeholder="70"
-              value={pesoBorrador}
-              onChange={(e) => setPesoBorrador(e.target.value)}
-              className="h-11 w-full rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="estatura-macros" className="flex min-h-8 items-end text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
-              Estatura (cm)
-            </label>
-            <input
-              id="estatura-macros"
-              type="number"
-              inputMode="numeric"
-              placeholder="170"
-              value={estaturaBorrador}
-              onChange={(e) => setEstaturaBorrador(e.target.value)}
-              className="h-11 w-full rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="edad-macros" className="flex min-h-8 items-end text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
-              Edad
-            </label>
-            <input
-              id="edad-macros"
-              type="number"
-              inputMode="numeric"
-              placeholder="26"
-              value={edadBorrador}
-              onChange={(e) => setEdadBorrador(e.target.value)}
-              className="h-11 w-full rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
-            />
-          </div>
-          {/* Solo Ruta B: en bajar grasa el objetivo es MANTENER las cargas,
-              así que el progreso real se ve en centímetros, no en peso
-              levantado (ver Historial → "Tu progreso"). */}
-          {meta === 'grasa' && (
-            <div className="flex flex-col gap-1">
-              <label htmlFor="cintura-macros" className="flex min-h-8 items-end text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
-                Cintura (cm)
-              </label>
-              <input
-                id="cintura-macros"
-                type="number"
-                inputMode="decimal"
-                placeholder="80"
-                value={cinturaBorrador}
-                onChange={(e) => setCinturaBorrador(e.target.value)}
-                className="h-11 w-full rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
-              />
-            </div>
-          )}
-        </div>
-        <button
-          type="button"
-          onClick={guardarDatosMacros}
-          className="boton-3d mt-3 flex h-11 w-full items-center justify-center rounded-xl bg-[var(--accent)] px-4 text-sm font-semibold text-[var(--bg)]"
-        >
-          Calcular mis macros
-        </button>
 
         {progreso.pesoKg && progreso.estaturaCm && progreso.edad && progreso.sexo ? (
           (() => {
@@ -661,11 +629,115 @@ export default function PerfilPage() {
               </div>
             );
           })()
-        ) : (
-          <p className="mt-3 text-xs text-[var(--text-secondary)]">
-            Elige tu sexo biológico y pon tu peso, estatura y edad para calcular tu gasto calórico real y cuánta proteína, carbohidratos y grasa te conviene comer cada día según tu ruta.
-          </p>
-        )}
+        ) : null}
+
+        {/* El sexo biológico se pide aquí (no en el onboarding, 21/09/2026):
+            solo sirve para la fórmula de calorías, y aquí el usuario ve el
+            resultado al instante. Sin valor por defecto. Las casillas para
+            editar estos datos solo aparecen al tocar "Editar" (pedido
+            explícito del usuario, para no saturar la pantalla). */}
+        <AnimatePresence>
+          {editandoMacros && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="mt-4 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">Sexo biológico</p>
+                <div className="mt-1 grid grid-cols-2 gap-2" role="radiogroup" aria-label="Sexo biológico">
+                  {(['hombre', 'mujer'] as const).map((op) => (
+                    <button
+                      key={op}
+                      type="button"
+                      role="radio"
+                      aria-checked={sexoBorrador === op}
+                      onClick={() => setSexoBorrador(op)}
+                      className={`h-11 rounded-xl border text-sm font-semibold ${
+                        sexoBorrador === op
+                          ? 'border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--accent)]'
+                          : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-primary)]'
+                      }`}
+                    >
+                      {SEXO_LABEL[op]}
+                    </button>
+                  ))}
+                </div>
+                <div className={`mt-3 grid gap-2 ${meta === 'grasa' ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                  <div className="flex flex-col gap-1">
+                    <label htmlFor="peso-macros" className="flex min-h-8 items-end text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+                      Peso (kg)
+                    </label>
+                    <input
+                      id="peso-macros"
+                      type="number"
+                      inputMode="decimal"
+                      placeholder="70"
+                      value={pesoBorrador}
+                      onChange={(e) => setPesoBorrador(e.target.value)}
+                      className="h-11 w-full rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label htmlFor="estatura-macros" className="flex min-h-8 items-end text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+                      Estatura (cm)
+                    </label>
+                    <input
+                      id="estatura-macros"
+                      type="number"
+                      inputMode="numeric"
+                      placeholder="170"
+                      value={estaturaBorrador}
+                      onChange={(e) => setEstaturaBorrador(e.target.value)}
+                      className="h-11 w-full rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label htmlFor="edad-macros" className="flex min-h-8 items-end text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+                      Edad
+                    </label>
+                    <input
+                      id="edad-macros"
+                      type="number"
+                      inputMode="numeric"
+                      placeholder="26"
+                      value={edadBorrador}
+                      onChange={(e) => setEdadBorrador(e.target.value)}
+                      className="h-11 w-full rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+                    />
+                  </div>
+                  {/* Solo Ruta B: en bajar grasa el objetivo es MANTENER las
+                      cargas, así que el progreso real se ve en centímetros,
+                      no en peso levantado (ver Historial → "Tu progreso"). */}
+                  {meta === 'grasa' && (
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="cintura-macros" className="flex min-h-8 items-end text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+                        Cintura (cm)
+                      </label>
+                      <input
+                        id="cintura-macros"
+                        type="number"
+                        inputMode="decimal"
+                        placeholder="80"
+                        value={cinturaBorrador}
+                        onChange={(e) => setCinturaBorrador(e.target.value)}
+                        className="h-11 w-full rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-2 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+                      />
+                    </div>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={guardarDatosMacros}
+                  className="boton-3d mt-3 flex h-11 w-full items-center justify-center rounded-xl bg-[var(--accent)] px-4 text-sm font-semibold text-[var(--bg)]"
+                >
+                  Calcular mis macros
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Recordatorio push (2 días sin entrenar) — activo/inactivo POR
@@ -910,15 +982,6 @@ export default function PerfilPage() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
-  );
-}
-
-function Fila({ label, valor }: { label: string; valor: string }) {
-  return (
-    <div className="flex items-center justify-between">
-      <dt className="text-[var(--text-secondary)]">{label}</dt>
-      <dd className="font-medium text-[var(--text-primary)]">{valor}</dd>
     </div>
   );
 }
