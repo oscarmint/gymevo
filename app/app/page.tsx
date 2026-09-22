@@ -183,6 +183,9 @@ function PlanDelDia({
   const [celebrarHito, setCelebrarHito] = useState<number | null>(null);
   const [celebrarFin, setCelebrarFin] = useState(false);
   const [cardioAbierto, setCardioAbierto] = useState(false);
+  // Se muestra al prender el interruptor de descanso automático, se oculta al
+  // elegir una duración (pedido del usuario: no quedar expandido a diario).
+  const [mostrarOpcionesDescanso, setMostrarOpcionesDescanso] = useState(false);
   // celebrarFin como dependencia es intencional: regenera las posiciones del
   // confeti cada vez que se abre la celebración, no solo la primera vez.
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -450,11 +453,30 @@ function PlanDelDia({
   }
 
   function alternarDescansoAutomatico() {
+    // Bug real encontrado (22/09/2026): llamar a un setState DISTINTO desde
+    // DENTRO del actualizador que le pasamos a `actualizar` (que a su vez
+    // llama a `setProgreso`) es inválido en React — React lo ejecuta durante
+    // la fase de render, no en el momento del clic, y eso disparaba "Cannot
+    // update a component while rendering a different component" y dejaba
+    // TODAS las actualizaciones de estado siguientes de este componente sin
+    // aplicarse de forma confiable (los botones de duración dejaban de
+    // responder). El setState del otro hook va SIEMPRE afuera de `actualizar`.
+    // Tampoco sirve leer el "next" que devuelve el actualizador de setState
+    // por una variable capturada: React no garantiza ejecutarlo de forma
+    // síncrona en el momento del clic (bug real, encontrado probando esto
+    // mismo) — se calcula el próximo valor directo desde `progreso` (el prop
+    // ya actualizado de este render), no desde el actualizador.
+    const prender = !progreso.descansoAutomatico;
     actualizar((p) => {
       const next = { ...p, descansoAutomatico: !p.descansoAutomatico };
       guardarProgresoRemoto(next, () => setErrorSync(true));
       return next;
     });
+    // Al encenderlo se vuelven a mostrar las opciones de duración (pedido del
+    // usuario: para cambiar la duración ya elegida, hay que apagar y volver a
+    // prender — así el control no se queda expandido a diario estorbando la
+    // lista de ejercicios, una vez elegida la duración).
+    setMostrarOpcionesDescanso(prender);
   }
 
   function elegirDuracionDescanso(seg: number) {
@@ -463,6 +485,7 @@ function PlanDelDia({
       guardarProgresoRemoto(next, () => setErrorSync(true));
       return next;
     });
+    setMostrarOpcionesDescanso(false);
   }
 
   function alternarSonidoDescanso() {
@@ -720,9 +743,12 @@ function PlanDelDia({
         </span>
       </motion.button>
 
-      {/* Duración del cronómetro de descanso — una sola vez, para todo hoy */}
+      {/* Duración del cronómetro de descanso — se muestra solo al encender el
+          interruptor y hasta elegir una duración; después queda colapsada
+          (pedido del usuario) y solo reaparece si se apaga y se vuelve a
+          prender el interruptor de arriba. */}
       <AnimatePresence>
-        {progreso.descansoAutomatico && (
+        {progreso.descansoAutomatico && mostrarOpcionesDescanso && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -1281,9 +1307,9 @@ function PlanDelDia({
                         <div className="shrink-0 text-right">
                           <p className="text-xs font-bold uppercase tracking-[0.04em] text-[var(--accent)]">Volumen</p>
                           <p className="mt-1 text-2xl font-extrabold leading-none text-[var(--accent)]">{ej.series}</p>
-                          <p className="text-[11px] uppercase tracking-[0.04em] text-[var(--text-secondary)]">Series</p>
+                          <p className="text-xs uppercase tracking-[0.04em] text-[var(--text-secondary)]">Series</p>
                           <p className="mt-1 text-2xl font-extrabold leading-none text-[var(--accent)]">{ej.reps}</p>
-                          <p className="text-[11px] uppercase tracking-[0.04em] text-[var(--text-secondary)]">Repeticiones</p>
+                          <p className="text-xs uppercase tracking-[0.04em] text-[var(--text-secondary)]">Repeticiones</p>
                         </div>
                       </div>
                       <div className="rounded-2xl border border-[color-mix(in_oklab,var(--accent)_30%,transparent)] bg-[color-mix(in_oklab,var(--accent)_6%,transparent)] px-4 py-3">

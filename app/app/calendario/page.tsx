@@ -23,16 +23,16 @@ const ESTILO: Record<EstadoDia, string> = {
     'border-[color-mix(in_oklab,var(--status-error)_60%,transparent)] bg-[color-mix(in_oklab,var(--status-error)_24%,transparent)] text-[var(--text-primary)]',
   descanso:
     'border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_45%,transparent)] bg-[var(--surface)] text-[var(--text-secondary)]',
-  hoy_pendiente: 'border-transparent bg-transparent text-[var(--text-primary)]',
-  futuro: 'border-transparent bg-transparent text-[var(--text-tertiary)]',
-  sin_datos: 'border-transparent bg-transparent text-[var(--text-tertiary)]',
+  hoy_pendiente: 'border-[color-mix(in_oklab,var(--text-tertiary)_28%,transparent)] bg-[var(--surface)] text-[var(--text-primary)]',
+  futuro: 'border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] text-[var(--text-tertiary)]',
+  sin_datos: 'border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] text-[var(--text-tertiary)]',
 };
 
 const ETIQUETA: Record<EstadoDia, string> = {
   verde: 'entrenamiento completo',
   amarillo: 'entrenamiento parcial',
   rojo: 'sin entrenar',
-  descanso: 'descanso',
+  descanso: 'día de descanso recomendado',
   hoy_pendiente: 'hoy, aún sin entrenar',
   futuro: 'todavía no llega',
   sin_datos: 'sin registros',
@@ -160,7 +160,7 @@ export default function CalendarioPage() {
           <Punto clase={ESTILO.rojo} /> No entrenaste
         </li>
         <li className="flex items-center gap-2">
-          <Punto clase={ESTILO.descanso} /> Descanso
+          <Punto clase={ESTILO.descanso} /> Día de descanso recomendado
         </li>
       </ul>
     </div>

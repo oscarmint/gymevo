@@ -18,7 +18,7 @@ const TITULO: Record<EstadoDia, string> = {
   verde: 'Entrenamiento completo',
   amarillo: 'Entrenamiento parcial',
   rojo: 'No entrenaste este día',
-  descanso: 'Día de descanso',
+  descanso: 'Día de descanso recomendado',
   hoy_pendiente: 'Hoy todavía no entrenas',
   futuro: 'Este día aún no llega',
   sin_datos: 'Sin registros de este día',
@@ -128,7 +128,9 @@ export default function ResumenDiaPage() {
               </p>
             )}
             {info.estado === 'descanso' && (
-              <p className="mt-3 text-sm text-[var(--text-secondary)]">El descanso también es parte del plan: ahí es donde el músculo se recupera.</p>
+              <p className="mt-3 text-sm text-[var(--text-secondary)]">
+                Tu plan no tenía entrenamiento este día — el descanso también es parte del plan: ahí es donde el músculo se recupera.
+              </p>
             )}
             {info.estado === 'sin_datos' && (
               <p className="mt-3 text-sm text-[var(--text-secondary)]">Es anterior a tu primer entrenamiento registrado.</p>
