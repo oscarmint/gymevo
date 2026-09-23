@@ -13,7 +13,7 @@
 // series de esa rutina, sin importar si cambió un ejercicio por su
 // alternativa con el Botón de Rescate.
 
-import { ejerciciosDeHoy, nombreDeHoy, obtenerEjercicio, type Ejercicio, type Progreso, type RegistroLog } from './routine';
+import { TODAS_LAS_SESIONES, ejerciciosDeSesion, nombreDeSesion, obtenerEjercicio, type Ejercicio, type Progreso, type RegistroLog } from './routine';
 
 export type EstadoDia = 'verde' | 'amarillo' | 'rojo' | 'descanso' | 'hoy_pendiente' | 'futuro' | 'sin_datos';
 
@@ -56,14 +56,11 @@ interface RutinaPrograma {
   ejercicios: Ejercicio[];
 }
 
-/** Días programados de entrenamiento (todos menos el descanso), con nombre. */
+/** Todas las sesiones del programa, con nombre: la persona pudo haber cambiado
+ * sus días por semana, así que se compara contra todas y no solo contra su
+ * plan de hoy. */
 function rutinasDelPrograma(nivel: Progreso['nivel']): RutinaPrograma[] {
-  const rutinas: RutinaPrograma[] = [];
-  for (let dia = 1; dia <= 7; dia++) {
-    const ejercicios = ejerciciosDeHoy(dia, nivel);
-    if (ejercicios.length > 0) rutinas.push({ nombre: nombreDeHoy(dia), ejercicios });
-  }
-  return rutinas;
+  return TODAS_LAS_SESIONES.map((sesion) => ({ nombre: nombreDeSesion(sesion), ejercicios: ejerciciosDeSesion(sesion, nivel) }));
 }
 
 /** La rutina del programa que más coincide con lo registrado ese día. */
@@ -106,10 +103,9 @@ export function infoDelDia(p: Progreso, fecha: string, hoy: string): InfoDia {
     const inicio = p.logs.reduce<string | null>((min, l) => (min === null || l.fecha < min ? l.fecha : min), null);
     if (inicio === null || fecha < inicio) return vacio('sin_datos');
 
-    const esDescansoGuardado = (p.diasDescanso ?? []).includes(fecha);
     const v = ventanaDeRacha(p);
     const enRacha = v !== null && fecha >= v.desde && fecha <= v.hasta;
-    if (esDescansoGuardado || enRacha) return vacio('descanso');
+    if (enRacha) return vacio('descanso');
 
     if (fecha === hoy) return vacio('hoy_pendiente');
     return vacio('rojo');

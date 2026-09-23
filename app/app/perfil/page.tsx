@@ -9,7 +9,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { AlertTriangle, Bell, BellOff, Camera, Check, ExternalLink, Flame, Loader2, LogOut, Pencil, Trash2 } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, SEXO_LABEL, leerRespuestas, type RespuestasOnboarding, type Sexo } from '@/lib/onboarding';
 import { calcularMacros } from '@/lib/macros';
-import { DIAS_MAX_PLAN, aplicarReemplazos, cambiarDias, cambiarRuta, ejerciciosDeHoy, esDiaDeDescanso, guardarProgreso, leerProgreso, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
+import { DIAS_MAX_PLAN, aplicarReemplazos, cambiarDias, cambiarRuta, ejerciciosDeHoy, guardarProgreso, leerProgreso, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
 import type { Meta, Nivel } from '@/lib/onboarding';
 import { leerAvatarLocal, guardarAvatarLocal, leerNombreLocal, guardarNombreLocal } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
@@ -122,14 +122,10 @@ export default function PerfilPage() {
 
   // Misma llama de racha que Plan de hoy: se llena según el progreso real de
   // hoy (ejercicios ya marcados hechos / total de hoy), no es decorativa.
-  const idsHoy = aplicarReemplazos(ejerciciosDeHoy(progreso.diaActual, nivel), progreso.reemplazosHoy);
-  // En el día de descanso no hay ejercicios que marcar, pero la racha sigue
-  // intacta — se muestra llena, no vacía (mismo fix que Plan de hoy).
-  const progresoLlamaPct = esDiaDeDescanso(progreso.diaActual)
-    ? 100
-    : idsHoy.length
-      ? Math.round((idsHoy.filter((e) => progreso.hechosHoy.includes(e.id)).length / idsHoy.length) * 100)
-      : 0;
+  const idsHoy = aplicarReemplazos(ejerciciosDeHoy(progreso.diaActual, nivel, progreso.diasSemana), progreso.reemplazosHoy);
+  const progresoLlamaPct = idsHoy.length
+    ? Math.round((idsHoy.filter((e) => progreso.hechosHoy.includes(e.id)).length / idsHoy.length) * 100)
+    : 0;
 
   function empezarEdicion() {
     setBorrador(nombre ?? '');

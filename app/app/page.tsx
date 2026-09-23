@@ -17,7 +17,6 @@ import {
   completarEntrenamiento,
   deshacerHecho,
   ejerciciosDeHoy,
-  esDiaDeDescanso,
   generoIlustracion,
   guardarProgreso,
   hoyISO,
@@ -290,7 +289,6 @@ function PlanDelDia({
   // plan por fecha real, así que sigue viéndolo una sola vez por día real).
   const [etapa, setEtapa] = useState<'saludo' | 'entrenador' | 'plan'>(() => {
     if (typeof window === 'undefined') return 'plan';
-    if (esDiaDeDescanso(progreso.diaActual)) return 'plan';
     const yaVisto = sessionStorage.getItem('gymevo_saludo_visto_dia') === String(progreso.diaActual);
     return yaVisto ? 'plan' : 'saludo';
   });
@@ -313,11 +311,6 @@ function PlanDelDia({
   useEffect(() => {
     if (diaActualAnteriorRef.current === progreso.diaActual) return;
     diaActualAnteriorRef.current = progreso.diaActual;
-    if (esDiaDeDescanso(progreso.diaActual)) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setEtapa('plan');
-      return;
-    }
     const yaVisto = sessionStorage.getItem('gymevo_saludo_visto_dia') === String(progreso.diaActual);
     setEtapa(yaVisto ? 'plan' : 'saludo');
   }, [progreso.diaActual]);
@@ -378,7 +371,7 @@ function PlanDelDia({
   const nivel = progreso.nivel;
   const meta = progreso.meta;
 
-  const ejercicios = useMemo(() => ejerciciosDeHoy(progreso.diaActual, nivel), [progreso.diaActual, nivel]);
+  const ejercicios = useMemo(() => ejerciciosDeHoy(progreso.diaActual, nivel, progreso.diasSemana), [progreso.diaActual, nivel, progreso.diasSemana]);
 
   // Actualización funcional: siempre parte del progreso MÁS RECIENTE, nunca del
   // capturado en el closure del render — evita perder un registro si dos taps
@@ -522,18 +515,13 @@ function PlanDelDia({
   const idsHoy = useMemo(() => aplicarReemplazos(ejercicios, progreso.reemplazosHoy), [ejercicios, progreso.reemplazosHoy]);
   const todosHechos = idsHoy.every((e) => progreso.hechosHoy.includes(e.id));
   const enRiesgo = rachaEnRiesgo(progreso);
-  const diaDescanso = esDiaDeDescanso(progreso.diaActual);
   // La llama se llena según el progreso REAL de hoy (ejercicios ya marcados
   // hechos / total de hoy) — a pedido explícito del usuario, no es decorativa.
-  // En el día de descanso no hay ejercicios que marcar, pero la racha sigue
-  // intacta (no es que "falte esfuerzo") — se muestra llena, no vacía.
-  const progresoLlamaPct = diaDescanso
-    ? 100
-    : idsHoy.length
-      ? Math.round((idsHoy.filter((e) => progreso.hechosHoy.includes(e.id)).length / idsHoy.length) * 100)
-      : 0;
-  const tren = calentamientoDeHoy(progreso.diaActual);
-  const cardio = cardioDeHoy(progreso.diaActual, meta, nivel);
+  const progresoLlamaPct = idsHoy.length
+    ? Math.round((idsHoy.filter((e) => progreso.hechosHoy.includes(e.id)).length / idsHoy.length) * 100)
+    : 0;
+  const tren = calentamientoDeHoy(progreso.diaActual, progreso.diasSemana);
+  const cardio = cardioDeHoy(progreso.diaActual, meta, nivel, progreso.diasSemana);
 
   if (etapa !== 'plan') {
     return (
@@ -559,7 +547,7 @@ function PlanDelDia({
             </span>
             <h1 className="mt-6 text-3xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Hola!</h1>
             <p className="mt-3 max-w-sm text-base text-[var(--text-secondary)]">
-              Hoy vamos a iniciar el entrenamiento de <strong className="text-[var(--text-primary)]">{nombreDeHoy(progreso.diaActual)}</strong>.
+              Hoy vamos a iniciar el entrenamiento de <strong className="text-[var(--text-primary)]">{nombreDeHoy(progreso.diaActual, progreso.diasSemana)}</strong>.
             </p>
             <button
               type="button"
@@ -625,7 +613,7 @@ function PlanDelDia({
           última palabra. */}
       <div className="mt-1 flex items-start gap-2">
         <h1 className="min-w-0 flex-1 text-balance text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
-          {diaDescanso ? 'Hoy es tu día de descanso' : `Hoy vamos con: ${nombreDeHoy(progreso.diaActual)}`}
+          {`Hoy vamos con: ${nombreDeHoy(progreso.diaActual, progreso.diasSemana)}`}
         </h1>
         <Lottie
           src={animacionFitness}
@@ -689,29 +677,6 @@ function PlanDelDia({
         </div>
       </div>
 
-      {diaDescanso ? (
-        <div className="mt-6 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5 text-center">
-          <p className="text-base font-semibold text-[var(--text-primary)]">Descanso hormonal — y está bien así.</p>
-          <p className="mt-2 text-sm text-[var(--text-secondary)]">
-            En el reposo es cuando el músculo realmente crece y el equilibrio hormonal se restaura. Aprovecha para
-            dormir bien y comer con calma: mañana retomas tu plan.
-          </p>
-          {/* Bug real encontrado por el usuario: esta pantalla no tenía NINGÚN
-              botón — "mañana retomas tu plan" no pasaba solo, `diaActual`
-              nunca avanza por fecha de calendario, solo cuando se llama a
-              completarEntrenamiento(). Sin este botón, TODO usuario real
-              quedaba atascado en el domingo para siempre. */}
-          <motion.button
-            type="button"
-            onClick={finalizarEntrenamiento}
-            whileTap={{ scale: 0.97 }}
-            className="boton-3d mt-5 flex h-14 w-full items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
-          >
-            Ya descansé, continuar mi plan
-          </motion.button>
-        </div>
-      ) : (
-      <>
       {/* Calentamiento antes de los ejercicios principales — nunca es opcional
           (5-7 min, activa lo que vas a trabajar y protege articulaciones). */}
       {tren && (
@@ -1086,8 +1051,6 @@ function PlanDelDia({
           </button>
         )}
       </div>
-      </>
-      )}
 
       {pidiendoCortar && (
         <div
