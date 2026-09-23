@@ -837,6 +837,16 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Isquiotibiales', principal: true }, { nombre: 'Glúteos', principal: true }],
     consejoTecnico: 'Mantén la espalda recta en todo momento para proteger tu columna vertebral.',
   } },
+  press_inclinado_barra: { id: 'press_inclinado_barra', nombre: 'Press inclinado con barra', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/press-inclinado-barra.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_inclinado_mancuerna', guia: {
+    indicaciones: [
+      'Ajusta el banco a unos 30-45 grados.',
+      'Acuéstate y agarra la barra más ancho que los hombros.',
+      'Saca la barra del soporte y baja hasta el pecho superior.',
+      'Empuja hacia arriba de forma controlada.',
+    ],
+    musculos: [{ nombre: 'Pectorales superiores', principal: true }, { nombre: 'Deltoides anterior', principal: false }],
+    consejoTecnico: 'Evita bloquear los codos bruscamente y mantén la barra estable.',
+  } },
 };
 
 /** Alterna hombre/mujer entre ejercicios de forma ESTABLE (nunca al azar: el
