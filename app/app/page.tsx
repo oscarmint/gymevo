@@ -6,7 +6,7 @@
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { Lottie } from 'lottie-react';
 import { motion, AnimatePresence, useReducedMotion, animate } from 'motion/react';
-import { Check, Dumbbell, Flame, Info, PlayCircle, RefreshCcw, TrendingUp, Undo2, Volume2, VolumeX, WifiOff, X, Zap } from 'lucide-react';
+import { Check, Dumbbell, FileText, Flame, Info, PlayCircle, RefreshCcw, TrendingUp, Undo2, Volume2, VolumeX, WifiOff, X, Zap } from 'lucide-react';
 import { leerRespuestas } from '@/lib/onboarding';
 import animacionFitness from '@/public/animaciones/fitness.json';
 import { CuerpoMuscular } from '@/components/CuerpoMuscular';
@@ -186,6 +186,10 @@ function PlanDelDia({
   // Se muestra al prender el interruptor de descanso automático, se oculta al
   // elegir una duración (pedido del usuario: no quedar expandido a diario).
   const [mostrarOpcionesDescanso, setMostrarOpcionesDescanso] = useState(false);
+  // "¿Cómo se hace?" y "Explicación del ejercicio" quedan ocultos detrás de
+  // un botón de hoja junto al de rescate, por ejercicio (pedido del usuario:
+  // pantalla de entrenamiento más prolija).
+  const [ayudasAbiertas, setAyudasAbiertas] = useState<Record<string, boolean>>({});
   // celebrarFin como dependencia es intencional: regenera las posiciones del
   // confeti cada vez que se abre la celebración, no solo la primera vez.
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -836,7 +840,7 @@ function PlanDelDia({
                     {ej.nombre}
                   </p>
                   <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                    {ej.series}×{ej.reps} · descanso {ej.descansoSeg}s
+                    {ej.series}×{ej.reps}
                   </p>
                   {!hecho && (
                     <p className="mt-1 text-xs font-semibold text-[var(--accent)]">
@@ -878,7 +882,7 @@ function PlanDelDia({
                         : `Mantén ${sugerencia.pesoSugerido}${progreso.unidadPeso} — la vez pasada costó.`}
                     </p>
                   )}
-                  {!hecho && (
+                  {!hecho && ayudasAbiertas[ej.id] && (
                     <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
                       <a
                         href={urlComoSeHace(ej.nombre)}
@@ -899,15 +903,31 @@ function PlanDelDia({
                   )}
                 </div>
                 {!hecho && (
-                  <motion.button
-                    type="button"
-                    whileTap={{ scale: 0.9 }}
-                    aria-label={`Cambiar ${ej.nombre} por una alternativa`}
-                    onClick={() => rescatar(ej.id)}
-                    className="flex size-9 shrink-0 items-center justify-center rounded-full border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]"
-                  >
-                    <RefreshCcw size={16} />
-                  </motion.button>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <motion.button
+                      type="button"
+                      whileTap={{ scale: 0.9 }}
+                      aria-label={ayudasAbiertas[ej.id] ? `Ocultar ayudas de ${ej.nombre}` : `Ver cómo se hace ${ej.nombre}`}
+                      aria-expanded={!!ayudasAbiertas[ej.id]}
+                      onClick={() => setAyudasAbiertas((p) => ({ ...p, [ej.id]: !p[ej.id] }))}
+                      className={`flex size-9 items-center justify-center rounded-full border ${
+                        ayudasAbiertas[ej.id]
+                          ? 'border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--accent)]'
+                          : 'border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
+                      }`}
+                    >
+                      <FileText size={16} />
+                    </motion.button>
+                    <motion.button
+                      type="button"
+                      whileTap={{ scale: 0.9 }}
+                      aria-label={`Cambiar ${ej.nombre} por una alternativa`}
+                      onClick={() => rescatar(ej.id)}
+                      className="flex size-9 items-center justify-center rounded-full border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]"
+                    >
+                      <RefreshCcw size={16} />
+                    </motion.button>
+                  </div>
                 )}
               </div>
 
