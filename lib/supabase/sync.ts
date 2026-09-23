@@ -6,7 +6,7 @@
 
 import { crearClienteSupabase } from './client';
 import type { RespuestasOnboarding } from '../onboarding';
-import type { Progreso, RegistroLog } from '../routine';
+import { diasDePlan, type Progreso, type RegistroLog } from '../routine';
 import { leerUTM } from '../utm';
 
 export async function usuarioActual() {
@@ -61,7 +61,7 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
 
   const { data: perfil } = await supabase
     .from('profiles')
-    .select('nivel, meta, sexo, dia_actual, racha, ultimo_dia_completado, descanso_automatico, descanso_duracion_seg, sonido_descanso, peso_kg, unidad_peso, estatura_cm, edad, peso_inicial_kg, cintura_cm, cintura_inicial_cm, fecha_inicio_medidas')
+    .select('nivel, meta, sexo, dias_semana, dia_actual, racha, ultimo_dia_completado, descanso_automatico, descanso_duracion_seg, sonido_descanso, peso_kg, unidad_peso, estatura_cm, edad, peso_inicial_kg, cintura_cm, cintura_inicial_cm, fecha_inicio_medidas')
     .eq('id', user.id)
     .maybeSingle();
   if (!perfil) return null;
@@ -84,6 +84,7 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
     nivel: perfil.nivel === 'intermedio' ? 'intermedio' : 'principiante',
     meta: perfil.meta === 'grasa' ? 'grasa' : 'musculo',
     sexo: perfil.sexo === 'mujer' ? 'mujer' : perfil.sexo === 'hombre' ? 'hombre' : null,
+    diasSemana: diasDePlan(perfil.dias_semana),
     diaActual: perfil.dia_actual,
     racha: perfil.racha,
     ultimaFecha: perfil.ultimo_dia_completado,
@@ -118,6 +119,7 @@ export function guardarProgresoRemoto(p: Progreso, onError?: () => void) {
         nivel: p.nivel,
         meta: p.meta,
         ...(p.sexo ? { sexo: p.sexo } : {}),
+        dias_semana: p.diasSemana,
         dia_actual: p.diaActual,
         racha: p.racha,
         ultimo_dia_completado: p.ultimaFecha,

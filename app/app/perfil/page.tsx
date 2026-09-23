@@ -9,7 +9,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { AlertTriangle, Bell, BellOff, Camera, Check, ExternalLink, Flame, Loader2, LogOut, Pencil, Trash2 } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, SEXO_LABEL, leerRespuestas, type RespuestasOnboarding, type Sexo } from '@/lib/onboarding';
 import { calcularMacros } from '@/lib/macros';
-import { aplicarReemplazos, cambiarRuta, ejerciciosDeHoy, esDiaDeDescanso, guardarProgreso, leerProgreso, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
+import { DIAS_MAX_PLAN, aplicarReemplazos, cambiarDias, cambiarRuta, ejerciciosDeHoy, esDiaDeDescanso, guardarProgreso, leerProgreso, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
 import type { Meta, Nivel } from '@/lib/onboarding';
 import { leerAvatarLocal, guardarAvatarLocal, leerNombreLocal, guardarNombreLocal } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
@@ -188,6 +188,14 @@ export default function PerfilPage() {
     guardarProgresoRemoto(next);
     setPidiendoConfirmacion(null);
     setEditandoRuta(false);
+  }
+
+  function elegirDias(dias: number) {
+    if (!progreso || dias === progreso.diasSemana) return;
+    const next = cambiarDias(progreso, dias);
+    setProgreso(next);
+    guardarProgreso(next);
+    guardarProgresoRemoto(next);
   }
 
   function cambiarUnidadPeso(unidad: 'kg' | 'lb') {
@@ -377,7 +385,7 @@ export default function PerfilPage() {
           <div>
             <p className="text-lg font-semibold text-[var(--text-primary)]">{tituloRuta(nivel, meta)}</p>
             <p className="mt-1 text-sm text-[var(--text-secondary)]">
-              Entrenas {respuestas ? HORARIO_LABEL[respuestas.horario] : 'en la tarde'} · {respuestas?.diasSemana ?? 4} días/semana
+              Entrenas {respuestas ? HORARIO_LABEL[respuestas.horario] : 'en la tarde'} · {progreso.diasSemana} {progreso.diasSemana === 1 ? 'día' : 'días'}/semana
             </p>
           </div>
           <motion.button
@@ -397,7 +405,7 @@ export default function PerfilPage() {
         <dl className="mt-4 flex flex-col gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4 text-sm">
           <div className="flex items-center justify-between">
             <dt className="text-[var(--text-secondary)]">Días de entrenamiento</dt>
-            <dd className="font-medium text-[var(--text-primary)]">{respuestas?.diasSemana ?? 4} por semana</dd>
+            <dd className="font-medium text-[var(--text-primary)]">{progreso.diasSemana} por semana</dd>
           </div>
           <div className="flex items-center justify-between">
             <dt className="text-[var(--text-secondary)]">Nivel</dt>
@@ -428,6 +436,31 @@ export default function PerfilPage() {
               className="overflow-hidden"
             >
               <div className="mt-3 flex flex-col gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">Días de entrenamiento por semana</p>
+                  <div className="mt-1.5 flex gap-2">
+                    {Array.from({ length: DIAS_MAX_PLAN }, (_, i) => i + 1).map((d) => (
+                      <motion.button
+                        key={d}
+                        type="button"
+                        onClick={() => elegirDias(d)}
+                        aria-pressed={progreso.diasSemana === d}
+                        whileTap={{ scale: 0.97 }}
+                        className={`flex-1 rounded-xl border px-3 py-2 text-sm font-semibold tabular-nums transition-colors duration-150 ${
+                          progreso.diasSemana === d
+                            ? 'boton-3d-borde border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--accent)]'
+                            : 'superficie-3d border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
+                        }`}
+                      >
+                        {d}
+                      </motion.button>
+                    ))}
+                  </div>
+                  <p className="mt-1.5 text-xs text-[var(--text-tertiary)]">
+                    No importa qué días de la semana vayas: la app te propone la siguiente sesión cuando entrenes.
+                    {nivel === 'principiante' && progreso.diasSemana >= 5 ? ' Para empezar, 3 o 4 días suelen dar mejor resultado que 5 o 6.' : ''}
+                  </p>
+                </div>
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">Nivel</p>
                   <div className="mt-1.5 flex gap-2">

@@ -1049,6 +1049,16 @@ export interface RegistroLog {
   rir?: number;
 }
 
+/** Máximo de días de entrenamiento por semana: el 7º queda de descanso. */
+export const DIAS_MAX_PLAN = 6;
+
+/** Lleva cualquier valor (el onboarding permite 1-7) al rango del plan (1-6). */
+export function diasDePlan(n: number | null | undefined): number {
+  const v = Math.round(Number(n));
+  if (!Number.isFinite(v)) return 4;
+  return Math.min(DIAS_MAX_PLAN, Math.max(1, v));
+}
+
 export interface Progreso {
   /** Nivel (principiante/intermedio) y meta (músculo/grasa) — antes vivían
    * SOLO en `RespuestasOnboarding` (sessionStorage, se borra al cerrar el
@@ -1067,6 +1077,10 @@ export interface Progreso {
   /** null hasta que la persona lo elige en Perfil (calculadora de macros) —
    * ya no se asume 'hombre' en silencio. */
   sexo: Sexo | null;
+  /** Días de entrenamiento por semana que eligió la persona (1-6). NO son días
+   * fijos de la semana: puede ir cuando quiera, el plan rota sesiones. El 7º
+   * día siempre queda de descanso recomendado (ver DIAS_MAX_PLAN). */
+  diasSemana: number;
   diaActual: number;
   racha: number;
   ultimaFecha: string | null; // YYYY-MM-DD del último entrenamiento completado
@@ -1140,9 +1154,14 @@ function diasEntre(a: string, b: string): number {
   return Math.round((new Date(b).getTime() - new Date(a).getTime()) / msPorDia);
 }
 
+function respuestasDias(): number {
+  const r = leerRespuestas();
+  return r ? diasDePlan(r.diasSemana) : DIAS_MAX_PLAN;
+}
+
 export function leerProgreso(): Progreso {
   if (typeof window === 'undefined') {
-    return { nivel: 'principiante', meta: 'musculo', sexo: null, diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: false, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
+    return { nivel: 'principiante', meta: 'musculo', sexo: null, diasSemana: 4, diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: false, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
   }
   const raw = localStorage.getItem(KEY);
   if (!raw) {
@@ -1150,7 +1169,7 @@ export function leerProgreso(): Progreso {
     // su nivel/meta (evita que el primer progreso guardado nazca con los
     // valores por defecto pisando lo que el usuario acaba de elegir).
     const respuestas = leerRespuestas();
-    const inicial: Progreso = { nivel: respuestas?.nivel ?? 'principiante', meta: respuestas?.meta ?? 'musculo', sexo: respuestas?.sexo ?? null, diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: false, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
+    const inicial: Progreso = { nivel: respuestas?.nivel ?? 'principiante', meta: respuestas?.meta ?? 'musculo', sexo: respuestas?.sexo ?? null, diasSemana: diasDePlan(respuestas?.diasSemana), diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: false, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
     localStorage.setItem(KEY, JSON.stringify(inicial));
     return inicial;
   }
@@ -1159,6 +1178,9 @@ export function leerProgreso(): Progreso {
   if (p.nivel === undefined) p.nivel = leerRespuestas()?.nivel ?? 'principiante';
   if (p.meta === undefined) p.meta = leerRespuestas()?.meta ?? 'musculo';
   if (p.sexo === undefined) p.sexo = leerRespuestas()?.sexo ?? null;
+  // Progreso anterior a este campo: seguía el plan de 6 días de siempre — se
+  // conserva ese comportamiento (o lo que respondió en el onboarding, si lo hay).
+  if (p.diasSemana === undefined) p.diasSemana = respuestasDias();
   if (p.descansoAutomatico === undefined) p.descansoAutomatico = false;
   if (p.descansoDuracionSeg === undefined) p.descansoDuracionSeg = 60;
   if (p.sonidoDescanso === undefined) p.sonidoDescanso = true;
@@ -1184,6 +1206,11 @@ export function leerProgreso(): Progreso {
  * querer hacer lo mismo, o cambiará de parecer"). Editable en Perfil en
  * cualquier momento; la pantalla que llama esto es responsable de pedir
  * confirmación primero (es un cambio real de plan, no un ajuste menor). */
+/** Cambia cuántos días por semana quiere entrenar (1-6). */
+export function cambiarDias(p: Progreso, dias: number): Progreso {
+  return { ...p, diasSemana: diasDePlan(dias) };
+}
+
 export function cambiarRuta(p: Progreso, nivel: Nivel, meta: Meta): Progreso {
   return { ...p, nivel, meta };
 }
