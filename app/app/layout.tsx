@@ -1,16 +1,15 @@
 'use client';
 
-// SHELL DE LA APP INTERNA — Plan del día (protagonista), Calendario (21/09/2026,
-// pedido del usuario), Historial, Perfil. Tab bar inferior, siempre visible.
+// SHELL DE LA APP INTERNA — Plan del día (protagonista), Progreso (calendario +
+// historial fusionados, 23/09/2026), Perfil. Tab bar inferior, siempre visible.
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CalendarDays, Dumbbell, History, User } from 'lucide-react';
+import { CalendarDays, Dumbbell, User } from 'lucide-react';
 
 const TABS = [
   { href: '/app', label: 'Plan de hoy', icon: Dumbbell },
-  { href: '/app/calendario', label: 'Calendario', icon: CalendarDays },
-  { href: '/app/historial', label: 'Historial', icon: History },
+  { href: '/app/progreso', label: 'Progreso', icon: CalendarDays },
   { href: '/app/perfil', label: 'Perfil', icon: User },
 ];
 

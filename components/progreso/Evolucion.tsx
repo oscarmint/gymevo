@@ -1,21 +1,21 @@
 'use client';
 
-// HISTORIAL — registro de pesos/cargas (04-ARQUITECTURA → workout_logs).
+// EVOLUCIÓN — segunda mitad de la pantalla Progreso (antes vivía en Historial):
+// tu progreso real según la meta (peso corporal o cintura), el volumen de tus
+// últimas sesiones y, en Ruta Intermedio, la analítica avanzada. El día a día
+// (qué hiciste cada fecha) vive en el calendario de la misma pantalla.
 // Sesión 7 (auditoría, hallazgo #2): antes era una lista plana sin gráfico ni
-// insight — "vacío muerto" según la rúbrica de 17-VISUALIZACION-DATOS. Ahora
-// tiene un dato héroe (volumen de la semana) + un gráfico de área animado
-// (serie temporal: el tipo correcto para "evolución en el tiempo", ver la
-// tabla de esa doctrina) + insight interpretado, con la lista detallada abajo.
+// insight — ahora tiene un dato héroe (volumen) + un gráfico de área animado
+// (serie temporal, ver 17-VISUALIZACION-DATOS) + insight interpretado.
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useReducedMotion } from 'motion/react';
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
 import { Award, History, TrendingDown, TrendingUp } from 'lucide-react';
 import type { Meta } from '@/lib/onboarding';
-import { leerProgreso, obtenerEjercicio, type Progreso, type RegistroLog } from '@/lib/routine';
+import type { Progreso, RegistroLog } from '@/lib/routine';
 import { progresionPorEjercicio, recordMasReciente, volumenPorGrupoMuscular } from '@/lib/analiticaAvanzada';
-import { leerProgresoRemoto } from '@/lib/supabase/sync';
 import { useConteo } from '@/lib/useConteo';
 
 const NUM = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 });
@@ -45,46 +45,24 @@ function TooltipVolumen({
   );
 }
 
-export default function HistorialPage() {
-  const [progreso, setProgreso] = useState<Progreso | null>(null);
+export function Evolucion({ progreso }: { progreso: Progreso }) {
   const reduce = useReducedMotion();
-
-  // localStorage no existe en el servidor: leerlo en el initializer de
-  // useState causa mismatch de hydration. Este efecto es la forma correcta.
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setProgreso(leerProgreso());
-    // Si hay sesión, el historial remoto (Supabase) manda sobre el local —
-    // es el que tiene los registros de todos los dispositivos.
-    leerProgresoRemoto().then((remoto) => {
-      if (remoto) setProgreso(remoto);
-    });
-  }, []);
-
-  const porFecha = useMemo(() => {
-    const mapa = new Map<string, RegistroLog[]>();
-    for (const log of [...(progreso?.logs ?? [])].reverse()) {
-      const lista = mapa.get(log.fecha) ?? [];
-      lista.push(log);
-      mapa.set(log.fecha, lista);
-    }
-    return mapa;
-  }, [progreso]);
 
   // Serie temporal para el gráfico: una sesión por fecha, volumen = Σ peso×reps×series
   // del día. Orden CRONOLÓGICO (viejo → nuevo) para que el área se dibuje de
-  // izquierda a derecha con sentido — la lista de abajo sigue en orden inverso
-  // (más reciente arriba), que es lo que se lee al entrar a esta pantalla.
+  // izquierda a derecha con sentido.
   const sesiones = useMemo(() => {
+    const porFecha = new Map<string, number>();
+    for (const log of progreso.logs) porFecha.set(log.fecha, (porFecha.get(log.fecha) ?? 0) + volumenDe(log));
     return Array.from(porFecha.entries())
-      .map(([fecha, logs]) => ({
+      .map(([fecha, volumen]) => ({
         fecha,
         etiqueta: new Date(fecha + 'T00:00:00').toLocaleDateString('es', { day: 'numeric', month: 'short' }),
-        volumen: logs.reduce((acc, l) => acc + volumenDe(l), 0),
+        volumen,
       }))
       .sort((a, b) => a.fecha.localeCompare(b.fecha))
       .slice(-7); // máximo 7 puntos visibles en móvil (17-VISUALIZACION-DATOS)
-  }, [porFecha]);
+  }, [progreso.logs]);
 
   const volumenSemana = sesiones.reduce((acc, s) => acc + s.volumen, 0);
   const sesionAnterior = sesiones.length >= 2 ? sesiones[sesiones.length - 2].volumen : null;
@@ -97,60 +75,24 @@ export default function HistorialPage() {
   const volumenMostrado = useConteo(volumenSemana);
 
   return (
-    // flex flex-col + min-h-[calc(100dvh-5rem)] (mismo patrón ya usado en
-    // perfil/page.tsx y la pantalla de saludo): así el estado vacío de abajo
-    // puede usar flex-1 y llenar TODO el espacio real que sobre hasta la nav,
-    // sin necesidad de adivinar su alto con un cálculo aparte — antes eso
-    // dejaba un hueco muerto grande (hallazgo del usuario, captura real).
-    // relative + fondo radial propio (mismo recurso de Hero/CtaFinal de la
-    // landing, mismos tokens de acento) — antes era un fill plano, la única
-    // pantalla de las 6 sin ningún elemento de profundidad (hallazgo craft).
-    <div className="relative flex min-h-[calc(100dvh-5rem)] flex-col overflow-hidden px-5 pt-6 pb-10">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-0"
-        style={{
-          background:
-            'radial-gradient(560px 340px at 15% -8%, color-mix(in oklab, var(--accent) 9%, transparent) 0%, transparent 60%), ' +
-            'radial-gradient(420px 300px at 100% 10%, color-mix(in oklab, var(--accent-2) 8%, transparent) 0%, transparent 55%)',
-        }}
-      />
-      <div className="relative z-10 flex flex-1 flex-col">
-      <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">Tu progreso</p>
-      {/* Mismo patrón que el ícono de Lottie junto al título de Plan de hoy:
-          siempre visible (no es un spinner de carga condicional — pedido
-          explícito del usuario tras ver que desaparecía), en su propia
-          columna fuera del flujo del texto para no chocar si el título
-          crece. */}
-      <div className="mt-1 flex items-center gap-2">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">Historial</h1>
-        <img
-          src="/animaciones/historial-spinner.gif"
-          alt=""
-          aria-hidden="true"
-          className="size-14 shrink-0 motion-reduce:hidden"
-        />
-      </div>
-
-      {progreso && (
-        <>
+    <div>
       {/* El progreso se ve DISTINTO según la ruta (pedido explícito): Ruta A
           compara el peso corporal contra el inicial (sube = éxito); Ruta B
           compara la cintura (el objetivo ahí es MANTENER las cargas, no
           subirlas). Vive siempre, incluso sin series registradas todavía. */}
       <TarjetaProgreso progreso={progreso} meta={progreso.meta} />
 
-      {porFecha.size === 0 ? (
-        <div className="flex flex-1 flex-col items-center justify-center text-center">
-          <span className="flex size-20 items-center justify-center rounded-full bg-[var(--chip-bg)]">
-            <History size={32} color="var(--accent)" />
+      {sesiones.length === 0 ? (
+        <div className="mt-5 flex flex-col items-center rounded-2xl border border-dashed border-[color-mix(in_oklab,var(--accent)_35%,transparent)] bg-[var(--surface)] p-6 text-center">
+          <span className="flex size-16 items-center justify-center rounded-full bg-[var(--chip-bg)]">
+            <History size={28} color="var(--accent)" />
           </span>
-          <p className="mt-5 max-w-xs text-base text-[var(--text-secondary)]">
+          <p className="mt-4 max-w-xs text-base text-[var(--text-secondary)]">
             Todavía no registras ningún peso. En cuanto termines tu primer ejercicio, aparece aquí.
           </p>
           <Link
             href="/app"
-            className="boton-3d mt-7 flex h-14 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
+            className="boton-3d mt-6 flex h-14 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
           >
             Ir a mi plan de hoy
           </Link>
@@ -182,12 +124,7 @@ export default function HistorialPage() {
                       <stop offset="100%" stopColor="var(--accent)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis
-                    dataKey="etiqueta"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: 'var(--text-tertiary)', fontSize: 11 }}
-                  />
+                  <XAxis dataKey="etiqueta" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-tertiary)', fontSize: 11 }} />
                   <Tooltip content={<TooltipVolumen unidad={progreso.unidadPeso} />} cursor={{ stroke: 'var(--accent)', strokeOpacity: 0.2 }} />
                   <Area
                     type="monotone"
@@ -224,54 +161,12 @@ export default function HistorialPage() {
             </table>
           </div>
 
-          {/* Detalle por sesión — más reciente primero. Cada log ahora es UNA
-              serie (registro real serie por serie, no un agregado), así que
-              se agrupan por ejercicio para mostrar el peso de cada serie. */}
-          <div className="mt-6 flex flex-col gap-5">
-            {Array.from(porFecha.entries()).map(([fecha, logs]) => {
-              const porEjercicio = new Map<string, RegistroLog[]>();
-              for (const log of logs) {
-                const sets = porEjercicio.get(log.ejercicioId) ?? [];
-                sets.push(log);
-                porEjercicio.set(log.ejercicioId, sets);
-              }
-              return (
-                <div key={fecha}>
-                  <p className="text-xs font-semibold text-[var(--text-tertiary)]">{formatearFecha(fecha)}</p>
-                  <div className="mt-2 flex flex-col gap-2">
-                    {Array.from(porEjercicio.entries()).map(([ejercicioId, sets]) => {
-                      const ej = obtenerEjercicio(ejercicioId);
-                      const pesosTexto = sets.map((s) => (s.peso > 0 ? s.peso : '—')).join(' / ');
-                      return (
-                        <div
-                          key={ejercicioId}
-                          className="flex items-center justify-between rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] px-4 py-3"
-                        >
-                          <span className="text-sm font-medium text-[var(--text-primary)]">{ej.nombre}</span>
-                          <span className="text-sm tabular-nums text-[var(--text-secondary)]">
-                            {sets.length} series · {pesosTexto} {progreso.unidadPeso}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
           {/* Opción B de "sentir la diferencia entre niveles" (15/09/2026,
               ver ESTADO.md): solo Ruta Intermedio ve esta sección — un
-              principiante se motiva con la racha de arriba, no con datos.
-              Intermedio ya viene con `guia`/RIR, así que la analítica que le
-              sirve es distinta: qué músculo trabajó más, si su fuerza sube
-              de verdad, y cuándo bate una marca real. */}
+              principiante se motiva con la racha, no con datos. */}
           {progreso.nivel === 'intermedio' && <ProgresoAvanzado logs={progreso.logs} unidadPeso={progreso.unidadPeso} />}
         </>
       )}
-        </>
-      )}
-      </div>
     </div>
   );
 }

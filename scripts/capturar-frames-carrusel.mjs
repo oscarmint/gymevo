@@ -2,9 +2,9 @@
 // — captura los 4 frames REALES del carrusel "La app por dentro" de la
 // landing. Salen a public/screenshots/ porque los sirve el navegador del
 // visitante, a diferencia de docs/revisiones (evidencia interna del revisor).
-// /app y /app/historial exigen sesión paga real (proxy.ts) sin bypass de
+// /app y /app/progreso exigen sesión paga real (proxy.ts) sin bypass de
 // servidor — se capturan vía rutas temporales /dev-preview-plandeldia y
-// /dev-preview-historial (mismo componente, sin el guard), creadas justo
+// /dev-preview-progreso (re-exporta app/app/progreso/page.tsx) (mismo componente, sin el guard), creadas justo
 // antes de correr este script y borradas justo después.
 import { chromium } from 'playwright';
 import { mkdirSync } from 'node:fs';
@@ -121,12 +121,12 @@ async function nuevaPagina() {
   console.log('✓ frame-plan-del-dia.png');
 }
 
-// 4) Historial de pesos — misma razón que arriba: ruta temporal sin guard.
+// 4) Progreso (vista Evolución: progreso corporal + volumen) — misma razón que arriba: ruta temporal sin guard.
 {
   const page = await nuevaPagina();
-  await page.goto(`${BASE}/dev-preview-historial`);
+  await page.goto(`${BASE}/dev-preview-progreso?vista=evolucion`);
   await page.evaluate((p) => localStorage.setItem('gymevo_progreso', JSON.stringify(p)), PROGRESO_APP);
-  await page.goto(`${BASE}/dev-preview-historial`, { waitUntil: 'networkidle' });
+  await page.goto(`${BASE}/dev-preview-progreso?vista=evolucion`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(600);
   await page.screenshot({ path: `${OUT_DIR}/frame-historial.png` });
   await page.close();

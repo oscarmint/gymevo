@@ -9,6 +9,15 @@ const nextConfig: NextConfig = {
   // varios screenshots de revisión (nav inferior, bullets) — nunca aparece en
   // producción, pero mejor apagarlo para que las capturas de review sean fieles.
   devIndicators: false,
+  // Calendario e Historial se fusionaron en Progreso (23/09/2026): los links
+  // viejos (guardados, capturas, marcadores) siguen funcionando.
+  async redirects() {
+    return [
+      { source: '/app/calendario', destination: '/app/progreso', permanent: false },
+      { source: '/app/calendario/:fecha', destination: '/app/progreso?fecha=:fecha', permanent: false },
+      { source: '/app/historial', destination: '/app/progreso?vista=evolucion', permanent: false },
+    ];
+  },
 };
 
 export default nextConfig;
