@@ -29,6 +29,7 @@ import {
   rachaEnRiesgo,
   registrarSerie,
   reemplazarEjercicio,
+  aplicarReemplazos,
   seriesHechasHoy,
   sugerenciaPeso,
   ultimoRegistro,
@@ -514,18 +515,11 @@ function PlanDelDia({
     setCelebrarFin(true);
   }
 
-  // Bug real encontrado al agregar Ruta Intermedio (15/09/2026): esto antes
-  // volvía a buscar cada ejercicio en `obtenerEjercicio` (catálogo base),
-  // descartando los series/reps/tempo propios de hoy que ya trae `ejercicios`
-  // (ej. Ruta Intermedio los sobrescribe con más peso/menos reps). Se
-  // resuelve con un mapa de "lo de hoy" — el sustituto SÍ usa el catálogo
-  // base si no es parte del plan de hoy (no tiene un override que aplicar).
-  const mapaEjerciciosHoy = useMemo(() => new Map(ejercicios.map((e) => [e.id, e])), [ejercicios]);
-  const idsHoy = ejercicios.map((e) => {
-    const sustitutoId = progreso.reemplazosHoy[e.id];
-    if (!sustitutoId) return e;
-    return mapaEjerciciosHoy.get(sustitutoId) ?? obtenerEjercicio(sustitutoId);
-  });
+  // Lo que de verdad se hace hoy: el plan con los cambios del Botón de Rescate
+  // aplicados. La alternativa hereda series/reps/tempo del ejercicio del plan
+  // (ver aplicarReemplazos en lib/routine.ts) — antes mostraba los valores de
+  // su ficha del catálogo, y un intermedio veía sus 6-8 pesadas convertidas en 10-12.
+  const idsHoy = useMemo(() => aplicarReemplazos(ejercicios, progreso.reemplazosHoy), [ejercicios, progreso.reemplazosHoy]);
   const todosHechos = idsHoy.every((e) => progreso.hechosHoy.includes(e.id));
   const enRiesgo = rachaEnRiesgo(progreso);
   const diaDescanso = esDiaDeDescanso(progreso.diaActual);
@@ -918,15 +912,17 @@ function PlanDelDia({
                     >
                       <FileText size={16} />
                     </motion.button>
-                    <motion.button
-                      type="button"
-                      whileTap={{ scale: 0.9 }}
-                      aria-label={`Cambiar ${ej.nombre} por una alternativa`}
-                      onClick={() => rescatar(ej.id)}
-                      className="flex size-9 items-center justify-center rounded-full border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]"
-                    >
-                      <RefreshCcw size={16} />
-                    </motion.button>
+                    {!ej.sinRescate && (
+                      <motion.button
+                        type="button"
+                        whileTap={{ scale: 0.9 }}
+                        aria-label={`Cambiar ${ej.nombre} por una alternativa`}
+                        onClick={() => rescatar(ej.id)}
+                        className="flex size-9 items-center justify-center rounded-full border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]"
+                      >
+                        <RefreshCcw size={16} />
+                      </motion.button>
+                    )}
                   </div>
                 )}
               </div>

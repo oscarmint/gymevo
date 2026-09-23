@@ -81,6 +81,10 @@ export interface Ejercicio {
    * lesionarse por mala técnica). Compuestos van más lentos que aislados. */
   tempo: string;
   alternativaId: string;
+  /** El dueño indicó "sin variante" para este ejercicio (Plancha, Extensión de
+   * cuádriceps): el Botón de Rescate no se muestra. `alternativaId` se
+   * conserva solo porque el tipo lo exige. */
+  sinRescate?: boolean;
 }
 
 /** Tren que se calienta antes del día — decide qué lámina de calentamiento
@@ -235,7 +239,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Cuádriceps', principal: true }, { nombre: 'Glúteo', principal: false }],
     consejoTecnico: 'Desciende hasta 90°. No bloquear rodillas al extender.',
   } },
-  extension_cuadriceps: { id: 'extension_cuadriceps', nombre: 'Extensión de cuádriceps', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/extension-cuadriceps.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'prensa_inclinada', guia: {
+  extension_cuadriceps: { id: 'extension_cuadriceps', nombre: 'Extensión de cuádriceps', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/extension-cuadriceps.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'prensa_inclinada', sinRescate: true, guia: {
     indicaciones: [
       'Siéntate con la espalda apoyada firmemente en el respaldo.',
       'Extiende ambas piernas hasta casi bloquear la rodilla.',
@@ -452,7 +456,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Deltoides Laterales', principal: true }],
     consejoTecnico: 'Ligera flexión de codos, sin usar impulso del cuerpo para levantar el peso.',
   } },
-  plancha_abdominal: { id: 'plancha_abdominal', nombre: 'Plancha abdominal', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/plancha-abdominal.png', series: 3, reps: '30-60 seg', descansoSeg: 45, tempo: 'isométrico', alternativaId: 'crunch_lateral_inclinado', guia: {
+  plancha_abdominal: { id: 'plancha_abdominal', nombre: 'Plancha abdominal', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/plancha-abdominal.png', series: 3, reps: '30-60 seg', descansoSeg: 45, tempo: 'isométrico', alternativaId: 'crunch_lateral_inclinado', sinRescate: true, guia: {
     indicaciones: [
       'Apoya antebrazos y puntas de los pies en el suelo, cuerpo alineado de cabeza a talones.',
       'Aprieta el abdomen y los glúteos, sin dejar caer ni elevar la cadera.',
@@ -508,7 +512,7 @@ const CATALOGO: Record<string, Ejercicio> = {
 
   // Ejercicios del Excel de variaciones (21/09/2026). Los que no traen
   // imagenExplicacion usan la silueta de respaldo hasta tener ilustración.
-  remo_mancuerna_banco: { id: 'remo_mancuerna_banco', nombre: 'Remo con mancuerna apoyado en banco', grupo: 'Espalda', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/remo-mancuerna-banco.png', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_mancuerna_pie', guia: {
+  remo_mancuerna_banco: { id: 'remo_mancuerna_banco', nombre: 'Remo con mancuerna apoyado en banco', grupo: 'Espalda', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/remo-mancuerna-banco.png', series: 4, reps: '10-12 por brazo', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_mancuerna_pie', guia: {
     indicaciones: [
       'Apoya una rodilla y la mano del mismo lado en el banco, con la espalda recta.',
       'Sujeta la mancuerna con el brazo extendido.',
@@ -574,7 +578,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Femorales', principal: true }, { nombre: 'Glúteos', principal: false }, { nombre: 'Lumbares', principal: false }],
     consejoTecnico: 'Mantén la columna neutra durante todo el recorrido.',
   } },
-  jalon_unilateral_polea: { id: 'jalon_unilateral_polea', nombre: 'Jalón unilateral en polea alta', grupo: 'Espalda', grupoMuscular: 'dorsal', imagenExplicacion: '/explicaciones/jalon-unilateral-polea.png', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'jalon_pecho', guia: {
+  jalon_unilateral_polea: { id: 'jalon_unilateral_polea', nombre: 'Jalón unilateral en polea alta', grupo: 'Espalda', grupoMuscular: 'dorsal', imagenExplicacion: '/explicaciones/jalon-unilateral-polea.png', series: 4, reps: '10-12 por lado', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'jalon_pecho', guia: {
     indicaciones: [
       'Arrodíllate con una pierna adelantada y agarra la polea con el brazo extendido.',
       'Jala hacia abajo y afuera apretando el dorsal.',
@@ -583,7 +587,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Dorsal ancho', principal: true }, { nombre: 'Redondo mayor', principal: false }],
     consejoTecnico: 'Evita el balanceo del torso y usa una carga que puedas controlar.',
   } },
-  remo_mancuerna_pie: { id: 'remo_mancuerna_pie', nombre: 'Remo con mancuerna de pie', grupo: 'Espalda', grupoMuscular: 'espalda', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_mancuerna_banco', guia: {
+  remo_mancuerna_pie: { id: 'remo_mancuerna_pie', nombre: 'Remo con mancuerna de pie', grupo: 'Espalda', grupoMuscular: 'espalda', series: 4, reps: '10-12 por brazo', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_mancuerna_banco', guia: {
     indicaciones: [
       'De pie, inclina el torso con la espalda recta y una mancuerna en la mano.',
       'Tira hacia la cadera apretando la espalda.',
@@ -1259,6 +1263,29 @@ export function deshacerHecho(p: Progreso, ejercicioId: string): Progreso {
 export function reemplazarEjercicio(p: Progreso, originalId: string): Progreso {
   const alt = obtenerEjercicio(originalId).alternativaId;
   return { ...p, reemplazosHoy: { ...p.reemplazosHoy, [originalId]: alt } };
+}
+
+const SUFIJO_UNILATERAL = / por (pierna|lado|brazo)$/;
+
+/** Lo que de verdad se hace hoy: cada ejercicio del plan o, si la persona tocó
+ * el Botón de Rescate, su alternativa. La alternativa HEREDA series, reps y
+ * tempo del ejercicio del plan — un intermedio que rescata la sentadilla sigue
+ * con sus 6-8 pesadas, no con las 10-12 de la ficha del catálogo. Lo único
+ * propio de la alternativa es cómo se cuenta (por pierna / lado / brazo). */
+export function aplicarReemplazos(ejercicios: Ejercicio[], reemplazos: Record<string, string>): Ejercicio[] {
+  const delPlan = new Map(ejercicios.map((e) => [e.id, e]));
+  return ejercicios.map((e) => {
+    const sustitutoId = reemplazos[e.id];
+    if (!sustitutoId) return e;
+    const yaEnPlan = delPlan.get(sustitutoId);
+    if (yaEnPlan) return yaEnPlan;
+    const alt = obtenerEjercicio(sustitutoId);
+    const partes = e.reps.match(/^(.*?)( \(.*\))?$/);
+    const rango = (partes?.[1] ?? e.reps).replace(SUFIJO_UNILATERAL, '');
+    const extra = partes?.[2] ?? '';
+    const sufijo = alt.reps.match(SUFIJO_UNILATERAL)?.[0] ?? '';
+    return { ...alt, series: e.series, reps: `${rango}${sufijo}${extra}`, tempo: e.tempo };
+  });
 }
 
 export function registrarSerie(p: Progreso, log: Omit<RegistroLog, 'fecha'>): Progreso {
