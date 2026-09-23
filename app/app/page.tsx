@@ -298,9 +298,13 @@ function PlanDelDia({
   // con toda!". Guardar por `diaActual` en vez de por fecha lo corrige sin
   // cambiar el comportamiento normal (un usuario real solo avanza un día del
   // plan por fecha real, así que sigue viéndolo una sola vez por día real).
+  // Identifica la sesión que toca: el contador se reinicia cada lunes, así que
+  // el número solo podría repetirse entre semanas — con la fecha del último
+  // entrenamiento cerrado nunca se confunde una sesión con otra.
+  const claveSesion = `${progreso.ultimaFecha ?? ''}:${progreso.diaActual}`;
   const [etapa, setEtapa] = useState<'saludo' | 'entrenador' | 'plan'>(() => {
     if (typeof window === 'undefined') return 'plan';
-    const yaVisto = sessionStorage.getItem('gymevo_saludo_visto_dia') === String(progreso.diaActual);
+    const yaVisto = sessionStorage.getItem('gymevo_saludo_visto_dia') === claveSesion;
     return yaVisto ? 'plan' : 'saludo';
   });
 
@@ -318,16 +322,16 @@ function PlanDelDia({
   // para siempre, sin volver a mostrar el saludo/"vamos con toda". Este
   // efecto SÍ reacciona a que diaActual cambió — recalcula la etapa con la
   // misma regla de arriba cada vez que se avanza de día en la misma sesión.
-  const diaActualAnteriorRef = useRef(progreso.diaActual);
+  const claveAnteriorRef = useRef(claveSesion);
   useEffect(() => {
-    if (diaActualAnteriorRef.current === progreso.diaActual) return;
-    diaActualAnteriorRef.current = progreso.diaActual;
-    const yaVisto = sessionStorage.getItem('gymevo_saludo_visto_dia') === String(progreso.diaActual);
+    if (claveAnteriorRef.current === claveSesion) return;
+    claveAnteriorRef.current = claveSesion;
+    const yaVisto = sessionStorage.getItem('gymevo_saludo_visto_dia') === claveSesion;
     setEtapa(yaVisto ? 'plan' : 'saludo');
-  }, [progreso.diaActual]);
+  }, [claveSesion]);
 
   function iniciarEntrenamiento() {
-    sessionStorage.setItem('gymevo_saludo_visto_dia', String(progreso.diaActual));
+    sessionStorage.setItem('gymevo_saludo_visto_dia', claveSesion);
     setEtapa('entrenador');
   }
 

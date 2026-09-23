@@ -110,7 +110,7 @@ async function nuevaPagina() {
       // Salta el saludo previo al entrenamiento ("Iniciar entrenamiento") —
       // el carrusel de la landing quiere el plan ya cargado, no el ritual.
       // La clave es por número de día del plan, no por fecha (ver app/app/page.tsx).
-      sessionStorage.setItem('gymevo_saludo_visto_dia', String(p.diaActual));
+      sessionStorage.setItem('gymevo_saludo_visto_dia', `${p.ultimaFecha}:${p.diaActual}`);
     },
     { r: RESPUESTAS_ONBOARDING, p: PROGRESO_APP },
   );

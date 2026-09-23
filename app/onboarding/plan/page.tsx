@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import { Lock, RefreshCcw } from 'lucide-react';
 import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
-import { diasDePlan, ejerciciosDeSesion, nombreDeSesion, sesionDeHoy, tituloRuta } from '@/lib/routine';
+import { diasDePlan, ejerciciosDeSesion, nombreDeSesion, sesionDelCiclo, tituloRuta } from '@/lib/routine';
 
 export default function VistaPreviaDiaUnoPage() {
   const router = useRouter();
@@ -35,11 +35,11 @@ export default function VistaPreviaDiaUnoPage() {
   if (!cargado || !respuestas) return null;
 
   const diasPlan = diasDePlan(respuestas.diasSemana);
-  const sesionDia1 = sesionDeHoy(1, diasPlan);
+  const sesionDia1 = sesionDelCiclo(0, diasPlan);
   const ejercicios = ejerciciosDeSesion(sesionDia1, respuestas.nivel);
   const nombreDia1 = nombreDeSesion(sesionDia1);
   // Las demás sesiones de SU plan (según los días que eligió), no nombres de relleno.
-  const restoSemana = Array.from({ length: diasPlan - 1 }, (_, i) => nombreDeSesion(sesionDeHoy(i + 2, diasPlan)));
+  const restoSemana = Array.from({ length: diasPlan - 1 }, (_, i) => nombreDeSesion(sesionDelCiclo(i + 1, diasPlan)));
 
   return (
     <div className="min-h-dvh bg-[var(--bg)] px-5 pt-8 pb-10 [font-family:var(--font-body)]">

@@ -613,7 +613,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Dorsal ancho', principal: true }, { nombre: 'Redondo mayor', principal: false }],
     consejoTecnico: 'Evita el balanceo del torso y usa una carga que puedas controlar.',
   } },
-  remo_mancuerna_pie: { id: 'remo_mancuerna_pie', nombre: 'Remo con mancuerna de pie', grupo: 'Espalda', grupoMuscular: 'espalda', series: 4, reps: '10-12 por brazo', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_mancuerna_banco', guia: {
+  remo_mancuerna_pie: { id: 'remo_mancuerna_pie', nombre: 'Remo con mancuerna de pie', grupo: 'Espalda', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/remo-mancuerna-pie.jpg', series: 4, reps: '10-12 por brazo', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_mancuerna_banco', guia: {
     indicaciones: [
       'De pie, inclina el torso con la espalda recta y una mancuerna en la mano.',
       'Tira hacia la cadera apretando la espalda.',
@@ -622,7 +622,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Dorsales', principal: true }, { nombre: 'Romboides', principal: false }, { nombre: 'Bíceps', principal: false }],
     consejoTecnico: 'Espalda neutra y cadera atrás; no uses impulso.',
   } },
-  curl_scott_barra_z: { id: 'curl_scott_barra_z', nombre: 'Curl Scott con barra Z', grupo: 'Bíceps', grupoMuscular: 'biceps', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_supinacion_maquina', guia: {
+  curl_scott_barra_z: { id: 'curl_scott_barra_z', nombre: 'Curl Scott con barra Z', grupo: 'Bíceps', grupoMuscular: 'biceps', imagenExplicacion: '/explicaciones/curl-scott-barra-z.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_supinacion_maquina', guia: {
     indicaciones: [
       'Apoya los brazos completos en el banco Scott.',
       'Sube la barra Z flexionando los codos.',
@@ -651,7 +651,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Cuádriceps', principal: true }, { nombre: 'Glúteos', principal: false }],
     consejoTecnico: 'Rodillas alineadas con las puntas de los pies y talones firmes.',
   } },
-  sentadilla_smith: { id: 'sentadilla_smith', nombre: 'Sentadilla en máquina Smith', grupo: 'Pierna', grupoMuscular: 'cuadriceps', series: 4, reps: '10-12', descansoSeg: 120, tempo: '3-1-1', alternativaId: 'sentadilla_barra', guia: {
+  sentadilla_smith: { id: 'sentadilla_smith', nombre: 'Sentadilla en máquina Smith', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/sentadilla-smith.jpg', series: 4, reps: '10-12', descansoSeg: 120, tempo: '3-1-1', alternativaId: 'sentadilla_barra', guia: {
     indicaciones: [
       'Ubica la barra sobre los hombros con los pies un poco adelante.',
       'Baja hasta que los muslos queden paralelos al suelo.',
@@ -660,7 +660,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Cuádriceps', principal: true }, { nombre: 'Glúteos', principal: false }],
     consejoTecnico: 'Espalda recta y rodillas alineadas con los pies.',
   } },
-  prensa_unilateral: { id: 'prensa_unilateral', nombre: 'Prensa unilateral', grupo: 'Pierna', grupoMuscular: 'cuadriceps', series: 4, reps: '10-12 por pierna', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'zancadas', guia: {
+  prensa_unilateral: { id: 'prensa_unilateral', nombre: 'Prensa unilateral', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/prensa-unilateral.jpg', series: 4, reps: '10-12 por pierna', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'zancadas', guia: {
     indicaciones: [
       'Apoya un solo pie en el centro de la plataforma.',
       'Baja controlado hasta unos 90° de rodilla.',
@@ -715,7 +715,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Aductores', principal: true }],
     consejoTecnico: 'Torso firme y movimiento sin impulso.',
   } },
-  press_frances_polea_alta: { id: 'press_frances_polea_alta', nombre: 'Press francés en polea alta', grupo: 'Tríceps', grupoMuscular: 'triceps', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'press_frances_barra_z', guia: {
+  press_frances_polea_alta: { id: 'press_frances_polea_alta', nombre: 'Press francés en polea alta', grupo: 'Tríceps', grupoMuscular: 'triceps', imagenExplicacion: '/explicaciones/press-frances-polea-alta.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'press_frances_barra_z', guia: {
     indicaciones: [
       'Coloca la cuerda o barra en la polea alta y ubica los codos por delante de la cabeza.',
       'Extiende los codos sin moverlos.',
@@ -1013,11 +1013,20 @@ const CICLO_POR_DIAS: Record<number, SesionId[]> = {
  * rutina se hizo un día pasado, aunque la persona haya cambiado sus días. */
 export const TODAS_LAS_SESIONES = Object.keys(SPLIT_PRINCIPIANTE) as SesionId[];
 
-/** La sesión que toca ahora: `diaActual` cuenta sesiones (avanza al terminar
- * una), no días del calendario. */
-export function sesionDeHoy(diaActual: number, diasSemana: number): SesionId {
+/** La sesión número `indice` (desde 0) del ciclo del plan. */
+export function sesionDelCiclo(indice: number, diasSemana: number): SesionId {
   const ciclo = CICLO_POR_DIAS[diasDePlan(diasSemana)];
-  return ciclo[(diaActual - 1) % ciclo.length];
+  return ciclo[indice % ciclo.length];
+}
+
+/** Sesiones del plan que ya hizo ESTA semana (lunes a domingo). `diaActual` es
+ * "sesiones de la semana + 1" y se reinicia solo cada lunes: si la última
+ * sesión cerrada es de una semana anterior, esta semana lleva 0. Así el ciclo
+ * arranca por su primera sesión cada lunes y no depende de cuántas sesiones
+ * se acumularon en total. */
+export function sesionesHechasSemana(p: Progreso, hoy: string = hoyISO()): number {
+  if (!p.ultimaFecha || inicioDeSemana(p.ultimaFecha) !== inicioDeSemana(hoy)) return 0;
+  return Math.max(0, p.diaActual - 1);
 }
 
 export function nombreDeSesion(sesion: SesionId): string {
@@ -1031,7 +1040,7 @@ export function calentamientoDeSesion(sesion: SesionId): TrenCalentamiento | nul
 /** La sesión que se hace ahora: la que toca en la rotación o, si la persona
  * pidió un día extra ligero (planes de 4+ días), esa. */
 export function sesionActual(p: Progreso): SesionId {
-  return p.extraHoy && p.diasSemana >= 4 ? 'extra_ligera' : sesionDeHoy(p.diaActual, p.diasSemana);
+  return p.extraHoy && p.diasSemana >= 4 ? 'extra_ligera' : sesionDelCiclo(sesionesHechasSemana(p), p.diasSemana);
 }
 
 // Prescripción de Intermedio para los bloques nuevos: cada ejercicio hereda la
@@ -1148,6 +1157,8 @@ export interface Progreso {
    * fijos de la semana: puede ir cuando quiera, el plan rota sesiones. El 7º
    * día siempre queda de descanso recomendado (ver DIAS_MAX_PLAN). */
   diasSemana: number;
+  /** Sesiones de la semana en curso (lunes a domingo) + 1: se reinicia solo
+   * cada lunes (ver `sesionesHechasSemana`). */
   diaActual: number;
   racha: number;
   ultimaFecha: string | null; // YYYY-MM-DD del último entrenamiento completado
@@ -1282,10 +1293,10 @@ export function cambiarDias(p: Progreso, dias: number): Progreso {
   return { ...p, diasSemana: diasDePlan(dias), diaActual: 1, hechosHoy: [], reemplazosHoy: {}, extraHoy: false };
 }
 
-/** Qué sesión del ciclo toca (1 a N), para mostrarla en Perfil. */
+/** Qué sesión del ciclo toca esta semana (1 a N), para mostrarla en Perfil. */
 export function posicionEnCiclo(p: Progreso): { posicion: number; total: number } {
   const total = CICLO_POR_DIAS[diasDePlan(p.diasSemana)].length;
-  return { posicion: ((p.diaActual - 1) % total) + 1, total };
+  return { posicion: (sesionesHechasSemana(p) % total) + 1, total };
 }
 
 export function cambiarRuta(p: Progreso, nivel: Nivel, meta: Meta): Progreso {
@@ -1403,7 +1414,10 @@ export function completarEntrenamiento(p: Progreso): Progreso {
     const gap = diasEntre(p.ultimaFecha, hoy);
     racha = gap <= 1 ? p.racha + 1 : 1; // mismo día o consecutivo: suma; si no, reinicia
   }
-  return { ...p, diaActual: p.extraHoy ? p.diaActual : p.diaActual + 1, extraHoy: false, racha, ultimaFecha: hoy, hechosHoy: [], reemplazosHoy: {} };
+  // `diaActual` = sesiones de esta semana + 1 (lunes a domingo). El día extra
+  // ligero cuenta para la meta semanal pero no avanza el ciclo.
+  const hechas = sesionesHechasSemana(p, hoy);
+  return { ...p, diaActual: hechas + (p.extraHoy ? 1 : 2), extraHoy: false, racha, ultimaFecha: hoy, hechosHoy: [], reemplazosHoy: {} };
 }
 
 /** Racha en riesgo (M4 de 56): ya pasó ≥1 día completo sin entrenar y aún no
