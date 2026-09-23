@@ -576,7 +576,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Pectorales', principal: true }, { nombre: 'Deltoides anteriores', principal: false }, { nombre: 'Tríceps', principal: false }],
     consejoTecnico: 'Codos ligeramente hacia abajo, sin bloquearlos al final; espalda plana.',
   } },
-  press_inclinado_hammer: { id: 'press_inclinado_hammer', nombre: 'Press inclinado en máquina hammer', grupo: 'Pecho', grupoMuscular: 'pecho', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_inclinado_mancuerna', guia: {
+  press_inclinado_hammer: { id: 'press_inclinado_hammer', nombre: 'Press inclinado en máquina hammer', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/press-inclinado-hammer.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_inclinado_mancuerna', guia: {
     indicaciones: [
       'Ajusta el asiento para que las manijas queden a la altura del pecho alto.',
       'Empuja hacia arriba y adelante sin despegar la espalda.',
@@ -594,7 +594,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Deltoides laterales', principal: true }],
     consejoTecnico: 'Evita que el cable se cruce o se tense en exceso en la parte superior.',
   } },
-  pajaros_maquina: { id: 'pajaros_maquina', nombre: 'Pájaros sentado en máquina', grupo: 'Hombro', grupoMuscular: 'hombro', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'pajaros_pie_mancuerna', guia: {
+  pajaros_maquina: { id: 'pajaros_maquina', nombre: 'Pájaros sentado en máquina', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/pajaros-maquina.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'pajaros_pie_mancuerna', guia: {
     indicaciones: [
       'Siéntate de frente al respaldo con el pecho apoyado.',
       'Agarra las manijas y abre los brazos hacia atrás.',
@@ -705,7 +705,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Glúteo medio', principal: true }],
     consejoTecnico: 'Mantén el torso erguido y mueve solo la pierna.',
   } },
-  aductor_interno_polea: { id: 'aductor_interno_polea', nombre: 'Aductor interno en polea', grupo: 'Pierna', grupoMuscular: 'cuadriceps', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'aductor_interno', guia: {
+  aductor_interno_polea: { id: 'aductor_interno_polea', nombre: 'Aductor interno en polea', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/aductor-interno-polea.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'aductor_interno', guia: {
     indicaciones: [
       'De pie, engancha la tobillera de la polea en la pierna cercana a la máquina.',
       'Cruza la pierna hacia adentro de forma controlada.',
@@ -890,13 +890,13 @@ export function generoIlustracion(id: string): 'masculino' | 'femenino' {
 // del mismo día.
 const SPLIT_PRINCIPIANTE: Record<SesionId, string[]> = {
   // Lunes — pierna completa.
-  pierna_completa: ['sentadilla_barra', 'prensa_inclinada', 'zancadas', 'extension_cuadriceps', 'curl_femoral_maquina', 'elevacion_talon'],
+  pierna_completa: ['sentadilla_barra', 'prensa_inclinada', 'peso_muerto_barra', 'zancadas', 'extension_cuadriceps', 'curl_femoral_maquina', 'elevacion_talon'],
   // Martes — pecho, tríceps, hombro y abdomen.
   empuje: ['press_pecho_hammer', 'press_inclinado_hammer', 'aperturas_maquina', 'crossover_polea_alta', 'press_frances_barra_z', 'extension_triceps_copa', 'extension_triceps_polea_alta', 'elevaciones_laterales_polea', 'crunch_superior_horizontal'],
   // Miércoles — espalda, bíceps, hombro posterior, glúteo y abdomen.
   traccion: ['remo_mancuerna_banco', 'jalon_pecho', 'remo_cerrado_maquina', 'jalon_pecho_cerrado_neutro', 'curl_barra', 'curl_supinacion_maquina', 'curl_martillo_mancuernas', 'pajaros_maquina', 'hip_thrust_maquina', 'plancha_abdominal'],
   // Jueves — pierna con énfasis en glúteo.
-  pierna_gluteo: ['hip_thrust_maquina', 'zancadas', 'sentadilla_barra', 'prensa_inclinada', 'aductor_externo', 'aductor_interno'],
+  pierna_gluteo: ['hip_thrust_maquina', 'peso_muerto_barra', 'zancadas', 'sentadilla_barra', 'prensa_inclinada', 'aductor_externo', 'aductor_interno'],
   // Viernes — pecho, espalda y abdomen.
   pecho_espalda: ['press_pecho_hammer', 'crossover_polea_alta', 'remo_mancuerna_banco', 'jalon_pecho', 'crunch_lateral_inclinado'],
   // Sábado — full body.
@@ -906,7 +906,7 @@ const SPLIT_PRINCIPIANTE: Record<SesionId, string[]> = {
   // rodilla o cadera, un empuje, una tracción, brazos/hombro y core).
   full_a: ['sentadilla_barra', 'press_pecho_hammer', 'remo_mancuerna_banco', 'curl_femoral_maquina', 'elevaciones_laterales_polea', 'plancha_abdominal'],
   full_b: ['prensa_inclinada', 'press_inclinado_hammer', 'jalon_pecho', 'hip_thrust_maquina', 'curl_barra', 'extension_triceps_copa', 'crunch_superior_horizontal'],
-  full_c: ['zancadas', 'press_militar_barra', 'jalon_pecho_cerrado_neutro', 'curl_supinacion_maquina', 'press_frances_barra_z', 'crunch_lateral_inclinado'],
+  full_c: ['peso_muerto_barra', 'zancadas', 'press_militar_barra', 'jalon_pecho_cerrado_neutro', 'curl_supinacion_maquina', 'press_frances_barra_z', 'crunch_lateral_inclinado'],
   torso_a: ['press_pecho_hammer', 'jalon_pecho', 'press_militar_barra', 'aperturas_maquina', 'remo_cerrado_maquina', 'extension_triceps_copa', 'curl_barra', 'plancha_abdominal'],
   // Día extra opcional (planes de 4+ días, cuando ya cumplió su meta): sin
   // pesas pesadas, para sumar movimiento sin comprometer la recuperación.
@@ -942,6 +942,7 @@ const SPLIT_INTERMEDIO: Record<SesionBase, EjercicioIntermedio[]> = {
   pierna_completa: [
     ejercicioIntermedio('sentadilla_barra', 4, '6-8', '2-0-1'),
     ejercicioIntermedio('prensa_inclinada', 4, '8-10', '2-0-1'),
+    ejercicioIntermedio('peso_muerto_barra', 4, '6-8', '2-0-1'),
     ejercicioIntermedio('zancadas', 3, '10-12 por pierna', '2-0-1'),
     ejercicioIntermedio('extension_cuadriceps', 3, '12-15', '3-0-1', true),
     ejercicioIntermedio('curl_femoral_maquina', 3, '12-15', '3-0-1', true),
@@ -970,6 +971,7 @@ const SPLIT_INTERMEDIO: Record<SesionBase, EjercicioIntermedio[]> = {
   ],
   pierna_gluteo: [
     ejercicioIntermedio('hip_thrust_maquina', 4, '6-8', '2-0-1'),
+    ejercicioIntermedio('peso_muerto_barra', 4, '6-8', '2-0-1'),
     ejercicioIntermedio('prensa_inclinada', 3, '10-12', '2-0-1'),
     ejercicioIntermedio('zancadas', 3, '10-12 por pierna', '2-0-1'),
     ejercicioIntermedio('aductor_externo', 3, '12-15', '3-0-1', true),
