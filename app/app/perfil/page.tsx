@@ -9,7 +9,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { AlertTriangle, Bell, BellOff, Camera, Check, ExternalLink, Flame, Loader2, LogOut, Pencil, Trash2 } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, SEXO_LABEL, leerRespuestas, type RespuestasOnboarding, type Sexo } from '@/lib/onboarding';
 import { calcularMacros } from '@/lib/macros';
-import { DIAS_MAX_PLAN, semanasSeguidas, aplicarReemplazos, cambiarDias, cambiarRuta, ejerciciosDeSesion, sesionActual, guardarProgreso, leerProgreso, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
+import { DIAS_MAX_PLAN, posicionEnCiclo, semanasSeguidas, aplicarReemplazos, cambiarDias, cambiarRuta, ejerciciosDeSesion, sesionActual, guardarProgreso, leerProgreso, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
 import type { Meta, Nivel } from '@/lib/onboarding';
 import { leerAvatarLocal, guardarAvatarLocal, leerNombreLocal, guardarNombreLocal } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
@@ -538,7 +538,7 @@ export default function PerfilPage() {
             </div>
           </div>
           <span className="text-sm font-medium text-[var(--text-primary)]">
-            Racha de {semanasSeguidas(progreso)} {semanasSeguidas(progreso) === 1 ? 'semana' : 'semanas'} · Sesión {progreso.diaActual} de tu plan
+            Racha de {semanasSeguidas(progreso)} {semanasSeguidas(progreso) === 1 ? 'semana' : 'semanas'} · Toca la sesión {posicionEnCiclo(progreso).posicion} de {posicionEnCiclo(progreso).total}
           </span>
         </div>
       </div>

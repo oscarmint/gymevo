@@ -14,8 +14,6 @@ import { Lock, RefreshCcw } from 'lucide-react';
 import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { diasDePlan, ejerciciosDeSesion, nombreDeSesion, sesionDeHoy, tituloRuta } from '@/lib/routine';
 
-const NOMBRES_RESTO_SEMANA = ['Tirón', 'Piernas', 'Full body'];
-
 export default function VistaPreviaDiaUnoPage() {
   const router = useRouter();
   const [respuestas, setRespuestas] = useState<RespuestasOnboarding | null>(null);
@@ -40,6 +38,8 @@ export default function VistaPreviaDiaUnoPage() {
   const sesionDia1 = sesionDeHoy(1, diasPlan);
   const ejercicios = ejerciciosDeSesion(sesionDia1, respuestas.nivel);
   const nombreDia1 = nombreDeSesion(sesionDia1);
+  // Las demás sesiones de SU plan (según los días que eligió), no nombres de relleno.
+  const restoSemana = Array.from({ length: diasPlan - 1 }, (_, i) => nombreDeSesion(sesionDeHoy(i + 2, diasPlan)));
 
   return (
     <div className="min-h-dvh bg-[var(--bg)] px-5 pt-8 pb-10 [font-family:var(--font-body)]">
@@ -91,14 +91,15 @@ export default function VistaPreviaDiaUnoPage() {
         </div>
 
         {/* El resto de la ruta — bloqueado con honestidad, no relleno inventado */}
+        {restoSemana.length > 0 && (
         <div className="mt-8">
           <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
             El resto de tu semana
           </p>
           <div className="mt-3 flex flex-col gap-2">
-            {NOMBRES_RESTO_SEMANA.map((nombre) => (
+            {restoSemana.map((nombre, i) => (
               <div
-                key={nombre}
+                key={`${i}-${nombre}`}
                 className="flex items-center justify-between rounded-xl bg-[var(--surface-2)] px-4 py-3 opacity-70"
               >
                 <span className="text-sm font-medium text-[var(--text-secondary)]">{nombre}</span>
@@ -108,6 +109,7 @@ export default function VistaPreviaDiaUnoPage() {
           </div>
           <p className="mt-2 text-center text-xs text-[var(--text-tertiary)]">Se desbloquea con tu plan</p>
         </div>
+        )}
 
         <button
           type="button"

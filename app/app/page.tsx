@@ -1463,7 +1463,7 @@ function TarjetaDescanso({
           whileTap={{ scale: 0.97 }}
           className="boton-3d mt-8 flex h-14 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
         >
-          Sesión ligera: core y cardio suave
+          Día extra ligero: abdomen y lumbar
         </motion.button>
       )}
       <motion.button

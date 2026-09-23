@@ -120,19 +120,20 @@ export const CALENTAMIENTO_IMG: Record<TrenCalentamiento, string> = {
 // jueves es un día de pierna real en las dos rutas). Lo que cambia entre
 // Principiante e Intermedio es SOLO la selección/parámetros de ejercicios
 // (ver SPLIT_PRINCIPIANTE / SPLIT_INTERMEDIO más abajo) y el cardio.
+// Solo los músculos que se entrenan (pedido del usuario): nada de "Full body A" ni "Torso B".
 const NOMBRE_DIA_RUTINA: Record<SesionId, string> = {
   pierna_completa: 'Pierna completa',
   empuje: 'Pecho, tríceps y hombro',
   traccion: 'Espalda, bíceps y glúteo',
   pierna_gluteo: 'Pierna (énfasis glúteo)',
   pecho_espalda: 'Pecho y espalda',
-  full_body: 'Full body',
-  full_a: 'Full body A',
-  full_b: 'Full body B',
-  full_c: 'Full body C',
-  torso_a: 'Torso A (pecho, espalda y hombro)',
-  torso_b: 'Torso B (espalda, hombro y brazos)',
-  extra_ligera: 'Sesión ligera: core y cardio suave',
+  full_body: 'Pierna, pecho, espalda, hombro y brazos',
+  full_a: 'Pierna, pecho, espalda, hombro y abdomen',
+  full_b: 'Pierna, glúteo, pecho, espalda, brazos y abdomen',
+  full_c: 'Pierna, hombro, espalda, brazos y abdomen',
+  torso_a: 'Pecho, espalda, hombro y brazos',
+  torso_b: 'Pecho, espalda, hombro y brazos',
+  extra_ligera: 'Abdomen y zona lumbar (ligero)',
 };
 
 /** Calentamiento por día: depende de qué se entrena hoy, no es fijo — un día
@@ -1274,9 +1275,17 @@ export function leerProgreso(): Progreso {
  * querer hacer lo mismo, o cambiará de parecer"). Editable en Perfil en
  * cualquier momento; la pantalla que llama esto es responsable de pedir
  * confirmación primero (es un cambio real de plan, no un ajuste menor). */
-/** Cambia cuántos días por semana quiere entrenar (1-6). */
+/** Cambia cuántos días por semana quiere entrenar (1-6). El plan nuevo arranca
+ * por su primera sesión: `diaActual` cuenta sesiones del plan anterior y, sin
+ * reiniciarlo, la persona caería en una sesión cualquiera del ciclo nuevo. */
 export function cambiarDias(p: Progreso, dias: number): Progreso {
-  return { ...p, diasSemana: diasDePlan(dias) };
+  return { ...p, diasSemana: diasDePlan(dias), diaActual: 1, hechosHoy: [], reemplazosHoy: {}, extraHoy: false };
+}
+
+/** Qué sesión del ciclo toca (1 a N), para mostrarla en Perfil. */
+export function posicionEnCiclo(p: Progreso): { posicion: number; total: number } {
+  const total = CICLO_POR_DIAS[diasDePlan(p.diasSemana)].length;
+  return { posicion: ((p.diaActual - 1) % total) + 1, total };
 }
 
 export function cambiarRuta(p: Progreso, nivel: Nivel, meta: Meta): Progreso {
