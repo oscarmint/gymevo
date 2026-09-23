@@ -712,6 +712,110 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Recto abdominal superior', principal: true }],
     consejoTecnico: 'El movimiento sale del abdomen, no del cuello.',
   } },
+
+  // 10 variantes nuevas (22/09/2026, pedido del usuario tras revisar su
+  // carpeta de ilustraciones) — todavía NO están asignadas a ningún día del
+  // programa ni son el destino del Botón de Rescate de ningún ejercicio
+  // existente (para no alterar en silencio las rutinas ya aprobadas). Quedan
+  // aquí, listas con su ilustración, esperando esa decisión.
+  press_banco_barra: { id: 'press_banco_barra', nombre: 'Press de banco plano con barra', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/press-banco-barra.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_banco_mancuernas', guia: {
+    indicaciones: [
+      'Acuéstate en el banco con los pies firmes en el suelo y la espalda apoyada.',
+      'Toma la barra con un agarre ligeramente más ancho que los hombros.',
+      'Baja la barra de forma controlada hasta la parte media del pecho, codos a unos 45°.',
+      'Empuja la barra hacia arriba hasta extender los brazos, sin bloquear los codos.',
+    ],
+    musculos: [{ nombre: 'Pectorales', principal: true }, { nombre: 'Deltoides anterior', principal: false }, { nombre: 'Tríceps', principal: false }],
+    consejoTecnico: 'Evita abrir demasiado los codos y no bajes la barra más allá de la línea del pecho.',
+  } },
+  curl_pie_mancuernas_supino: { id: 'curl_pie_mancuernas_supino', nombre: 'Curl de bíceps de pie con mancuernas, agarre supino', grupo: 'Bíceps', grupoMuscular: 'biceps', imagenExplicacion: '/explicaciones/curl-pie-mancuernas-supino.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_barra', guia: {
+    indicaciones: [
+      'De pie, sujeta una mancuerna en cada mano con las palmas hacia adelante.',
+      'Mantén los codos pegados al cuerpo durante todo el movimiento.',
+      'Flexiona los codos para subir las mancuernas hacia los hombros.',
+      'Baja lentamente hasta la posición inicial.',
+    ],
+    musculos: [{ nombre: 'Bíceps braquial', principal: true }, { nombre: 'Braquial anterior', principal: false }],
+    consejoTecnico: 'Mantén el torso firme; evita balancearte o impulsarte con el cuerpo.',
+  } },
+  curl_polea_baja_supino: { id: 'curl_polea_baja_supino', nombre: 'Curl de bíceps en polea baja con cuerda, agarre supino', grupo: 'Bíceps', grupoMuscular: 'biceps', imagenExplicacion: '/explicaciones/curl-polea-baja-supino.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_hammer_polea_baja', guia: {
+    indicaciones: [
+      'Sujeta la cuerda de la polea baja con las palmas hacia arriba.',
+      'Mantén los codos fijos a los lados del cuerpo.',
+      'Flexiona los codos subiendo las manos hacia los hombros.',
+      'Baja lentamente sin bloquear los codos.',
+    ],
+    musculos: [{ nombre: 'Bíceps braquial', principal: true }, { nombre: 'Braquial', principal: false }, { nombre: 'Braquiorradial', principal: false }],
+    consejoTecnico: 'Mantén el torso firme; evita balancearte o usar impulso para subir el peso.',
+  } },
+  elevacion_frontal_polea: { id: 'elevacion_frontal_polea', nombre: 'Elevación frontal de hombro en polea (un brazo)', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/elevacion-frontal-polea.png', series: 4, reps: '8-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'elevacion_frontal_mancuernas', guia: {
+    indicaciones: [
+      'Ponte de espaldas a la polea baja, con el mango en una mano.',
+      'Con el brazo casi extendido, eleva al frente hasta la altura del hombro.',
+      'Baja de forma controlada hasta la posición inicial.',
+      'Completa las repeticiones y cambia de brazo.',
+    ],
+    musculos: [{ nombre: 'Deltoides anterior', principal: true }],
+    consejoTecnico: 'No uses impulso de la espalda; el movimiento lo hace solo el hombro.',
+  } },
+  encogimientos_maquina: { id: 'encogimientos_maquina', nombre: 'Encogimientos (shrugs) en máquina', grupo: 'Trapecio', grupoMuscular: 'trapecio', imagenExplicacion: '/explicaciones/encogimientos-maquina.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'encogimientos_mancuernas', guia: {
+    indicaciones: [
+      'De pie, sujeta las manijas de la máquina con los brazos extendidos.',
+      'Eleva los hombros hacia las orejas, sin flexionar los codos.',
+      'Sostén un segundo arriba y baja de forma controlada.',
+    ],
+    musculos: [{ nombre: 'Trapecio superior', principal: true }],
+    consejoTecnico: 'No gires los hombros — el movimiento es solo hacia arriba y abajo.',
+  } },
+  crunch_banco_declinado: { id: 'crunch_banco_declinado', nombre: 'Crunch en banco declinado', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-banco-declinado.png', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_superior_horizontal_banco', guia: {
+    indicaciones: [
+      'Ajusta el banco declinado y engancha los pies en los rodillos.',
+      'Manos detrás de la cabeza, sin jalar el cuello.',
+      'Eleva el torso contrayendo el abdomen y baja de forma controlada.',
+    ],
+    musculos: [{ nombre: 'Recto abdominal', principal: true }],
+    consejoTecnico: 'Mantén caderas y espalda apoyadas; evita impulsarte con el torso.',
+  } },
+  crunch_colchoneta: { id: 'crunch_colchoneta', nombre: 'Crunch superior en colchoneta (sin banco)', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-colchoneta.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_superior_horizontal_banco', guia: {
+    indicaciones: [
+      'Acuéstate boca arriba con las rodillas flexionadas y los pies apoyados.',
+      'Coloca las manos detrás de la cabeza sin jalar el cuello.',
+      'Exhala y eleva las escápulas del suelo, flexionando la columna.',
+      'Baja lentamente sin perder la tensión en el abdomen.',
+    ],
+    musculos: [{ nombre: 'Recto abdominal superior', principal: true }],
+    consejoTecnico: 'Mira al techo para mantener el cuello neutro. No tires de la cabeza.',
+  } },
+  sentadilla_goblet_kettlebell: { id: 'sentadilla_goblet_kettlebell', nombre: 'Sentadilla goblet con kettlebell', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/sentadilla-goblet-kettlebell.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'sentadilla_barra', guia: {
+    indicaciones: [
+      'Sujeta la kettlebell por los cuernos a la altura del pecho.',
+      'Mantén la espalda recta y el core activado.',
+      'Baja de forma controlada empujando la cadera hacia atrás.',
+      'Sube con potencia empujando el suelo con los pies.',
+    ],
+    musculos: [{ nombre: 'Cuádriceps', principal: true }, { nombre: 'Glúteos', principal: true }, { nombre: 'Core', principal: false }],
+    consejoTecnico: 'Mantén los codos pegados al cuerpo y las rodillas alineadas con los dedos de los pies.',
+  } },
+  zancadas_barra: { id: 'zancadas_barra', nombre: 'Zancadas con barra', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/zancadas-barra.jpg', series: 4, reps: '10-12 por pierna', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'zancadas', guia: {
+    indicaciones: [
+      'Coloca la barra sobre los trapecios, igual que en sentadilla.',
+      'Da un paso adelante y baja la cadera hasta que ambas rodillas formen 90°.',
+      'La rodilla trasera baja cerca del suelo sin tocarlo.',
+      'Empuja con la pierna adelantada para volver a la posición inicial.',
+    ],
+    musculos: [{ nombre: 'Cuádriceps', principal: true }, { nombre: 'Glúteos', principal: true }],
+    consejoTecnico: 'Mantén el torso erguido y no dejes que la rodilla delantera sobrepase la punta del pie.',
+  } },
+  aduccion_cadera_banda: { id: 'aduccion_cadera_banda', nombre: 'Abducción de cadera acostado con banda', grupo: 'Pierna', grupoMuscular: 'gluteo', imagenExplicacion: '/explicaciones/aduccion-cadera-banda.jpg', series: 4, reps: '12-15 por pierna', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'aductor_externo', guia: {
+    indicaciones: [
+      'Acuéstate de lado con las piernas extendidas y una banda elástica justo por encima de las rodillas.',
+      'Apóyate en el codo o el brazo para sostener la cabeza.',
+      'Manteniendo el cuerpo alineado, eleva la pierna superior de forma controlada.',
+      'Baja lentamente sin perder la tensión de la banda.',
+    ],
+    musculos: [{ nombre: 'Glúteo medio', principal: true }, { nombre: 'Glúteo menor', principal: false }],
+    consejoTecnico: 'Evita girar la cadera hacia atrás o usar impulso para levantar la pierna.',
+  } },
 };
 
 /** Alterna hombre/mujer entre ejercicios de forma ESTABLE (nunca al azar: el
