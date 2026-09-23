@@ -250,7 +250,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     ],
     consejoTecnico: 'Mantén el pecho arriba y las rodillas alineadas con las puntas de los pies.',
   } },
-  peso_muerto_barra: { id: 'peso_muerto_barra', nombre: 'Peso muerto con barra', grupo: 'Pierna', grupoMuscular: 'femoral', imagenExplicacion: '/explicaciones/peso-muerto-barra.png', series: 4, reps: '10-12', descansoSeg: 120, tempo: '3-1-1', alternativaId: 'peso_muerto_maquina', guia: {
+  peso_muerto_barra: { id: 'peso_muerto_barra', nombre: 'Peso muerto con barra', grupo: 'Pierna', grupoMuscular: 'femoral', imagenExplicacion: '/explicaciones/peso-muerto-barra.png', series: 4, reps: '10-12', descansoSeg: 120, tempo: '3-1-1', alternativaId: 'peso_muerto_rumano_kettlebell', guia: {
     indicaciones: [
       'Posiciona los pies a la anchura de las caderas con la barra sobre la mitad de los pies.',
       'Sujeta la barra con agarre prono o mixto, flexiona rodillas y caderas hasta que las espinillas toquen la barra.',
@@ -534,7 +534,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Tríceps', principal: true }],
     consejoTecnico: 'Codos fijos a los costados del torso durante todo el recorrido.',
   } },
-  curl_martillo_mancuernas: { id: 'curl_martillo_mancuernas', nombre: 'Curl martillo con mancuernas', grupo: 'Bíceps', grupoMuscular: 'biceps', imagenExplicacion: '/explicaciones/curl-martillo-mancuernas.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_hammer_polea_baja', guia: {
+  curl_martillo_mancuernas: { id: 'curl_martillo_mancuernas', nombre: 'Curl martillo con mancuernas', grupo: 'Bíceps', grupoMuscular: 'biceps', imagenExplicacion: '/explicaciones/curl-martillo-mancuernas.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_polea_baja_supino', guia: {
     indicaciones: [
       'De pie, sujeta una mancuerna en cada mano con agarre neutro (palmas enfrentadas).',
       'Flexiona los codos subiendo el peso sin girar la muñeca.',
@@ -603,15 +603,6 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Deltoides posteriores', principal: true }, { nombre: 'Trapecio medio', principal: false }],
     consejoTecnico: 'Lidera con los codos y no encojas los hombros.',
   } },
-  peso_muerto_maquina: { id: 'peso_muerto_maquina', nombre: 'Peso muerto en máquina', grupo: 'Pierna', grupoMuscular: 'femoral', series: 4, reps: '10-12', descansoSeg: 120, tempo: '3-1-1', alternativaId: 'peso_muerto_barra', guia: {
-    indicaciones: [
-      'Ajusta la máquina y agarra las manijas con la espalda recta.',
-      'Baja llevando la cadera hacia atrás, con las piernas casi rectas.',
-      'Sube apretando glúteos y femorales.',
-    ],
-    musculos: [{ nombre: 'Femorales', principal: true }, { nombre: 'Glúteos', principal: false }, { nombre: 'Lumbares', principal: false }],
-    consejoTecnico: 'Mantén la columna neutra durante todo el recorrido.',
-  } },
   jalon_unilateral_polea: { id: 'jalon_unilateral_polea', nombre: 'Jalón unilateral en polea alta', grupo: 'Espalda', grupoMuscular: 'dorsal', imagenExplicacion: '/explicaciones/jalon-unilateral-polea.png', series: 4, reps: '10-12 por lado', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'jalon_pecho', guia: {
     indicaciones: [
       'Arrodíllate con una pierna adelantada y agarra la polea con el brazo extendido.',
@@ -629,15 +620,6 @@ const CATALOGO: Record<string, Ejercicio> = {
     ],
     musculos: [{ nombre: 'Dorsales', principal: true }, { nombre: 'Romboides', principal: false }, { nombre: 'Bíceps', principal: false }],
     consejoTecnico: 'Espalda neutra y cadera atrás; no uses impulso.',
-  } },
-  curl_hammer_polea_baja: { id: 'curl_hammer_polea_baja', nombre: 'Curl hammer en polea baja', grupo: 'Bíceps', grupoMuscular: 'biceps', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_martillo_mancuernas', guia: {
-    indicaciones: [
-      'De pie frente a la polea baja con la cuerda en agarre neutro.',
-      'Flexiona los codos sin girar las muñecas.',
-      'Baja controlado hasta extender los brazos.',
-    ],
-    musculos: [{ nombre: 'Braquial', principal: true }, { nombre: 'Bíceps braquial', principal: false }],
-    consejoTecnico: 'Codos pegados al torso, sin balancearte.',
   } },
   curl_scott_barra_z: { id: 'curl_scott_barra_z', nombre: 'Curl Scott con barra Z', grupo: 'Bíceps', grupoMuscular: 'biceps', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_supinacion_maquina', guia: {
     indicaciones: [
@@ -776,7 +758,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Bíceps braquial', principal: true }, { nombre: 'Braquial anterior', principal: false }],
     consejoTecnico: 'Mantén el torso firme; evita balancearte o impulsarte con el cuerpo.',
   } },
-  curl_polea_baja_supino: { id: 'curl_polea_baja_supino', nombre: 'Curl de bíceps en polea baja con cuerda, agarre supino', grupo: 'Bíceps', grupoMuscular: 'biceps', imagenExplicacion: '/explicaciones/curl-polea-baja-supino.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_hammer_polea_baja', guia: {
+  curl_polea_baja_supino: { id: 'curl_polea_baja_supino', nombre: 'Curl de bíceps en polea baja con cuerda, agarre supino', grupo: 'Bíceps', grupoMuscular: 'biceps', imagenExplicacion: '/explicaciones/curl-polea-baja-supino.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_martillo_mancuernas', guia: {
     indicaciones: [
       'Sujeta la cuerda de la polea baja con las palmas hacia arriba.',
       'Mantén los codos fijos a los lados del cuerpo.',
@@ -908,13 +890,13 @@ export function generoIlustracion(id: string): 'masculino' | 'femenino' {
 // del mismo día.
 const SPLIT_PRINCIPIANTE: Record<SesionId, string[]> = {
   // Lunes — pierna completa.
-  pierna_completa: ['sentadilla_barra', 'prensa_inclinada', 'peso_muerto_maquina', 'zancadas', 'extension_cuadriceps', 'curl_femoral_maquina', 'elevacion_talon'],
+  pierna_completa: ['sentadilla_barra', 'prensa_inclinada', 'zancadas', 'extension_cuadriceps', 'curl_femoral_maquina', 'elevacion_talon'],
   // Martes — pecho, tríceps, hombro y abdomen.
   empuje: ['press_pecho_hammer', 'press_inclinado_hammer', 'aperturas_maquina', 'crossover_polea_alta', 'press_frances_barra_z', 'extension_triceps_copa', 'extension_triceps_polea_alta', 'elevaciones_laterales_polea', 'crunch_superior_horizontal'],
   // Miércoles — espalda, bíceps, hombro posterior, glúteo y abdomen.
   traccion: ['remo_mancuerna_banco', 'jalon_pecho', 'remo_cerrado_maquina', 'jalon_pecho_cerrado_neutro', 'curl_barra', 'curl_supinacion_maquina', 'curl_martillo_mancuernas', 'pajaros_maquina', 'hip_thrust_maquina', 'plancha_abdominal'],
   // Jueves — pierna con énfasis en glúteo.
-  pierna_gluteo: ['hip_thrust_maquina', 'peso_muerto_maquina', 'zancadas', 'sentadilla_barra', 'prensa_inclinada', 'aductor_externo', 'aductor_interno'],
+  pierna_gluteo: ['hip_thrust_maquina', 'zancadas', 'sentadilla_barra', 'prensa_inclinada', 'aductor_externo', 'aductor_interno'],
   // Viernes — pecho, espalda y abdomen.
   pecho_espalda: ['press_pecho_hammer', 'crossover_polea_alta', 'remo_mancuerna_banco', 'jalon_pecho', 'crunch_lateral_inclinado'],
   // Sábado — full body.
@@ -924,7 +906,7 @@ const SPLIT_PRINCIPIANTE: Record<SesionId, string[]> = {
   // rodilla o cadera, un empuje, una tracción, brazos/hombro y core).
   full_a: ['sentadilla_barra', 'press_pecho_hammer', 'remo_mancuerna_banco', 'curl_femoral_maquina', 'elevaciones_laterales_polea', 'plancha_abdominal'],
   full_b: ['prensa_inclinada', 'press_inclinado_hammer', 'jalon_pecho', 'hip_thrust_maquina', 'curl_barra', 'extension_triceps_copa', 'crunch_superior_horizontal'],
-  full_c: ['peso_muerto_maquina', 'zancadas', 'press_militar_barra', 'jalon_pecho_cerrado_neutro', 'curl_supinacion_maquina', 'press_frances_barra_z', 'crunch_lateral_inclinado'],
+  full_c: ['zancadas', 'press_militar_barra', 'jalon_pecho_cerrado_neutro', 'curl_supinacion_maquina', 'press_frances_barra_z', 'crunch_lateral_inclinado'],
   torso_a: ['press_pecho_hammer', 'jalon_pecho', 'press_militar_barra', 'aperturas_maquina', 'remo_cerrado_maquina', 'extension_triceps_copa', 'curl_barra', 'plancha_abdominal'],
   // Día extra opcional (planes de 4+ días, cuando ya cumplió su meta): sin
   // pesas pesadas, para sumar movimiento sin comprometer la recuperación.
@@ -960,7 +942,6 @@ const SPLIT_INTERMEDIO: Record<SesionBase, EjercicioIntermedio[]> = {
   pierna_completa: [
     ejercicioIntermedio('sentadilla_barra', 4, '6-8', '2-0-1'),
     ejercicioIntermedio('prensa_inclinada', 4, '8-10', '2-0-1'),
-    ejercicioIntermedio('peso_muerto_maquina', 4, '6-8', '2-0-1'),
     ejercicioIntermedio('zancadas', 3, '10-12 por pierna', '2-0-1'),
     ejercicioIntermedio('extension_cuadriceps', 3, '12-15', '3-0-1', true),
     ejercicioIntermedio('curl_femoral_maquina', 3, '12-15', '3-0-1', true),
@@ -989,7 +970,6 @@ const SPLIT_INTERMEDIO: Record<SesionBase, EjercicioIntermedio[]> = {
   ],
   pierna_gluteo: [
     ejercicioIntermedio('hip_thrust_maquina', 4, '6-8', '2-0-1'),
-    ejercicioIntermedio('peso_muerto_maquina', 4, '6-8', '2-0-1'),
     ejercicioIntermedio('prensa_inclinada', 3, '10-12', '2-0-1'),
     ejercicioIntermedio('zancadas', 3, '10-12 por pierna', '2-0-1'),
     ejercicioIntermedio('aductor_externo', 3, '12-15', '3-0-1', true),
@@ -1098,8 +1078,15 @@ const EJERCICIO_DESCONOCIDO: Ejercicio = {
   alternativaId: '_desconocido',
 };
 
+// Ejercicios retirados que tienen sustituto directo: un progreso guardado que
+// aún los nombre (ej. un reemplazo del día) se resuelve al sustituto en vez de
+// caer en "Ejercicio anterior".
+const SUSTITUTO_DE_RETIRADOS: Record<string, string> = {
+  curl_hammer_polea_baja: 'curl_polea_baja_supino',
+};
+
 export function obtenerEjercicio(id: string): Ejercicio {
-  return CATALOGO[id] ?? EJERCICIO_DESCONOCIDO;
+  return CATALOGO[SUSTITUTO_DE_RETIRADOS[id] ?? id] ?? EJERCICIO_DESCONOCIDO;
 }
 
 export function tituloRuta(nivel: Nivel, meta: Meta): string {
