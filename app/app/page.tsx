@@ -41,6 +41,7 @@ import {
   type Progreso,
 } from '@/lib/routine';
 import { BannerRenovacion } from '@/components/BannerRenovacion';
+import CalentamientoGuiado, { DURACION_CALENTAMIENTO_MIN } from '@/components/CalentamientoGuiado';
 import { guardarLogRemoto, guardarProgresoRemoto, leerProgresoRemoto, sincronizarPerfilInicial } from '@/lib/supabase/sync';
 
 /** Opciones de duración del descanso — el usuario elige una al empezar el
@@ -196,6 +197,8 @@ function PlanDelDia({
   // un botón de hoja junto al de rescate, por ejercicio (pedido del usuario:
   // pantalla de entrenamiento más prolija).
   const [ayudasAbiertas, setAyudasAbiertas] = useState<Record<string, boolean>>({});
+  // Calentamiento guiado (pantalla completa con contador por ejercicio).
+  const [calentando, setCalentando] = useState(false);
   // celebrarFin como dependencia es intencional: regenera las posiciones del
   // confeti cada vez que se abre la celebración, no solo la primera vez.
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -707,16 +710,20 @@ function PlanDelDia({
       {/* Calentamiento antes de los ejercicios principales — nunca es opcional
           (5-7 min, activa lo que vas a trabajar y protege articulaciones). */}
       {tren && (
-        <a
-          href={CALENTAMIENTO_IMG[tren]}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-6 block overflow-hidden rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)]"
+        <button
+          type="button"
+          onClick={() => setCalentando(true)}
+          aria-label={`Empezar calentamiento guiado de tren ${tren}`}
+          className="mt-6 block w-full overflow-hidden rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] text-left"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={CALENTAMIENTO_IMG[tren]} alt={`Calentamiento tren ${tren}`} className="w-full" />
-        </a>
+          <span className="flex items-center justify-center gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] px-4 py-3 text-sm font-semibold text-[var(--accent)]">
+            <PlayCircle size={18} /> Toca para empezar el calentamiento guiado · ~{DURACION_CALENTAMIENTO_MIN} min
+          </span>
+        </button>
       )}
+      {calentando && tren && <CalentamientoGuiado tren={tren} onCerrar={() => setCalentando(false)} />}
 
       {/* Interruptor: el usuario decide si el descanso arranca solo o no */}
       <motion.button
