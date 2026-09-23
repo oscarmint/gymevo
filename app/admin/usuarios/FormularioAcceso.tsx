@@ -19,9 +19,9 @@ export function FormularioAcceso({ emailFijo, id }: { emailFijo?: string | null;
 
   return (
     <div className="rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
-      <p className="text-sm font-semibold text-[var(--text-primary)]">Agregar acceso a mano</p>
+      <p className="text-sm font-semibold text-[var(--text-primary)]">Asignar plan a mano</p>
       <p className="mt-1 text-sm text-[var(--text-secondary)]">
-        Para cuando alguien pagó pero el aviso automático de Hotmart no le dio acceso. En cuanto entre con este correo, va a tener el plan completo.
+        Para cuando alguien pagó pero el aviso automático de Hotmart no le dio acceso, o para regalar acceso. Elige el plan: los meses se suman al acceso que ya le quede.
       </p>
       <form ref={formRef} action={enviar} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
         {id && <input type="hidden" name="id" value={id} />}
@@ -41,6 +41,22 @@ export function FormularioAcceso({ emailFijo, id }: { emailFijo?: string | null;
           />
         </div>
         <div className="flex flex-1 flex-col gap-1">
+          <label htmlFor="plan-acceso" className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+            Plan
+          </label>
+          <select
+            id="plan-acceso"
+            name="plan"
+            defaultValue="mensual"
+            className="h-11 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+          >
+            <option value="mensual">Mensual (1 mes)</option>
+            <option value="semestral">Semestral (6 meses)</option>
+            <option value="anual">Anual (12 meses)</option>
+            <option value="sin_vencimiento">Sin vencimiento (cortesía)</option>
+          </select>
+        </div>
+        <div className="flex flex-1 flex-col gap-1">
           <label htmlFor="nombre-acceso" className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
             Nombre (opcional)
           </label>
@@ -57,7 +73,7 @@ export function FormularioAcceso({ emailFijo, id }: { emailFijo?: string | null;
           disabled={pending}
           className="boton-3d flex h-11 items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 text-sm font-semibold text-[var(--bg)] disabled:opacity-60"
         >
-          <UserPlus size={16} /> {pending ? 'Guardando…' : 'Dar acceso'}
+          <UserPlus size={16} /> {pending ? 'Guardando…' : 'Asignar plan'}
         </button>
       </form>
       {resultado && (

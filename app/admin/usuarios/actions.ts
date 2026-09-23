@@ -9,6 +9,7 @@
 import { revalidatePath } from 'next/cache';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
 import { registrarAuditoria } from '@/lib/admin';
+import { MESES_POR_PLAN, calcularVencimiento, type PlanId } from '@/lib/planes';
 
 export interface ResultadoAgregarUsuario {
   ok: boolean;
@@ -18,12 +19,27 @@ export interface ResultadoAgregarUsuario {
 export async function agregarAccesoManual(formData: FormData): Promise<ResultadoAgregarUsuario> {
   const email = String(formData.get('email') ?? '').trim().toLowerCase();
   const nombre = String(formData.get('nombre') ?? '').trim();
+  const planElegido = String(formData.get('plan') ?? 'mensual');
 
   if (!email || !email.includes('@')) {
     return { ok: false, mensaje: 'Escribe un correo válido.' };
   }
+  const sinVencimiento = planElegido === 'sin_vencimiento';
+  if (!sinVencimiento && !(planElegido in MESES_POR_PLAN)) {
+    return { ok: false, mensaje: 'Elige un plan válido.' };
+  }
 
   const supabase = await crearClienteSupabaseServidor();
+
+  // Los meses del plan se SUMAN al acceso que todavía le quede (igual que
+  // hace el webhook con una compra real — lib/planes.ts).
+  let accessUntil: string | null = null;
+  if (!sinVencimiento) {
+    const { data: existente } = await supabase.from('hotmart_purchases').select('access_until').eq('email', email).maybeSingle();
+    const actual = existente?.access_until ? new Date(existente.access_until) : null;
+    accessUntil = calcularVencimiento(MESES_POR_PLAN[planElegido as PlanId], actual).toISOString();
+  }
+
   const { error } = await supabase
     .from('hotmart_purchases')
     .upsert(
@@ -31,6 +47,7 @@ export async function agregarAccesoManual(formData: FormData): Promise<Resultado
         email,
         plan: 'pro',
         status: 'active',
+        access_until: accessUntil,
         nombre_manual: nombre || null,
         agregado_manualmente: true,
         updated_at: new Date().toISOString(),
@@ -42,13 +59,16 @@ export async function agregarAccesoManual(formData: FormData): Promise<Resultado
     return { ok: false, mensaje: `No se pudo guardar: ${error.message}` };
   }
 
-  await registrarAuditoria('USUARIO_ACCESO_DADO', `Acceso Pro dado a mano a ${email}`);
+  const etiquetaPlan = sinVencimiento ? 'sin vencimiento' : planElegido;
+  await registrarAuditoria('USUARIO_ACCESO_DADO', `Plan ${etiquetaPlan} dado a mano a ${email}${accessUntil ? ` (vence ${accessUntil.slice(0, 10)})` : ''}`);
   revalidatePath('/admin/usuarios');
   const id = String(formData.get('id') ?? '').trim();
   if (id) revalidatePath(`/admin/usuarios/${id}`);
   return {
     ok: true,
-    mensaje: `Listo — cuando ${email} entre con su correo, va a tener acceso completo automáticamente.`,
+    mensaje: sinVencimiento
+      ? `Listo — ${email} va a tener acceso completo sin fecha de vencimiento cuando entre con su correo.`
+      : `Listo — ${email} va a tener el plan ${planElegido} cuando entre con su correo (vence ${accessUntil!.slice(0, 10)}).`,
   };
 }
 
