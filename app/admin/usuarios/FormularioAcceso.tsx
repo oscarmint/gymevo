@@ -56,6 +56,10 @@ export function FormularioAcceso({ emailFijo, id }: { emailFijo?: string | null;
             <option value="sin_vencimiento">Sin vencimiento (cortesía)</option>
           </select>
         </div>
+        <label className="flex items-center gap-2 text-xs text-[var(--text-secondary)] sm:pb-3">
+          <input type="checkbox" name="reemplazar" className="size-4 accent-[var(--accent)]" />
+          Cambiar de plan (contar desde hoy, sin sumar lo que le quedaba)
+        </label>
         <div className="flex flex-1 flex-col gap-1">
           <label htmlFor="nombre-acceso" className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
             Nombre (opcional)

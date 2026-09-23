@@ -108,13 +108,14 @@ export interface UsuarioFila {
   membershipStatus: string | null;
   role: string;
   createdAt: string;
+  accessUntil: string | null;
 }
 
 export async function buscarUsuarios(query: string): Promise<UsuarioFila[]> {
   const supabase = await crearClienteSupabaseServidor();
   let q = supabase
     .from('profiles')
-    .select('id, email, nombre, plan, membership_status, role, created_at')
+    .select('id, email, nombre, plan, membership_status, role, created_at, access_until')
     .order('created_at', { ascending: false })
     .limit(50);
   if (query.trim()) {
@@ -129,6 +130,7 @@ export async function buscarUsuarios(query: string): Promise<UsuarioFila[]> {
     membershipStatus: f.membership_status,
     role: f.role,
     createdAt: f.created_at,
+    accessUntil: f.access_until,
   }));
 }
 

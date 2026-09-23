@@ -20,6 +20,7 @@ export async function agregarAccesoManual(formData: FormData): Promise<Resultado
   const email = String(formData.get('email') ?? '').trim().toLowerCase();
   const nombre = String(formData.get('nombre') ?? '').trim();
   const planElegido = String(formData.get('plan') ?? 'mensual');
+  const reemplazar = formData.get('reemplazar') === 'on';
 
   if (!email || !email.includes('@')) {
     return { ok: false, mensaje: 'Escribe un correo válido.' };
@@ -36,7 +37,7 @@ export async function agregarAccesoManual(formData: FormData): Promise<Resultado
   let accessUntil: string | null = null;
   if (!sinVencimiento) {
     const { data: existente } = await supabase.from('hotmart_purchases').select('access_until').eq('email', email).maybeSingle();
-    const actual = existente?.access_until ? new Date(existente.access_until) : null;
+    const actual = !reemplazar && existente?.access_until ? new Date(existente.access_until) : null;
     accessUntil = calcularVencimiento(MESES_POR_PLAN[planElegido as PlanId], actual).toISOString();
   }
 
@@ -60,7 +61,7 @@ export async function agregarAccesoManual(formData: FormData): Promise<Resultado
   }
 
   const etiquetaPlan = sinVencimiento ? 'sin vencimiento' : planElegido;
-  await registrarAuditoria('USUARIO_ACCESO_DADO', `Plan ${etiquetaPlan} dado a mano a ${email}${accessUntil ? ` (vence ${accessUntil.slice(0, 10)})` : ''}`);
+  await registrarAuditoria('USUARIO_ACCESO_DADO', `Plan ${etiquetaPlan} ${reemplazar ? 'fijado desde hoy' : 'sumado'} a mano a ${email}${accessUntil ? ` (vence ${accessUntil.slice(0, 10)})` : ''}`);
   revalidatePath('/admin/usuarios');
   const id = String(formData.get('id') ?? '').trim();
   if (id) revalidatePath(`/admin/usuarios/${id}`);

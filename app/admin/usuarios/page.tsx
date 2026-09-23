@@ -15,6 +15,9 @@ export default async function AdminUsuariosPage({ searchParams }: { searchParams
   return (
     <div className="flex flex-col gap-6">
       <FormularioAcceso />
+      <p className="-mt-3 text-xs text-[var(--text-tertiary)]">
+        Para asignar o cambiar el plan de alguien ya registrado, toca su nombre en la lista de abajo: en su ficha están el selector de plan y el botón para quitarle el acceso.
+      </p>
 
       <div className="rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
         <form className="mb-4" method="get">
@@ -43,6 +46,7 @@ export default async function AdminUsuariosPage({ searchParams }: { searchParams
                   <p className="truncate text-sm font-semibold text-[var(--text-primary)]">{u.nombre || u.email || 'Sin nombre'}</p>
                   <p className="truncate text-xs text-[var(--text-tertiary)]">
                     {u.email} · Alta {formatearFecha(u.createdAt)}
+                    {u.accessUntil ? ` · Vence ${formatearFecha(u.accessUntil)}` : ''}
                   </p>
                 </div>
                 <span
