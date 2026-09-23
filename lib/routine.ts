@@ -826,6 +826,17 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Dorsal ancho', principal: true }, { nombre: 'Trapecios', principal: false }, { nombre: 'Romboides', principal: false }, { nombre: 'Deltoides posteriores', principal: false }],
     consejoTecnico: 'Evita redondear la espalda y usa un movimiento controlado para un máximo aislamiento de los músculos.',
   } },
+  peso_muerto_rumano_kettlebell: { id: 'peso_muerto_rumano_kettlebell', nombre: 'Peso muerto rumano con kettlebell', grupo: 'Pierna', grupoMuscular: 'femoral', imagenExplicacion: '/explicaciones/peso-muerto-rumano-kettlebell.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'peso_muerto_barra', guia: {
+    indicaciones: [
+      'De pie, sujeta la kettlebell con ambas manos.',
+      'Mantén las piernas casi rectas, con una ligera flexión de rodillas.',
+      'Bisagra de cadera hacia atrás, bajando la kettlebell con la espalda recta.',
+      'Baja hasta sentir el estiramiento en los isquiotibiales.',
+      'Vuelve a la posición inicial apretando los glúteos.',
+    ],
+    musculos: [{ nombre: 'Isquiotibiales', principal: true }, { nombre: 'Glúteos', principal: true }],
+    consejoTecnico: 'Mantén la espalda recta en todo momento para proteger tu columna vertebral.',
+  } },
 };
 
 /** Alterna hombre/mujer entre ejercicios de forma ESTABLE (nunca al azar: el
