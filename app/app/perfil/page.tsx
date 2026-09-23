@@ -646,8 +646,8 @@ export default function PerfilPage() {
               meta,
             });
             return (
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                <div className="col-span-2 rounded-xl bg-[var(--chip-bg)] px-4 py-3">
+              <div className="mt-4 grid grid-cols-[1fr_1.4fr_1fr] gap-2">
+                <div className="col-span-3 rounded-xl bg-[var(--chip-bg)] px-4 py-3">
                   <p className="text-2xl font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                     <KcalDato kcal={macros.kcal} /> <span className="text-sm font-semibold text-[var(--text-secondary)]">kcal/día</span>
                   </p>
