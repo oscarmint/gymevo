@@ -17,8 +17,7 @@ const FECHA_VALIDA = /^\d{4}-\d{2}-\d{2}$/;
 const TITULO: Record<EstadoDia, string> = {
   verde: 'Entrenamiento completo',
   amarillo: 'Entrenamiento parcial',
-  rojo: 'No entrenaste este día',
-  descanso: 'Día de descanso recomendado',
+  descanso: 'Día libre',
   hoy_pendiente: 'Hoy todavía no entrenas',
   futuro: 'Este día aún no llega',
   sin_datos: 'Sin registros de este día',
@@ -27,7 +26,6 @@ const TITULO: Record<EstadoDia, string> = {
 const COLOR: Record<EstadoDia, string> = {
   verde: 'var(--status-success)',
   amarillo: 'var(--status-warning)',
-  rojo: 'var(--status-error)',
   descanso: 'var(--text-tertiary)',
   hoy_pendiente: 'var(--accent)',
   futuro: 'var(--text-tertiary)',
@@ -94,7 +92,7 @@ export default function ResumenDiaPage() {
               >
                 {info.estado === 'descanso' ? (
                   <Moon size={20} color={COLOR[info.estado]} />
-                ) : info.estado === 'rojo' || info.estado === 'sin_datos' || info.estado === 'futuro' ? (
+                ) : info.estado === 'sin_datos' || info.estado === 'futuro' ? (
                   <CalendarX2 size={20} color={COLOR[info.estado]} />
                 ) : (
                   <Dumbbell size={20} color={COLOR[info.estado]} />
@@ -122,14 +120,9 @@ export default function ResumenDiaPage() {
               </div>
             )}
 
-            {info.estado === 'rojo' && (
-              <p className="mt-3 text-sm text-[var(--text-secondary)]">
-                No hay series registradas este día. Lo importante es retomar: tu plan de hoy te espera.
-              </p>
-            )}
             {info.estado === 'descanso' && (
               <p className="mt-3 text-sm text-[var(--text-secondary)]">
-                Tu plan no tenía entrenamiento este día — el descanso también es parte del plan: ahí es donde el músculo se recupera.
+                No registraste series este día. Entrenas los días que puedes — el descanso también es parte del plan: ahí es donde el músculo se recupera.
               </p>
             )}
             {info.estado === 'sin_datos' && (
@@ -169,7 +162,7 @@ export default function ResumenDiaPage() {
             </ul>
           )}
 
-          {esHoyOPasado && (info.estado === 'hoy_pendiente' || info.estado === 'amarillo' || (info.estado === 'rojo' && fecha === hoy)) && (
+          {esHoyOPasado && (info.estado === 'hoy_pendiente' || info.estado === 'amarillo') && (
             <Link
               href="/app"
               className="boton-3d mt-5 flex h-14 w-full items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"

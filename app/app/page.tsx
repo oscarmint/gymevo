@@ -6,24 +6,30 @@
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { Lottie } from 'lottie-react';
 import { motion, AnimatePresence, useReducedMotion, animate } from 'motion/react';
-import { Check, Dumbbell, FileText, Flame, Info, PlayCircle, RefreshCcw, TrendingUp, Undo2, Volume2, VolumeX, WifiOff, X, Zap } from 'lucide-react';
+import { Check, Dumbbell, FileText, Flame, Info, Moon, PlayCircle, RefreshCcw, TrendingUp, Undo2, Volume2, VolumeX, WifiOff, X, Zap } from 'lucide-react';
 import { leerRespuestas } from '@/lib/onboarding';
 import animacionFitness from '@/public/animaciones/fitness.json';
 import { CuerpoMuscular } from '@/components/CuerpoMuscular';
 import {
   CALENTAMIENTO_IMG,
-  calentamientoDeHoy,
-  cardioDeHoy,
+  calentamientoDeSesion,
+  cardioDeSesion,
   completarEntrenamiento,
   deshacerHecho,
-  ejerciciosDeHoy,
+  ejerciciosDeSesion,
   generoIlustracion,
   guardarProgreso,
   hoyISO,
   leerProgreso,
   marcarHecho,
   MUSCULO_LABEL,
-  nombreDeHoy,
+  nombreDeSesion,
+  sesionActual,
+  semanasSeguidas,
+  resumenSemana,
+  descansoRecomendado,
+  entrenarIgual,
+  type MotivoDescanso,
   obtenerEjercicio,
   rachaEnRiesgo,
   registrarSerie,
@@ -200,7 +206,9 @@ function PlanDelDia({
   // la persona debe parar sin haber marcado todos los ejercicios — pide
   // confirmación una sola vez porque avanza el día/racha igual que terminarla completa.
   const [pidiendoCortar, setPidiendoCortar] = useState(false);
-  const rachaAnteriorRef = useRef(progreso.racha);
+  const semanas = semanasSeguidas(progreso);
+  const semana = resumenSemana(progreso);
+  const rachaAnteriorRef = useRef(semanas);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const reduce = useReducedMotion();
 
@@ -344,34 +352,35 @@ function PlanDelDia({
 
   // Número héroe de la racha: cuenta desde 0 al montar (baseline obligatoria de
   // movimiento, 14/22) — se salta la animación con prefers-reduced-motion.
-  const [rachaMostrada, setRachaMostrada] = useState(reduce ? progreso.racha : 0);
+  const [rachaMostrada, setRachaMostrada] = useState(reduce ? semanas : 0);
   useEffect(() => {
     if (reduce) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setRachaMostrada(progreso.racha);
+      setRachaMostrada(semanas);
       return;
     }
-    const controls = animate(0, progreso.racha, {
+    const controls = animate(0, semanas, {
       duration: 0.6,
       ease: [0.16, 1, 0.3, 1],
       onUpdate: (v) => setRachaMostrada(Math.round(v)),
     });
     return () => controls.stop();
-  }, [progreso.racha, reduce]);
+  }, [semanas, reduce]);
 
   // Hito de racha (M2, compilador sobrio): se detecta por CAMBIO de estado,
   // nunca dentro del updater — así una doble actualización rápida no lo dispara dos veces.
   useEffect(() => {
-    if ([7, 30, 100].includes(progreso.racha) && progreso.racha !== rachaAnteriorRef.current) {
-      setCelebrarHito(progreso.racha);
+    if ([4, 12, 26].includes(semanas) && semanas !== rachaAnteriorRef.current) {
+      setCelebrarHito(semanas);
     }
-    rachaAnteriorRef.current = progreso.racha;
-  }, [progreso.racha]);
+    rachaAnteriorRef.current = semanas;
+  }, [semanas]);
 
   const nivel = progreso.nivel;
   const meta = progreso.meta;
 
-  const ejercicios = useMemo(() => ejerciciosDeHoy(progreso.diaActual, nivel, progreso.diasSemana), [progreso.diaActual, nivel, progreso.diasSemana]);
+  const sesion = sesionActual(progreso);
+  const ejercicios = useMemo(() => ejerciciosDeSesion(sesion, nivel), [sesion, nivel]);
 
   // Actualización funcional: siempre parte del progreso MÁS RECIENTE, nunca del
   // capturado en el closure del render — evita perder un registro si dos taps
@@ -520,8 +529,24 @@ function PlanDelDia({
   const progresoLlamaPct = idsHoy.length
     ? Math.round((idsHoy.filter((e) => progreso.hechosHoy.includes(e.id)).length / idsHoy.length) * 100)
     : 0;
-  const tren = calentamientoDeHoy(progreso.diaActual, progreso.diasSemana);
-  const cardio = cardioDeHoy(progreso.diaActual, meta, nivel, progreso.diasSemana);
+  const tren = calentamientoDeSesion(sesion);
+  const cardio = cardioDeSesion(sesion, nivel);
+
+  const motivoDescanso = descansoRecomendado(progreso);
+  if (motivoDescanso) {
+    return (
+      <>
+        <TarjetaDescanso
+          motivo={motivoDescanso}
+          semana={semana}
+          diasPlan={progreso.diasSemana}
+          siguiente={nombreDeSesion(sesion)}
+          onEntrenarIgual={(ligero) => actualizar((p) => entrenarIgual(p, ligero))}
+        />
+        {overlayCelebracionFin}
+      </>
+    );
+  }
 
   if (etapa !== 'plan') {
     return (
@@ -547,7 +572,7 @@ function PlanDelDia({
             </span>
             <h1 className="mt-6 text-3xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Hola!</h1>
             <p className="mt-3 max-w-sm text-base text-[var(--text-secondary)]">
-              Hoy vamos a iniciar el entrenamiento de <strong className="text-[var(--text-primary)]">{nombreDeHoy(progreso.diaActual, progreso.diasSemana)}</strong>.
+              Hoy vamos a iniciar el entrenamiento de <strong className="text-[var(--text-primary)]">{nombreDeSesion(sesion)}</strong>.
             </p>
             <button
               type="button"
@@ -613,7 +638,7 @@ function PlanDelDia({
           última palabra. */}
       <div className="mt-1 flex items-start gap-2">
         <h1 className="min-w-0 flex-1 text-balance text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
-          {`Hoy vamos con: ${nombreDeHoy(progreso.diaActual, progreso.diasSemana)}`}
+          {`Hoy vamos con: ${nombreDeSesion(sesion)}`}
         </h1>
         <Lottie
           src={animacionFitness}
@@ -669,10 +694,12 @@ function PlanDelDia({
         </div>
         <div>
           <p className={`text-sm font-semibold ${enRiesgo ? 'text-[var(--status-warning)]' : 'text-[var(--text-primary)]'}`}>
-            Racha: {rachaMostrada} {progreso.racha === 1 ? 'día' : 'días'}
+            Racha: {rachaMostrada} {semanas === 1 ? 'semana' : 'semanas'}
           </p>
           <p className="text-xs text-[var(--text-secondary)]">
-            {enRiesgo ? 'Falta el registro de hoy.' : 'Tu registro de hoy la mantiene viva.'}
+            {enRiesgo
+              ? `Te ${semana.faltan === 1 ? 'falta 1 sesión' : `faltan ${semana.faltan} sesiones`} esta semana y ${semana.diasRestantes === 1 ? 'queda 1 día' : `quedan ${semana.diasRestantes} días`}.`
+              : `Esta semana: ${semana.hechos} de ${semana.meta} ${semana.meta === 1 ? 'día' : 'días'} de entrenamiento.`}
           </p>
         </div>
       </div>
@@ -1185,9 +1212,9 @@ function PlanDelDia({
             <p className="mt-6 text-5xl font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
               {celebrarHito}
             </p>
-            <h2 className="mt-1 text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">días seguidos</h2>
+            <h2 className="mt-1 text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">semanas seguidas</h2>
             <p className="mt-3 max-w-xs text-center text-sm text-[var(--text-secondary)]">
-              Racha activa: {celebrarHito} días. Cada entrenamiento cuenta — sigue así.
+              Cumpliste tu meta {celebrarHito} semanas seguidas. Cada entrenamiento cuenta — sigue así.
             </p>
             <button
               type="button"
@@ -1371,6 +1398,79 @@ function AnilloDescanso({ restante, total }: { restante: number; total: number }
         />
       </svg>
       <span className="absolute text-xs font-bold tabular-nums text-[var(--bg)]">{restante}</span>
+    </div>
+  );
+}
+
+const TEXTO_DESCANSO: Record<MotivoDescanso, { titulo: string; cuerpo: (siguiente: string, hechos: number, meta: number) => string }> = {
+  hoy: {
+    titulo: 'Hoy ya entrenaste',
+    cuerpo: (siguiente) => `Buen trabajo. El músculo crece mientras descansas. Tu próxima sesión: ${siguiente}.`,
+  },
+  seguidos: {
+    titulo: 'Descanso recomendado',
+    cuerpo: (siguiente) => `Llevas 3 días seguidos entrenando. Descansar hoy ayuda a que tu cuerpo se recupere y rinda mejor en tu próxima sesión: ${siguiente}.`,
+  },
+  semana: {
+    titulo: 'El 7º día es de descanso',
+    cuerpo: (siguiente) => `Ya entrenaste 6 de los últimos 7 días. Descansa hoy: sin recuperación el riesgo es lesión y agotamiento, no más progreso. Sigues con ${siguiente}.`,
+  },
+  meta: {
+    titulo: '¡Meta de la semana cumplida!',
+    cuerpo: (siguiente, hechos, meta) => `${hechos} de ${meta} ${meta === 1 ? 'día' : 'días'} de entrenamiento. Puedes descansar, o sumar un día extra si te sientes con energía. Tu próxima sesión: ${siguiente}.`,
+  },
+};
+
+/** El plan propone descansar, nunca lo impone: siempre hay un botón para
+ * entrenar igual. Reemplaza al "día 7" fijo — la persona entrena los días que
+ * puede y la app solo cuida que no se pase. */
+function TarjetaDescanso({
+  motivo,
+  semana,
+  diasPlan,
+  siguiente,
+  onEntrenarIgual,
+}: {
+  motivo: MotivoDescanso;
+  semana: { hechos: number; meta: number };
+  diasPlan: number;
+  siguiente: string;
+  onEntrenarIgual: (ligero: boolean) => void;
+}) {
+  const texto = TEXTO_DESCANSO[motivo];
+  // Con 4+ días la sesión extra es ligera (core y cardio suave); con menos, el
+  // día extra es simplemente la siguiente sesión de cuerpo completo.
+  const hayExtraLigero = motivo === 'meta' && diasPlan >= 4;
+  const etiquetaEntrenar = motivo === 'meta' ? `Agregar otro día: ${siguiente}` : motivo === 'hoy' ? 'Entrenar otra sesión hoy' : 'Entrenar igual';
+  return (
+    <div className="flex min-h-[calc(100dvh-5rem)] flex-col items-center justify-center px-6 text-center">
+      <span className="chip-3d flex size-20 items-center justify-center rounded-2xl bg-[var(--accent)]">
+        <Moon size={36} color="var(--bg)" strokeWidth={2.4} />
+      </span>
+      <h1 className="mt-6 text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">{texto.titulo}</h1>
+      <p className="mt-3 max-w-sm text-base text-[var(--text-secondary)]">{texto.cuerpo(siguiente, semana.hechos, semana.meta)}</p>
+      {hayExtraLigero && (
+        <motion.button
+          type="button"
+          onClick={() => onEntrenarIgual(true)}
+          whileTap={{ scale: 0.97 }}
+          className="boton-3d mt-8 flex h-14 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
+        >
+          Sesión ligera: core y cardio suave
+        </motion.button>
+      )}
+      <motion.button
+        type="button"
+        onClick={() => onEntrenarIgual(false)}
+        whileTap={{ scale: 0.97 }}
+        className={
+          hayExtraLigero
+            ? 'mt-3 flex h-12 w-full max-w-xs items-center justify-center rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] text-sm font-semibold text-[var(--text-secondary)]'
+            : 'boton-3d mt-8 flex h-14 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] px-4 text-base font-semibold text-[var(--bg)]'
+        }
+      >
+        {hayExtraLigero ? `Entrenar ${siguiente}` : etiquetaEntrenar}
+      </motion.button>
     </div>
   );
 }

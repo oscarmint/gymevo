@@ -1,5 +1,6 @@
-// Cron diario (ver vercel.json): revisa quién lleva EXACTAMENTE 2 días sin
-// completar un entrenamiento y le manda un push al mismo dispositivo donde
+// Cron diario (ver vercel.json): revisa quién lleva más de lo esperado sin
+// completar un entrenamiento (según los días por semana que eligió — ver la
+// función SQL usuarios_para_recordatorio_inactividad, migración 0022) y le manda un push al mismo dispositivo donde
 // lo activó. Protegido con CRON_SECRET — Vercel Cron agrega automáticamente
 // el header "Authorization: Bearer <CRON_SECRET>" cuando esa variable existe.
 import { NextRequest, NextResponse } from 'next/server';
@@ -19,7 +20,7 @@ function clienteAdmin() {
 // Copy elegido por el usuario — "Empática y Relajada": valida que a veces la
 // vida se interpone, sin culpa, y anima a retomar hoy mismo.
 const TITULO = '¿Todo bien por ahí? 👀';
-const CUERPO = 'Llevas 2 días de descanso. Tomar un respiro está perfecto, pero no pierdas el ritmo. ¿Hacemos una rutina corta hoy?';
+const CUERPO = 'Han pasado unos días desde tu último entrenamiento. Tomar un respiro está perfecto, pero no pierdas el ritmo. ¿Hacemos una rutina corta hoy?';
 
 export async function GET(req: NextRequest) {
   // Fail-secure (auditoría de seguridad 04/09/2026): sin CRON_SECRET
@@ -71,7 +72,7 @@ export async function GET(req: NextRequest) {
 
     // Se marca como "avisado" aunque no tuviera ninguna suscripción activa —
     // la condición de la función SQL solo vuelve a cumplirse si el usuario
-    // entrena de nuevo y luego pasan otros 2 días (no se reintenta a diario).
+    // entrena de nuevo y luego pasa otra vez su intervalo (no se reintenta a diario).
     await admin.from('profiles').update({ ultimo_recordatorio_inactividad: hoy }).eq('id', u.id);
   }
 

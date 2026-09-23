@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import { Lock, RefreshCcw } from 'lucide-react';
 import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
-import { diasDePlan, ejerciciosDeHoy, nombreDeHoy, tituloRuta } from '@/lib/routine';
+import { diasDePlan, ejerciciosDeSesion, nombreDeSesion, sesionDeHoy, tituloRuta } from '@/lib/routine';
 
 const NOMBRES_RESTO_SEMANA = ['Tirón', 'Piernas', 'Full body'];
 
@@ -37,8 +37,9 @@ export default function VistaPreviaDiaUnoPage() {
   if (!cargado || !respuestas) return null;
 
   const diasPlan = diasDePlan(respuestas.diasSemana);
-  const ejercicios = ejerciciosDeHoy(1, respuestas.nivel, diasPlan);
-  const nombreDia1 = nombreDeHoy(1, diasPlan);
+  const sesionDia1 = sesionDeHoy(1, diasPlan);
+  const ejercicios = ejerciciosDeSesion(sesionDia1, respuestas.nivel);
+  const nombreDia1 = nombreDeSesion(sesionDia1);
 
   return (
     <div className="min-h-dvh bg-[var(--bg)] px-5 pt-8 pb-10 [font-family:var(--font-body)]">

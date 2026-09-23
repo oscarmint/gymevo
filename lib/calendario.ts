@@ -1,10 +1,10 @@
 // Calendario de entrenamientos (21/09/2026): cada día del mes se pinta según
 // cuánto de su rutina se hizo. Funciones puras, sin estado ni React.
 //
-//   rojo      → tocaba entrenar y no se registró ninguna serie
 //   amarillo  → se hizo entre 1% y menos del 80% de las series de la rutina
 //   verde     → se hizo el 80% o más
-//   descanso  → día de descanso completado (no cuenta como falta)
+//   descanso  → día sin entrenar: la persona elige cuántos días por semana entrena
+//               (no cuáles), así que un día libre nunca cuenta como falta
 //
 // El plan avanza por "día de programa" (`Progreso.diaActual`), no por fecha
 // del calendario, así que la rutina de una fecha pasada no está guardada: se
@@ -15,7 +15,7 @@
 
 import { TODAS_LAS_SESIONES, ejerciciosDeSesion, nombreDeSesion, obtenerEjercicio, type Ejercicio, type Progreso, type RegistroLog } from './routine';
 
-export type EstadoDia = 'verde' | 'amarillo' | 'rojo' | 'descanso' | 'hoy_pendiente' | 'futuro' | 'sin_datos';
+export type EstadoDia = 'verde' | 'amarillo' | 'descanso' | 'hoy_pendiente' | 'futuro' | 'sin_datos';
 
 export interface SerieRegistrada {
   peso: number;
@@ -44,12 +44,6 @@ export interface InfoDia {
 }
 
 export const UMBRAL_VERDE = 0.8;
-
-function sumarDias(fecha: string, dias: number): string {
-  const [y, m, d] = fecha.split('-').map(Number);
-  const f = new Date(Date.UTC(y, m - 1, d + dias));
-  return f.toISOString().slice(0, 10);
-}
 
 interface RutinaPrograma {
   nombre: string;
@@ -85,13 +79,6 @@ function seriesDeLaRutina(rutina: RutinaPrograma): number {
   return rutina.ejercicios.reduce((acc, e) => acc + e.series, 0);
 }
 
-/** Fechas de la racha vigente (de la primera a la última): todas cerraron su
- * día, así que un día SIN series dentro de esa ventana fue un descanso. */
-function ventanaDeRacha(p: Progreso): { desde: string; hasta: string } | null {
-  if (!p.ultimaFecha || p.racha <= 0) return null;
-  return { desde: sumarDias(p.ultimaFecha, -(p.racha - 1)), hasta: p.ultimaFecha };
-}
-
 export function infoDelDia(p: Progreso, fecha: string, hoy: string): InfoDia {
   const vacio = (estado: EstadoDia): InfoDia => ({ fecha, estado, porcentaje: null, seriesHechas: 0, seriesPlan: 0, ejercicios: [], nombreRutina: null });
 
@@ -103,12 +90,8 @@ export function infoDelDia(p: Progreso, fecha: string, hoy: string): InfoDia {
     const inicio = p.logs.reduce<string | null>((min, l) => (min === null || l.fecha < min ? l.fecha : min), null);
     if (inicio === null || fecha < inicio) return vacio('sin_datos');
 
-    const v = ventanaDeRacha(p);
-    const enRacha = v !== null && fecha >= v.desde && fecha <= v.hasta;
-    if (enRacha) return vacio('descanso');
-
     if (fecha === hoy) return vacio('hoy_pendiente');
-    return vacio('rojo');
+    return vacio('descanso');
   }
 
   const rutinas = rutinasDelPrograma(p.nivel);
@@ -148,16 +131,14 @@ export function infoDelDia(p: Progreso, fecha: string, hoy: string): InfoDia {
 export interface ResumenMes {
   verdes: number;
   amarillos: number;
-  rojos: number;
   descansos: number;
 }
 
 export function resumenDelMes(dias: InfoDia[]): ResumenMes {
-  const r: ResumenMes = { verdes: 0, amarillos: 0, rojos: 0, descansos: 0 };
+  const r: ResumenMes = { verdes: 0, amarillos: 0, descansos: 0 };
   for (const d of dias) {
     if (d.estado === 'verde') r.verdes++;
     else if (d.estado === 'amarillo') r.amarillos++;
-    else if (d.estado === 'rojo') r.rojos++;
     else if (d.estado === 'descanso') r.descansos++;
   }
   return r;

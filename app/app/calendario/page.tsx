@@ -1,7 +1,8 @@
 'use client';
 
 // CALENDARIO (21/09/2026) — cada día del mes pintado según cuánto de su rutina
-// se hizo: rojo (no entrenó), amarillo (menos del 80%), verde (80% o más).
+// se hizo: amarillo (menos del 80%), verde (80% o más); un día sin entrenar es
+// un día libre (no una falta: cada quien elige cuántos días por semana).
 // Tocar un día abre su resumen (/app/calendario/[fecha]). La lógica vive en
 // lib/calendario.ts; aquí solo se dibuja.
 
@@ -19,8 +20,6 @@ const ESTILO: Record<EstadoDia, string> = {
     'border-[color-mix(in_oklab,var(--status-success)_60%,transparent)] bg-[color-mix(in_oklab,var(--status-success)_26%,transparent)] text-[var(--text-primary)]',
   amarillo:
     'border-[color-mix(in_oklab,var(--status-warning)_60%,transparent)] bg-[color-mix(in_oklab,var(--status-warning)_26%,transparent)] text-[var(--text-primary)]',
-  rojo:
-    'border-[color-mix(in_oklab,var(--status-error)_60%,transparent)] bg-[color-mix(in_oklab,var(--status-error)_24%,transparent)] text-[var(--text-primary)]',
   descanso:
     'border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_45%,transparent)] bg-[var(--surface)] text-[var(--text-secondary)]',
   hoy_pendiente: 'border-[color-mix(in_oklab,var(--text-tertiary)_28%,transparent)] bg-[var(--surface)] text-[var(--text-primary)]',
@@ -31,8 +30,7 @@ const ESTILO: Record<EstadoDia, string> = {
 const ETIQUETA: Record<EstadoDia, string> = {
   verde: 'entrenamiento completo',
   amarillo: 'entrenamiento parcial',
-  rojo: 'sin entrenar',
-  descanso: 'día de descanso recomendado',
+  descanso: 'día libre',
   hoy_pendiente: 'hoy, aún sin entrenar',
   futuro: 'todavía no llega',
   sin_datos: 'sin registros',
@@ -144,8 +142,7 @@ export default function CalendarioPage() {
         <p className="mt-4 text-sm text-[var(--text-secondary)]">
           <span className="font-semibold text-[var(--text-primary)]">Este mes:</span> {resumen.verdes}{' '}
           {resumen.verdes === 1 ? 'día completo' : 'días completos'} · {resumen.amarillos}{' '}
-          {resumen.amarillos === 1 ? 'parcial' : 'parciales'} · {resumen.rojos}{' '}
-          sin entrenar
+          {resumen.amarillos === 1 ? 'parcial' : 'parciales'}
         </p>
       )}
 
@@ -157,10 +154,7 @@ export default function CalendarioPage() {
           <Punto clase={ESTILO.amarillo} /> Menos del 80%
         </li>
         <li className="flex items-center gap-2">
-          <Punto clase={ESTILO.rojo} /> No entrenaste
-        </li>
-        <li className="flex items-center gap-2">
-          <Punto clase={ESTILO.descanso} /> Día de descanso recomendado
+          <Punto clase={ESTILO.descanso} /> Día libre
         </li>
       </ul>
     </div>

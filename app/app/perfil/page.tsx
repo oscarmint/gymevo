@@ -9,7 +9,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { AlertTriangle, Bell, BellOff, Camera, Check, ExternalLink, Flame, Loader2, LogOut, Pencil, Trash2 } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, SEXO_LABEL, leerRespuestas, type RespuestasOnboarding, type Sexo } from '@/lib/onboarding';
 import { calcularMacros } from '@/lib/macros';
-import { DIAS_MAX_PLAN, aplicarReemplazos, cambiarDias, cambiarRuta, ejerciciosDeHoy, guardarProgreso, leerProgreso, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
+import { DIAS_MAX_PLAN, semanasSeguidas, aplicarReemplazos, cambiarDias, cambiarRuta, ejerciciosDeSesion, sesionActual, guardarProgreso, leerProgreso, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
 import type { Meta, Nivel } from '@/lib/onboarding';
 import { leerAvatarLocal, guardarAvatarLocal, leerNombreLocal, guardarNombreLocal } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
@@ -122,7 +122,7 @@ export default function PerfilPage() {
 
   // Misma llama de racha que Plan de hoy: se llena según el progreso real de
   // hoy (ejercicios ya marcados hechos / total de hoy), no es decorativa.
-  const idsHoy = aplicarReemplazos(ejerciciosDeHoy(progreso.diaActual, nivel, progreso.diasSemana), progreso.reemplazosHoy);
+  const idsHoy = aplicarReemplazos(ejerciciosDeSesion(sesionActual(progreso), nivel), progreso.reemplazosHoy);
   const progresoLlamaPct = idsHoy.length
     ? Math.round((idsHoy.filter((e) => progreso.hechosHoy.includes(e.id)).length / idsHoy.length) * 100)
     : 0;
@@ -538,7 +538,7 @@ export default function PerfilPage() {
             </div>
           </div>
           <span className="text-sm font-medium text-[var(--text-primary)]">
-            Racha de {progreso.racha} {progreso.racha === 1 ? 'día' : 'días'} · Día {progreso.diaActual} de tu plan
+            Racha de {semanasSeguidas(progreso)} {semanasSeguidas(progreso) === 1 ? 'semana' : 'semanas'} · Sesión {progreso.diaActual} de tu plan
           </span>
         </div>
       </div>

@@ -104,7 +104,8 @@ export type SesionId =
   | 'full_b'
   | 'full_c'
   | 'torso_a'
-  | 'torso_b';
+  | 'torso_b'
+  | 'extra_ligera';
 
 export const CALENTAMIENTO_IMG: Record<TrenCalentamiento, string> = {
   superior: '/explicaciones/calentamiento-tren-superior.png',
@@ -131,6 +132,7 @@ const NOMBRE_DIA_RUTINA: Record<SesionId, string> = {
   full_c: 'Full body C',
   torso_a: 'Torso A (pecho, espalda y hombro)',
   torso_b: 'Torso B (espalda, hombro y brazos)',
+  extra_ligera: 'Sesión ligera: core y cardio suave',
 };
 
 /** Calentamiento por día: depende de qué se entrena hoy, no es fijo — un día
@@ -149,6 +151,7 @@ const CALENTAMIENTO_DIA_RUTINA: Record<SesionId, TrenCalentamiento | null> = {
   full_c: 'inferior',
   torso_a: 'superior',
   torso_b: 'superior',
+  extra_ligera: null,
 };
 
 export type TipoCardio = 'hiit' | 'zona2';
@@ -212,17 +215,18 @@ const CARDIO_COMO: Record<Exclude<SesionId, SesionBase>, SesionBase> = {
   full_c: 'pierna_gluteo',
   torso_a: 'pecho_espalda',
   torso_b: 'traccion',
+  extra_ligera: 'traccion',
 };
 
 function sesionBase(sesion: SesionId): SesionBase {
   return sesion in CARDIO_COMO ? CARDIO_COMO[sesion as keyof typeof CARDIO_COMO] : (sesion as SesionBase);
 }
 
-/** Cardio de la sesión de hoy — ninguna ruta lo hace depender de la meta
+/** Cardio de la sesión — ninguna ruta lo hace depender de la meta
  * (Hipertrofia/Pérdida de grasa) desde el 15/09/2026: cada sesión trae su
  * propio tipo/duración/indicaciones fijas. */
-export function cardioDeHoy(diaActual: number, meta: Meta, nivel: Nivel, diasSemana: number): CardioDelDia {
-  const base = sesionBase(sesionDeHoy(diaActual, diasSemana));
+export function cardioDeSesion(sesion: SesionId, nivel: Nivel): CardioDelDia {
+  const base = sesionBase(sesion);
   return nivel === 'principiante' ? CARDIO_DIA_PRINCIPIANTE[base] : CARDIO_DIA_INTERMEDIO[base];
 }
 
@@ -922,6 +926,9 @@ const SPLIT_PRINCIPIANTE: Record<SesionId, string[]> = {
   full_b: ['prensa_inclinada', 'press_inclinado_hammer', 'jalon_pecho', 'hip_thrust_maquina', 'curl_barra', 'extension_triceps_copa', 'crunch_superior_horizontal'],
   full_c: ['peso_muerto_maquina', 'zancadas', 'press_militar_barra', 'jalon_pecho_cerrado_neutro', 'curl_supinacion_maquina', 'press_frances_barra_z', 'crunch_lateral_inclinado'],
   torso_a: ['press_pecho_hammer', 'jalon_pecho', 'press_militar_barra', 'aperturas_maquina', 'remo_cerrado_maquina', 'extension_triceps_copa', 'curl_barra', 'plancha_abdominal'],
+  // Día extra opcional (planes de 4+ días, cuando ya cumplió su meta): sin
+  // pesas pesadas, para sumar movimiento sin comprometer la recuperación.
+  extra_ligera: ['plancha_abdominal', 'crunch_lateral_inclinado', 'lumbares_maquina', 'elevacion_piernas'],
   torso_b: ['press_inclinado_hammer', 'remo_mancuerna_banco', 'jalon_pecho_cerrado_neutro', 'crossover_polea_alta', 'elevaciones_laterales_polea', 'press_frances_barra_z', 'curl_martillo_mancuernas', 'crunch_superior_horizontal'],
 };
 
@@ -1034,12 +1041,14 @@ export function nombreDeSesion(sesion: SesionId): string {
   return NOMBRE_DIA_RUTINA[sesion];
 }
 
-export function nombreDeHoy(diaActual: number, diasSemana: number): string {
-  return nombreDeSesion(sesionDeHoy(diaActual, diasSemana));
+export function calentamientoDeSesion(sesion: SesionId): TrenCalentamiento | null {
+  return CALENTAMIENTO_DIA_RUTINA[sesion];
 }
 
-export function calentamientoDeHoy(diaActual: number, diasSemana: number): TrenCalentamiento | null {
-  return CALENTAMIENTO_DIA_RUTINA[sesionDeHoy(diaActual, diasSemana)];
+/** La sesión que se hace ahora: la que toca en la rotación o, si la persona
+ * pidió un día extra ligero (planes de 4+ días), esa. */
+export function sesionActual(p: Progreso): SesionId {
+  return p.extraHoy && p.diasSemana >= 4 ? 'extra_ligera' : sesionDeHoy(p.diaActual, p.diasSemana);
 }
 
 // Prescripción de Intermedio para los bloques nuevos: cada ejercicio hereda la
@@ -1068,10 +1077,6 @@ export function ejerciciosDeSesion(sesion: SesionId, nivel: Nivel): Ejercicio[] 
     reps: cfg.restPause ? `${cfg.reps} (Rest-Pause en la última serie)` : cfg.reps,
     tempo: cfg.tempo,
   }));
-}
-
-export function ejerciciosDeHoy(diaActual: number, nivel: Nivel, diasSemana: number): Ejercicio[] {
-  return ejerciciosDeSesion(sesionDeHoy(diaActual, diasSemana), nivel);
 }
 
 /** Ejercicio de respaldo para ids que ya no existen en el catálogo actual —
@@ -1200,6 +1205,13 @@ export interface Progreso {
   /** Fecha (YYYY-MM-DD) de la primera medida registrada (peso o cintura) —
    * para poder decir "desde el [fecha]" en el progreso, no solo "un cambio". */
   fechaInicioMedidas: string | null;
+  /** Solo en este dispositivo. Día (YYYY-MM-DD) en que la persona eligió
+   * "entrenar igual" pese al descanso recomendado — ese día no se le vuelve
+   * a insistir. */
+  descansoIgnorado?: string;
+  /** Pidió el día extra ligero: se hace en vez de la siguiente sesión y NO
+   * avanza la rotación. Se limpia al terminarlo. */
+  extraHoy?: boolean;
 }
 
 const KEY = 'gymevo_progreso';
@@ -1393,7 +1405,7 @@ export function completarEntrenamiento(p: Progreso): Progreso {
     const gap = diasEntre(p.ultimaFecha, hoy);
     racha = gap <= 1 ? p.racha + 1 : 1; // mismo día o consecutivo: suma; si no, reinicia
   }
-  return { ...p, diaActual: p.diaActual + 1, racha, ultimaFecha: hoy, hechosHoy: [], reemplazosHoy: {} };
+  return { ...p, diaActual: p.extraHoy ? p.diaActual : p.diaActual + 1, extraHoy: false, racha, ultimaFecha: hoy, hechosHoy: [], reemplazosHoy: {} };
 }
 
 /** Racha en riesgo (M4 de 56): ya pasó ≥1 día completo sin entrenar y aún no
@@ -1401,7 +1413,96 @@ export function completarEntrenamiento(p: Progreso): Progreso {
  * registrar por diseño, así que "hechosHoy vacío" es lo normal, no una señal
  * de riesgo (bug real encontrado por el usuario: la llama salía en color de
  * alerta un domingo sin haber hecho nada mal). */
-export function rachaEnRiesgo(p: Progreso): boolean {
-  if (!p.ultimaFecha || p.racha === 0) return false;
-  return diasEntre(p.ultimaFecha, hoyISO()) >= 1 && p.hechosHoy.length === 0;
+// ── Semana, racha semanal y descanso (sin días de calendario fijos) ──────────
+// La persona elige cuántos días entrena por semana, no cuáles. La meta es esa
+// cantidad de días con series registradas en la semana (lunes a domingo), y la
+// racha cuenta semanas seguidas que la cumplieron.
+
+function sumarDiasISO(fecha: string, dias: number): string {
+  const [y, m, d] = fecha.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d + dias)).toISOString().slice(0, 10);
+}
+
+function inicioDeSemana(fecha: string): string {
+  const [y, m, d] = fecha.split('-').map(Number);
+  const dow = new Date(Date.UTC(y, m - 1, d)).getUTCDay(); // 0 = domingo
+  return sumarDiasISO(fecha, -((dow + 6) % 7));
+}
+
+/** Fechas (YYYY-MM-DD) en las que la persona registró series. Hoy solo cuenta
+ * cuando ya cerró su sesión: a mitad de un entrenamiento hay series de hoy,
+ * pero la semana y el descanso no deben cambiar todavía. */
+function fechasEntrenadas(p: Progreso, hoy: string): Set<string> {
+  const fechas = new Set(p.logs.map((l) => l.fecha));
+  if (p.ultimaFecha !== hoy) fechas.delete(hoy);
+  return fechas;
+}
+
+function diasEntrenadosEnSemana(fechas: Set<string>, inicio: string): number {
+  let n = 0;
+  for (let i = 0; i < 7; i++) if (fechas.has(sumarDiasISO(inicio, i))) n++;
+  return n;
+}
+
+export interface ResumenSemana {
+  /** Días por semana que eligió. */
+  meta: number;
+  /** Días de esta semana (lunes a domingo) con series registradas. */
+  hechos: number;
+  faltan: number;
+  /** Días que quedan de la semana contando hoy. */
+  diasRestantes: number;
+}
+
+export function resumenSemana(p: Progreso, hoy: string = hoyISO()): ResumenSemana {
+  const inicio = inicioDeSemana(hoy);
+  const hechos = diasEntrenadosEnSemana(fechasEntrenadas(p, hoy), inicio);
+  const meta = diasDePlan(p.diasSemana);
+  return { meta, hechos, faltan: Math.max(0, meta - hechos), diasRestantes: 7 - diasEntre(inicio, hoy) };
+}
+
+/** Semanas seguidas que cumplieron su meta. La semana en curso suma solo si ya
+ * la cumplió; si todavía no, no rompe la racha (aún queda tiempo). */
+export function semanasSeguidas(p: Progreso, hoy: string = hoyISO()): number {
+  const fechas = fechasEntrenadas(p, hoy);
+  const meta = diasDePlan(p.diasSemana);
+  let inicio = inicioDeSemana(hoy);
+  let semanas = 0;
+  if (diasEntrenadosEnSemana(fechas, inicio) >= meta) semanas++;
+  inicio = sumarDiasISO(inicio, -7);
+  while (semanas < 520 && diasEntrenadosEnSemana(fechas, inicio) >= meta) {
+    semanas++;
+    inicio = sumarDiasISO(inicio, -7);
+  }
+  return semanas;
+}
+
+/** La racha semanal corre peligro cuando las sesiones que faltan ya solo caben
+ * si entrena todos los días que quedan de la semana. */
+export function rachaEnRiesgo(p: Progreso, hoy: string = hoyISO()): boolean {
+  const semana = resumenSemana(p, hoy);
+  return semana.faltan > 0 && semana.diasRestantes <= semana.faltan && semanasSeguidas(p, hoy) > 0;
+}
+
+export type MotivoDescanso = 'hoy' | 'semana' | 'seguidos' | 'meta';
+
+/** Cuándo el plan propone descansar. Siempre es una propuesta: la persona puede
+ * entrenar igual (ver `descansoIgnorado`). Reemplaza al "día 7" fijo. */
+export function descansoRecomendado(p: Progreso, hoy: string = hoyISO()): MotivoDescanso | null {
+  if (p.descansoIgnorado === hoy) return null;
+  // Cerró una sesión hoy y todavía no empezó otra.
+  if (p.ultimaFecha === hoy && p.hechosHoy.length === 0) return 'hoy';
+  const fechas = fechasEntrenadas(p, hoy);
+  let previos7 = 0;
+  for (let i = 1; i <= 7; i++) if (fechas.has(sumarDiasISO(hoy, -i))) previos7++;
+  if (previos7 >= 6) return 'semana';
+  if (fechas.has(sumarDiasISO(hoy, -1)) && fechas.has(sumarDiasISO(hoy, -2)) && fechas.has(sumarDiasISO(hoy, -3))) return 'seguidos';
+  if (resumenSemana(p, hoy).faltan === 0) return 'meta';
+  return null;
+}
+
+/** Elige "entrenar igual" (o agregar un día): no se vuelve a proponer descanso
+ * hoy. `ligero` = día extra ligero en vez de la siguiente sesión. */
+export function entrenarIgual(p: Progreso, ligero: boolean): Progreso {
+  return { ...p, descansoIgnorado: hoyISO(), extraHoy: ligero };
 }
