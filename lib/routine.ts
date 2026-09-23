@@ -816,6 +816,16 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Glúteo medio', principal: true }, { nombre: 'Glúteo menor', principal: false }],
     consejoTecnico: 'Evita girar la cadera hacia atrás o usar impulso para levantar la pierna.',
   } },
+  remo_polea_baja_pie: { id: 'remo_polea_baja_pie', nombre: 'Remo en polea baja, de pie, con las dos manos', grupo: 'Espalda', grupoMuscular: 'dorsal', imagenExplicacion: '/explicaciones/remo-polea-baja-pie.jpg', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_mancuerna_pie', guia: {
+    indicaciones: [
+      'Colócate frente a la polea baja, de pie, con los pies a la anchura de los hombros.',
+      'Sujeta el manillar con ambas manos y mantén la espalda recta.',
+      'Tira del manillar hacia la cintura, apretando la espalda.',
+      'Vuelve lentamente a la posición inicial.',
+    ],
+    musculos: [{ nombre: 'Dorsal ancho', principal: true }, { nombre: 'Trapecios', principal: false }, { nombre: 'Romboides', principal: false }, { nombre: 'Deltoides posteriores', principal: false }],
+    consejoTecnico: 'Evita redondear la espalda y usa un movimiento controlado para un máximo aislamiento de los músculos.',
+  } },
 };
 
 /** Alterna hombre/mujer entre ejercicios de forma ESTABLE (nunca al azar: el
