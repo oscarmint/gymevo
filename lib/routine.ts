@@ -1102,35 +1102,21 @@ export function sesionesDelPlan(diasSemana: number): SesionId[] {
   return CICLO_POR_DIAS[diasDePlan(diasSemana)];
 }
 
-const KEY_SESIONES_HECHAS = 'gymevo_sesiones_hechas';
-
 /** Qué sesiones del plan (índices dentro de `sesionesDelPlan`) ya se hicieron
- * ESTA semana. Se guarda en el dispositivo porque la persona puede saltarse el
- * orden (hacer el Día 3 antes que el 1) y el progreso remoto solo cuenta
- * cuántas sesiones van. Sin dato local, se asume que fueron las primeras. */
+ * ESTA semana. Vive en el Progreso (y se sincroniza con la cuenta) porque la
+ * persona puede saltarse el orden (hacer el Día 3 antes que el 1). Sin dato de
+ * esta semana, se asume que fueron las primeras. */
 export function indicesHechosSemana(p: Progreso, hoy: string = hoyISO()): number[] {
   const hechas = sesionesHechasSemana(p, hoy);
-  if (typeof window !== 'undefined') {
-    try {
-      const v = JSON.parse(localStorage.getItem(KEY_SESIONES_HECHAS) ?? 'null') as { semana: string; dias: number; indices: number[] } | null;
-      if (v && v.semana === inicioDeSemana(hoy) && v.dias === diasDePlan(p.diasSemana) && Array.isArray(v.indices) && v.indices.length >= hechas) {
-        return v.indices;
-      }
-    } catch {
-      // Dato local ilegible: se usa el respaldo.
-    }
-  }
+  const v = p.rutinasHechas;
+  if (v && v.semana === inicioDeSemana(hoy) && v.dias === diasDePlan(p.diasSemana) && v.indices.length >= hechas) return v.indices;
   return Array.from({ length: hechas }, (_, i) => i);
 }
 
 /** Anota que la sesión `indice` ya se hizo esta semana (al cerrar el entrenamiento). */
-export function registrarSesionHecha(p: Progreso, indice: number, hoy: string = hoyISO()): void {
+export function registrarSesionHecha(p: Progreso, indice: number, hoy: string = hoyISO()): Progreso {
   const indices = [...new Set([...indicesHechosSemana(p, hoy), indice])];
-  try {
-    localStorage.setItem(KEY_SESIONES_HECHAS, JSON.stringify({ semana: inicioDeSemana(hoy), dias: diasDePlan(p.diasSemana), indices }));
-  } catch {
-    // Sin almacenamiento: el respaldo asume las primeras sesiones.
-  }
+  return { ...p, rutinasHechas: { semana: inicioDeSemana(hoy), dias: diasDePlan(p.diasSemana), indices }, rutinaElegida: null };
 }
 
 /** Índice de la sesión que se hace hoy: la elegida a mano, o la primera del
@@ -1159,27 +1145,14 @@ export function rutinasDisponiblesSemana(p: Progreso, hoy: string = hoyISO()): {
     .filter((r) => !hechas.includes(r.indice));
 }
 
-const KEY_SESION_ELEGIDA = 'gymevo_sesion_elegida';
-
-/** Sesión que la persona eligió para HOY (solo vale el día en que la eligió).
- * Vive en el dispositivo: es una preferencia del día, no progreso. */
-export function leerSesionElegida(hoy: string = hoyISO()): number | null {
-  if (typeof window === 'undefined') return null;
-  try {
-    const v = JSON.parse(localStorage.getItem(KEY_SESION_ELEGIDA) ?? 'null') as { fecha: string; indice: number } | null;
-    return v && v.fecha === hoy && Number.isInteger(v.indice) ? v.indice : null;
-  } catch {
-    return null;
-  }
+/** Sesión que la persona eligió para HOY (solo vale el día en que la eligió). */
+export function leerSesionElegida(p: Progreso, hoy: string = hoyISO()): number | null {
+  const e = p.rutinaElegida;
+  return e && e.fecha === hoy ? e.indice : null;
 }
 
-export function guardarSesionElegida(indice: number | null, hoy: string = hoyISO()): void {
-  try {
-    if (indice === null) localStorage.removeItem(KEY_SESION_ELEGIDA);
-    else localStorage.setItem(KEY_SESION_ELEGIDA, JSON.stringify({ fecha: hoy, indice }));
-  } catch {
-    // Sin almacenamiento: la elección solo dura mientras la pantalla esté abierta.
-  }
+export function elegirSesion(p: Progreso, indice: number, hoy: string = hoyISO()): Progreso {
+  return { ...p, rutinaElegida: { fecha: hoy, indice }, reemplazosHoy: {} };
 }
 
 /** Los 7 días (lunes a domingo) de la semana de `hoy`, con si se entrenó ese día. */
@@ -1356,6 +1329,10 @@ export interface Progreso {
   /** Fecha (YYYY-MM-DD) de la primera medida registrada (peso o cintura) —
    * para poder decir "desde el [fecha]" en el progreso, no solo "un cambio". */
   fechaInicioMedidas: string | null;
+  /** Rutinas del plan ya hechas la semana en curso (índices del ciclo). */
+  rutinasHechas?: { semana: string; dias: number; indices: number[] } | null;
+  /** Rutina elegida a mano para un día concreto (solo vale ese día). */
+  rutinaElegida?: { fecha: string; indice: number } | null;
 }
 
 const KEY = 'gymevo_progreso';

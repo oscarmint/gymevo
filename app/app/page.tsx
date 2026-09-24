@@ -30,7 +30,7 @@ import {
   indicesHechosSemana,
   registrarSesionHecha,
   leerSesionElegida,
-  guardarSesionElegida,
+  elegirSesion,
   semanasSeguidas,
   resumenSemana,
   esDomingo,
@@ -223,7 +223,7 @@ function PlanDelDia({
   // Ya hizo todas las sesiones de su semana (lunes a domingo).
   const cumplida = semanaCumplida(progreso, hoy);
   // Rutina elegida a mano para hoy (null = la siguiente del plan).
-  const [elegida, setElegida] = useState<number | null>(() => leerSesionElegida());
+  const elegida = leerSesionElegida(progreso, hoy);
   const rachaAnteriorRef = useRef(semanas);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const reduce = useReducedMotion();
@@ -410,9 +410,11 @@ function PlanDelDia({
   // Con series ya registradas hoy no se puede cambiar de rutina.
   const empezoHoy = progreso.hechosHoy.length > 0 || progreso.logs.some((l) => l.fecha === hoy);
   function elegirRutina(indice: number) {
-    setElegida(indice);
-    guardarSesionElegida(indice);
-    actualizar((p) => ({ ...p, reemplazosHoy: {} }));
+    actualizar((p) => {
+      const next = elegirSesion(p, indice);
+      guardarProgresoRemoto(next, () => setErrorSync(true));
+      return next;
+    });
   }
   const selectorRutina = (
     <SelectorDiaRutina progreso={progreso} elegida={elegida} indiceActual={indiceActual} bloqueado={empezoHoy} hechos={indicesHechos} onElegir={elegirRutina} />
@@ -547,11 +549,8 @@ function PlanDelDia({
 
   function finalizarEntrenamiento() {
     // La rutina hecha deja de estar disponible esta semana (calendario y selector).
-    registrarSesionHecha(progreso, indiceActual);
-    guardarSesionElegida(null);
-    setElegida(null);
     actualizar((p) => {
-      const next = completarEntrenamiento(p);
+      const next = completarEntrenamiento(registrarSesionHecha(p, indiceActual));
       guardarProgresoRemoto(next, () => setErrorSync(true));
       return next;
     });

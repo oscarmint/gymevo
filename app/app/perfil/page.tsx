@@ -128,7 +128,7 @@ export default function PerfilPage() {
 
   // Misma llama de racha que Plan de hoy: se llena según el progreso real de
   // hoy (ejercicios ya marcados hechos / total de hoy), no es decorativa.
-  const idsHoy = aplicarReemplazos(ejerciciosDeSesion(sesionActual(progreso, leerSesionElegida()), nivel), progreso.reemplazosHoy);
+  const idsHoy = aplicarReemplazos(ejerciciosDeSesion(sesionActual(progreso, leerSesionElegida(progreso)), nivel), progreso.reemplazosHoy);
   const progresoLlamaPct = idsHoy.length
     ? Math.round((idsHoy.filter((e) => progreso.hechosHoy.includes(e.id)).length / idsHoy.length) * 100)
     : 0;

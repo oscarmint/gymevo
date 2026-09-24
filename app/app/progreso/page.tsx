@@ -11,7 +11,8 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { diasDelMes, resumenDelMes } from '@/lib/calendario';
-import { guardarSesionElegida, hoyISO, nombreDeSesion, rutinasDisponiblesSemana } from '@/lib/routine';
+import { elegirSesion, guardarProgreso, hoyISO, nombreDeSesion, rutinasDisponiblesSemana } from '@/lib/routine';
+import { guardarProgresoRemoto } from '@/lib/supabase/sync';
 import { useProgresoCalendario } from '@/lib/useProgresoCalendario';
 import { CalendarioMes } from '@/components/progreso/CalendarioMes';
 import { DetalleDia } from '@/components/progreso/DetalleDia';
@@ -143,7 +144,9 @@ function ProgresoContenido() {
                   bloqueada={empezoHoy}
                   onHacerRutina={() => {
                     if (!rutinaElegida) return;
-                    guardarSesionElegida(rutinaElegida.indice);
+                    const next = elegirSesion(progreso, rutinaElegida.indice);
+                    guardarProgreso(next);
+                    guardarProgresoRemoto(next);
                     router.push('/app');
                   }}
                 />
