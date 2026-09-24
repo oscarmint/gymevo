@@ -907,7 +907,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Recto abdominal', principal: true }, { nombre: 'Oblicuos' }, { nombre: 'Transverso abdominal' }],
     consejoTecnico: 'Mantén la zona lumbar pegada al suelo en todo momento para asegurar que el core haga el trabajo.',
   } },
-  step_up_banco: { id: 'step_up_banco', nombre: 'Subida al banco (step-up)', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/step-up-banco.png', series: 4, reps: '10-12 por pierna', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'extension_cuadriceps', guia: {
+  step_up_banco: { id: 'step_up_banco', nombre: 'Subida al banco (step-up)', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/step-up-banco.jpg', series: 4, reps: '10-12 por pierna', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'extension_cuadriceps', guia: {
     indicaciones: [
       'Colócate de pie frente a un banco plano estable, a la altura de tu rodilla.',
       'Apoya todo el pie sobre el centro del banco.',
