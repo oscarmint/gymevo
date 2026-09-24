@@ -275,7 +275,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Cuádriceps', principal: true }],
     consejoTecnico: 'Espalda apoyada firmemente en el respaldo durante todo el movimiento.',
   } },
-  aductor_externo: { id: 'aductor_externo', nombre: 'Aductor externo (máquina sentado)', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/aductor-externo.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'aductor_externo_polea', guia: {
+  aductor_externo: { id: 'aductor_externo', nombre: 'Abductor de cadera (máquina sentado)', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/aductor-externo.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'aductor_externo_polea', guia: {
     indicaciones: [
       'Siéntate con las piernas juntas contra las almohadillas.',
       'Empuja las piernas hacia afuera de forma controlada.',
@@ -343,7 +343,16 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Oblicuos', principal: true }, { nombre: 'Recto abdominal', principal: false }],
     consejoTecnico: 'Enfoque en la contracción de los oblicuos, no en la velocidad.',
   } },
-  elevacion_piernas: { id: 'elevacion_piernas', nombre: 'Elevación de piernas', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/elevacion-piernas.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha_abdominal' },
+  elevacion_piernas: { id: 'elevacion_piernas', nombre: 'Elevación de piernas', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/elevacion-piernas.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha_abdominal' , guia: {
+      indicaciones: [
+        'Acuéstate boca arriba con las piernas juntas y las manos bajo los glúteos.',
+        'Pega la zona lumbar al suelo y activa el abdomen.',
+        'Sube las piernas casi estiradas hasta formar 90° con el tronco.',
+        'Baja lento sin tocar el suelo y sin arquear la espalda.',
+      ],
+      musculos: [{ nombre: 'Recto abdominal inferior', principal: true }, { nombre: 'Flexores de cadera' }, { nombre: 'Oblicuos' }],
+      consejoTecnico: 'Si la espalda baja se despega del suelo, flexiona un poco las rodillas y baja menos.',
+    } },
 
   press_banco_mancuernas: { id: 'press_banco_mancuernas', nombre: 'Press de banco plano con mancuernas', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/press-banco-mancuernas.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_pecho_hammer', guia: {
     indicaciones: [
@@ -493,9 +502,27 @@ const CATALOGO: Record<string, Ejercicio> = {
     consejoTecnico: 'Cuerpo alineado, abdomen apretado, 3 series de 45-60 segundos.',
   } },
 
-  elevacion_frontal_mancuernas: { id: 'elevacion_frontal_mancuernas', nombre: 'Elevación frontal con mancuernas', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/elevacion-frontal-mancuernas.jpg', series: 4, reps: '8-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'elevaciones_laterales_mancuernas' },
-  encogimientos_mancuernas: { id: 'encogimientos_mancuernas', nombre: 'Encogimientos con mancuernas', grupo: 'Trapecio', grupoMuscular: 'trapecio', imagenExplicacion: '/explicaciones/encogimientos-mancuernas.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'elevacion_frontal_mancuernas' },
-  crunch_superior_horizontal: { id: 'crunch_superior_horizontal', nombre: 'Crunch superior horizontal (máquina)', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-superior-horizontal.png', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_superior_horizontal_banco', guia: {
+  elevacion_frontal_mancuernas: { id: 'elevacion_frontal_mancuernas', nombre: 'Elevación frontal con mancuernas', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/elevacion-frontal-mancuernas.jpg', series: 4, reps: '8-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'elevaciones_laterales_mancuernas' , guia: {
+      indicaciones: [
+        'De pie, con una mancuerna en cada mano frente a los muslos y el core activado.',
+        'Con los codos apenas flexionados, sube los brazos al frente hasta la altura de los hombros.',
+        'Haz una pausa breve arriba sin encoger los hombros.',
+        'Baja lento y con control hasta el punto de partida.',
+      ],
+      musculos: [{ nombre: 'Deltoides anterior', principal: true }, { nombre: 'Pectoral superior' }, { nombre: 'Serrato anterior' }],
+      consejoTecnico: 'No balancees el torso para subir la mancuerna: si necesitas impulso, baja el peso.',
+    } },
+  encogimientos_mancuernas: { id: 'encogimientos_mancuernas', nombre: 'Encogimientos con mancuernas', grupo: 'Trapecio', grupoMuscular: 'trapecio', imagenExplicacion: '/explicaciones/encogimientos-mancuernas.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'elevacion_frontal_mancuernas' , guia: {
+      indicaciones: [
+        'De pie, con una mancuerna en cada mano a los lados del cuerpo y los brazos estirados.',
+        'Mantén la espalda recta y la mirada al frente.',
+        'Sube los hombros hacia las orejas lo más alto que puedas.',
+        'Sostén un segundo arriba y baja lento sin rebotar.',
+      ],
+      musculos: [{ nombre: 'Trapecio superior', principal: true }, { nombre: 'Elevador de la escápula' }, { nombre: 'Antebrazos' }],
+      consejoTecnico: 'Sube los hombros en línea recta, sin rotarlos hacia adelante ni atrás.',
+    } },
+  crunch_superior_horizontal: { id: 'crunch_superior_horizontal', nombre: 'Crunch superior horizontal', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-superior-horizontal.png', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_superior_horizontal_banco', guia: {
     indicaciones: [
       'Acuéstate en el banco con las rodillas flexionadas y las manos detrás de la cabeza.',
       'Sube el torso contrayendo el abdomen, sin tirar del cuello.',
@@ -504,7 +531,16 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Recto abdominal (zona superior)', principal: true }],
     consejoTecnico: 'Enfócate en la contracción abdominal, no en la velocidad del movimiento.',
   } },
-  lumbares_maquina: { id: 'lumbares_maquina', nombre: 'Lumbares (máquina)', grupo: 'Espalda baja', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/lumbares.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha_abdominal' },
+  lumbares_maquina: { id: 'lumbares_maquina', nombre: 'Lumbares (máquina)', grupo: 'Espalda baja', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/lumbares.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha_abdominal' , guia: {
+      indicaciones: [
+        'Ajusta el respaldo y las almohadillas para que queden a la altura de tu espalda y cadera.',
+        'Siéntate con los pies firmes y el pecho apoyado, con la espalda recta.',
+        'Empuja hacia atrás extendiendo el tronco hasta quedar alineado, sin arquear de más.',
+        'Vuelve lento a la posición inicial manteniendo la tensión.',
+      ],
+      musculos: [{ nombre: 'Erectores espinales', principal: true }, { nombre: 'Glúteos' }, { nombre: 'Isquiotibiales' }],
+      consejoTecnico: 'Extiende solo hasta quedar recto: arquear de más la espalda carga la zona lumbar sin beneficio.',
+    } },
 
   // Ejercicios NUEVOS agregados 15/09/2026 con la rutina de Principiante (ver
   // ESTADO.md) — sin ilustración real todavía, usan la silueta de respaldo
@@ -689,7 +725,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Pectoral inferior', principal: true }, { nombre: 'Tríceps', principal: false }, { nombre: 'Deltoides anteriores', principal: false }],
     consejoTecnico: 'Controla la bajada y añade lastre solo cuando domines el peso corporal.',
   } },
-  aductor_externo_polea: { id: 'aductor_externo_polea', nombre: 'Aductor externo en polea', grupo: 'Pierna', grupoMuscular: 'gluteo', imagenExplicacion: '/explicaciones/aductor-externo-polea.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'aductor_externo', guia: {
+  aductor_externo_polea: { id: 'aductor_externo_polea', nombre: 'Abductor de cadera en polea', grupo: 'Pierna', grupoMuscular: 'gluteo', imagenExplicacion: '/explicaciones/aductor-externo-polea.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'aductor_externo', guia: {
     indicaciones: [
       'De pie, sujeta la estructura y engancha la tobillera de la polea.',
       'Lleva la pierna hacia afuera de forma controlada.',
