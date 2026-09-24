@@ -1061,9 +1061,50 @@ export function calentamientoDeSesion(sesion: SesionId): TrenCalentamiento | nul
   return CALENTAMIENTO_DIA_RUTINA[sesion];
 }
 
-/** La sesión que se hace ahora: la siguiente pendiente de la semana. */
-export function sesionActual(p: Progreso): SesionId {
+/** Las sesiones que rota el plan de la persona, en orden (una por día de plan). */
+export function sesionesDelPlan(diasSemana: number): SesionId[] {
+  return CICLO_POR_DIAS[diasDePlan(diasSemana)];
+}
+
+/** La sesión que se hace ahora: la siguiente pendiente de la semana, o la que
+ * la persona eligió para hoy (índice dentro de `sesionesDelPlan`). */
+export function sesionActual(p: Progreso, elegida: number | null = null): SesionId {
+  const ciclo = sesionesDelPlan(p.diasSemana);
+  if (elegida !== null && elegida >= 0 && elegida < ciclo.length) return ciclo[elegida];
   return sesionDelCiclo(sesionesHechasSemana(p), p.diasSemana);
+}
+
+const KEY_SESION_ELEGIDA = 'gymevo_sesion_elegida';
+
+/** Sesión que la persona eligió para HOY (solo vale el día en que la eligió).
+ * Vive en el dispositivo: es una preferencia del día, no progreso. */
+export function leerSesionElegida(hoy: string = hoyISO()): number | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const v = JSON.parse(localStorage.getItem(KEY_SESION_ELEGIDA) ?? 'null') as { fecha: string; indice: number } | null;
+    return v && v.fecha === hoy && Number.isInteger(v.indice) ? v.indice : null;
+  } catch {
+    return null;
+  }
+}
+
+export function guardarSesionElegida(indice: number | null, hoy: string = hoyISO()): void {
+  try {
+    if (indice === null) localStorage.removeItem(KEY_SESION_ELEGIDA);
+    else localStorage.setItem(KEY_SESION_ELEGIDA, JSON.stringify({ fecha: hoy, indice }));
+  } catch {
+    // Sin almacenamiento: la elección solo dura mientras la pantalla esté abierta.
+  }
+}
+
+/** Los 7 días (lunes a domingo) de la semana de `hoy`, con si se entrenó ese día. */
+export function diasDeLaSemana(p: Progreso, hoy: string = hoyISO()): { fecha: string; entrenado: boolean; esHoy: boolean }[] {
+  const inicio = inicioDeSemana(hoy);
+  const fechas = fechasEntrenadas(p, hoy);
+  return Array.from({ length: 7 }, (_, i) => {
+    const fecha = sumarDiasISO(inicio, i);
+    return { fecha, entrenado: fechas.has(fecha), esHoy: fecha === hoy };
+  });
 }
 
 // Prescripción de Intermedio para los bloques nuevos: cada ejercicio hereda la

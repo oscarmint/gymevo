@@ -26,6 +26,10 @@ import {
   MUSCULO_LABEL,
   nombreDeSesion,
   sesionActual,
+  sesionesDelPlan,
+  sesionesHechasSemana,
+  leerSesionElegida,
+  guardarSesionElegida,
   semanasSeguidas,
   resumenSemana,
   esDomingo,
@@ -41,6 +45,7 @@ import {
   ultimoRegistro,
   type Progreso,
 } from '@/lib/routine';
+import { SelectorDiaRutina } from '@/components/SelectorDiaRutina';
 import { BannerRenovacion } from '@/components/BannerRenovacion';
 import CalentamientoGuiado, { DURACION_CALENTAMIENTO_MIN } from '@/components/CalentamientoGuiado';
 import { guardarLogRemoto, guardarProgresoRemoto, leerProgresoRemoto, sincronizarPerfilInicial } from '@/lib/supabase/sync';
@@ -216,6 +221,8 @@ function PlanDelDia({
   const hoy = hoyISO();
   // Ya hizo todas las sesiones de su semana (lunes a domingo).
   const cumplida = semanaCumplida(progreso, hoy);
+  // Rutina elegida a mano para hoy (null = la siguiente del plan).
+  const [elegida, setElegida] = useState<number | null>(() => leerSesionElegida());
   const rachaAnteriorRef = useRef(semanas);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const reduce = useReducedMotion();
@@ -396,7 +403,19 @@ function PlanDelDia({
   const nivel = progreso.nivel;
   const meta = progreso.meta;
 
-  const sesion = sesionActual(progreso);
+  const sesion = sesionActual(progreso, elegida);
+  const cicloPlan = sesionesDelPlan(progreso.diasSemana);
+  const indiceActual = elegida !== null && elegida < cicloPlan.length ? elegida : sesionesHechasSemana(progreso) % cicloPlan.length;
+  // Con series ya registradas hoy no se puede cambiar de rutina.
+  const empezoHoy = progreso.hechosHoy.length > 0 || progreso.logs.some((l) => l.fecha === hoy);
+  function elegirRutina(indice: number) {
+    setElegida(indice);
+    guardarSesionElegida(indice);
+    actualizar((p) => ({ ...p, reemplazosHoy: {} }));
+  }
+  const selectorRutina = (
+    <SelectorDiaRutina progreso={progreso} elegida={elegida} indiceActual={indiceActual} bloqueado={empezoHoy} onElegir={elegirRutina} />
+  );
   const ejercicios = useMemo(() => ejerciciosDeSesion(sesion, nivel), [sesion, nivel]);
 
   // Actualización funcional: siempre parte del progreso MÁS RECIENTE, nunca del
@@ -605,6 +624,7 @@ function PlanDelDia({
                 </>
               )}
             </p>
+            {!cumplida && <div className="mt-6 w-full max-w-sm">{selectorRutina}</div>}
             <button
               type="button"
               onClick={iniciarEntrenamiento}
