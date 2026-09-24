@@ -40,7 +40,23 @@ function fechaLarga(fecha: string): string {
   return t.charAt(0).toUpperCase() + t.slice(1);
 }
 
-export function DetalleDia({ progreso, fecha, hoy }: { progreso: Progreso; fecha: string; hoy: string }) {
+export function DetalleDia({
+  progreso,
+  fecha,
+  hoy,
+  rutina,
+  bloqueada,
+  onHacerRutina,
+}: {
+  progreso: Progreso;
+  fecha: string;
+  hoy: string;
+  /** Rutina del plan disponible en este día de la semana (null = ninguna). */
+  rutina: { dia: number; nombre: string } | null;
+  /** Ya empezó a entrenar hoy: no puede cambiar de rutina. */
+  bloqueada: boolean;
+  onHacerRutina: () => void;
+}) {
   const info = infoDelDia(progreso, fecha, hoy);
   const unidad = progreso.unidadPeso;
 
@@ -90,6 +106,27 @@ export function DetalleDia({ progreso, fecha, hoy }: { progreso: Progreso; fecha
         {info.estado === 'sin_datos' && <p className="mt-3 text-sm text-[var(--text-secondary)]">Es anterior a tu primer entrenamiento registrado.</p>}
         {info.estado === 'futuro' && <p className="mt-3 text-sm text-[var(--text-secondary)]">Cuando llegue, aquí verás cómo te fue.</p>}
       </div>
+
+      {rutina && info.estado !== 'verde' && info.estado !== 'amarillo' && (
+        <div className="mt-3 rounded-2xl border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] bg-[var(--chip-bg)] p-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--accent)]">Rutina disponible · Día {rutina.dia}</p>
+          <p className="mt-1 text-base font-semibold text-[var(--text-primary)]">{rutina.nombre}</p>
+          {bloqueada ? (
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">Ya empezaste el entrenamiento de hoy: termínalo para elegir otra rutina.</p>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={onHacerRutina}
+                className="boton-3d mt-3 flex h-12 w-full items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
+              >
+                Hacer esta rutina hoy
+              </button>
+              <p className="mt-2 text-xs text-[var(--text-secondary)]">Una vez que la hagas, no volverá a estar disponible esta semana.</p>
+            </>
+          )}
+        </div>
+      )}
 
       {info.ejercicios.length > 0 && (
         <ul className="mt-4 flex flex-col gap-3">

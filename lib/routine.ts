@@ -1066,12 +1066,61 @@ export function sesionesDelPlan(diasSemana: number): SesionId[] {
   return CICLO_POR_DIAS[diasDePlan(diasSemana)];
 }
 
-/** La sesión que se hace ahora: la siguiente pendiente de la semana, o la que
- * la persona eligió para hoy (índice dentro de `sesionesDelPlan`). */
-export function sesionActual(p: Progreso, elegida: number | null = null): SesionId {
+const KEY_SESIONES_HECHAS = 'gymevo_sesiones_hechas';
+
+/** Qué sesiones del plan (índices dentro de `sesionesDelPlan`) ya se hicieron
+ * ESTA semana. Se guarda en el dispositivo porque la persona puede saltarse el
+ * orden (hacer el Día 3 antes que el 1) y el progreso remoto solo cuenta
+ * cuántas sesiones van. Sin dato local, se asume que fueron las primeras. */
+export function indicesHechosSemana(p: Progreso, hoy: string = hoyISO()): number[] {
+  const hechas = sesionesHechasSemana(p, hoy);
+  if (typeof window !== 'undefined') {
+    try {
+      const v = JSON.parse(localStorage.getItem(KEY_SESIONES_HECHAS) ?? 'null') as { semana: string; dias: number; indices: number[] } | null;
+      if (v && v.semana === inicioDeSemana(hoy) && v.dias === diasDePlan(p.diasSemana) && Array.isArray(v.indices) && v.indices.length >= hechas) {
+        return v.indices;
+      }
+    } catch {
+      // Dato local ilegible: se usa el respaldo.
+    }
+  }
+  return Array.from({ length: hechas }, (_, i) => i);
+}
+
+/** Anota que la sesión `indice` ya se hizo esta semana (al cerrar el entrenamiento). */
+export function registrarSesionHecha(p: Progreso, indice: number, hoy: string = hoyISO()): void {
+  const indices = [...new Set([...indicesHechosSemana(p, hoy), indice])];
+  try {
+    localStorage.setItem(KEY_SESIONES_HECHAS, JSON.stringify({ semana: inicioDeSemana(hoy), dias: diasDePlan(p.diasSemana), indices }));
+  } catch {
+    // Sin almacenamiento: el respaldo asume las primeras sesiones.
+  }
+}
+
+/** Índice de la sesión que se hace hoy: la elegida a mano, o la primera del
+ * plan que aún no se hizo esta semana. */
+export function indiceSesionActual(p: Progreso, elegida: number | null = null, hoy: string = hoyISO()): number {
   const ciclo = sesionesDelPlan(p.diasSemana);
-  if (elegida !== null && elegida >= 0 && elegida < ciclo.length) return ciclo[elegida];
-  return sesionDelCiclo(sesionesHechasSemana(p), p.diasSemana);
+  if (elegida !== null && elegida >= 0 && elegida < ciclo.length) return elegida;
+  const hechas = indicesHechosSemana(p, hoy);
+  const pendiente = ciclo.findIndex((_, i) => !hechas.includes(i));
+  return pendiente >= 0 ? pendiente : sesionesHechasSemana(p, hoy) % ciclo.length;
+}
+
+/** La sesión que se hace ahora: la elegida para hoy o la siguiente pendiente. */
+export function sesionActual(p: Progreso, elegida: number | null = null): SesionId {
+  return sesionesDelPlan(p.diasSemana)[indiceSesionActual(p, elegida)];
+}
+
+/** Días de esta semana en los que se puede elegir una rutina: el día 1 del plan
+ * es el lunes, el 2 el martes… (uno por día del plan). Un día desaparece cuando
+ * su rutina ya se hizo, para no repetirla en la misma semana. */
+export function rutinasDisponiblesSemana(p: Progreso, hoy: string = hoyISO()): { fecha: string; indice: number; sesion: SesionId }[] {
+  const inicio = inicioDeSemana(hoy);
+  const hechas = indicesHechosSemana(p, hoy);
+  return sesionesDelPlan(p.diasSemana)
+    .map((sesion, indice) => ({ fecha: sumarDiasISO(inicio, indice), indice, sesion }))
+    .filter((r) => !hechas.includes(r.indice));
 }
 
 const KEY_SESION_ELEGIDA = 'gymevo_sesion_elegida';

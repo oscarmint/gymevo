@@ -26,8 +26,9 @@ import {
   MUSCULO_LABEL,
   nombreDeSesion,
   sesionActual,
-  sesionesDelPlan,
-  sesionesHechasSemana,
+  indiceSesionActual,
+  indicesHechosSemana,
+  registrarSesionHecha,
   leerSesionElegida,
   guardarSesionElegida,
   semanasSeguidas,
@@ -404,8 +405,8 @@ function PlanDelDia({
   const meta = progreso.meta;
 
   const sesion = sesionActual(progreso, elegida);
-  const cicloPlan = sesionesDelPlan(progreso.diasSemana);
-  const indiceActual = elegida !== null && elegida < cicloPlan.length ? elegida : sesionesHechasSemana(progreso) % cicloPlan.length;
+  const indiceActual = indiceSesionActual(progreso, elegida);
+  const indicesHechos = indicesHechosSemana(progreso);
   // Con series ya registradas hoy no se puede cambiar de rutina.
   const empezoHoy = progreso.hechosHoy.length > 0 || progreso.logs.some((l) => l.fecha === hoy);
   function elegirRutina(indice: number) {
@@ -414,7 +415,7 @@ function PlanDelDia({
     actualizar((p) => ({ ...p, reemplazosHoy: {} }));
   }
   const selectorRutina = (
-    <SelectorDiaRutina progreso={progreso} elegida={elegida} indiceActual={indiceActual} bloqueado={empezoHoy} onElegir={elegirRutina} />
+    <SelectorDiaRutina progreso={progreso} elegida={elegida} indiceActual={indiceActual} bloqueado={empezoHoy} hechos={indicesHechos} onElegir={elegirRutina} />
   );
   const ejercicios = useMemo(() => ejerciciosDeSesion(sesion, nivel), [sesion, nivel]);
 
@@ -545,6 +546,10 @@ function PlanDelDia({
   }
 
   function finalizarEntrenamiento() {
+    // La rutina hecha deja de estar disponible esta semana (calendario y selector).
+    registrarSesionHecha(progreso, indiceActual);
+    guardarSesionElegida(null);
+    setElegida(null);
     actualizar((p) => {
       const next = completarEntrenamiento(p);
       guardarProgresoRemoto(next, () => setErrorSync(true));

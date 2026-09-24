@@ -15,6 +15,7 @@ export function SelectorDiaRutina({
   elegida,
   indiceActual,
   bloqueado,
+  hechos,
   onElegir,
 }: {
   progreso: Progreso;
@@ -24,6 +25,8 @@ export function SelectorDiaRutina({
   indiceActual: number;
   /** Ya empezó a registrar hoy: cambiar de rutina mezclaría dos entrenamientos. */
   bloqueado: boolean;
+  /** Índices de las rutinas ya hechas esta semana (no se pueden repetir). */
+  hechos: number[];
   onElegir: (indice: number) => void;
 }) {
   const semana = diasDeLaSemana(progreso);
@@ -60,11 +63,12 @@ export function SelectorDiaRutina({
       <div className="mt-2 flex flex-col gap-2">
         {ciclo.map((sesion, i) => {
           const activa = i === indiceActual;
+          const hecha = hechos.includes(i);
           return (
             <button
               key={`${sesion}-${i}`}
               type="button"
-              disabled={bloqueado && !activa}
+              disabled={(bloqueado && !activa) || (hecha && !activa)}
               aria-pressed={activa}
               onClick={() => onElegir(i)}
               className={`flex min-h-11 items-center justify-between gap-3 rounded-xl border px-4 py-2.5 text-left text-sm font-semibold disabled:opacity-40 ${
@@ -77,6 +81,7 @@ export function SelectorDiaRutina({
                 <span className="mr-2 text-xs font-medium text-[var(--text-tertiary)]">Día {i + 1}</span>
                 {nombreDeSesion(sesion)}
               </span>
+              {hecha && !activa && <span className="text-xs font-medium text-[var(--text-tertiary)]">Hecha</span>}
               {activa && <Check size={16} color="var(--accent)" aria-hidden="true" />}
             </button>
           );

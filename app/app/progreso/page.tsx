@@ -9,9 +9,9 @@
 // Arriba, siempre visible, la semana contra la meta y la racha en semanas.
 
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { diasDelMes, resumenDelMes } from '@/lib/calendario';
-import { hoyISO } from '@/lib/routine';
+import { guardarSesionElegida, hoyISO, nombreDeSesion, rutinasDisponiblesSemana } from '@/lib/routine';
 import { useProgresoCalendario } from '@/lib/useProgresoCalendario';
 import { CalendarioMes } from '@/components/progreso/CalendarioMes';
 import { DetalleDia } from '@/components/progreso/DetalleDia';
@@ -29,6 +29,7 @@ const VISTAS: { id: Vista; etiqueta: string }[] = [
 
 function ProgresoContenido() {
   const parametros = useSearchParams();
+  const router = useRouter();
   const progreso = useProgresoCalendario();
   const hoy = hoyISO();
 
@@ -39,11 +40,8 @@ function ProgresoContenido() {
   const detalleRef = useRef<HTMLDivElement>(null);
   const eligioDia = useRef(false);
 
-  // Por defecto se ve la última sesión registrada (lo que una pantalla de
-  // historial tiene que mostrar al abrirse); si aún no hay ninguna, hoy. Ir al
-  // plan de hoy está a un toque en la barra de abajo.
-  const ultimaConRegistros = progreso ? progreso.logs.reduce<string | null>((max, l) => (max === null || l.fecha > max ? l.fecha : max), null) : null;
-  const seleccionada = elegida ?? (ultimaConRegistros && ultimaConRegistros <= hoy ? ultimaConRegistros : hoy);
+  // Por defecto queda seleccionado el día de hoy.
+  const seleccionada = elegida ?? hoy;
   const mes = useMemo(
     () => mesElegido ?? { anio: Number(seleccionada.slice(0, 4)), mes0: Number(seleccionada.slice(5, 7)) - 1 },
     [mesElegido, seleccionada],
@@ -54,6 +52,11 @@ function ProgresoContenido() {
   const esMesActual = mes.anio === anioHoy && mes.mes0 === mesHoy;
 
   const dias = useMemo(() => (progreso ? diasDelMes(progreso, mes.anio, mes.mes0, hoy) : []), [progreso, mes, hoy]);
+  // Rutinas de la semana que aún se pueden hacer (una por día del plan, desde el lunes).
+  const disponibles = useMemo(() => (progreso ? rutinasDisponiblesSemana(progreso, hoy) : []), [progreso, hoy]);
+  const disponiblesPorFecha = useMemo(() => Object.fromEntries(disponibles.map((r) => [r.fecha, r.indice + 1])), [disponibles]);
+  const rutinaElegida = disponibles.find((r) => r.fecha === seleccionada) ?? null;
+  const empezoHoy = !!progreso && (progreso.hechosHoy.length > 0 || progreso.logs.some((l) => l.fecha === hoy));
   const resumen = useMemo(() => resumenDelMes(dias), [dias]);
 
   // Al tocar un día, el detalle queda a la vista sin que la persona tenga que
@@ -116,6 +119,7 @@ function ProgresoContenido() {
                 hoy={hoy}
                 seleccionada={seleccionada}
                 esMesActual={esMesActual}
+                disponibles={disponiblesPorFecha}
                 onSeleccionar={elegirDia}
                 onMoverMes={moverMes}
               />
@@ -131,7 +135,18 @@ function ProgresoContenido() {
                 </p>
               )}
               <div ref={detalleRef} className="mt-6 scroll-mb-24">
-                <DetalleDia progreso={progreso} fecha={seleccionada} hoy={hoy} />
+                <DetalleDia
+                  progreso={progreso}
+                  fecha={seleccionada}
+                  hoy={hoy}
+                  rutina={rutinaElegida ? { dia: rutinaElegida.indice + 1, nombre: nombreDeSesion(rutinaElegida.sesion) } : null}
+                  bloqueada={empezoHoy}
+                  onHacerRutina={() => {
+                    if (!rutinaElegida) return;
+                    guardarSesionElegida(rutinaElegida.indice);
+                    router.push('/app');
+                  }}
+                />
               </div>
             </div>
           ) : (

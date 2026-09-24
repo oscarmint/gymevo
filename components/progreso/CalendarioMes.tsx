@@ -4,7 +4,7 @@
 // (lib/calendario.ts). Tocar un día lo selecciona — su detalle aparece justo
 // debajo, en la misma pantalla (antes abría otra página).
 
-import { ChevronLeft, ChevronRight, Moon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Dumbbell, Moon } from 'lucide-react';
 import { huecosIniciales, type EstadoDia, type InfoDia } from '@/lib/calendario';
 
 const SEMANA = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
@@ -20,6 +20,9 @@ const ESTILO_DIA: Record<EstadoDia, string> = {
   futuro: 'border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] text-[var(--text-tertiary)]',
   sin_datos: 'border-[color-mix(in_oklab,var(--text-tertiary)_16%,transparent)] bg-[var(--surface)] text-[var(--text-tertiary)]',
 };
+
+const ESTILO_DISPONIBLE =
+  'border-[color-mix(in_oklab,var(--accent)_70%,transparent)] bg-[var(--chip-bg)] text-[var(--text-primary)]';
 
 const ETIQUETA: Record<EstadoDia, string> = {
   verde: 'entrenamiento completo',
@@ -46,6 +49,7 @@ export function CalendarioMes({
   hoy,
   seleccionada,
   esMesActual,
+  disponibles,
   onSeleccionar,
   onMoverMes,
 }: {
@@ -55,6 +59,8 @@ export function CalendarioMes({
   hoy: string;
   seleccionada: string;
   esMesActual: boolean;
+  /** Fechas de esta semana con una rutina del plan aún por hacer (fecha → nº de día del plan). */
+  disponibles: Record<string, number>;
   onSeleccionar: (fecha: string) => void;
   onMoverMes: (delta: number) => void;
 }) {
@@ -99,17 +105,20 @@ export function CalendarioMes({
             const numero = Number(d.fecha.slice(8, 10));
             const esHoy = d.fecha === hoy;
             const activa = d.fecha === seleccionada;
-            const clase = `relative flex aspect-square flex-col items-center justify-center rounded-xl border text-sm font-semibold tabular-nums ${ESTILO_DIA[d.estado]} ${
+            const dia = disponibles[d.fecha];
+            const disponible = dia !== undefined && d.estado !== 'verde' && d.estado !== 'amarillo';
+            const clase = `relative flex aspect-square flex-col items-center justify-center rounded-xl border text-sm font-semibold tabular-nums ${disponible ? ESTILO_DISPONIBLE : ESTILO_DIA[d.estado]} ${
               activa ? 'outline outline-2 outline-offset-1 outline-[var(--accent)]' : ''
             }`;
             const etiqueta = `${numero} de ${nombreMes(anio, mes0).split(' ')[0].toLowerCase()}${
               d.porcentaje !== null ? `, ${d.porcentaje}%` : ''
-            }, ${ETIQUETA[d.estado]}${esHoy ? ', hoy' : ''}`;
+            }, ${disponible ? `rutina del día ${dia} disponible` : ETIQUETA[d.estado]}${esHoy ? ', hoy' : ''}`;
             const contenido = (
               <>
                 {numero}
                 {esHoy && <span aria-hidden="true" className="absolute right-1 top-1 size-1.5 rounded-full bg-[var(--accent)]" />}
-                {d.estado === 'descanso' && <Moon size={10} aria-hidden="true" className="absolute bottom-1" />}
+                {disponible && <Dumbbell size={10} aria-hidden="true" className="absolute bottom-1 text-[var(--accent)]" />}
+                {d.estado === 'descanso' && !disponible && <Moon size={10} aria-hidden="true" className="absolute bottom-1" />}
               </>
             );
             if (d.estado === 'futuro' || d.estado === 'sin_datos') {
@@ -128,7 +137,7 @@ export function CalendarioMes({
         </div>
       </div>
 
-      <ul className="mt-3 grid grid-cols-3 gap-x-2 gap-y-2 text-xs text-[var(--text-secondary)]">
+      <ul className="mt-3 grid grid-cols-2 gap-x-2 gap-y-2 text-xs text-[var(--text-secondary)]">
         <li className="flex items-center gap-1.5">
           <Punto clase={ESTILO_DIA.verde} /> 80% o más
         </li>
@@ -137,6 +146,9 @@ export function CalendarioMes({
         </li>
         <li className="flex items-center gap-1.5">
           <Punto clase={ESTILO_DIA.descanso} /> Día libre
+        </li>
+        <li className="flex items-center gap-1.5">
+          <Punto clase={ESTILO_DISPONIBLE} /> Rutina disponible
         </li>
       </ul>
     </div>
