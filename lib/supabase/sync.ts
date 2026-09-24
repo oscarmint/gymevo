@@ -205,6 +205,12 @@ export async function leerNombreRemoto(): Promise<string | null> {
   return perfil?.nombre ?? null;
 }
 
+export async function leerCorreoRemoto(): Promise<string | null> {
+  const supabase = crearClienteSupabase();
+  const { data } = await supabase.auth.getUser();
+  return data.user?.email ?? null;
+}
+
 export function guardarNombreRemoto(nombre: string, onError?: () => void) {
   const supabase = crearClienteSupabase();
   supabase.auth.getUser().then(({ data }) => {

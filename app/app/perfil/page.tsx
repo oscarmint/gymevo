@@ -6,7 +6,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
-import { AlertTriangle, Bell, BellOff, Camera, Check, ExternalLink, Flame, Loader2, LogOut, Pencil, Trash2 } from 'lucide-react';
+import { AlertTriangle, Bell, BellOff, Camera, Check, ExternalLink, Eye, EyeOff, Flame, Loader2, LogOut, Pencil, Trash2 } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, SEXO_LABEL, leerRespuestas, type RespuestasOnboarding, type Sexo } from '@/lib/onboarding';
 import { calcularMacros } from '@/lib/macros';
 import { DIAS_MAX_PLAN, posicionEnCiclo, semanasSeguidas, aplicarReemplazos, cambiarDias, cambiarRuta, ejerciciosDeSesion, sesionActual, leerSesionElegida, guardarProgreso, leerProgreso, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
@@ -14,7 +14,7 @@ import type { Meta, Nivel } from '@/lib/onboarding';
 import { leerAvatarLocal, guardarAvatarLocal, leerNombreLocal, guardarNombreLocal } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { activarAvisos, desactivarAvisos, estaSuscrito, pushSoportado } from '@/lib/push-client';
-import { guardarNombreRemoto, guardarProgresoRemoto, leerAvatarRemoto, leerMembresiaRemota, leerNombreRemoto, leerVencimientoRemoto, subirAvatar } from '@/lib/supabase/sync';
+import { guardarNombreRemoto, guardarProgresoRemoto, leerAvatarRemoto, leerCorreoRemoto, leerMembresiaRemota, leerNombreRemoto, leerVencimientoRemoto, subirAvatar } from '@/lib/supabase/sync';
 import { useConteo } from '@/lib/useConteo';
 
 const ESTADO_MEMBRESIA_LABEL: Record<string, string> = {
@@ -29,6 +29,8 @@ export default function PerfilPage() {
   const [respuestas, setRespuestas] = useState<RespuestasOnboarding | null>(null);
   const [progreso, setProgreso] = useState<Progreso | null>(null);
   const [nombre, setNombre] = useState<string | null>(null);
+  const [correo, setCorreo] = useState<string | null>(null);
+  const [verCorreo, setVerCorreo] = useState(false);
   const [editando, setEditando] = useState(false);
   const [borrador, setBorrador] = useState('');
   const [membresia, setMembresia] = useState<{ plan: string; estado: string | null } | null>(null);
@@ -104,6 +106,7 @@ export default function PerfilPage() {
         guardarNombreLocal(remoto);
       }
     });
+    leerCorreoRemoto().then(setCorreo);
     setAvatarUrl(leerAvatarLocal());
     leerAvatarRemoto().then((remoto) => {
       if (remoto) {
@@ -374,6 +377,18 @@ export default function PerfilPage() {
             Hola, {nombre ?? 'ponte un nombre'}
           </h1>
           <Pencil size={15} color="var(--text-tertiary)" />
+        </button>
+      )}
+      {correo && (
+        <button
+          type="button"
+          onClick={() => setVerCorreo((v) => !v)}
+          aria-expanded={verCorreo}
+          aria-label={verCorreo ? 'Ocultar mi correo de acceso' : 'Ver con qué correo ingresé'}
+          className="mt-1 flex max-w-full items-center gap-1.5 text-sm text-[var(--text-secondary)]"
+        >
+          {verCorreo ? <EyeOff size={14} className="shrink-0" /> : <Eye size={14} className="shrink-0" />}
+          <span className="truncate">{verCorreo ? correo : 'Ver mi correo de acceso'}</span>
         </button>
       )}
       </div>
