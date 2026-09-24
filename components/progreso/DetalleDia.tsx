@@ -28,10 +28,10 @@ const COLOR: Record<EstadoDia, string> = {
 };
 
 function etiquetaRir(rir: number): string {
-  if (rir >= 3) return 'Fácil';
-  if (rir === 2) return 'Normal';
-  if (rir === 1) return 'Duro';
-  return 'Al fallo';
+  if (rir >= 3) return 'Ligera';
+  if (rir === 2) return 'Buena';
+  if (rir === 1) return 'Pesada';
+  return 'Al límite';
 }
 
 function fechaLarga(fecha: string): string {

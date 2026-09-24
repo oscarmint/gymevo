@@ -1188,7 +1188,7 @@ export function ejerciciosDeSesion(sesion: SesionId, nivel: Nivel): Ejercicio[] 
   return configs.map((cfg) => ({
     ...CATALOGO[cfg.id],
     series: cfg.series,
-    reps: cfg.restPause ? `${cfg.reps} (Rest-Pause en la última serie)` : cfg.reps,
+    reps: cfg.restPause ? `${cfg.reps} (última serie: al límite, descansa 15 s y saca unas repeticiones más)` : cfg.reps,
     tempo: cfg.tempo,
   }));
 }

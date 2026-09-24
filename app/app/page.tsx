@@ -58,11 +58,11 @@ const DURACIONES_DESCANSO = [30, 60, 120, 180];
 /** Chips de esfuerzo (RIR, Repeticiones en Reserva) — solo Ruta Intermedio,
  * ver `sugerenciaPeso` en lib/routine.ts. 4 opciones (no 5) para que quepan
  * cómodas en una fila a 375px sin scroll horizontal. */
-const RIR_OPCIONES: { rir: number; etiqueta: string }[] = [
-  { rir: 4, etiqueta: 'Fácil' },
-  { rir: 2, etiqueta: 'Normal' },
-  { rir: 1, etiqueta: 'Duro' },
-  { rir: 0, etiqueta: 'Al fallo' },
+const RIR_OPCIONES: { rir: number; etiqueta: string; pista: string }[] = [
+  { rir: 4, etiqueta: 'Ligera', pista: 'Te sobraban varias repeticiones' },
+  { rir: 2, etiqueta: 'Buena', pista: 'Podías hacer 2 más' },
+  { rir: 1, etiqueta: 'Pesada', pista: 'Podías hacer 1 más' },
+  { rir: 0, etiqueta: 'Al límite', pista: 'No podías hacer ni una más' },
 ];
 
 function etiquetaDuracion(seg: number): string {
@@ -984,7 +984,9 @@ function PlanDelDia({
                     precisión, así que nunca se le pregunta. Opcional: si no
                     se toca ningún chip, el log se guarda igual, sin `rir`. */}
                 {nivel === 'intermedio' && (
-                  <div className="mt-3 flex flex-wrap gap-1.5">
+                  <div className="mt-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">¿Qué tal se sintió la serie?</p>
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
                     {RIR_OPCIONES.map((op) => (
                       <button
                         key={op.rir}
@@ -999,6 +1001,10 @@ function PlanDelDia({
                         {op.etiqueta}
                       </button>
                     ))}
+                  </div>
+                  {rirElegido[ej.id] !== undefined && (
+                    <p className="mt-1.5 text-xs text-[var(--text-secondary)]">{RIR_OPCIONES.find((o) => o.rir === rirElegido[ej.id])?.pista}</p>
+                  )}
                   </div>
                 )}
                 <div className="mt-3 flex items-end gap-2">

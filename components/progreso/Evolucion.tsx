@@ -102,7 +102,7 @@ export function Evolucion({ progreso }: { progreso: Progreso }) {
           {/* Dato héroe + gráfico — un objeto principal, con su insight (17-VISUALIZACION-DATOS) */}
           <div className="mt-5 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
-              Volumen de tus últimas {sesiones.length} sesiones
+              Peso total levantado en tus últimas {sesiones.length} sesiones
             </p>
             <p className="mt-1 text-4xl font-bold tabular-nums leading-none text-[var(--text-primary)] [font-family:var(--font-display)]">
               {NUM.format(Math.round(volumenMostrado))} <span className="text-lg font-semibold text-[var(--text-secondary)]">{progreso.unidadPeso}</span>
@@ -143,7 +143,7 @@ export function Evolucion({ progreso }: { progreso: Progreso }) {
 
             {/* Alternativa accesible — mismos datos en tabla, para lectores de pantalla */}
             <table className="sr-only">
-              <caption>Volumen de entrenamiento por sesión</caption>
+              <caption>Peso total levantado por sesión</caption>
               <thead>
                 <tr>
                   <th scope="col">Fecha</th>
@@ -227,7 +227,7 @@ function ProgresoAvanzado({ logs, unidadPeso }: { logs: RegistroLog[]; unidadPes
 
       {progresiones.length > 0 && (
         <div className="rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Progresión de fuerza estimada</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Tu fuerza máxima estimada</p>
           <div className="mt-3 flex flex-col gap-3">
             {progresiones.map((p) => (
               <div key={p.ejercicioId} className="flex items-center justify-between gap-3">
@@ -251,7 +251,7 @@ function ProgresoAvanzado({ logs, unidadPeso }: { logs: RegistroLog[]; unidadPes
             ))}
           </div>
           <p className="mt-3 text-xs text-[var(--text-tertiary)]">
-            Fuerza estimada = el peso máximo que podrías levantar 1 vez, calculado desde tus series reales — no hace falta probarlo de verdad.
+            Es el peso más pesado que podrías levantar en una sola repetición, calculado con tus series reales. No hace falta probarlo.
           </p>
         </div>
       )}

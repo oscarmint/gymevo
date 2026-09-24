@@ -643,7 +643,7 @@ export default function PerfilPage() {
       <div className="mt-4 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
         <div className="flex items-start justify-between gap-3">
           <p className="text-sm font-semibold text-[var(--text-primary)]">
-            Tus macros · {meta === 'musculo' ? 'ganar músculo' : 'bajar grasa'}
+            Tu alimentación · {meta === 'musculo' ? 'ganar músculo' : 'bajar grasa'}
           </p>
           <motion.button
             type="button"
@@ -670,7 +670,7 @@ export default function PerfilPage() {
               <div className="mt-4 grid grid-cols-[1fr_1.4fr_1fr] gap-2">
                 <div className="col-span-3 rounded-xl bg-[var(--chip-bg)] px-4 py-3">
                   <p className="text-2xl font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-                    <KcalDato kcal={macros.kcal} /> <span className="text-sm font-semibold text-[var(--text-secondary)]">kcal/día</span>
+                    <KcalDato kcal={macros.kcal} /> <span className="text-sm font-semibold text-[var(--text-secondary)]">calorías al día</span>
                   </p>
                 </div>
                 <MacroDato label="Proteína" gramos={macros.proteinaG} />
@@ -782,7 +782,7 @@ export default function PerfilPage() {
                   onClick={guardarDatosMacros}
                   className="boton-3d mt-3 flex h-11 w-full items-center justify-center rounded-xl bg-[var(--accent)] px-4 text-sm font-semibold text-[var(--bg)]"
                 >
-                  Calcular mis macros
+                  Calcular mi alimentación
                 </button>
               </div>
             </motion.div>
@@ -895,7 +895,7 @@ export default function PerfilPage() {
               </p>
               <p className="mt-2 text-sm text-[var(--text-secondary)]">
                 Vas a cambiar tu plan a <strong>{tituloRuta(pidiendoConfirmacion.nivel, pidiendoConfirmacion.meta)}</strong>. Tus
-                ejercicios, macros y cardio de hoy en adelante se van a ajustar a esta nueva ruta.
+                ejercicios, alimentación y cardio de hoy en adelante se van a ajustar a esta nueva ruta.
               </p>
               <div className="mt-5 flex gap-3">
                 <motion.button
