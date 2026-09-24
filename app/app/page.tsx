@@ -4,6 +4,7 @@
 // UNA misión: completar el entrenamiento de hoy. Protagonista de la Sesión 5.
 
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
+import { useRouter } from 'next/navigation';
 import { Lottie } from 'lottie-react';
 import { motion, AnimatePresence, useReducedMotion, animate } from 'motion/react';
 import { Check, Dumbbell, FileText, Flame, Info, Moon, PlayCircle, RefreshCcw, TrendingUp, Undo2, Volume2, VolumeX, WifiOff, X, Zap } from 'lucide-react';
@@ -27,9 +28,9 @@ import {
   sesionActual,
   semanasSeguidas,
   resumenSemana,
-  descansoRecomendado,
-  entrenarIgual,
-  type MotivoDescanso,
+  esDomingo,
+  semanaCumplida,
+  DIAS_MAX_PLAN,
   obtenerEjercicio,
   rachaEnRiesgo,
   registrarSerie,
@@ -211,6 +212,10 @@ function PlanDelDia({
   const [pidiendoCortar, setPidiendoCortar] = useState(false);
   const semanas = semanasSeguidas(progreso);
   const semana = resumenSemana(progreso);
+  const router = useRouter();
+  const hoy = hoyISO();
+  // Ya hizo todas las sesiones de su semana (lunes a domingo).
+  const cumplida = semanaCumplida(progreso, hoy);
   const rachaAnteriorRef = useRef(semanas);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const reduce = useReducedMotion();
@@ -331,6 +336,11 @@ function PlanDelDia({
   }, [claveSesion]);
 
   function iniciarEntrenamiento() {
+    // Semana completa: para entrenar más hay que sumar días en el perfil.
+    if (cumplida) {
+      router.push('/app/perfil?editar=dias');
+      return;
+    }
     sessionStorage.setItem('gymevo_saludo_visto_dia', claveSesion);
     setEtapa('entrenador');
   }
@@ -539,23 +549,22 @@ function PlanDelDia({
   const tren = calentamientoDeSesion(sesion);
   const cardio = cardioDeSesion(sesion, nivel);
 
-  const motivoDescanso = descansoRecomendado(progreso);
-  if (motivoDescanso) {
+  // El domingo es el día de descanso (y con 6 días, la semana completa también):
+  // solo hay "entrenamiento libre", que no se registra.
+  if (esDomingo(hoy) || (cumplida && progreso.diasSemana >= DIAS_MAX_PLAN)) {
     return (
       <>
-        <TarjetaDescanso
-          motivo={motivoDescanso}
-          semana={semana}
-          diasPlan={progreso.diasSemana}
-          siguiente={nombreDeSesion(sesion)}
-          onEntrenarIgual={(ligero) => actualizar((p) => entrenarIgual(p, ligero))}
-        />
+        <PantallaDescanso domingo={esDomingo(hoy)} />
         {overlayCelebracionFin}
       </>
     );
   }
 
-  if (etapa !== 'plan') {
+  // Semana completa con menos de 6 días: sigue viéndose "Iniciar entrenamiento",
+  // pero lleva al perfil a activar más días.
+  const etapaVista = cumplida ? 'saludo' : etapa;
+
+  if (etapaVista !== 'plan') {
     return (
       <>
       <div
@@ -564,7 +573,7 @@ function PlanDelDia({
         role={etapa === 'entrenador' ? 'button' : undefined}
         aria-label={etapa === 'entrenador' ? 'Toca para continuar' : undefined}
       >
-        {etapa === 'saludo' ? (
+        {etapaVista === 'saludo' ? (
           <motion.div
             initial={reduce ? {} : { opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
@@ -579,7 +588,22 @@ function PlanDelDia({
             </span>
             <h1 className="mt-6 text-3xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">¡Hola!</h1>
             <p className="mt-3 max-w-sm text-base text-[var(--text-secondary)]">
-              Hoy vamos a iniciar el entrenamiento de <strong className="text-[var(--text-primary)]">{nombreDeSesion(sesion)}</strong>.
+              {cumplida ? (
+                <>
+                  {semana.meta === 1 ? (
+                    'Completaste tu sesión de la semana.'
+                  ) : (
+                    <>
+                      Completaste las <strong className="text-[var(--text-primary)]">{semana.meta}</strong> sesiones de tu semana.
+                    </>
+                  )}{' '}
+                  Para entrenar más, suma días en tu perfil.
+                </>
+              ) : (
+                <>
+                  Hoy vamos a iniciar el entrenamiento de <strong className="text-[var(--text-primary)]">{nombreDeSesion(sesion)}</strong>.
+                </>
+              )}
             </p>
             <button
               type="button"
@@ -1411,74 +1435,33 @@ function AnilloDescanso({ restante, total }: { restante: number; total: number }
   );
 }
 
-const TEXTO_DESCANSO: Record<MotivoDescanso, { titulo: string; cuerpo: (siguiente: string, hechos: number, meta: number) => string }> = {
-  hoy: {
-    titulo: 'Hoy ya entrenaste',
-    cuerpo: (siguiente) => `Buen trabajo. El músculo crece mientras descansas. Tu próxima sesión: ${siguiente}.`,
-  },
-  seguidos: {
-    titulo: 'Descanso recomendado',
-    cuerpo: (siguiente) => `Llevas 3 días seguidos entrenando. Descansar hoy ayuda a que tu cuerpo se recupere y rinda mejor en tu próxima sesión: ${siguiente}.`,
-  },
-  semana: {
-    titulo: 'El 7º día es de descanso',
-    cuerpo: (siguiente) => `Ya entrenaste 6 de los últimos 7 días. Descansa hoy: sin recuperación el riesgo es lesión y agotamiento, no más progreso. Sigues con ${siguiente}.`,
-  },
-  meta: {
-    titulo: '¡Meta de la semana cumplida!',
-    cuerpo: (siguiente, hechos, meta) => `${hechos} de ${meta} ${meta === 1 ? 'día' : 'días'} de entrenamiento. Puedes descansar, o sumar un día extra si te sientes con energía. Tu próxima sesión: ${siguiente}.`,
-  },
-};
-
-/** El plan propone descansar, nunca lo impone: siempre hay un botón para
- * entrenar igual. Reemplaza al "día 7" fijo — la persona entrena los días que
- * puede y la app solo cuida que no se pase. */
-function TarjetaDescanso({
-  motivo,
-  semana,
-  diasPlan,
-  siguiente,
-  onEntrenarIgual,
-}: {
-  motivo: MotivoDescanso;
-  semana: { hechos: number; meta: number };
-  diasPlan: number;
-  siguiente: string;
-  onEntrenarIgual: (ligero: boolean) => void;
-}) {
-  const texto = TEXTO_DESCANSO[motivo];
-  // Con 4+ días la sesión extra es ligera (core y cardio suave); con menos, el
-  // día extra es simplemente la siguiente sesión de cuerpo completo.
-  const hayExtraLigero = motivo === 'meta' && diasPlan >= 4;
-  const etiquetaEntrenar = motivo === 'meta' ? `Agregar otro día: ${siguiente}` : motivo === 'hoy' ? 'Entrenar otra sesión hoy' : 'Entrenar igual';
+/** Día de descanso: el domingo (o la semana de 6 días ya completa). Lo único que
+ * hay es "entrenamiento libre": la persona se mueve a su gusto y la app no
+ * guarda nada — ni historial, ni semana, ni racha. */
+function PantallaDescanso({ domingo }: { domingo: boolean }) {
+  const [libre, setLibre] = useState(false);
   return (
     <div className="flex min-h-[calc(100dvh-5rem)] flex-col items-center justify-center px-6 text-center">
       <span className="chip-3d flex size-20 items-center justify-center rounded-2xl bg-[var(--accent)]">
         <Moon size={36} color="var(--bg)" strokeWidth={2.4} />
       </span>
-      <h1 className="mt-6 text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">{texto.titulo}</h1>
-      <p className="mt-3 max-w-sm text-base text-[var(--text-secondary)]">{texto.cuerpo(siguiente, semana.hechos, semana.meta)}</p>
-      {hayExtraLigero && (
-        <motion.button
-          type="button"
-          onClick={() => onEntrenarIgual(true)}
-          whileTap={{ scale: 0.97 }}
-          className="boton-3d mt-8 flex h-14 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
-        >
-          Día extra ligero: abdomen y lumbar
-        </motion.button>
-      )}
+      <h1 className="mt-6 text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">
+        {libre ? 'Entrenamiento libre' : 'Hoy es tu día de descanso'}
+      </h1>
+      <p className="mt-3 max-w-sm text-base text-[var(--text-secondary)]">
+        {libre
+          ? 'Entrena a tu gusto. Esta sesión no se guarda: no aparece en tu historial ni suma a tu semana o a tu racha.'
+          : domingo
+            ? 'Tu semana termina hoy. El músculo crece mientras descansas: tu próxima sesión empieza el lunes.'
+            : '¡Completaste todas las sesiones de tu semana! Descansa: tu próxima sesión empieza el lunes.'}
+      </p>
       <motion.button
         type="button"
-        onClick={() => onEntrenarIgual(false)}
+        onClick={() => setLibre((v) => !v)}
         whileTap={{ scale: 0.97 }}
-        className={
-          hayExtraLigero
-            ? 'mt-3 flex h-12 w-full max-w-xs items-center justify-center rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] text-sm font-semibold text-[var(--text-secondary)]'
-            : 'boton-3d mt-8 flex h-14 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] px-4 text-base font-semibold text-[var(--bg)]'
-        }
+        className="boton-3d mt-8 flex h-14 w-full max-w-xs items-center justify-center rounded-2xl bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
       >
-        {hayExtraLigero ? `Entrenar ${siguiente}` : etiquetaEntrenar}
+        {libre ? 'Volver' : 'Entrenamiento libre'}
       </motion.button>
     </div>
   );

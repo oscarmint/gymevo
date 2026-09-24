@@ -92,6 +92,12 @@ export default function PerfilPage() {
     setSexoBorrador(p.sexo);
     setCinturaBorrador(p.cinturaCm ? String(p.cinturaCm) : '');
     setNombre(leerNombreLocal());
+    // Llegó desde "Iniciar entrenamiento" con la semana completa: abre la
+    // edición y lleva la vista al selector de días.
+    if (new URLSearchParams(window.location.search).get('editar') === 'dias') {
+      setEditandoRuta(true);
+      setTimeout(() => document.getElementById('dias-semana')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 400);
+    }
     leerNombreRemoto().then((remoto) => {
       if (remoto) {
         setNombre(remoto);
@@ -432,7 +438,7 @@ export default function PerfilPage() {
               className="overflow-hidden"
             >
               <div className="mt-3 flex flex-col gap-3">
-                <div>
+                <div id="dias-semana">
                   <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">Días de entrenamiento por semana</p>
                   <div className="mt-1.5 flex gap-2">
                     {Array.from({ length: DIAS_MAX_PLAN }, (_, i) => i + 1).map((d) => (
@@ -453,7 +459,7 @@ export default function PerfilPage() {
                     ))}
                   </div>
                   <p className="mt-1.5 text-xs text-[var(--text-tertiary)]">
-                    No importa qué días de la semana vayas: la app te propone la siguiente sesión cuando entrenes.
+                    Tu semana empieza el lunes y el domingo es de descanso. Si un día no puedes, haz esa sesión cuando puedas durante la semana: queda en tu historial el día que la hagas.
                     {nivel === 'principiante' && progreso.diasSemana >= 5 ? ' Para empezar, 3 o 4 días suelen dar mejor resultado que 5 o 6.' : ''}
                   </p>
                 </div>
