@@ -81,10 +81,6 @@ export interface Ejercicio {
    * lesionarse por mala técnica). Compuestos van más lentos que aislados. */
   tempo: string;
   alternativaId: string;
-  /** El dueño indicó "sin variante" para este ejercicio (Plancha, Extensión de
-   * cuádriceps): el Botón de Rescate no se muestra. `alternativaId` se
-   * conserva solo porque el tipo lo exige. */
-  sinRescate?: boolean;
 }
 
 /** Tren que se calienta antes del día — decide qué lámina de calentamiento
@@ -274,7 +270,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Cuádriceps', principal: true }, { nombre: 'Glúteo', principal: false }],
     consejoTecnico: 'Desciende hasta 90°. No bloquear rodillas al extender.',
   } },
-  extension_cuadriceps: { id: 'extension_cuadriceps', nombre: 'Extensión de cuádriceps', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/extension-cuadriceps.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'prensa_inclinada', sinRescate: true, guia: {
+  extension_cuadriceps: { id: 'extension_cuadriceps', nombre: 'Extensión de cuádriceps', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/extension-cuadriceps.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'step_up_banco', guia: {
     indicaciones: [
       'Siéntate con la espalda apoyada firmemente en el respaldo.',
       'Extiende ambas piernas hasta casi bloquear la rodilla.',
@@ -491,7 +487,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Deltoides Laterales', principal: true }],
     consejoTecnico: 'Ligera flexión de codos, sin usar impulso del cuerpo para levantar el peso.',
   } },
-  plancha_abdominal: { id: 'plancha_abdominal', nombre: 'Plancha abdominal', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/plancha-abdominal.png', series: 3, reps: '30-60 seg', descansoSeg: 45, tempo: 'isométrico', alternativaId: 'crunch_lateral_inclinado', sinRescate: true, guia: {
+  plancha_abdominal: { id: 'plancha_abdominal', nombre: 'Plancha abdominal', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/plancha-abdominal.png', series: 3, reps: '30-60 seg', descansoSeg: 45, tempo: 'isométrico', alternativaId: 'dead_bug', guia: {
     indicaciones: [
       'Apoya antebrazos y puntas de los pies en el suelo, cuerpo alineado de cabeza a talones.',
       'Aprieta el abdomen y los glúteos, sin dejar caer ni elevar la cadera.',
@@ -867,6 +863,28 @@ const CATALOGO: Record<string, Ejercicio> = {
     ],
     musculos: [{ nombre: 'Pectorales superiores', principal: true }, { nombre: 'Deltoides anterior', principal: false }],
     consejoTecnico: 'Evita bloquear los codos bruscamente y mantén la barra estable.',
+  } },
+  dead_bug: { id: 'dead_bug', nombre: 'Dead Bug (Bicho Muerto)', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/dead-bug.png', series: 4, reps: '10-12 por lado', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha_abdominal', guia: {
+    indicaciones: [
+      'Acuéstate boca arriba sobre una colchoneta y estira los brazos hacia el techo.',
+      'Eleva las piernas con caderas y rodillas flexionadas a 90°.',
+      'Pega la zona lumbar al suelo y contrae el abdomen.',
+      'Baja a la vez un brazo por detrás de la cabeza y la pierna contraria, sin tocar el suelo.',
+      'Regresa al centro y repite con el otro lado.',
+    ],
+    musculos: [{ nombre: 'Recto abdominal', principal: true }, { nombre: 'Oblicuos' }, { nombre: 'Transverso abdominal' }],
+    consejoTecnico: 'Mantén la zona lumbar pegada al suelo en todo momento para asegurar que el core haga el trabajo.',
+  } },
+  step_up_banco: { id: 'step_up_banco', nombre: 'Subida al banco (step-up)', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/step-up-banco.png', series: 4, reps: '10-12 por pierna', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'extension_cuadriceps', guia: {
+    indicaciones: [
+      'Colócate de pie frente a un banco plano estable, a la altura de tu rodilla.',
+      'Apoya todo el pie sobre el centro del banco.',
+      'Empuja con el talón del pie apoyado y sube hasta quedar de pie sobre el banco.',
+      'Baja con control, apoyando primero el pie de atrás.',
+      'Completa las repeticiones y cambia de pierna.',
+    ],
+    musculos: [{ nombre: 'Cuádriceps', principal: true }, { nombre: 'Glúteos' }, { nombre: 'Pantorrillas' }],
+    consejoTecnico: 'Empuja con la pierna que sube, no con la de atrás. Mantén el torso erguido y la rodilla alineada con el pie.',
   } },
 };
 
@@ -1395,6 +1413,10 @@ export function aplicarReemplazos(ejercicios: Ejercicio[], reemplazos: Record<st
     const yaEnPlan = delPlan.get(sustitutoId);
     if (yaEnPlan) return yaEnPlan;
     const alt = obtenerEjercicio(sustitutoId);
+    // Plancha (segundos / "hasta el fallo") ↔ Dead bug (repeticiones): no se
+    // puede heredar "30-60 seg" en un ejercicio que se cuenta en repeticiones.
+    const porTiempo = (reps: string) => /seg|fallo/i.test(reps);
+    if (porTiempo(e.reps) !== porTiempo(alt.reps)) return alt;
     const partes = e.reps.match(/^(.*?)( \(.*\))?$/);
     const rango = (partes?.[1] ?? e.reps).replace(SUFIJO_UNILATERAL, '');
     const extra = partes?.[2] ?? '';

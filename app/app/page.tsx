@@ -915,17 +915,15 @@ function PlanDelDia({
                     >
                       <FileText size={16} />
                     </motion.button>
-                    {!ej.sinRescate && (
-                      <motion.button
-                        type="button"
-                        whileTap={{ scale: 0.9 }}
-                        aria-label={`Cambiar ${ej.nombre} por una alternativa`}
-                        onClick={() => rescatar(ej.id)}
-                        className="flex size-9 items-center justify-center rounded-full border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]"
-                      >
-                        <RefreshCcw size={16} />
-                      </motion.button>
-                    )}
+                    <motion.button
+                      type="button"
+                      whileTap={{ scale: 0.9 }}
+                      aria-label={`Cambiar ${ej.nombre} por una alternativa`}
+                      onClick={() => rescatar(ej.id)}
+                      className="flex size-9 items-center justify-center rounded-full border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]"
+                    >
+                      <RefreshCcw size={16} />
+                    </motion.button>
                   </div>
                 )}
               </div>
