@@ -896,7 +896,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Pectorales superiores', principal: true }, { nombre: 'Deltoides anterior', principal: false }],
     consejoTecnico: 'Evita bloquear los codos bruscamente y mantén la barra estable.',
   } },
-  dead_bug: { id: 'dead_bug', nombre: 'Dead Bug (Bicho Muerto)', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/dead-bug.png', series: 4, reps: '10-12 por lado', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha_abdominal', guia: {
+  dead_bug: { id: 'dead_bug', nombre: 'Dead Bug (Bicho Muerto)', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/dead-bug.jpg', series: 4, reps: '10-12 por lado', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha_abdominal', guia: {
     indicaciones: [
       'Acuéstate boca arriba sobre una colchoneta y estira los brazos hacia el techo.',
       'Eleva las piernas con caderas y rodillas flexionadas a 90°.',
