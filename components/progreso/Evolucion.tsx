@@ -287,7 +287,7 @@ function TarjetaProgresoMusculo({ progreso }: { progreso: Progreso }) {
   const deltaKgMostrado = useConteo(deltaKg ?? 0);
   return (
     <div className="mt-5 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
-      <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Tu progreso · Ruta A (ganar músculo)</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Tu progreso · Ganar músculo</p>
       {deltaKg === null ? (
         <p className="mt-2 text-sm text-[var(--text-secondary)]">
           Registra tu peso en Perfil — la próxima vez que lo actualices, vas a ver aquí cuánto cambió.
@@ -302,7 +302,7 @@ function TarjetaProgresoMusculo({ progreso }: { progreso: Progreso }) {
             </p>
           </div>
           <p className="mt-1.5 text-sm text-[var(--text-secondary)]">
-            de peso corporal{desde}. Meta sana: +300 a +800 g al mes — sube el peso que levantas cuando completes tus series con buena técnica.
+            de peso corporal{desde}. Subir entre 300 y 800 g al mes es un buen ritmo. Cuando completes tus series con buena técnica, sube un poco el peso que levantas.
           </p>
         </>
       )}
@@ -317,10 +317,10 @@ function TarjetaProgresoCintura({ progreso }: { progreso: Progreso }) {
   const deltaCmMostrado = useConteo(deltaCm ?? 0);
   return (
     <div className="mt-5 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
-      <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Tu progreso · Ruta B (bajar grasa)</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">Tu progreso · Bajar grasa</p>
       {deltaCm === null ? (
         <p className="mt-2 text-sm text-[var(--text-secondary)]">
-          Registra tu cintura en Perfil — en Ruta B el progreso se ve ahí, no en el peso que levantas.
+          Anota la medida de tu cintura en Perfil. Es la mejor forma de ver que estás bajando grasa.
         </p>
       ) : (
         <>
@@ -332,7 +332,12 @@ function TarjetaProgresoCintura({ progreso }: { progreso: Progreso }) {
             </p>
           </div>
           <p className="mt-1.5 text-sm text-[var(--text-secondary)]">
-            de cintura{desde}. Mantén las cargas que ya levantas — en Ruta B el objetivo no es subir peso, es conservar el músculo mientras baja la grasa.
+            {deltaCm === 0
+              ? `de cambio en tu cintura${desde}. Todavía no hay diferencia: mídete de nuevo en un par de semanas.`
+              : deltaCm < 0
+                ? `menos en tu cintura${desde}. ¡Vas bajando grasa!`
+                : `más en tu cintura${desde}. Tranquilo: sigue entrenando y cuidando la comida, y mídete de nuevo en unas semanas.`}
+            {' '}Sigue levantando el mismo peso: así conservas tu músculo mientras baja la grasa.
           </p>
         </>
       )}

@@ -643,7 +643,7 @@ export default function PerfilPage() {
       <div className="mt-4 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
         <div className="flex items-start justify-between gap-3">
           <p className="text-sm font-semibold text-[var(--text-primary)]">
-            Tus macros · {meta === 'musculo' ? 'Ruta A, ganar músculo' : 'Ruta B, bajar grasa'}
+            Tus macros · {meta === 'musculo' ? 'ganar músculo' : 'bajar grasa'}
           </p>
           <motion.button
             type="button"
