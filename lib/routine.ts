@@ -1495,7 +1495,15 @@ export function deshacerHecho(p: Progreso, ejercicioId: string): Progreso {
   return { ...p, hechosHoy: p.hechosHoy.filter((id) => id !== ejercicioId), logs };
 }
 
+/** Botón de Rescate: alterna entre el ejercicio del plan y su alternativa. Se
+ * recibe el id que se ve en pantalla — si ya es una variante activa, se vuelve
+ * al original. */
 export function reemplazarEjercicio(p: Progreso, originalId: string): Progreso {
+  const claveActiva = Object.keys(p.reemplazosHoy).find((k) => p.reemplazosHoy[k] === originalId);
+  if (claveActiva) {
+    const { [claveActiva]: _volver, ...resto } = p.reemplazosHoy;
+    return { ...p, reemplazosHoy: resto };
+  }
   const alt = obtenerEjercicio(originalId).alternativaId;
   return { ...p, reemplazosHoy: { ...p.reemplazosHoy, [originalId]: alt } };
 }
