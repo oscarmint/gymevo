@@ -22,6 +22,8 @@ export default function VistaPreviaDiaUnoPage() {
   // Demo del Botón de Rescate: original → alternativa. Tocar de nuevo vuelve al original.
   const [cambios, setCambios] = useState<Record<string, string>>({});
   const [ultimoCambio, setUltimoCambio] = useState<string | null>(null);
+  // Carga cognitiva: 5 ejercicios a la vista y el resto plegado (el plan real tiene todos).
+  const [verTodos, setVerTodos] = useState(false);
 
   // sessionStorage no existe en el servidor: leerlo en el initializer de
   // useState causa mismatch de hydration. Este efecto es la forma correcta.
@@ -67,7 +69,7 @@ export default function VistaPreviaDiaUnoPage() {
 
         {/* Día 1 — el resultado REAL, no una promesa (5 trabajos del onboarding: crear deseo) */}
         <div className="mt-6 flex flex-col gap-3">
-          {ejercicios.map((ej, i) => {
+          {(verTodos ? ejercicios : ejercicios.slice(0, 5)).map((ej, i) => {
             const original = ejerciciosBase[i];
             const cambiado = ej.id !== original.id;
             return (
@@ -112,14 +114,24 @@ export default function VistaPreviaDiaUnoPage() {
             );
           })}
 
+          {!verTodos && ejercicios.length > 5 && (
+            <button
+              type="button"
+              onClick={() => setVerTodos(true)}
+              className="flex min-h-11 items-center justify-center rounded-2xl border border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] px-4 text-sm font-semibold text-[var(--text-secondary)]"
+            >
+              + {ejercicios.length - 5} ejercicios más de este día
+            </button>
+          )}
+
           {/* Botón de Rescate, presente desde el Día 1 — el mecanismo, no una lista de features */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08 + ejercicios.length * 0.06 }}
-            className="flex items-center gap-3 rounded-2xl border border-dashed border-[color-mix(in_oklab,var(--accent)_35%,transparent)] bg-[var(--chip-bg)] p-4"
+            className="flex items-start gap-3 rounded-2xl border border-[color-mix(in_oklab,var(--accent)_30%,transparent)] bg-[var(--chip-bg)] p-4"
           >
-            <RefreshCcw size={18} color="var(--accent)" />
+            <RefreshCcw size={18} color="var(--accent)" className="mt-0.5 shrink-0" />
             <p className="text-sm font-medium text-[var(--text-primary)]" aria-live="polite">
               {ultimoCambio
                 ? '¡Listo! Así de rápido cambias de ejercicio en el gym, sin perder la sesión. Toca de nuevo para volver.'
@@ -156,6 +168,9 @@ export default function VistaPreviaDiaUnoPage() {
         >
           Ver mi plan completo
         </button>
+        <p className="mt-3 text-center text-xs text-[var(--text-secondary)]">
+          7 días gratis, sin tarjeta · sin renovación automática · garantía de 7 días
+        </p>
       </motion.div>
     </div>
   );

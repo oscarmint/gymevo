@@ -70,7 +70,8 @@ export function CtaFinal({
         <motion.h2
           variants={item}
           className="text-balance text-[30px] font-bold leading-[1.15] [font-family:var(--font-display)] md:text-[44px]"
-          style={{ color: 'var(--bg)' }}
+          // Sobre el fondo crema el lima no llega a 3:1: el énfasis usa el verde oscuro de la ficha.
+          style={{ color: 'var(--bg)', ['--accent' as string]: 'var(--accent-2-deep)' }}
         >
           <MarkedCopy text={h2Marked} />
         </motion.h2>
@@ -105,7 +106,7 @@ export function CtaFinal({
             variants={item}
             className="mt-10 max-w-[520px] border-l-2 pl-4 text-left text-[15px] italic leading-[1.6]"
             style={{
-              borderColor: 'var(--accent)',
+              borderColor: 'var(--accent-2-deep)',
               color: 'color-mix(in oklab, var(--bg) 80%, transparent)',
             }}
           >

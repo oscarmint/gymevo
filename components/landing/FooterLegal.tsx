@@ -28,7 +28,7 @@ export interface FooterLegalProps {
 export function FooterLegal({ appName, logo, enlaces, soporteEmail, anio }: FooterLegalProps) {
   const year = anio ?? new Date().getFullYear();
   return (
-    <footer className="pt-8 pb-4 md:py-12">
+    <footer className="pt-8 pb-2 md:py-12">
       <div className="mx-auto w-full max-w-[1140px] px-5">
         {/* Fila 1: marca chica + enlaces legales */}
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -38,17 +38,12 @@ export function FooterLegal({ appName, logo, enlaces, soporteEmail, anio }: Foot
           </p>
           <nav aria-label="Enlaces legales">
             <ul className="flex flex-wrap items-center gap-x-1 gap-y-0">
-              {enlaces.map((e, i) => (
+              {enlaces.map((e) => (
                 <li key={e.href} className="flex items-center">
-                  {i > 0 && (
-                    <span aria-hidden="true" className="px-1 text-[var(--text-tertiary)]">
-                      ·
-                    </span>
-                  )}
                   {/* py-3 = área táctil ≥44px sin líneas pegadas */}
                   <a
                     href={e.href}
-                    className="px-1 py-3 text-[13px] text-[var(--text-tertiary)] underline-offset-4 hover:text-[var(--text-secondary)] hover:underline"
+                    className="px-2 py-3 text-[13px] text-[var(--text-secondary)] underline-offset-4 hover:text-[var(--text-primary)] hover:underline"
                   >
                     {e.label}
                   </a>

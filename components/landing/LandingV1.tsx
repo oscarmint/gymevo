@@ -33,7 +33,7 @@ export default function LandingV1() {
         subtitleMarked="El Botón de Rescate te da otro ejercicio [b]al instante[/b] sin pensar ni improvisar"
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
-        socialProof={<span>Garantía Hotmart de 7 días — sin preguntas</span>}
+        socialProof={<span>Garantía del Primer Plan Claro: 7 días desde tu pago</span>}
         visual={
           // eslint-disable-next-line @next/next/no-img-element -- Hero.tsx del kit usa <img> a propósito (portable, ver su comentario)
           <img
@@ -125,7 +125,7 @@ export default function LandingV1() {
         ctaGlobal={{
           label: 'Crear mi plan gratis',
           href: CTA_HREF,
-          nota: 'Sin tarjeta · sin renovación automática · garantía de devolución de 7 días desde tu pago.',
+          nota: 'Sin tarjeta · sin renovación automática · Garantía del Primer Plan Claro: 7 días desde tu pago.',
         }}
         tituloMarked="Tu plan completo por menos de [acento]$0.09/día[/acento]"
         stack={{
@@ -183,11 +183,6 @@ export default function LandingV1() {
         condicionMarked="Pruébalo 7 días gratis. Al terminar, eliges tu plan y realizas el pago para seguir; y si no te convence, tienes [b]7 días desde tu pago[/b] para pedir tu dinero de vuelta, en cualquier plan. Sin preguntas."
         pisoLegal="Respaldada por la garantía Hotmart"
       />
-
-      {/* CTA repetido tras la garantía — ya no queda ninguna objeción sin responder */}
-      <div className="bg-[var(--surface)] px-5 pb-12 text-center">
-        <CtaButton href={CTA_HREF}>{CTA_LABEL}</CtaButton>
-      </div>
 
       {/* 8. FAQ */}
       <Faq

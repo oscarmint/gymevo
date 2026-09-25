@@ -116,6 +116,7 @@ export default function PaywallPage() {
   const meta = respuestas ? META_LABEL[respuestas.meta] : 'ganar músculo';
   const horario = respuestas ? HORARIO_LABEL[respuestas.horario] : 'en la tarde';
   const infoPlan = PLANES[plan];
+  const totalCOP = trm ? formatearCOP(`$${infoPlan.precioTotal.toFixed(2)}`, trm) : null;
 
   function elegirPlan(id: PlanId) {
     setPlan(id);
@@ -250,20 +251,16 @@ export default function PaywallPage() {
           transition={{ delay: 0.04, duration: 0.3 }}
           className="mt-5 overflow-hidden rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)]"
         >
-          <video
-            aria-hidden="true"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            className="h-24 w-full object-cover motion-reduce:hidden"
-          >
-            <source src="/videos/hero-gimnasio.mp4" type="video/mp4" />
-          </video>
-          {/* Respaldo sin video para prefers-reduced-motion: mismo alto, sin
-              movimiento, para que la tarjeta nunca se vea rota o vacía. */}
-          <div className="hidden h-24 w-full bg-[var(--surface-2)] motion-reduce:block" />
+          {/* Mini-demo del mecanismo (en vez de un video de gimnasio): el ejercicio A cambia por el B. */}
+          <div aria-hidden="true" className="flex items-center gap-2 bg-[var(--surface-2)] px-4 py-4">
+            <span className="min-w-0 flex-1 truncate rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] px-3 py-2 text-[13px] font-medium text-[var(--text-tertiary)] line-through decoration-[var(--accent)] decoration-2">
+              Prensa inclinada · ocupada
+            </span>
+            <RefreshCcw size={18} color="var(--accent)" className="shrink-0" />
+            <span className="min-w-0 flex-1 truncate rounded-xl border border-[var(--accent)] bg-[var(--chip-bg)] px-3 py-2 text-[13px] font-semibold text-[var(--text-primary)]">
+              Hack inclinado
+            </span>
+          </div>
           <div className="flex items-center gap-3 p-4">
             <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--chip-bg)]">
               <RefreshCcw size={22} color="var(--accent)" />
@@ -350,7 +347,10 @@ export default function PaywallPage() {
         )}
 
         <p className="mt-2 text-center text-xs text-[var(--text-secondary)]">
-          Pago único · acceso hasta {fechaCorta(infoPlan.meses)} · sin renovación automática
+          Pagas una sola vez ${infoPlan.precioTotal.toFixed(2)} USD{totalCOP ? ` (≈ ${totalCOP})` : ''} · acceso hasta {fechaCorta(infoPlan.meses)} · sin renovación automática
+        </p>
+        <p className="mt-1 flex items-center justify-center gap-1.5 text-center text-xs text-[var(--text-secondary)]">
+          <Lock size={12} className="shrink-0" /> Tarjeta, Nequi o efectivo · pago seguro vía Hotmart
         </p>
 
         {/* Garantía nombrada junto al CTA (antes solo vivía en el trust row, lejos) */}
@@ -483,7 +483,7 @@ export default function PaywallPage() {
           initial={reduce ? {} : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.48, duration: 0.3 }}
-          className="mt-5 flex items-center justify-center gap-1 text-sm text-[var(--text-tertiary)]"
+          className="mt-5 flex items-center justify-center gap-1 text-sm text-[var(--text-secondary)]"
         >
           <button type="button" onClick={() => router.push('/')} className="px-2 py-3">
             Ahora no
@@ -494,16 +494,6 @@ export default function PaywallPage() {
           </a>
         </motion.div>
 
-        {/* (9) Trust row — solo "Pago seguro" (la garantía ya se dijo junto al
-            CTA; repetirla aquí de nuevo no sumaba información nueva) */}
-        <motion.div
-          initial={reduce ? {} : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.56, duration: 0.3 }}
-          className="mt-2 flex items-center justify-center gap-1.5 text-xs text-[var(--text-tertiary)]"
-        >
-          <Lock size={14} /> Pago seguro
-        </motion.div>
       </div>
     </div>
   );

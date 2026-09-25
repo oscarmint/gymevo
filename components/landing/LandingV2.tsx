@@ -39,7 +39,7 @@ export default function LandingV2() {
         subtitleMarked="Un plan exacto, con la técnica correcta — [b]sin improvisar[/b] ni arriesgar tu espalda"
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
-        socialProof={<span>Garantía Hotmart de 7 días — sin preguntas</span>}
+        socialProof={<span>Garantía del Primer Plan Claro: 7 días desde tu pago</span>}
         visual={
           // eslint-disable-next-line @next/next/no-img-element -- Hero.tsx del kit usa <img> a propósito (portable, ver su comentario)
           <img
@@ -128,7 +128,7 @@ export default function LandingV2() {
         ctaGlobal={{
           label: 'Crear mi plan gratis',
           href: CTA_HREF,
-          nota: 'Sin tarjeta · sin renovación automática · garantía de devolución de 7 días desde tu pago.',
+          nota: 'Sin tarjeta · sin renovación automática · Garantía del Primer Plan Claro: 7 días desde tu pago.',
         }}
         tituloMarked="Tu plan completo por menos de [acento]$0.09/día[/acento]"
         stack={{
