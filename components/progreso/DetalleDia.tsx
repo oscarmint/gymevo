@@ -107,7 +107,7 @@ export function DetalleDia({
         {info.estado === 'futuro' && <p className="mt-3 text-sm text-[var(--text-secondary)]">Cuando llegue, aquí verás cómo te fue.</p>}
       </div>
 
-      {rutina && info.estado !== 'verde' && info.estado !== 'amarillo' && (
+      {rutina && (
         <div className="mt-3 rounded-2xl border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] bg-[var(--chip-bg)] p-4">
           <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--accent)]">Rutina disponible · Día {rutina.dia}</p>
           <p className="mt-1 text-base font-semibold text-[var(--text-primary)]">{rutina.nombre}</p>

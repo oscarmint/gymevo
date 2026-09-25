@@ -112,11 +112,12 @@ export function CalendarioMes({
             }`;
             const etiqueta = `${numero} de ${nombreMes(anio, mes0).split(' ')[0].toLowerCase()}${
               d.porcentaje !== null ? `, ${d.porcentaje}%` : ''
-            }, ${disponible ? `rutina del día ${dia} disponible` : ETIQUETA[d.estado]}${esHoy ? ', hoy' : ''}`;
+            }, ${disponible ? `rutina del día ${dia} disponible` : ETIQUETA[d.estado]}${dia !== undefined && !disponible ? `, y la rutina del día ${dia} sigue pendiente` : ''}${esHoy ? ', hoy' : ''}`;
             const contenido = (
               <>
                 {numero}
                 {esHoy && <span aria-hidden="true" className="absolute right-1 top-1 size-1.5 rounded-full bg-[var(--accent)]" />}
+                {dia !== undefined && !disponible && <Dumbbell size={10} aria-hidden="true" className="absolute bottom-1 text-[var(--accent)]" />}
                 {disponible && <Dumbbell size={10} aria-hidden="true" className="absolute bottom-1 text-[var(--accent)]" />}
                 {d.estado === 'descanso' && !disponible && <Moon size={10} aria-hidden="true" className="absolute bottom-1" />}
               </>
