@@ -483,7 +483,7 @@ export default function PaywallPage() {
             Ahora no
           </button>
           <span aria-hidden="true">·</span>
-          <a href="mailto:soporte@gymevo.app?subject=Restaurar%20mi%20compra" className="px-2 py-3">
+          <a href="mailto:gymevo@outlook.com?subject=Restaurar%20mi%20compra" className="px-2 py-3">
             ¿Ya pagaste? Escríbenos
           </a>
         </motion.div>

@@ -234,7 +234,7 @@ export default function LandingV1() {
       <FooterLegal
         appName="GymEvo"
         logo={<Logo className="size-5 text-[var(--accent)]" />}
-        soporteEmail="soporte@gymevo.app"
+        soporteEmail="gymevo@outlook.com"
         enlaces={[
           { label: 'Privacidad', href: '/privacidad' },
           { label: 'Términos y Condiciones', href: '/terminos' },

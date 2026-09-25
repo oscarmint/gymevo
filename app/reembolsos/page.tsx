@@ -50,8 +50,8 @@ export default function ReembolsosPage() {
           <h2 className="text-lg font-semibold">Cómo pedir tu reembolso</h2>
           <p className="mt-2">
             Escribe a{" "}
-            <a href="mailto:soporte@gymevo.app" className="underline underline-offset-4">
-              soporte@gymevo.app
+            <a href="mailto:gymevo@outlook.com" className="underline underline-offset-4">
+              gymevo@outlook.com
             </a>{" "}
             indicando el correo con el que compraste, o pide el reembolso directamente desde tu
             portal de compras de Hotmart. Procesamos las solicitudes que nos llegan por correo en un

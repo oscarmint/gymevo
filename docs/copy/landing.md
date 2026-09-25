@@ -70,4 +70,4 @@
 
 ## 10. FOOTER LEGAL
 - Enlaces: Privacidad (/privacidad) · Términos y Condiciones (/terminos) · Reembolsos (/reembolsos)
-- Soporte: soporte@gymevo.app (⚠️ dominio pendiente de compra — ver Pendientes del usuario en ESTADO.md)
+- Soporte: gymevo@outlook.com (decisión del dueño 25/09/2026; el dominio gymevo.app nunca se compró)

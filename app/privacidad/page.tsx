@@ -28,8 +28,8 @@ export default function PrivacidadPage() {
           <p className="mt-2">
             GymEvo es operado por <strong>Oscar Hernán Hernández Murillo</strong>, persona natural, con domicilio en
             Colombia. Puedes contactarnos para cualquier tema de privacidad en{" "}
-            <a href="mailto:soporte@gymevo.app" className="underline underline-offset-4">
-              soporte@gymevo.app
+            <a href="mailto:gymevo@outlook.com" className="underline underline-offset-4">
+              gymevo@outlook.com
             </a>
             .
           </p>
@@ -112,8 +112,8 @@ export default function PrivacidadPage() {
             Como titular de tus datos tienes derecho a conocerlos, actualizarlos, rectificarlos, pedir
             prueba de tu autorización, solicitar su eliminación y revocar la autorización que nos diste.
             Para ejercerlos, escríbenos a{" "}
-            <a href="mailto:soporte@gymevo.app" className="underline underline-offset-4">
-              soporte@gymevo.app
+            <a href="mailto:gymevo@outlook.com" className="underline underline-offset-4">
+              gymevo@outlook.com
             </a>
             . Respondemos en un máximo de 5 días hábiles (15 días hábiles si tu solicitud es una queja
             formal, según el plazo legal).
@@ -144,8 +144,8 @@ export default function PrivacidadPage() {
           <h2 className="text-lg font-semibold">Contacto</h2>
           <p className="mt-2">
             Si tienes preguntas sobre esta política, escríbenos a{" "}
-            <a href="mailto:soporte@gymevo.app" className="underline underline-offset-4">
-              soporte@gymevo.app
+            <a href="mailto:gymevo@outlook.com" className="underline underline-offset-4">
+              gymevo@outlook.com
             </a>
             .
           </p>

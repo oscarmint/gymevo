@@ -112,8 +112,8 @@ export default function TerminosPage() {
         <section>
           <h2 className="text-lg font-semibold">Contacto</h2>
           <p className="mt-2">
-            <a href="mailto:soporte@gymevo.app" className="underline underline-offset-4">
-              soporte@gymevo.app
+            <a href="mailto:gymevo@outlook.com" className="underline underline-offset-4">
+              gymevo@outlook.com
             </a>
           </p>
         </section>
