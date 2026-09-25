@@ -22,6 +22,7 @@ import { Garantia } from '@/components/landing/Garantia';
 import { Faq } from '@/components/landing/Faq';
 import { CtaFinal } from '@/components/landing/CtaFinal';
 import { FooterLegal } from '@/components/landing/FooterLegal';
+import { Testimonios } from '@/components/landing/Testimonios';
 import { BotonVolverArriba, CtaButton, StickyCtaMobile } from '@/components/landing/ui';
 import { CreditCard, Frown, RefreshCcw, ShieldAlert, Users } from 'lucide-react';
 
@@ -114,6 +115,9 @@ export default function LandingV2() {
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
       />
+
+      {/* Testimonios REALES: no se pinta nada hasta tener el primero con permiso (lib/testimonios.ts) */}
+      <Testimonios />
 
       {/* 6. OFERTA — idéntica a V1 (precio y estructura no son parte del experimento) */}
       <Oferta

@@ -16,6 +16,7 @@ import { Garantia } from '@/components/landing/Garantia';
 import { Faq } from '@/components/landing/Faq';
 import { CtaFinal } from '@/components/landing/CtaFinal';
 import { FooterLegal } from '@/components/landing/FooterLegal';
+import { Testimonios } from '@/components/landing/Testimonios';
 import { BotonVolverArriba, CtaButton, StickyCtaMobile } from '@/components/landing/ui';
 import { CreditCard, Frown, RefreshCcw, ShieldAlert, Users } from 'lucide-react';
 
@@ -109,6 +110,9 @@ export default function LandingV1() {
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
       />
+
+      {/* Testimonios REALES: no se pinta nada hasta tener el primero con permiso (lib/testimonios.ts) */}
+      <Testimonios />
 
       {/* 6. OFERTA — anual primero. Modelo vigente (21/09/2026): 7 días gratis sin tarjeta y luego PAGO ÚNICO por el periodo elegido (sin suscripción que se renueve sola)
           (mismo esquema del paywall in-app, 21/09/2026 — nunca prometer en la landing
