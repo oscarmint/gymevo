@@ -1,16 +1,23 @@
-# VEREDICTO revisor-visual — landing (ronda 5)
-Fecha: 2026-09-25 18:00
+# VEREDICTO revisor-visual — landing
+Fecha: 2026-09-25 12:00
 Screenshot: docs/revisiones/landing-375.png
-Usabilidad: 29/40
-Craft: 14/20
-Copy (si vende): 16/20
-Fidelidad (si hubo referencia): N-A
+Usabilidad: 28/40
+Craft: 11/20
+Copy (si vende): 15/20
+Fidelidad (si hubo referencia): FIEL
 Veredicto: NO LISTA
+
+Detalle usabilidad: h1:3 h2:3 h3:3 h4:3 h5:2 h6:3 h7:2 h8:2 h9:2 h10:3
+Detalle craft: jerarquia:3 profundidad:2 identidad:3 movimiento:2 encaje:1
+Detalle copy: idea:4 especificidad:2 emocion:3 oferta:3 accion:3
+
+Fidelidad: paleta oscura con tinte azulado y acento lima, Poppins, coherente con FICHA-ARTE (no es clon de Capitulo ni Umbral).
+
 Top defectos:
-1. [components/landing/LandingV1.tsx + Oferta.tsx, sección oferta (tramos 5-7, ~2.000px antes del botón)] La oferta sigue apilando stack de 5 líneas + nota larga en negrita + bloque "Así funcionan tus 7 días" (4 líneas por paso) + 3 tarjetas de plan sin botón propio (parecen seleccionables y no hacen nada) antes del único CTA. El "/mes" gigante sigue chocando con "pago único de $29.99", y "USD" va a ~10px. Fix: mover "Así funcionan" a una fila de 3 íconos con 1 línea cada uno debajo de las tarjetas, acortar los pasos a 1 frase, y poner "pago único $29.99" con el mismo peso que el precio mensual; quitar el aspecto de tarjeta seleccionable o darles botón.
-2. [components/landing/ui.tsx CtaButton + tokens de movimiento] Movimiento: hay stagger de entrada y reveal, pero los números héroe no cuentan (PrecioAnimado es un span estático), no hay anillos/barras que se dibujen, ni celebración, y CtaButton no tiene whileTap pese a su comentario (solo :active CSS). Reduced-motion sí respetado. Fix: añadir whileTap={{scale:0.97}} a CtaButton y a la barra fija, y un conteo/entrada real del "$0.09/día" o "$2.50" al entrar en vista.
-3. [components/landing/Garantia.tsx h2 + LandingV1.tsx nombre="la Garantía del Primer Plan Claro"] El título de sección empieza en minúscula ("la Garantía…"), visible a simple vista en tramo 8. Fix: pasar nombre con "La" mayúscula en el h2 (y dejar la minúscula solo en las frases corridas), p. ej. prop separada tituloMostrado.
-4. [components/landing/Agitacion.tsx + LandingV1.tsx] "con 6 meses menos" aparece dos veces seguidas (frase 3 y tarjeta "En 6 meses"); y la tarjeta "Hoy" y las 3 frases previas repiten el mismo dolor (espejo/estancamiento). Fix: cambiar el texto de la tarjeta futura a algo nuevo ("Otra mensualidad pagada, el mismo espejo") y recortar una frase.
-5. [components/landing/FooterLegal.tsx, tramo 10] Los enlaces (x=28) no alinean con el logo y el © (x=20) por el padding de los enlaces; "Reembolsos" cae solo en una segunda línea y quedan ~120px de vacío oscuro al final. Fix: compensar el padding con -ml-2 en la fila de enlaces y recortar el pb del footer (dejar solo safe-area + 24px).
-Otros (menores): el CTA lima sobre el bloque crema final mide ~1.6:1 con su fondo (lo salva el canto 3D oscuro); "gym" en el H1 vs "gimnasio" en la ficha; comentario de Solucion.tsx habla de "ámbar tierra" pero el kit usa verde militar (--accent-2) por FICHA-ARTE, sin desvío visible; sin testimonios (aceptado, es de copy no de craft).
-Verificado esta ronda y corregido: énfasis del titular final ahora en verde oscuro, legible; garantía unificada con nombre y plazo en hero, oferta y final; separadores del pie eliminados; CTA duplicado tras la garantía retirado; barra fija se oculta con un botón a la vista (verificado en ui.tsx: data-cta-pagina + IntersectionObserver). Paleta, Poppins y radios coinciden con FICHA-ARTE; no es clon de los ejemplos vetados. Cognitive gate: 2 fallas (bloques de texto >4 líneas en oferta/FAQ, tarjetas de plan que parecen interactivas), por debajo del umbral crítico.
+1. [Screenshot completo, desde debajo de "¿Te suena?" (aprox. y=1900px) hasta el CTA final (aprox. y=8200px)] Casi 6000px de fondo vacio: Agitacion, Solucion, App por dentro, Oferta, Garantia y FAQ no se ven en el render. Es una revelacion por scroll (whileInView) que no se dispara en la captura, o un fallo real de render. Como esta, esas secciones (incluida la tabla de precios) NO estan verificadas, y si el fallo es real la landing esta rota. Fix: recapturar tras hacer scroll gradual por toda la pagina (o forzar reduced-motion / estado visible) y volver a pasar al revisor; si sigue vacio, corregir el reveal.
+2. [Seccion "¿Te suena?", 5 preguntas seguidas] Son 5 items y una fila de dolores sin transicion; el bloque queda flotando sobre un vacio oscuro. Ademas hay dos CTA casi identicos muy juntos (barra/boton tras Problema y boton en Solucion/CTA global) con la misma etiqueta. Fix: agrupar a 3-4 dolores y cerrar la seccion con la transicion a la Solucion sin espacio muerto.
+3. [Hero, linea de prueba bajo el CTA] La unica prueba es "Garantia del Primer Plan Claro: 7 dias desde tu pago", en texto pequeno y bajo contraste, sin numeros ni demo verificable. Copy con especificidad baja (sin cifra de usuarios o resultado, el precio comparativo "$79.99 Fitbod" es un ancla externa sin fuente visible). Fix: subir la garantia a bloque destacado junto al CTA y agregar prueba concreta (video del Boton de Rescate en uso, o dato propio verificable).
+4. [Hero, imagen del plan del dia y frames de "App por dentro"] Las capturas se ven diminutas a 375px (texto ilegible del mockup), y el paso "Ruta / nivel" pierde su valor. Encaje visual flojo (mockup no abraza el ancho, margenes desiguales). Fix: recortar el mockup al area util y ampliarlo al ancho del contenedor.
+5. [Codigo: components/landing/ui.tsx + LandingV1.tsx] Movimiento verificado solo parcialmente: hay reduced-motion en la barra fija y sube-arriba, pero no se confirmo conteo animado de numeros (precio/dias) ni celebracion; no se pudo verificar la barra fija sobre pantalla (no aparece en captura). Control/libertad y atajos: /login en el hero, boton volver-arriba, pero sin deshacer aplicable. Fix: agregar conteo animado al dato heroe del precio y confirmar la barra fija en captura de viewport.
+
+Nota de verificacion: h3/h7 verificados en codigo (CTA unico a /onboarding, sticky con IntersectionObserver que se oculta con CTAs a la vista, sin salto a precios). Prueba honesta sin testimonios inventados: correcto. Las secciones vacias en el render impiden puntuar oferta, garantia y FAQ visualmente; se puntuaron al menor.
