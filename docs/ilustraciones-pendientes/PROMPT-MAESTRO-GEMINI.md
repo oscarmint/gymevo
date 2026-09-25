@@ -10,7 +10,7 @@ PASO 1 — INVESTIGA (no lo muestres, úsalo para dibujar bien): busca cómo se 
 PASO 2 — GENERA UNA IMAGEN VERTICAL 4:5 con estas reglas fijas:
 - Estilo: ilustración anatómica 3D de manual de gimnasio. Figura masculina con músculos visibles (sin piel), en gris plateado, con iluminación de estudio suave. Fondo de gimnasio muy oscuro, casi negro y desenfocado.
 - Color: los músculos que trabaja el ejercicio brillan en verde lima (#B6F03C). NADA en cian, azul, naranja ni rojo. Las flechas de movimiento también en verde lima.
-- Composición: DOS vistas del MISMO ejercicio, una al lado de la otra. Izquierda: posición inicial. Derecha: posición final. Debajo de cada una, en letras blancas en mayúsculas: POSICIÓN INICIAL y POSICIÓN FINAL.
+- Composición: EXACTAMENTE DOS vistas del MISMO ejercicio, en UNA sola fila (nunca dos filas ni cuatro dibujos), una al lado de la otra. Izquierda: posición inicial. Derecha: posición final. Debajo de cada una, en letras blancas en mayúsculas: POSICIÓN INICIAL y POSICIÓN FINAL.
 - Etiquetas: 2 a 4 etiquetas cortas en español, con una línea fina que apunta al músculo (por ejemplo DORSAL ANCHO, GLÚTEO MAYOR). Ortografía perfecta, con tildes. Nada de corchetes.
 - PROHIBIDO: título, subtítulo, cuadros de indicaciones, cuadros de volumen o consejo, texto en inglés (nada de START o END), marcas de agua, figuras fantasma o repetidas, y equipo que no se use en el ejercicio.
 - Encuadre: el cuerpo completo y el equipo completo dentro del cuadro. No cortes la cabeza, las manos, los pies ni las pesas en los bordes. Deja un margen de aire alrededor.
