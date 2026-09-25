@@ -181,20 +181,18 @@ export function CtaButton({
 
 /* ── <StickyCtaMobile> — barra fija inferior SOLO mobile (55 T2).
    Aparece cuando el hero sale del viewport; se oculta frente a la oferta y al
-   CTA final; safe-area respetada. DOS estados (T2): antes de ver la oferta el
-   botón hace scroll a #oferta ("ver precios"); después de verla, cambia al CTA
-   comercial — nunca saltar una oferta que la persona todavía no vio. */
+   CTA final; safe-area respetada. Un solo estado (25/09/2026): siempre lleva
+   al inicio del cuestionario con el mismo mensaje de la prueba — nunca salta
+   a la tabla de precios. */
 export function StickyCtaMobile({
   labelComercial,
   href,
-  labelPre = 'Ver plan y precios',
   heroId = 'hero',
   ofertaId = 'oferta',
   ctaFinalId = 'cta-final',
 }: {
   labelComercial: string;
   href: string;
-  labelPre?: string;
   heroId?: string;
   ofertaId?: string;
   ctaFinalId?: string;
@@ -202,7 +200,6 @@ export function StickyCtaMobile({
   const reduce = useReducedMotion();
   const [heroVisible, setHeroVisible] = useState(true);
   const [ofertaVisible, setOfertaVisible] = useState(false);
-  const [ofertaVista, setOfertaVista] = useState(false);
   const [finalVisible, setFinalVisible] = useState(false);
   // Cuántos botones de la propia página están a la vista: con uno visible, la barra fija sobra
   // (se veían dos botones casi iguales apilados — hallazgo del video del 25/09/2026).
@@ -225,7 +222,6 @@ export function StickyCtaMobile({
     const a = observar(heroId, setHeroVisible);
     const b = observar(ofertaId, (v) => {
       setOfertaVisible(v);
-      if (v) setOfertaVista(true);
     });
     const c = observar(ctaFinalId, setFinalVisible);
     const enVista = new Set<Element>();
@@ -258,11 +254,11 @@ export function StickyCtaMobile({
           className="fixed inset-x-0 bottom-0 z-40 border-t border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] px-4 pt-2 pb-[max(12px,env(safe-area-inset-bottom))] md:hidden"
         >
           <motion.a
-            href={ofertaVista ? href : `#${ofertaId}`}
+            href={href}
             whileTap={{ scale: 0.97 }}
             className="boton-3d flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] [touch-action:manipulation]"
           >
-            {ofertaVista ? labelComercial : labelPre}
+            {labelComercial}
           </motion.a>
         </motion.div>
       )}

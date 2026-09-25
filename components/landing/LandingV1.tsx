@@ -21,7 +21,7 @@ import { BotonVolverArriba, CtaButton, StickyCtaMobile } from '@/components/land
 import { CreditCard, Frown, RefreshCcw, ShieldAlert, Users } from 'lucide-react';
 
 const CTA_HREF = '/onboarding';
-const CTA_LABEL = 'Crear mi plan gratis';
+const CTA_LABEL = 'Empezar mis 7 días gratis';
 
 export default function LandingV1() {
   return (
@@ -127,7 +127,7 @@ export default function LandingV1() {
           ],
         }}
         ctaGlobal={{
-          label: 'Crear mi plan gratis',
+          label: 'Empezar mis 7 días gratis',
           href: CTA_HREF,
           nota: 'Sin tarjeta · sin renovación automática · Garantía del Primer Plan Claro: 7 días desde tu pago.',
         }}
