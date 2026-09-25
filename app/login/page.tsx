@@ -143,7 +143,7 @@ function LoginContenido() {
             </h1>
             <p className="mt-2 text-sm text-[var(--text-secondary)]">
               {desdePlan
-                ? 'Escribe tu correo para guardarlo y ver tu Día 1. Tus 7 días gratis empiezan aquí, sin tarjeta.'
+                ? 'Guarda tu plan y empieza tus 7 días gratis, sin tarjeta.'
                 : 'Para guardarlo y verlo en cualquier dispositivo'}
             </p>
 
@@ -191,7 +191,7 @@ function LoginContenido() {
                 <path fill="#FBBC05" d="M5.29 14.29a7.2 7.2 0 0 1 0-4.58V6.62H1.29a12 12 0 0 0 0 10.76l4-3.09z" />
                 <path fill="#EA4335" d="M12 4.75c1.76 0 3.34.61 4.59 1.8l3.43-3.43C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.29 6.62l4 3.09C6.23 6.86 8.88 4.75 12 4.75z" />
               </svg>
-              {cargandoGoogle ? 'Abriendo Google…' : 'Continuar con Google'}
+              {cargandoGoogle ? 'Abriendo Google…' : desdePlan ? 'Guardar mi plan con Google' : 'Continuar con Google'}
             </button>
             {errorGoogle && (
               <p className="mt-2 text-sm text-[var(--status-error)]">
@@ -214,7 +214,6 @@ function LoginContenido() {
                 <input
                   type="email"
                   required
-                  autoFocus
                   placeholder="tu@correo.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}

@@ -266,7 +266,7 @@ export default function PaywallPage() {
           {/* Mini-demo del mecanismo (en vez de un video de gimnasio): el ejercicio A cambia por el B. */}
           <div aria-hidden="true" className="flex items-center gap-2 bg-[var(--surface-2)] px-4 py-4">
             <span className="min-w-0 flex-1 truncate rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] px-3 py-2 text-[13px] font-medium text-[var(--text-tertiary)] line-through decoration-[var(--accent)] decoration-2">
-              Prensa · ocupada
+              Prensa ocupada
             </span>
             <RefreshCcw size={18} color="var(--accent)" className="shrink-0" />
             <span className="min-w-0 flex-1 truncate rounded-xl border border-[var(--accent)] bg-[var(--chip-bg)] px-3 py-2 text-[13px] font-semibold text-[var(--text-primary)]">
@@ -313,8 +313,8 @@ export default function PaywallPage() {
                 precio={`$${info.precioTotal.toFixed(2)}`}
                 detalle={
                   info.meses === 1
-                    ? '1 mes de acceso · el más caro por mes'
-                    : `${info.meses} meses de acceso · equivale a $${precioMes.toFixed(2)} al mes · ahorras ${ahorroPct}%${id === 'anual' ? ' · hasta 12 cuotas en Colombia' : ''}`
+                    ? 'Pago único · 1 mes de acceso · el más caro por mes'
+                    : `Pago único · ${info.meses} meses de acceso · equivale a $${precioMes.toFixed(2)} al mes · ahorras ${ahorroPct}%${id === 'anual' ? ' · hasta 12 cuotas en Colombia' : ''}`
                 }
                 trm={trm}
               />
@@ -400,7 +400,7 @@ export default function PaywallPage() {
           transition={{ delay: 0.3, duration: 0.3 }}
           className="mt-2 flex items-center justify-center gap-1.5 text-center text-xs font-medium text-[var(--accent)]"
         >
-          <ShieldCheck size={13} /> Garantía de devolución de 7 días, sin preguntas
+          <ShieldCheck size={13} /> Si pagas y no te convence: devolución de 7 días, sin preguntas
         </motion.p>
 
 
@@ -621,7 +621,7 @@ function PlanCard({
               <PrecioAnimado texto={precio} />
             </p>
             <p className="mt-0.5 text-[13px] tabular-nums text-[var(--text-secondary)]">
-              USD · pago único{precioCOP ? ` · ≈ ${precioCOP}` : ''}
+              USD{precioCOP ? ` · ≈ ${precioCOP}` : ''}
             </p>
           </div>
           <span
