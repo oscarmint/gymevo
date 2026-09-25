@@ -1,42 +1,53 @@
-# Prompt maestro para Gemini — solo cambia el nombre del ejercicio
+# Prompt maestro para Gemini (versión 3) — solo cambia el nombre del ejercicio
 
 Pega esto en un chat NUEVO de Gemini (uno por ejercicio) y escribe el nombre del ejercicio en la última línea.
 
 ```
-Eres un entrenador de gimnasio y un ilustrador anatómico. Te voy a dar SOLO el nombre de un ejercicio. Sigue estos pasos en orden.
+Eres un entrenador de gimnasio y un ilustrador anatómico. Te voy a dar SOLO el nombre de un ejercicio. Genera UNA imagen que cumpla TODAS las reglas de abajo.
 
-PASO 1 — INVESTIGA (en silencio, no lo muestres): busca cómo se ejecuta de verdad este ejercicio en un gimnasio comercial. Define: el equipo exacto (barra, mancuernas, máquina, polea, banco y su inclinación), la posición del cuerpo (de pie, sentado, acostado boca arriba, boca abajo o de lado), el plano del movimiento, qué hace el cuerpo en la posición inicial y en la final, y cuáles son los músculos principales y secundarios. Si hay dos formas de hacerlo, usa la más común. Si el nombre se parece a otro ejercicio, no los confundas.
+PASO 1 — INVESTIGA EN SILENCIO cómo se hace de verdad este ejercicio en un gimnasio comercial: el equipo exacto y su ángulo, la posición del cuerpo, qué hace el cuerpo al inicio y al final del movimiento, y los músculos principales. Si hay dos formas, usa la más común. No lo confundas con otro ejercicio parecido.
 
-PASO 2 — GENERA UNA SOLA IMAGEN VERTICAL 4:5 con estas reglas, todas obligatorias:
+PASO 2 — DISEÑO DE LA IMAGEN (formato vertical 4:5):
+
+DISTRIBUCIÓN, NO NEGOCIABLE
+- Divide mentalmente el lienzo en DOS mitades iguales, izquierda y derecha, en UNA sola fila.
+- Mitad izquierda: UN solo cuerpo en la posición inicial. Mitad derecha: UN solo cuerpo en la posición final. En total hay EXACTAMENTE 2 cuerpos en toda la imagen: ni 3, ni 4.
+- Los dos dibujos usan la MISMA máquina o el MISMO equipo, idéntico en forma, tamaño y ángulo. Solo cambia la posición del cuerpo.
+- Debajo de cada mitad, en letras blancas mayúsculas: POSICIÓN INICIAL (izquierda) y POSICIÓN FINAL (derecha), alineadas a la misma altura.
 
 ESTILO
-- Ilustración anatómica 3D de manual de gimnasio: figura masculina con músculos visibles (sin piel), en gris plateado, con iluminación de estudio suave. Fondo de gimnasio muy oscuro, casi negro y desenfocado.
-- Los músculos que trabaja el ejercicio brillan en verde lima (#B6F03C). Las flechas de movimiento también en verde lima. Ningún otro color de acento: nada de cian, azul, naranja ni rojo.
+- Ilustración anatómica 3D de manual de gimnasio: figura masculina con músculos visibles (sin piel), gris plateado, luz de estudio suave, fondo de gimnasio casi negro y desenfocado.
+- Los músculos principales del ejercicio brillan en verde lima (#B6F03C). Las flechas de movimiento, también verde lima. Ningún otro color de acento: nada de cian, azul, naranja ni rojo.
 
-COMPOSICIÓN
-- EXACTAMENTE dos dibujos del MISMO ejercicio, en UNA sola fila, uno al lado del otro. Izquierda: posición inicial. Derecha: posición final. Nunca dos filas, nunca cuatro dibujos, nunca una tercera figura.
-- Debajo de cada dibujo, en letras blancas mayúsculas: POSICIÓN INICIAL (izquierda) y POSICIÓN FINAL (derecha).
-- De 2 a 4 etiquetas cortas en español con una línea fina que apunta al músculo (por ejemplo DORSAL ANCHO, GLÚTEO MAYOR). Ortografía perfecta, con tildes. Sin corchetes.
+ETIQUETAS (aquí es donde más se equivoca: sé estricto)
+- Máximo 3 etiquetas en toda la imagen, cada una con una línea fina hacia el músculo.
+- Usa SOLO nombres de esta lista, escritos exactamente así y con su tilde: PECTORAL MAYOR, PECTORAL SUPERIOR, DORSAL ANCHO, TRAPECIO, ROMBOIDES, DELTOIDES, TRÍCEPS, BÍCEPS, ANTEBRAZOS, RECTO ABDOMINAL, OBLICUOS, LUMBARES, GLÚTEO MAYOR, CUÁDRICEPS, ISQUIOTIBIALES, GEMELOS, ADUCTORES.
+- Revisa cada etiqueta letra por letra antes de entregar. Si dudas de la ortografía, quita la etiqueta.
 
 PROHIBIDO
-- Título, subtítulo, cuadros de indicaciones, cuadros de volumen o de consejo, texto en inglés (nada de START ni END), marcas de agua, figuras repetidas o fantasma, y equipo que el ejercicio no use.
+- Título, subtítulo, cuadros de indicaciones, de volumen o de consejo, texto en inglés, corchetes, marcas de agua, figuras repetidas o fantasma, y equipo que el ejercicio no use.
 
 ENCUADRE
-- El cuerpo completo y el equipo completo dentro del cuadro, con margen de aire alrededor. No cortes la cabeza, las manos, los pies ni las pesas en los bordes.
+- Los dos cuerpos y todo el equipo completos dentro del cuadro, con margen de aire. No cortes cabeza, manos, pies ni pesas en los bordes. Los dos dibujos del mismo tamaño.
 
 REALISMO
-- La postura, el agarre, el ángulo del banco y el recorrido deben ser los del ejercicio real. Si no puedes dibujarlo fielmente, dímelo en una línea en vez de dibujar otro ejercicio.
+- Postura, agarre, ángulo del banco y recorrido del ejercicio real. Si no puedes dibujarlo fielmente, dímelo en una línea en vez de dibujar otro ejercicio.
 
-PASO 3 — REVISA ANTES DE ENTREGAR (en silencio): ¿hay solo dos dibujos en una fila? ¿sin título ni cuadros? ¿solo verde lima? ¿nada cortado en los bordes? ¿es el ejercicio correcto? Si algo falla, corrígelo y vuelve a generar.
+PASO 3 — VERIFICA ANTES DE ENTREGAR, en silencio, esta lista: (a) ¿hay exactamente 2 cuerpos? (b) ¿la máquina es idéntica en los dos? (c) ¿las etiquetas están bien escritas y son de la lista? (d) ¿nada cortado? (e) ¿solo verde lima? Si algo falla, corrige y vuelve a generar. No me muestres versiones intermedias.
 
-AL TERMINAR escribe solo dos líneas:
-1) EQUIPO Y POSICIÓN: lo que usaste.
-2) ARCHIVO: el nombre del ejercicio en minúsculas, sin tildes y con guiones (por ejemplo: press-militar-barra).
+RESPUESTA: entrega solo la imagen y debajo dos líneas:
+EQUIPO Y POSICIÓN: lo que usaste.
+ARCHIVO: el nombre del ejercicio en minúsculas, sin tildes y con guiones.
 
 EJERCICIO:
 ```
 
-## Sobre el nombre del archivo
-Gemini no puede poner nombre al archivo que se descarga: siempre lo llama `Gemini_Generated_Image_….jpg`. Por eso el prompt le pide que escriba el nombre sugerido al final, para tenerlo a la vista. **No hace falta que renombres nada:** descarga cada imagen a `Downloads/Ejercicios/nuevas-gemini` tal como sale. Yo reconozco cada una por el equipo y los músculos que muestra, la renombro con el nombre del catálogo y te muestro la hoja para que confirmes que cada una quedó bien identificada.
+## Si la imagen sale con un defecto
+Responde en el mismo chat con UNA sola frase que nombre el defecto y lo que quieres, por ejemplo:
+- "Hay 3 cuerpos: deja SOLO 2, uno por mitad."
+- "La máquina cambia entre los dos dibujos: usa exactamente la misma."
+- "La etiqueta dice X: corrígela a GLÚTEO MAYOR."
+- "Se cortan los pies en el borde: reduce el tamaño y deja margen."
 
-Consejo para que no haya dudas: descarga en el mismo orden del listado (`LISTADO-IMAGENES-A-REGENERAR.md`).
+## Sobre el nombre del archivo
+Gemini siempre guarda como `Gemini_Generated_Image_….jpg`; el nombre no se puede controlar. Descarga cada imagen tal cual a `Downloads/Ejercicios/nuevas-gemini`, sin renombrar. Yo identifico cada una por el equipo y los músculos, la renombro con el nombre del catálogo y te muestro la hoja para confirmar.
