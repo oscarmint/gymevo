@@ -121,9 +121,9 @@ export default function LandingV1() {
         comoFunciona={{
           titulo: 'Así funcionan tus 7 días gratis',
           pasos: [
-            { titulo: 'Empiezas tu prueba', detalle: 'Creas tu plan, te registras con tu correo y entrenas con acceso completo: tu plan completo, el Botón de Rescate y tus pesos.' },
-            { titulo: 'Entrenas 7 días', detalle: 'Te avisamos antes de que termine para que no pierdas tu racha.' },
-            { titulo: 'Al terminar, realizas el pago', detalle: 'Cuando se acaben los 7 días, eliges tu plan y pagas para seguir entrenando con tu progreso intacto.' },
+            { titulo: 'Empiezas tu prueba', detalle: 'Te registras con tu correo y usas todo, sin tarjeta.' },
+            { titulo: 'Entrenas 7 días', detalle: 'Te avisamos antes de que termine.' },
+            { titulo: 'Al terminar, realizas el pago', detalle: 'Eliges tu plan y pagas una sola vez.' },
           ],
         }}
         ctaGlobal={{

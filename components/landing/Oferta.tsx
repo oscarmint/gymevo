@@ -121,7 +121,7 @@ function Precio({ plan }: { plan: PlanOferta }) {
           <PrecioAnimado texto={plan.precioMes} />
         </span>
         <span className="text-[14px] text-[var(--text-secondary)]">{plan.sufijo ?? '/mes'}</span>{' '}
-        <span className="text-[10.5px] font-semibold text-[var(--text-tertiary)]">USD</span>
+        <span className="text-[12px] font-semibold text-[var(--text-secondary)]">USD</span>
       </p>
       {precioCOP && <p className="mt-0.5 text-[13px] tabular-nums text-[var(--text-secondary)]">≈ {precioCOP}</p>}
       {plan.descomposicionDia && (
@@ -227,7 +227,7 @@ export function Oferta({
                 <div className="mt-4">
                   <Precio plan={anual} />
                   {/* El total anual SIEMPRE visible — regla de oro de 02C */}
-                  <p className="mt-1 text-[12px] text-[var(--text-secondary)]">{anual.totalAnual}</p>
+                  <p className="mt-1 text-[15px] font-semibold text-[var(--text-primary)]">{anual.totalAnual}</p>
                   <p className="mt-2 text-[15px] font-semibold text-[var(--accent)]">{anual.ahorro}</p>
                   {anual.ahorroDetalle && (
                     <p className="mt-0.5 text-[12.5px] leading-snug text-[var(--text-secondary)]">{anual.ahorroDetalle}</p>
@@ -257,7 +257,7 @@ export function Oferta({
               </div>
               <div className="mt-4">
                 <Precio plan={semestral} />
-                <p className="mt-1 text-[12px] text-[var(--text-secondary)]">{semestral.totalSemestral}</p>
+                <p className="mt-1 text-[15px] font-semibold text-[var(--text-primary)]">{semestral.totalSemestral}</p>
                 <p className="mt-2 text-[15px] font-semibold text-[var(--accent)]">{semestral.ahorro}</p>
               </div>
               <Features items={semestral.features} origen="Oferta → semestral" />
@@ -284,7 +284,7 @@ export function Oferta({
             </div>
             <div className="mt-4">
               <Precio plan={mensual} />
-              {mensual.totalPago && <p className="mt-1 text-[12px] text-[var(--text-secondary)]">{mensual.totalPago}</p>}
+              {mensual.totalPago && <p className="mt-1 text-[15px] font-semibold text-[var(--text-primary)]">{mensual.totalPago}</p>}
             </div>
             <Features items={mensual.features} origen="Oferta → mensual" />
             {mensual.ctaLabel && mensual.ctaHref && (
