@@ -58,11 +58,11 @@ const DURACIONES_DESCANSO = [30, 60, 120, 180];
 /** Chips de esfuerzo (RIR, Repeticiones en Reserva) — solo Ruta Intermedio,
  * ver `sugerenciaPeso` en lib/routine.ts. 4 opciones (no 5) para que quepan
  * cómodas en una fila a 375px sin scroll horizontal. */
-const RIR_OPCIONES: { rir: number; etiqueta: string; pista: string }[] = [
-  { rir: 4, etiqueta: 'Ligera', pista: 'Te sobraban varias repeticiones' },
-  { rir: 2, etiqueta: 'Buena', pista: 'Podías hacer 2 más' },
-  { rir: 1, etiqueta: 'Pesada', pista: 'Podías hacer 1 más' },
-  { rir: 0, etiqueta: 'Al límite', pista: 'No podías hacer ni una más' },
+const RIR_OPCIONES: { rir: number; etiqueta: string; pista: string; color: string }[] = [
+  { rir: 4, etiqueta: 'Ligera', pista: 'Te sobraban varias repeticiones', color: 'var(--status-success)' },
+  { rir: 2, etiqueta: 'Buena', pista: 'Podías hacer 2 más', color: 'var(--status-warning)' },
+  { rir: 1, etiqueta: 'Pesada', pista: 'Podías hacer 1 más', color: 'color-mix(in oklab, var(--status-warning) 45%, var(--status-error))' },
+  { rir: 0, etiqueta: 'Al límite', pista: 'No podías hacer ni una más', color: 'var(--status-error)' },
 ];
 
 function etiquetaDuracion(seg: number): string {
@@ -986,24 +986,41 @@ function PlanDelDia({
                 {nivel === 'intermedio' && (
                   <div className="mt-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">¿Qué tal se sintió la serie?</p>
-                  <div className="mt-1.5 flex flex-wrap gap-1.5">
-                    {RIR_OPCIONES.map((op) => (
-                      <button
-                        key={op.rir}
-                        type="button"
-                        onClick={() => setRirElegido((p) => ({ ...p, [ej.id]: op.rir }))}
-                        className={`h-8 rounded-full px-3 text-xs font-semibold transition-colors ${
-                          rirElegido[ej.id] === op.rir
-                            ? 'bg-[var(--accent)] text-[var(--bg)]'
-                            : 'border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
-                        }`}
-                      >
-                        {op.etiqueta}
-                      </button>
-                    ))}
+                  {/* Escala de color en vez de texto (25/09/2026): 4 círculos de
+                      44px en una sola fila, fáciles de tocar con una mano. El
+                      nombre y la pista salen al elegir; cada círculo lleva su
+                      nombre para lectores de pantalla. */}
+                  <div className="mt-1.5 flex items-center gap-3" role="radiogroup" aria-label="Qué tal se sintió la serie">
+                    {RIR_OPCIONES.map((op) => {
+                      const activo = rirElegido[ej.id] === op.rir;
+                      return (
+                        <button
+                          key={op.rir}
+                          type="button"
+                          role="radio"
+                          aria-checked={activo}
+                          aria-label={`${op.etiqueta}: ${op.pista}`}
+                          onClick={() => setRirElegido((p) => ({ ...p, [ej.id]: op.rir }))}
+                          className="flex size-11 items-center justify-center rounded-full"
+                        >
+                          <span
+                            className={`flex items-center justify-center rounded-full transition-all duration-150 ${
+                              activo ? 'size-9 ring-2 ring-[var(--text-primary)] ring-offset-2 ring-offset-[var(--surface)]' : 'size-7 opacity-70'
+                            }`}
+                            style={{ backgroundColor: op.color }}
+                          >
+                            {activo && <Check size={16} color="var(--bg)" strokeWidth={3} />}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                   {rirElegido[ej.id] !== undefined && (
-                    <p className="mt-1.5 text-xs text-[var(--text-secondary)]">{RIR_OPCIONES.find((o) => o.rir === rirElegido[ej.id])?.pista}</p>
+                    <p className="mt-1 text-xs text-[var(--text-secondary)]">
+                      <span className="font-semibold text-[var(--text-primary)]">{RIR_OPCIONES.find((o) => o.rir === rirElegido[ej.id])?.etiqueta}</span>
+                      {' · '}
+                      {RIR_OPCIONES.find((o) => o.rir === rirElegido[ej.id])?.pista}
+                    </p>
                   )}
                   </div>
                 )}
