@@ -22,6 +22,7 @@ import { HORARIO_LABEL, META_LABEL, leerRespuestas, type RespuestasOnboarding } 
 import { formatearCOP, useTRM } from '@/lib/trm';
 import { PrecioAnimado } from '@/components/landing/ui';
 import { DIAS_DE_PRUEBA } from '@/lib/planes';
+import { registrarEvento } from '@/lib/analitica';
 
 type PlanId = 'mensual' | 'semestral' | 'anual';
 
@@ -107,6 +108,7 @@ export default function PaywallPage() {
     // el día 0, así que el usuario SABE que ahí hay una salida — no hace
     // falta hacerlo esperar tanto para activarla). El botón sigue ahí todo
     // el tiempo, solo tarda en activarse (heurística 3: control y libertad).
+    registrarEvento('paywall_view');
     const t = setTimeout(() => setPuedeCerrar(true), 1500);
     return () => clearTimeout(t);
   }, []);
@@ -121,6 +123,7 @@ export default function PaywallPage() {
   }
 
   function pagar() {
+    registrarEvento('checkout_click');
     const enlace = CHECKOUT_ENV[plan];
     const checkoutUrl = enlace ? conDisenoGymEvo(enlace) : undefined;
 
@@ -302,7 +305,7 @@ export default function PaywallPage() {
                 detalle={
                   info.meses === 1
                     ? `$${info.precioTotal.toFixed(2)} USD por 1 mes`
-                    : `$${info.precioTotal.toFixed(2)} USD por ${info.meses} meses · ahorras ${ahorroPct}%`
+                    : `$${info.precioTotal.toFixed(2)} USD por ${info.meses} meses · ahorras ${ahorroPct}%${id === 'anual' ? ' · hasta 12 cuotas en Colombia' : ''}`
                 }
                 trm={trm}
               />
@@ -347,7 +350,7 @@ export default function PaywallPage() {
         )}
 
         <p className="mt-2 text-center text-xs text-[var(--text-secondary)]">
-          Pago único · acceso hasta {fechaCorta(infoPlan.meses)} · no se renueva solo
+          Pago único · acceso hasta {fechaCorta(infoPlan.meses)} · sin renovación automática
         </p>
 
         {/* Garantía nombrada junto al CTA (antes solo vivía en el trust row, lejos) */}
@@ -372,7 +375,10 @@ export default function PaywallPage() {
             ¿Prefieres probar antes?{' '}
             <button
               type="button"
-              onClick={() => router.push('/login?desde=prueba')}
+              onClick={() => {
+                registrarEvento('trial_click');
+                router.push('/login?desde=prueba');
+              }}
               className="min-h-11 font-semibold text-[var(--accent)] underline underline-offset-4"
             >
               {`Empieza ${DIAS_DE_PRUEBA} días gratis, sin tarjeta`}

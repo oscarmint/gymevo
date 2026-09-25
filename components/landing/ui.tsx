@@ -168,6 +168,7 @@ export function CtaButton({
   return (
     <motion.a
       href={href}
+      data-cta-pagina=""
       className={`boton-3d inline-flex items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] px-6 text-center text-[17px] font-semibold text-[var(--bg)] transition-colors duration-150 hover:bg-[color-mix(in_oklab,var(--accent)_88%,var(--text-primary))] [touch-action:manipulation] ${
         alto === 56 ? 'h-14' : 'h-[52px]'
       } ${fullMobile ? 'w-full sm:w-auto' : ''}`}
@@ -202,6 +203,9 @@ export function StickyCtaMobile({
   const [ofertaVisible, setOfertaVisible] = useState(false);
   const [ofertaVista, setOfertaVista] = useState(false);
   const [finalVisible, setFinalVisible] = useState(false);
+  // Cuántos botones de la propia página están a la vista: con uno visible, la barra fija sobra
+  // (se veían dos botones casi iguales apilados — hallazgo del video del 25/09/2026).
+  const [ctasEnPantalla, setCtasEnPantalla] = useState(0);
 
   useEffect(() => {
     const observar = (id: string, onChange: (visible: boolean) => void): IntersectionObserver | null => {
@@ -223,14 +227,24 @@ export function StickyCtaMobile({
       if (v) setOfertaVista(true);
     });
     const c = observar(ctaFinalId, setFinalVisible);
+    const enVista = new Set<Element>();
+    const ioCtas = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) enVista.add(e.target);
+        else enVista.delete(e.target);
+      }
+      setCtasEnPantalla(enVista.size);
+    });
+    document.querySelectorAll('[data-cta-pagina]').forEach((el) => ioCtas.observe(el));
     return () => {
       a?.disconnect();
       b?.disconnect();
       c?.disconnect();
+      ioCtas.disconnect();
     };
   }, [heroId, ofertaId, ctaFinalId]);
 
-  const visible = !heroVisible && !ofertaVisible && !finalVisible;
+  const visible = !heroVisible && !ofertaVisible && !finalVisible && ctasEnPantalla === 0;
 
   return (
     <AnimatePresence>
@@ -279,7 +293,7 @@ export function BotonVolverArriba() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
           whileTap={{ scale: 0.92 }}
-          className="fixed right-4 bottom-24 z-40 flex size-11 items-center justify-center rounded-full border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow-2)] [touch-action:manipulation]"
+          className="fixed right-3 bottom-24 z-40 flex size-11 items-center justify-center rounded-full border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[color-mix(in_oklab,var(--surface)_82%,transparent)] text-[var(--text-primary)] shadow-[var(--shadow-2)] backdrop-blur-sm [touch-action:manipulation]"
         >
           <ArrowUp size={18} aria-hidden="true" />
         </motion.button>

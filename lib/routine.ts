@@ -944,13 +944,13 @@ export function generoIlustracion(id: string): 'masculino' | 'femenino' {
 // del mismo día.
 const SPLIT_PRINCIPIANTE: Record<SesionId, string[]> = {
   // Lunes — pierna completa.
-  pierna_completa: ['sentadilla_barra', 'prensa_inclinada', 'peso_muerto_barra', 'zancadas', 'extension_cuadriceps', 'curl_femoral_maquina', 'elevacion_talon'],
+  pierna_completa: ['sentadilla_barra', 'prensa_inclinada', 'peso_muerto_rumano_kettlebell', 'zancadas', 'extension_cuadriceps', 'curl_femoral_maquina', 'elevacion_talon'],
   // Martes — pecho, tríceps, hombro y abdomen.
   empuje: ['press_pecho_hammer', 'press_inclinado_hammer', 'aperturas_maquina', 'crossover_polea_alta', 'press_frances_barra_z', 'extension_triceps_copa', 'extension_triceps_polea_alta', 'elevaciones_laterales_polea', 'crunch_superior_horizontal'],
   // Miércoles — espalda, bíceps, hombro posterior, glúteo y abdomen.
   traccion: ['remo_mancuerna_banco', 'jalon_pecho', 'remo_cerrado_maquina', 'jalon_pecho_cerrado_neutro', 'curl_barra', 'curl_supinacion_maquina', 'curl_martillo_mancuernas', 'pajaros_maquina', 'hip_thrust_maquina', 'plancha_abdominal'],
   // Jueves — pierna con énfasis en glúteo.
-  pierna_gluteo: ['hip_thrust_maquina', 'peso_muerto_barra', 'zancadas', 'sentadilla_barra', 'prensa_inclinada', 'aductor_externo', 'aductor_interno'],
+  pierna_gluteo: ['hip_thrust_maquina', 'peso_muerto_rumano_kettlebell', 'zancadas', 'sentadilla_barra', 'prensa_inclinada', 'aductor_externo', 'aductor_interno'],
   // Viernes — pecho, espalda y abdomen.
   pecho_espalda: ['press_pecho_hammer', 'crossover_polea_alta', 'remo_mancuerna_banco', 'jalon_pecho', 'crunch_lateral_inclinado'],
   // Sábado — full body.
@@ -960,7 +960,7 @@ const SPLIT_PRINCIPIANTE: Record<SesionId, string[]> = {
   // rodilla o cadera, un empuje, una tracción, brazos/hombro y core).
   full_a: ['sentadilla_barra', 'press_pecho_hammer', 'remo_mancuerna_banco', 'curl_femoral_maquina', 'elevaciones_laterales_polea', 'plancha_abdominal'],
   full_b: ['prensa_inclinada', 'press_inclinado_hammer', 'jalon_pecho', 'hip_thrust_maquina', 'curl_barra', 'extension_triceps_copa', 'crunch_superior_horizontal'],
-  full_c: ['peso_muerto_barra', 'zancadas', 'press_militar_barra', 'jalon_pecho_cerrado_neutro', 'curl_supinacion_maquina', 'press_frances_barra_z', 'crunch_lateral_inclinado'],
+  full_c: ['peso_muerto_rumano_kettlebell', 'zancadas', 'press_militar_barra', 'jalon_pecho_cerrado_neutro', 'curl_supinacion_maquina', 'press_frances_barra_z', 'crunch_lateral_inclinado'],
   torso_a: ['press_pecho_hammer', 'jalon_pecho', 'press_militar_barra', 'aperturas_maquina', 'remo_cerrado_maquina', 'extension_triceps_copa', 'curl_barra', 'plancha_abdominal'],
   torso_b: ['press_inclinado_hammer', 'remo_mancuerna_banco', 'jalon_pecho_cerrado_neutro', 'crossover_polea_alta', 'elevaciones_laterales_polea', 'press_frances_barra_z', 'curl_martillo_mancuernas', 'crunch_superior_horizontal'],
 };

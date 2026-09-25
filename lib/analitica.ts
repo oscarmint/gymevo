@@ -7,7 +7,15 @@
 // rastreo, sin identificar a nadie.
 import { leerUTM } from './utm';
 
-export type EventoEmbudo = 'landing_view' | 'onboarding_start' | 'onboarding_complete';
+export type EventoEmbudo =
+  | 'landing_view'
+  | 'onboarding_start'
+  | 'onboarding_complete'
+  | 'plan_preview_view'
+  | 'demo_rescate'
+  | 'paywall_view'
+  | 'checkout_click'
+  | 'trial_click';
 
 // `variante` es opcional: solo la landing y el onboarding (que heredan la
 // variante ya asignada, ver lib/experimentos.ts) la mandan — sirve para

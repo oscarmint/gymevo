@@ -44,6 +44,12 @@ const FORMATO_COP = new Intl.NumberFormat('es-CO', {
   maximumFractionDigits: 0,
 });
 
+/** Hotmart convierte a pesos con un margen sobre la TRM: el 25/09/2026 cobró $106.179 COP por
+ * $29.99 USD (≈ 6.3 % más que TRM × precio). Se aplica aquí para que el precio que ve la
+ * persona en la página sea el que verá en el checkout — un precio distinto se siente como
+ * cobro escondido. Revisar si Hotmart cambia su margen. */
+const MARGEN_HOTMART = 1.065;
+
 /** "$4.99" + TRM → "≈ $19.500 COP". Redondea al peso, sin decimales (nadie
  * cobra centavos de peso colombiano). El sufijo "COP" es obligatorio (pedido
  * explícito del usuario): ambas monedas usan el símbolo "$", así que sin la
@@ -51,5 +57,5 @@ const FORMATO_COP = new Intl.NumberFormat('es-CO', {
 export function formatearCOP(precioUSD: string, trm: number): string | null {
   const numero = extraerNumeroUSD(precioUSD);
   if (numero === null) return null;
-  return `${FORMATO_COP.format(numero * trm)} COP`;
+  return `${FORMATO_COP.format(numero * trm * MARGEN_HOTMART)} COP`;
 }

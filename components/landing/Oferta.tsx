@@ -184,7 +184,7 @@ export function Oferta({
                     <CheckCustom />
                     <span>{l.resultado}</span>
                   </span>
-                  <span className="shrink-0 tabular-nums text-[var(--text-secondary)]">{l.valor}</span>
+                  {l.valor && <span className="shrink-0 tabular-nums text-[var(--text-secondary)]">{l.valor}</span>}
                 </li>
               ))}
             </ul>

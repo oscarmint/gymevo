@@ -15,9 +15,25 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "GymEvo — El entrenador que tu gimnasio te cobra pero nunca te da",
+  metadataBase: new URL("https://www.gymevoapp.com"),
+  title: "GymEvo — Qué entrenar hoy en tu gimnasio, sin improvisar",
   description:
     "Plan fijo de gimnasio para principiantes e intermedios, con un Botón de Rescate para cuando la máquina está ocupada. Sin IA que te cambia la rutina, sin cobros ocultos.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    locale: "es_CO",
+    siteName: "GymEvo",
+    url: "/",
+    title: "GymEvo — Llega al gym sabiendo qué hacer hoy",
+    description: "Tu plan fijo de gimnasio y un Botón de Rescate para cuando la máquina está ocupada. 7 días gratis, sin tarjeta.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GymEvo — Llega al gym sabiendo qué hacer hoy",
+    description: "Tu plan fijo de gimnasio y un Botón de Rescate para cuando la máquina está ocupada.",
+  },
+  icons: { icon: [{ url: "/icon.svg", type: "image/svg+xml" }, { url: "/favicon-48.png", sizes: "48x48", type: "image/png" }], apple: "/apple-icon.png" },
 };
 
 // viewportFit "cover" deja que la app dibuje detrás de la barra de gestos de

@@ -128,20 +128,20 @@ export default function LandingV2() {
         ctaGlobal={{
           label: 'Crear mi plan gratis',
           href: CTA_HREF,
-          nota: 'Al terminar los 7 días gratis, para seguir entrenando debes elegir un plan y realizar el pago.',
+          nota: 'Sin tarjeta · sin renovación automática · garantía de devolución de 7 días desde tu pago.',
         }}
         tituloMarked="Tu plan completo por menos de [acento]$0.09/día[/acento]"
         stack={{
           lineas: [
-            { resultado: 'Tu plan de rutinas por nivel y días, con calentamiento guiado', valor: 'Incluido' },
-            { resultado: '70 ejercicios con técnica ilustrada y Botón de Rescate', valor: 'Incluido' },
-            { resultado: 'Registro de series y pesos, con tu progreso y racha', valor: 'Incluido' },
-            { resultado: 'Ruta Intermedio: sube el peso según tu esfuerzo', valor: 'Incluido' },
-            { resultado: 'Tu alimentación: calorías y macros para tu objetivo', valor: 'Incluido' },
+            { resultado: 'Tu plan de rutinas por nivel y días, con calentamiento guiado', valor: '' },
+            { resultado: '70 ejercicios con técnica ilustrada y Botón de Rescate', valor: '' },
+            { resultado: 'Registro de series y pesos, con tu progreso y racha', valor: '' },
+            { resultado: 'Ruta Intermedio: sube el peso según tu esfuerzo', valor: '' },
+            { resultado: 'Tu alimentación: calorías y macros para tu objetivo', valor: '' },
           ],
           etiquetaTotal: 'Una app equivalente (Fitbod Elite, desde)',
           totalTachado: '$79.99 USD/año',
-          nota: 'Hoy: $2.50 USD/mes ($29.99 USD por 12 meses de acceso)',
+          nota: 'Hoy: $2.50 USD/mes ($29.99 USD por 12 meses de acceso) — menos que una mensualidad de muchos gimnasios',
         }}
         anual={{
           nombre: 'Anual',

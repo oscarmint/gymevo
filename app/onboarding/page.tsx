@@ -191,7 +191,7 @@ export default function OnboardingPage() {
       avanzando.current = false;
       if (pasoIdx < PASOS.length - 1) ir(pasoIdx + 1);
       else terminar();
-    }, 320);
+    }, 260);
   }
 
   function terminar() {
@@ -209,7 +209,9 @@ export default function OnboardingPage() {
   const variants: Variants = {
     enter: (d: 1 | -1) => ({ x: reduce ? 0 : d * 40, opacity: 0 }),
     center: { x: 0, opacity: 1 },
-    exit: (d: 1 | -1) => ({ x: reduce ? 0 : d * -24, opacity: 0 }),
+    // Salida corta (120 ms): con mode="wait" el paso siguiente no entra hasta que este sale, y una
+    // salida lenta dejaba el fondo vacío (hallazgo del video del 25/09/2026).
+    exit: (d: 1 | -1) => ({ x: reduce ? 0 : d * -24, opacity: 0, transition: { duration: 0.12, ease: 'easeIn' } }),
   };
 
   return (

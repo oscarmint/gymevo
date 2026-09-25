@@ -12,12 +12,16 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import { Lock, RefreshCcw } from 'lucide-react';
 import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
-import { diasDePlan, ejerciciosDeSesion, nombreDeSesion, sesionDelCiclo, tituloRuta } from '@/lib/routine';
+import { registrarEvento } from '@/lib/analitica';
+import { aplicarReemplazos, diasDePlan, ejerciciosDeSesion, nombreDeSesion, obtenerEjercicio, sesionDelCiclo, tituloRuta } from '@/lib/routine';
 
 export default function VistaPreviaDiaUnoPage() {
   const router = useRouter();
   const [respuestas, setRespuestas] = useState<RespuestasOnboarding | null>(null);
   const [cargado, setCargado] = useState(false);
+  // Demo del Botón de Rescate: original → alternativa. Tocar de nuevo vuelve al original.
+  const [cambios, setCambios] = useState<Record<string, string>>({});
+  const [ultimoCambio, setUltimoCambio] = useState<string | null>(null);
 
   // sessionStorage no existe en el servidor: leerlo en el initializer de
   // useState causa mismatch de hydration. Este efecto es la forma correcta.
@@ -30,13 +34,15 @@ export default function VistaPreviaDiaUnoPage() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setRespuestas(r);
     setCargado(true);
+    registrarEvento('plan_preview_view');
   }, [router]);
 
   if (!cargado || !respuestas) return null;
 
   const diasPlan = diasDePlan(respuestas.diasSemana);
   const sesionDia1 = sesionDelCiclo(0, diasPlan);
-  const ejercicios = ejerciciosDeSesion(sesionDia1, respuestas.nivel);
+  const ejerciciosBase = ejerciciosDeSesion(sesionDia1, respuestas.nivel);
+  const ejercicios = aplicarReemplazos(ejerciciosBase, cambios);
   const nombreDia1 = nombreDeSesion(sesionDia1);
   // Las demás sesiones de SU plan (según los días que eligió), no nombres de relleno.
   const restoSemana = Array.from({ length: diasPlan - 1 }, (_, i) => nombreDeSesion(sesionDelCiclo(i + 1, diasPlan)));
@@ -61,20 +67,50 @@ export default function VistaPreviaDiaUnoPage() {
 
         {/* Día 1 — el resultado REAL, no una promesa (5 trabajos del onboarding: crear deseo) */}
         <div className="mt-6 flex flex-col gap-3">
-          {ejercicios.map((ej, i) => (
-            <motion.div
-              key={ej.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.08 + i * 0.06 }}
-              className="rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-4"
-            >
-              <p className="text-base font-semibold text-[var(--text-primary)]">{ej.nombre}</p>
-              <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                {ej.series}×{ej.reps} · descanso {ej.descansoSeg}s
-              </p>
-            </motion.div>
-          ))}
+          {ejercicios.map((ej, i) => {
+            const original = ejerciciosBase[i];
+            const cambiado = ej.id !== original.id;
+            return (
+              <motion.div
+                key={original.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.08 + i * 0.06 }}
+                className={`flex items-center gap-3 rounded-2xl border p-4 transition-colors ${
+                  cambiado
+                    ? 'border-[color-mix(in_oklab,var(--accent)_55%,transparent)] bg-[var(--chip-bg)]'
+                    : 'border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)]'
+                }`}
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="text-base font-semibold text-[var(--text-primary)]">{ej.nombre}</p>
+                  <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                    {ej.series}×{ej.reps} · descanso {ej.descansoSeg}s
+                  </p>
+                </div>
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.9 }}
+                  aria-label={cambiado ? `Volver a ${original.nombre}` : `Probar el Botón de Rescate en ${ej.nombre}`}
+                  onClick={() => {
+                    setCambios((c) => {
+                      const { [original.id]: _quitado, ...resto } = c;
+                      return cambiado ? resto : { ...c, [original.id]: obtenerEjercicio(original.id).alternativaId };
+                    });
+                    setUltimoCambio(cambiado ? null : original.id);
+                    if (!cambiado) registrarEvento('demo_rescate');
+                  }}
+                  className={`flex size-11 shrink-0 items-center justify-center rounded-full border ${
+                    cambiado
+                      ? 'border-[var(--accent)] bg-[var(--accent)] text-[var(--bg)]'
+                      : 'border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-[var(--accent)]'
+                  }`}
+                >
+                  <RefreshCcw size={18} />
+                </motion.button>
+              </motion.div>
+            );
+          })}
 
           {/* Botón de Rescate, presente desde el Día 1 — el mecanismo, no una lista de features */}
           <motion.div
@@ -84,8 +120,10 @@ export default function VistaPreviaDiaUnoPage() {
             className="flex items-center gap-3 rounded-2xl border border-dashed border-[color-mix(in_oklab,var(--accent)_35%,transparent)] bg-[var(--chip-bg)] p-4"
           >
             <RefreshCcw size={18} color="var(--accent)" />
-            <p className="text-sm font-medium text-[var(--text-primary)]">
-              ¿Máquina ocupada? Un toque y tienes tu alternativa.
+            <p className="text-sm font-medium text-[var(--text-primary)]" aria-live="polite">
+              {ultimoCambio
+                ? '¡Listo! Así de rápido cambias de ejercicio en el gym, sin perder la sesión. Toca de nuevo para volver.'
+                : '¿Máquina ocupada? Pruébalo: toca ↻ en cualquier ejercicio.'}
             </p>
           </motion.div>
         </div>

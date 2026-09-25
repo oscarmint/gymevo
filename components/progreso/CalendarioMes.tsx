@@ -22,7 +22,7 @@ const ESTILO_DIA: Record<EstadoDia, string> = {
 };
 
 const ESTILO_DISPONIBLE =
-  'border-[color-mix(in_oklab,var(--accent)_70%,transparent)] bg-[var(--chip-bg)] text-[var(--text-primary)]';
+  'border-2 border-[color-mix(in_oklab,var(--accent)_85%,transparent)] bg-transparent text-[var(--text-primary)]';
 
 const ETIQUETA: Record<EstadoDia, string> = {
   verde: 'entrenamiento completo',

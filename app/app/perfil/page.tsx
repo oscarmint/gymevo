@@ -626,7 +626,7 @@ export default function PerfilPage() {
                       whileTap={{ scale: 0.97 }}
                       className="flex h-11 items-center justify-center rounded-xl border border-[color-mix(in_oklab,var(--status-error)_35%,transparent)] text-sm font-medium text-[var(--status-error)]"
                     >
-                      Desactivar mi suscripción
+                      Cancelar mi acceso
                     </motion.button>
                   )}
                 </div>
