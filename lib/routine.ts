@@ -754,7 +754,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Tríceps', principal: true }],
     consejoTecnico: 'Codos fijos apuntando hacia adelante durante todo el recorrido.',
   } },
-  crunch_superior_horizontal_banco: { id: 'crunch_superior_horizontal_banco', nombre: 'Crunch superior horizontal en banco', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-superior-horizontal.png', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_superior_horizontal', guia: {
+  crunch_superior_horizontal_banco: { id: 'crunch_superior_horizontal_banco', nombre: 'Crunch superior horizontal en banco', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-superior-horizontal.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_superior_horizontal', guia: {
     indicaciones: [
       'Acuéstate en el banco con las rodillas flexionadas.',
       'Manos detrás de la cabeza sin jalar el cuello.',
