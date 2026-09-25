@@ -1,28 +1,42 @@
 # Prompt maestro para Gemini — solo cambia el nombre del ejercicio
 
-Pega esto en Gemini y escribe el nombre del ejercicio en la última línea.
+Pega esto en un chat NUEVO de Gemini (uno por ejercicio) y escribe el nombre del ejercicio en la última línea.
 
 ```
-Eres un entrenador de gimnasio y un ilustrador anatómico. Voy a darte SOLO el nombre de un ejercicio. Haz esto en orden:
+Eres un entrenador de gimnasio y un ilustrador anatómico. Te voy a dar SOLO el nombre de un ejercicio. Sigue estos pasos en orden.
 
-PASO 1 — INVESTIGA (no lo muestres, úsalo para dibujar bien): busca cómo se ejecuta de verdad este ejercicio en un gimnasio comercial: el equipo exacto (barra, mancuernas, máquina, polea, banco y su inclinación), la posición del cuerpo (de pie, sentado, acostado boca arriba, boca abajo o de lado), el plano del movimiento, qué hace el cuerpo en la posición inicial y en la final, y cuáles son los músculos principales y los secundarios. Si hay dos formas de hacerlo, usa la más común. Si el nombre se parece a otro ejercicio, no los confundas.
+PASO 1 — INVESTIGA (en silencio, no lo muestres): busca cómo se ejecuta de verdad este ejercicio en un gimnasio comercial. Define: el equipo exacto (barra, mancuernas, máquina, polea, banco y su inclinación), la posición del cuerpo (de pie, sentado, acostado boca arriba, boca abajo o de lado), el plano del movimiento, qué hace el cuerpo en la posición inicial y en la final, y cuáles son los músculos principales y secundarios. Si hay dos formas de hacerlo, usa la más común. Si el nombre se parece a otro ejercicio, no los confundas.
 
-PASO 2 — GENERA UNA IMAGEN VERTICAL 4:5 con estas reglas fijas:
-- Estilo: ilustración anatómica 3D de manual de gimnasio. Figura masculina con músculos visibles (sin piel), en gris plateado, con iluminación de estudio suave. Fondo de gimnasio muy oscuro, casi negro y desenfocado.
-- Color: los músculos que trabaja el ejercicio brillan en verde lima (#B6F03C). NADA en cian, azul, naranja ni rojo. Las flechas de movimiento también en verde lima.
-- Composición: EXACTAMENTE DOS vistas del MISMO ejercicio, en UNA sola fila (nunca dos filas ni cuatro dibujos), una al lado de la otra. Izquierda: posición inicial. Derecha: posición final. Debajo de cada una, en letras blancas en mayúsculas: POSICIÓN INICIAL y POSICIÓN FINAL.
-- Etiquetas: 2 a 4 etiquetas cortas en español, con una línea fina que apunta al músculo (por ejemplo DORSAL ANCHO, GLÚTEO MAYOR). Ortografía perfecta, con tildes. Nada de corchetes.
-- PROHIBIDO: título, subtítulo, cuadros de indicaciones, cuadros de volumen o consejo, texto en inglés (nada de START o END), marcas de agua, figuras fantasma o repetidas, y equipo que no se use en el ejercicio.
-- Encuadre: el cuerpo completo y el equipo completo dentro del cuadro. No cortes la cabeza, las manos, los pies ni las pesas en los bordes. Deja un margen de aire alrededor.
-- Realismo: la postura, el agarre, el ángulo del banco y el recorrido deben ser los correctos del ejercicio real. Si no puedes dibujarlo fielmente, dímelo en una línea en vez de dibujar otro ejercicio.
+PASO 2 — GENERA UNA SOLA IMAGEN VERTICAL 4:5 con estas reglas, todas obligatorias:
 
-Al terminar, escribe una sola línea: qué equipo y qué posición usaste, para que yo la revise.
+ESTILO
+- Ilustración anatómica 3D de manual de gimnasio: figura masculina con músculos visibles (sin piel), en gris plateado, con iluminación de estudio suave. Fondo de gimnasio muy oscuro, casi negro y desenfocado.
+- Los músculos que trabaja el ejercicio brillan en verde lima (#B6F03C). Las flechas de movimiento también en verde lima. Ningún otro color de acento: nada de cian, azul, naranja ni rojo.
+
+COMPOSICIÓN
+- EXACTAMENTE dos dibujos del MISMO ejercicio, en UNA sola fila, uno al lado del otro. Izquierda: posición inicial. Derecha: posición final. Nunca dos filas, nunca cuatro dibujos, nunca una tercera figura.
+- Debajo de cada dibujo, en letras blancas mayúsculas: POSICIÓN INICIAL (izquierda) y POSICIÓN FINAL (derecha).
+- De 2 a 4 etiquetas cortas en español con una línea fina que apunta al músculo (por ejemplo DORSAL ANCHO, GLÚTEO MAYOR). Ortografía perfecta, con tildes. Sin corchetes.
+
+PROHIBIDO
+- Título, subtítulo, cuadros de indicaciones, cuadros de volumen o de consejo, texto en inglés (nada de START ni END), marcas de agua, figuras repetidas o fantasma, y equipo que el ejercicio no use.
+
+ENCUADRE
+- El cuerpo completo y el equipo completo dentro del cuadro, con margen de aire alrededor. No cortes la cabeza, las manos, los pies ni las pesas en los bordes.
+
+REALISMO
+- La postura, el agarre, el ángulo del banco y el recorrido deben ser los del ejercicio real. Si no puedes dibujarlo fielmente, dímelo en una línea en vez de dibujar otro ejercicio.
+
+PASO 3 — REVISA ANTES DE ENTREGAR (en silencio): ¿hay solo dos dibujos en una fila? ¿sin título ni cuadros? ¿solo verde lima? ¿nada cortado en los bordes? ¿es el ejercicio correcto? Si algo falla, corrígelo y vuelve a generar.
+
+AL TERMINAR escribe solo dos líneas:
+1) EQUIPO Y POSICIÓN: lo que usaste.
+2) ARCHIVO: el nombre del ejercicio en minúsculas, sin tildes y con guiones (por ejemplo: press-militar-barra).
 
 EJERCICIO:
 ```
 
-## Cómo usarlo
-1. Abre un chat nuevo en Gemini por cada ejercicio (así no se mezclan).
-2. Pega el prompt y escribe el nombre después de `EJERCICIO:` (por ejemplo: `Press militar con barra`).
-3. Revisa la línea final de Gemini sobre el equipo y la posición. Si algo está mal, respóndele lo que falla, en una frase.
-4. Descarga la imagen a `Downloads/Ejercicios/nuevas-gemini` con el nombre del ejercicio.
+## Sobre el nombre del archivo
+Gemini no puede poner nombre al archivo que se descarga: siempre lo llama `Gemini_Generated_Image_….jpg`. Por eso el prompt le pide que escriba el nombre sugerido al final, para tenerlo a la vista. **No hace falta que renombres nada:** descarga cada imagen a `Downloads/Ejercicios/nuevas-gemini` tal como sale. Yo reconozco cada una por el equipo y los músculos que muestra, la renombro con el nombre del catálogo y te muestro la hoja para que confirmes que cada una quedó bien identificada.
+
+Consejo para que no haya dudas: descarga en el mismo orden del listado (`LISTADO-IMAGENES-A-REGENERAR.md`).
