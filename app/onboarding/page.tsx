@@ -7,7 +7,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { animate, AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
-import { Activity, Check, ChevronLeft, NotebookPen, PlayCircle, RefreshCcw, ShieldAlert, TrendingUp, Users, X, Zap } from 'lucide-react';
+import { Activity, Check, Repeat, ChevronLeft, NotebookPen, PlayCircle, RefreshCcw, ShieldAlert, TrendingUp, Users, X, Zap } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
   guardarRespuestas,
@@ -50,7 +50,7 @@ const OPCIONES_FRUSTRACION: Opcion<string>[] = [
 
 const RECONOCIMIENTO_POR_FRUSTRACION: Record<string, string> = {
   maquinas:
-    'No te falta constancia: cuando la máquina está ocupada, pierdes el hilo del plan. Por eso existe el Botón de Rescate — otro ejercicio al instante.',
+    'No te falta constancia: a las 6 PM, con la máquina ocupada, se pierde el hilo del plan. Por eso existe el Botón de Rescate — otro ejercicio en 1 toque, sin perder la sesión.',
   entrenadores:
     'No es que no merezcas ayuda: nadie te atiende igual a las 6 PM con el gimnasio lleno. GymEvo sí está pendiente de ti, todos los días.',
   lesion:
@@ -219,11 +219,6 @@ export default function OnboardingPage() {
         className="pointer-events-none absolute inset-0 z-0"
         style={{
           background:
-            /* Renglones de cuaderno (mundo del sujeto, FICHA-ARTE) — textura
-               PROPIA (líneas rectas), no el grano feTurbulence del ejemplo
-               vetado "Capítulo" del banco canónico: mismo concepto, device
-               visual distinto. */
-            'repeating-linear-gradient(to bottom, color-mix(in oklab, var(--text-tertiary) 22%, transparent) 0px, color-mix(in oklab, var(--text-tertiary) 22%, transparent) 1px, transparent 1px, transparent 28px), ' +
             'radial-gradient(700px 420px at 15% -10%, color-mix(in oklab, var(--accent) 26%, transparent) 0%, transparent 60%), ' +
             'radial-gradient(620px 460px at 100% 55%, color-mix(in oklab, var(--accent-2) 16%, transparent) 0%, transparent 60%), ' +
             'radial-gradient(560px 380px at 100% 100%, color-mix(in oklab, var(--accent-2) 12%, transparent) 0%, transparent 55%)',
@@ -318,7 +313,7 @@ export default function OnboardingPage() {
         <AnimatePresence mode="wait" custom={dir} initial={false}>
           {paso === 'meta' && (
             <PantallaPregunta key="meta" dir={dir} variants={variants}>
-              <Pregunta titulo="¿Cuál es tu meta ahora?" micro="Esto define el enfoque de tu plan" />
+              <Pregunta titulo="¿Cuál es tu *meta* ahora?" micro="Esto define el enfoque de tu plan" />
               <Chips opciones={OPCIONES_META} valor={meta} onSelect={(v) => seleccionarYAvanzar(setMeta, v)} />
               <TarjetaRuta
                 nivel={nivel}
@@ -332,7 +327,7 @@ export default function OnboardingPage() {
 
           {paso === 'nivel' && (
             <PantallaPregunta key="nivel" dir={dir} variants={variants}>
-              <Pregunta titulo="¿Cuál es tu situación hoy?" micro="Esto decide tu ruta: Principiante o Intermedio" />
+              <Pregunta titulo="¿Cuál es tu *situación* hoy?" micro="Esto decide tu ruta: Principiante o Intermedio" />
               <Chips opciones={OPCIONES_NIVEL} valor={nivel} onSelect={(v) => seleccionarYAvanzar(setNivel, v)} />
               {/* Beneficio reactivo al nivel elegido (16/09/2026): antes era
                   fijo (siempre "técnica explicada"), pero eso no distinguía
@@ -357,7 +352,7 @@ export default function OnboardingPage() {
 
           {paso === 'frustracion' && (
             <PantallaPregunta key="frustracion" dir={dir} variants={variants}>
-              <Pregunta titulo="¿Qué es lo que más te frustra hoy?" />
+              <Pregunta titulo="¿Qué es lo que más te *frustra* hoy?" />
               <Chips
                 opciones={OPCIONES_FRUSTRACION}
                 valor={frustracion}
@@ -369,7 +364,7 @@ export default function OnboardingPage() {
 
           {paso === 'reconocimiento' && (
             <PantallaPregunta key="reconocimiento" dir={dir} variants={variants}>
-              <div className="flex flex-1 flex-col items-center justify-start pt-2 text-center">
+              <div className="flex flex-1 flex-col items-center justify-center text-center">
                 <div className="flex flex-col items-center">
                   <motion.span
                     aria-hidden="true"
@@ -399,7 +394,7 @@ export default function OnboardingPage() {
                     transition={{ delay: reduce ? 0 : 0.08, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                     className="text-balance text-3xl font-bold leading-[1.1] tracking-[-0.02em] text-[var(--text-primary)] [font-family:var(--font-display)]"
                   >
-                    Te entendemos
+                    Te <span className="text-[var(--accent)]">entendemos</span>
                   </motion.h1>
                   <motion.p
                     initial={{ opacity: reduce ? 1 : 0, y: reduce ? 0 : 8 }}
@@ -422,21 +417,19 @@ export default function OnboardingPage() {
                     igual para ambas rutas — racha/progreso real es el loop de
                     retención central de la app (ver ESTADO.md), información
                     nueva y verdadera, no relleno. */}
-                <div className="mt-8 flex w-full max-w-xs flex-col gap-3">
+                <div className="mt-8 flex w-full flex-col gap-3">
                   <motion.div
                     initial={{ opacity: reduce ? 1 : 0, y: reduce ? 0 : 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: reduce ? 0 : 0.24, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    style={{
-                      borderImage: 'linear-gradient(90deg, var(--accent), color-mix(in oklab, var(--accent-2) 70%, var(--accent))) 1',
-                    }}
-                    className="flex items-start gap-3 rounded-[var(--radius-card)] border-t-2 bg-[var(--surface)] p-4 text-left"
+                                        className="relative flex items-start gap-3 overflow-hidden rounded-[var(--radius-card)] bg-[var(--surface)] p-4 text-left"
                   >
+                    <span aria-hidden="true" className="absolute inset-x-0 top-0 h-0.5" style={{ background: 'linear-gradient(90deg, var(--accent), color-mix(in oklab, var(--accent-2) 70%, var(--accent)))' }} />
                     <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-[color-mix(in_oklab,var(--accent)_30%,transparent)] bg-[var(--chip-bg)]">
                       {nivel === 'intermedio' ? (
                         <TrendingUp size={17} color="var(--accent)" />
                       ) : (
-                        <ShieldAlert size={17} color="var(--accent)" />
+                        <Repeat size={17} color="var(--accent)" />
                       )}
                     </span>
                     <p className="text-sm leading-relaxed text-[var(--text-primary)]">
@@ -457,13 +450,11 @@ export default function OnboardingPage() {
                     initial={{ opacity: reduce ? 1 : 0, y: reduce ? 0 : 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: reduce ? 0 : 0.32, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    style={{
-                      borderImage: 'linear-gradient(90deg, var(--accent-2), color-mix(in oklab, var(--accent) 70%, var(--accent-2))) 1',
-                    }}
-                    className="flex items-start gap-3 rounded-[var(--radius-card)] border-t-2 bg-[var(--surface)] p-4 text-left"
+                                        className="relative flex items-start gap-3 overflow-hidden rounded-[var(--radius-card)] bg-[var(--surface)] p-4 text-left"
                   >
+                    <span aria-hidden="true" className="absolute inset-x-0 top-0 h-0.5" style={{ background: 'linear-gradient(90deg, var(--accent), color-mix(in oklab, var(--accent-2) 70%, var(--accent)))' }} />
                     <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-[color-mix(in_oklab,var(--accent-2)_30%,transparent)] bg-[var(--chip-bg)]">
-                      <Activity size={17} color="var(--accent-2)" />
+                      <Activity size={17} color="var(--accent)" />
                     </span>
                     <p className="text-sm leading-relaxed text-[var(--text-primary)]">
                       <span className="font-semibold">Tu constancia queda registrada:</span> ves tu
@@ -478,7 +469,7 @@ export default function OnboardingPage() {
                 whileTap={{ scale: 0.97 }}
                 className="boton-3d mt-6 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
               >
-                Continuar
+                Seguir armando mi plan
               </motion.button>
             </PantallaPregunta>
           )}
@@ -684,7 +675,15 @@ function Pregunta({ titulo, micro }: { titulo: string; micro?: string }) {
   return (
     <div className="mb-6">
       <h1 className="text-balance text-3xl font-bold leading-[1.1] tracking-[-0.02em] text-[var(--text-primary)] [font-family:var(--font-display)]">
-        {titulo}
+        {titulo.split('*').map((parte, i) =>
+          i % 2 === 1 ? (
+            <span key={i} className="text-[var(--accent)]">
+              {parte}
+            </span>
+          ) : (
+            parte
+          ),
+        )}
       </h1>
       {micro && <p className="mt-2 text-sm text-[var(--text-secondary)]">{micro}</p>}
     </div>

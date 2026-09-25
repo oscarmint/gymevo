@@ -375,12 +375,12 @@ export default function PaywallPage() {
             <button
               type="button"
               onClick={() => router.push('/login?desde=prueba')}
-              className="flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-base font-semibold text-[var(--accent)]"
+              className="flex h-11 w-full items-center justify-center text-base font-semibold text-[var(--accent)] underline underline-offset-4"
             >
               {`Probar ${DIAS_DE_PRUEBA} días gratis`}
             </button>
             <p className="mt-1.5 text-center text-xs text-[var(--text-secondary)]">
-              Al terminar los {DIAS_DE_PRUEBA} días gratis, para seguir entrenando debes elegir un plan y realizar el pago.
+              Sin tarjeta. Al terminar los {DIAS_DE_PRUEBA} días, para seguir eliges un plan (la garantía de devolución es aparte: cuenta desde tu pago).
             </p>
           </motion.div>
         )}
@@ -517,7 +517,7 @@ function LineaDePago({ plan }: { plan: PlanId }) {
     {
       estado: 'lleno' as const,
       titulo: `Acceso hasta el ${fechaEnMeses(info.meses)}`,
-      sub: 'Los 6 días de tu plan, Botón de Rescate y registro de tus pesos',
+      sub: 'Todas tus rutinas, Botón de Rescate y registro de tus pesos',
     },
     { estado: 'vacio' as const, titulo: 'Antes de vencer — te avisamos', sub: 'Renuevas cuando quieras' },
   ];
@@ -585,7 +585,7 @@ function PlanCard({
       className={`relative flex flex-col rounded-[var(--radius-card)] border px-5 py-4 text-left transition-colors disabled:opacity-50 ${
         seleccionado
           ? 'boton-3d-borde border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_6%,transparent)]'
-          : 'superficie-3d border-2 border-dashed border-[color-mix(in_oklab,var(--accent-2)_45%,var(--text-tertiary)_55%)] bg-[var(--surface)]'
+          : 'superficie-3d border-[color-mix(in_oklab,var(--text-tertiary)_38%,transparent)] bg-[var(--surface)]'
       }`}
     >
       {badge && (
@@ -628,14 +628,14 @@ function PlanCard({
               </span>
             )}
           </div>
+          {precioTachado && (
+            <p className="text-xs tabular-nums text-[var(--text-tertiary)]">
+              Antes <span className="line-through decoration-[var(--accent)] decoration-2">{precioTachado}/mes</span>
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right">
-            {precioTachado && (
-              <p className="text-base font-bold tabular-nums text-[var(--text-tertiary)] line-through decoration-[var(--accent)] decoration-2">
-                {precioTachado}/mes
-              </p>
-            )}
             {/* Un solo número héroe por tarjeta (hallazgo revisor-visual: el
                 "USD" repetido dos veces + la conversión en su propia línea
                 competían con el precio grande) — "USD" y la conversión a

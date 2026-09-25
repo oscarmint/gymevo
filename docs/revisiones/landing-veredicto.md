@@ -1,9 +1,16 @@
-# VEREDICTO revisor-visual — landing
-Fecha: 2026-09-01 00:00
+# VEREDICTO revisor-visual — landing (ronda 2)
+Fecha: 2026-09-24 12:00
 Screenshot: docs/revisiones/landing-375.png
-Usabilidad: 36/40
-Craft: 19/20
-Copy (si vende): 19/20
+Usabilidad: 28/40
+Craft: 15/20
+Copy (si vende): 14/20
 Fidelidad (si hubo referencia): N-A
-Veredicto: LISTA
-Top defectos: 1. [flotante inferior-derecho, toda la página] <BotonVolverArriba> no tiene una zona de exclusión cerca de #cta-final/FAQ — al pasar por esas secciones puede pisar momentáneamente el chevron de la última pregunta o el borde del PS; fix: bajar su umbral de aparición o añadir un pequeño padding-right al contenido cuando esté visible. 2. [paleta global] papel cálido (#F5F1EA) + tinta verde (#5C7A1F) coincide en 2 de 3 ejes con el combo vetado "Capítulo" del banco canónico (falta la tercera pieza, Petrona/Karla, aquí es Instrument Sans) — no es clon pero es el eje más cercano al límite; fix: si se repite este patrón en otro proyecto del SO, está vetado (ya anotado en FICHA-ARTE), aquí se mantiene por ser la dirección aprobada. 3. [heurística 3, toda la página] sigue sin existir una marca/header persistente durante el scroll (solo aparece en el tramo del hero y en el footer) — el botón de volver arriba mitiga el problema pero un header sticky mínimo sería el óptimo; no bloqueante, nota para una futura iteración.
+Veredicto: NO LISTA
+Top defectos:
+1. [Oferta, bajo el stack y los planes] Dos etiquetas de CTA distintas para la misma acción (hero/medio/final "Crear mi plan de mañana gratis" vs. "Probar 7 días gratis"), y 6 botones repetidos en ~9.400px. Fix: una sola etiqueta en 1a persona en todos.
+2. [Oferta] Bloque más denso de la página: stack de valor + "Así funcionan tus 7 días" + 3 planes de 4 features + CTA + nota, antes de la garantía. Fix: colapsar features de Semestral/Mensual a 1-2 líneas o mover el stack fuera; una sola decisión visible.
+3. [Copy, Oferta] Sin ninguna prueba propia (testimonio, demo, número real); solo la garantía Hotmart. "Valor total $108 USD" tachado no tiene base verificable (observación de negocio pendiente del dueño, no bloqueante de craft). Fix: prueba verificable o retirar el ancla hasta tenerla.
+4. [Oferta vs código] Los comentarios del código dicen "pago único, sin trial", pero el copy vende "7 días gratis" con registro por correo; ningún plan pasa trialDias y no hay badge. Riesgo de contradicción con el paywall. Fix: alinear una sola verdad de trial entre landing, paywall y comentarios.
+5. [Verificación] El screenshot completo se ve a 76px de ancho: no se pudo verificar a ojo encaje óptico (chips, radios, padding) ni contraste por sección. Fix: entregar recortes por tramo (~1000px) para confirmar el eje de encaje.
+
+Observaciones: cuerpo de FAQ y planes cumple (aria-expanded, CTA >=52px, .boton-3d:active definido, reduced-motion respetado, PrecioAnimado ya arranca en el valor final). Sin desvío de paleta contra FICHA-ARTE en código (tokens var). No es clon vetado. Identidad: verde lima sobre casi-negro + Poppins, sostenida por video del hero y capturas; el kit sigue siendo algo intercambiable con otras apps fitness oscuras (3/4).
