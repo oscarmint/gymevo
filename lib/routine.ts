@@ -769,7 +769,7 @@ const CATALOGO: Record<string, Ejercicio> = {
   // programa ni son el destino del Botón de Rescate de ningún ejercicio
   // existente (para no alterar en silencio las rutinas ya aprobadas). Quedan
   // aquí, listas con su ilustración, esperando esa decisión.
-  press_banco_barra: { id: 'press_banco_barra', nombre: 'Press de banco plano con barra', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/press-banco-barra.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_banco_mancuernas', guia: {
+  press_banco_barra: { id: 'press_banco_barra', nombre: 'Press de banco plano con barra', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/press-banco-barra.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_banco_mancuernas', guia: {
     indicaciones: [
       'Acuéstate en el banco con los pies firmes en el suelo y la espalda apoyada.',
       'Toma la barra con un agarre ligeramente más ancho que los hombros.',
@@ -799,7 +799,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Bíceps braquial', principal: true }, { nombre: 'Braquial', principal: false }, { nombre: 'Braquiorradial', principal: false }],
     consejoTecnico: 'Mantén el torso firme; evita balancearte o usar impulso para subir el peso.',
   } },
-  elevacion_frontal_polea: { id: 'elevacion_frontal_polea', nombre: 'Elevación frontal de hombro en polea (un brazo)', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/elevacion-frontal-polea.png', series: 4, reps: '8-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'elevacion_frontal_mancuernas', guia: {
+  elevacion_frontal_polea: { id: 'elevacion_frontal_polea', nombre: 'Elevación frontal de hombro en polea (un brazo)', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/elevacion-frontal-polea.jpg', series: 4, reps: '8-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'elevacion_frontal_mancuernas', guia: {
     indicaciones: [
       'Ponte de espaldas a la polea baja, con el mango en una mano.',
       'Con el brazo casi extendido, eleva al frente hasta la altura del hombro.',
@@ -809,7 +809,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Deltoides anterior', principal: true }],
     consejoTecnico: 'No uses impulso de la espalda; el movimiento lo hace solo el hombro.',
   } },
-  encogimientos_maquina: { id: 'encogimientos_maquina', nombre: 'Encogimientos (shrugs) en máquina', grupo: 'Trapecio', grupoMuscular: 'trapecio', imagenExplicacion: '/explicaciones/encogimientos-maquina.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'encogimientos_mancuernas', guia: {
+  encogimientos_maquina: { id: 'encogimientos_maquina', nombre: 'Encogimientos (shrugs) en máquina', grupo: 'Trapecio', grupoMuscular: 'trapecio', imagenExplicacion: '/explicaciones/encogimientos-maquina.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'encogimientos_mancuernas', guia: {
     indicaciones: [
       'De pie, sujeta las manijas de la máquina con los brazos extendidos.',
       'Eleva los hombros hacia las orejas, sin flexionar los codos.',
@@ -818,7 +818,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Trapecio superior', principal: true }],
     consejoTecnico: 'No gires los hombros — el movimiento es solo hacia arriba y abajo.',
   } },
-  crunch_banco_declinado: { id: 'crunch_banco_declinado', nombre: 'Crunch en banco declinado', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-banco-declinado.png', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_superior_horizontal_banco', guia: {
+  crunch_banco_declinado: { id: 'crunch_banco_declinado', nombre: 'Crunch en banco declinado', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-banco-declinado.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_superior_horizontal_banco', guia: {
     indicaciones: [
       'Ajusta el banco declinado y engancha los pies en los rodillos.',
       'Manos detrás de la cabeza, sin jalar el cuello.',

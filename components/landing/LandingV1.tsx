@@ -105,7 +105,7 @@ export default function LandingV1() {
           { label: 'Eliges tu nivel y tu meta', src: '/screenshots/frame-onboarding.png', alt: 'Onboarding: elige tu meta' },
           { label: 'Tu ejercicio de hoy, listo', src: '/screenshots/frame-plan-del-dia.png', alt: 'Plan del día con ejercicios y racha' },
           { label: '¿Ocupada? Cambias al instante', src: '/screenshots/frame-rescate.png', alt: 'Botón de Rescate en tu plan del Día 1' },
-          { label: 'Ves tu progreso real', src: '/screenshots/frame-historial.png', alt: 'Historial de pesos registrados' },
+          { label: 'Ves tu progreso real', src: '/screenshots/frame-historial.png', alt: 'Tu progreso: peso corporal y volumen levantado' },
         ]}
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
