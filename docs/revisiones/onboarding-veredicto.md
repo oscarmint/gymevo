@@ -1,14 +1,16 @@
-# VEREDICTO revisor-visual — onboarding (paso "Te entendemos", ronda 3)
-Fecha: 2026-09-24 12:00
+# VEREDICTO revisor-visual — onboarding (ronda 5)
+Fecha: 2026-09-25 12:00
 Screenshot: docs/revisiones/onboarding-375.png
-Usabilidad: 31/40
-Craft: 15/20
-Copy (si vende): 16/20
-Fidelidad (si hubo referencia): FIEL
+Usabilidad: 30/40
+Craft: 14/20
+Copy (si vende): 14/20
+Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 Top defectos:
-1. app/onboarding/page.tsx L155-162: el listener global de Enter avanza el paso aunque el foco esté en Atrás o Salir (Enter activa el botón y además avanza). Fix: ignorar el evento si e.target es un button/input, o si e.defaultPrevented.
-2. app/onboarding/page.tsx L438-480 (movimiento 3/4): en este paso no hay conteo de número héroe ni celebración de hito más allá del check y el trazo; el conteo vive solo en "compromiso". Fix: añadir un contador o anillo con dato propio, o una micro-celebración con spring al montar el check.
-3. app/onboarding/page.tsx L442-444 y L470-472: el hairline lima de 2px queda recortado por overflow-hidden + radio y se ve como una barra curvada en el borde superior. Además, la 2ª tarjeta usa borde de ícono con accent-2 y la 1ª con accent (L445 vs L473). Fix: hairline inset con degradé que se desvanece en los extremos, y unificar el borde de ambos íconos en accent.
-4. app/onboarding/page.tsx L400-413 (identidad 3/4): el subrayado ondulado bajo el titular es un gesto muy común y no diferencia a la app de otras. La ficha define el dispositivo como "verde que se enciende" y el tachado. Fix: hacer que el trazo imite el tachado de ejercicio completado (trazo recto con leve inclinación) o reutilizar el mismo componente que el tachado real.
-5. app/onboarding/page.tsx L452-479 (jerarquía): las dos tarjetas usan el mismo peso, tamaño e ícono lima que el resto y compiten con el párrafo. "Tu plan no cambia de la nada" suena forzado. Fix: reescribir a "Tu plan no cambia cada semana: mismos ejercicios para que veas tu progreso real" y bajar la tarjeta 2 a un peso secundario (texto gris).
+1. [app/onboarding/plan/page.tsx, microcopy bajo el CTA "Ver mi plan completo"] "7 días gratis, sin tarjeta · sin renovación automática · garantía de 7 días" repite "7 días" dos veces con sentidos distintos (prueba y garantía), y la garantía no tiene nombre. FICHA-AVATAR promete "aviso antes del cobro", lo que implica cobro automático, y choca con "sin renovación automática". Fix: verificar la mecánica real del paywall y Hotmart, y dejar una sola promesa por línea. Si hay garantía, darle nombre y plazo distinto al de la prueba.
+2. [plan/page.tsx, lista de ejercicios] 5 botones de rescate en verde, más la fila "+2 ejercicios", el aviso, 3 filas bloqueadas y el CTA. Compiten con el CTA héroe y la pantalla queda densa. Fix: dejar UN botón de rescate destacado (primera fila) y los demás en tono neutro hasta que se toque el primero. Reducir a 3 filas bloqueadas, o a un resumen "+3 días".
+3. [plan/page.tsx L60 y L90] Jerga sin traducir para el avatar principiante: eyebrow "RUTA PRINCIPAL · HIPERTROFIA" y "4×10-12". Fix: "Ganar músculo" en lugar de "Hipertrofia", y "4 series de 10 a 12" en lugar de "4×10-12".
+4. [onboarding/page.tsx paso "Te entendemos", tarjeta 2, L479-481] "Tu constancia queda registrada: ves tu racha y tu progreso reales" es genérica, sin cifra, sin escena y sin dolor de la ficha. Fix: sustituirla por un beneficio concreto del avatar (por ejemplo "Sabes qué hacer apenas cruzas la puerta: el plan de hoy ya está listo").
+5. [plan/page.tsx, controles y movimiento] La vista previa no tiene "Volver" hacia el cuestionario (solo el CTA). Devuelve null mientras carga, sin skeleton. Usa motion sin useReducedMotion (el CSS global no frena los transforms de JS). Fix: agregar flecha atrás a /onboarding, un skeleton de 5 filas y useReducedMotion en las entradas.
+
+Notas: el trazo recto y el copy "Tu plan no cambia cada semana" se ven bien en el screenshot. Paleta y Poppins coinciden con FICHA-ARTE (#97d131 sobre #12161c). El aviso del rescate con borde sólido e ícono arriba está resuelto. Identidad ownable: 2/4 (dark + lima con hairline degradé y canto 3D, sin textura ni ilustración propia). Sin celebración de hito ni conteo en estas dos vistas (el conteo solo está en el paso de días). Carga cognitiva: la lista de 5 ejercicios pasa el gate, pero el conjunto de la vista previa queda al límite (≤4 fallas, no crítico).

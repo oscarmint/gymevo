@@ -68,7 +68,7 @@ export default function LandingV1() {
           labelHoy: 'Hoy',
           hoy: 'Entras al gym, ves todo ocupado, y terminas 20 minutos en la caminadora.',
           labelFuturo: 'En 6 meses, si nada cambia',
-          futuro: 'El mismo cuerpo, la misma frustración — con 6 meses menos.',
+          futuro: 'Otra mensualidad pagada, el mismo espejo.',
         }}
       />
 
@@ -179,7 +179,7 @@ export default function LandingV1() {
           garantía de devolución de 7 días desde el pago aplica a los 3 planes
           por igual. */}
       <Garantia
-        nombre="la Garantía del Primer Plan Claro"
+        nombre="La Garantía del Primer Plan Claro"
         condicionMarked="Pruébalo 7 días gratis. Al terminar, eliges tu plan y realizas el pago para seguir; y si no te convence, tienes [b]7 días desde tu pago[/b] para pedir tu dinero de vuelta, en cualquier plan. Sin preguntas."
         pisoLegal="Respaldada por la garantía Hotmart"
       />

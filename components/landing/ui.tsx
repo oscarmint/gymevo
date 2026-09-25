@@ -169,6 +169,7 @@ export function CtaButton({
     <motion.a
       href={href}
       data-cta-pagina=""
+      whileTap={{ scale: 0.97 }}
       className={`boton-3d inline-flex items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] px-6 text-center text-[17px] font-semibold text-[var(--bg)] transition-colors duration-150 hover:bg-[color-mix(in_oklab,var(--accent)_88%,var(--text-primary))] [touch-action:manipulation] ${
         alto === 56 ? 'h-14' : 'h-[52px]'
       } ${fullMobile ? 'w-full sm:w-auto' : ''}`}
@@ -258,6 +259,7 @@ export function StickyCtaMobile({
         >
           <motion.a
             href={ofertaVista ? href : `#${ofertaId}`}
+            whileTap={{ scale: 0.97 }}
             className="boton-3d flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] [touch-action:manipulation]"
           >
             {ofertaVista ? labelComercial : labelPre}

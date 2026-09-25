@@ -180,7 +180,7 @@ export default function LandingV2() {
 
       {/* 7. GARANTÍA — idéntica a V1 */}
       <Garantia
-        nombre="la Garantía del Primer Plan Claro"
+        nombre="La Garantía del Primer Plan Claro"
         condicionMarked="Pruébalo 7 días gratis. Al terminar, eliges tu plan y realizas el pago para seguir; y si no te convence, tienes [b]7 días desde tu pago[/b] para pedir tu dinero de vuelta, en cualquier plan. Sin preguntas."
         pisoLegal="Respaldada por la garantía Hotmart"
       />
