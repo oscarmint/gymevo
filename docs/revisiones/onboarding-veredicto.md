@@ -1,16 +1,14 @@
-# VEREDICTO revisor-visual — onboarding (paso "Te entendemos", ronda 2)
+# VEREDICTO revisor-visual — onboarding (paso "Te entendemos", ronda 3)
 Fecha: 2026-09-24 12:00
 Screenshot: docs/revisiones/onboarding-375.png
-Usabilidad: 30/40
-Craft: 14/20
-Copy (si vende): 13/20
-Fidelidad (si hubo referencia): N-A
+Usabilidad: 31/40
+Craft: 15/20
+Copy (si vende): 16/20
+Fidelidad (si hubo referencia): FIEL
 Veredicto: NO LISTA
 Top defectos:
-1. [Tarjetas de refuerzo vs CTA] Las tarjetas (max-w-xs, ~320px, x=28-347) son más angostas que el CTA (335px, x=20-355): dos anchos y bordes izquierdos que no alinean → mismo ancho (w-full) para tarjetas y CTA.
-2. [Icono tarjeta 1] "Tu plan no cambia de la nada" lleva ShieldAlert (escudo con "!"), que se lee como alerta, no como plan fijo → ícono neutro (Lock, CalendarCheck o Repeat).
-3. [Tarjeta 2, hairline e ícono] El acento secundario #5c7a1f sobre #1a2029 queda a ~3:1 y el hairline casi no se ve; el ícono Activity queda apagado → subir a un tono más claro del verde, o usar el acento lima en ambos.
-4. [Identidad] En esta pantalla no hay dispositivo ownable visible (sin renglones ni tachado): lima + Poppins + tarjeta oscura es intercambiable con cualquier app fitness → reintroducir el tachado/trazo lima como firma (por ejemplo, una línea que se dibuja bajo "entendemos").
-5. [Copy] "Botón de Rescate" aparece sin explicar qué es y "Continuar" es genérico; además la tarjeta "plan fijo" responde a la objeción de apps que cambian la rutina, no a la de máquina ocupada que acaba de elegir el usuario → CTA en 1ª persona ("Ver mi plan") y una tarjeta que cierre el dolor elegido.
-
-Verificación en código (no invento lo no visible): Enter avanza en este paso; atrás y salir siempre presentes; modal de confirmación con trampa de foco; stagger de entrada, trazo del check que se dibuja y whileTap 0.97; reduced-motion respetado. Faltan el conteo de números y la celebración en este paso; el conteo solo existe en "compromiso". No hay estados de error ni offline en la pantalla.
+1. app/onboarding/page.tsx L155-162: el listener global de Enter avanza el paso aunque el foco esté en Atrás o Salir (Enter activa el botón y además avanza). Fix: ignorar el evento si e.target es un button/input, o si e.defaultPrevented.
+2. app/onboarding/page.tsx L438-480 (movimiento 3/4): en este paso no hay conteo de número héroe ni celebración de hito más allá del check y el trazo; el conteo vive solo en "compromiso". Fix: añadir un contador o anillo con dato propio, o una micro-celebración con spring al montar el check.
+3. app/onboarding/page.tsx L442-444 y L470-472: el hairline lima de 2px queda recortado por overflow-hidden + radio y se ve como una barra curvada en el borde superior. Además, la 2ª tarjeta usa borde de ícono con accent-2 y la 1ª con accent (L445 vs L473). Fix: hairline inset con degradé que se desvanece en los extremos, y unificar el borde de ambos íconos en accent.
+4. app/onboarding/page.tsx L400-413 (identidad 3/4): el subrayado ondulado bajo el titular es un gesto muy común y no diferencia a la app de otras. La ficha define el dispositivo como "verde que se enciende" y el tachado. Fix: hacer que el trazo imite el tachado de ejercicio completado (trazo recto con leve inclinación) o reutilizar el mismo componente que el tachado real.
+5. app/onboarding/page.tsx L452-479 (jerarquía): las dos tarjetas usan el mismo peso, tamaño e ícono lima que el resto y compiten con el párrafo. "Tu plan no cambia de la nada" suena forzado. Fix: reescribir a "Tu plan no cambia cada semana: mismos ejercicios para que veas tu progreso real" y bajar la tarjeta 2 a un peso secundario (texto gris).

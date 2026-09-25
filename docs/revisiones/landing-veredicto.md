@@ -1,16 +1,15 @@
-# VEREDICTO revisor-visual — landing (ronda 2)
+# VEREDICTO revisor-visual — landing
 Fecha: 2026-09-24 12:00
 Screenshot: docs/revisiones/landing-375.png
-Usabilidad: 28/40
-Craft: 15/20
-Copy (si vende): 14/20
+Usabilidad: 27/40
+Craft: 13/20
+Copy (si vende): 15/20
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 Top defectos:
-1. [Oferta, bajo el stack y los planes] Dos etiquetas de CTA distintas para la misma acción (hero/medio/final "Crear mi plan de mañana gratis" vs. "Probar 7 días gratis"), y 6 botones repetidos en ~9.400px. Fix: una sola etiqueta en 1a persona en todos.
-2. [Oferta] Bloque más denso de la página: stack de valor + "Así funcionan tus 7 días" + 3 planes de 4 features + CTA + nota, antes de la garantía. Fix: colapsar features de Semestral/Mensual a 1-2 líneas o mover el stack fuera; una sola decisión visible.
-3. [Copy, Oferta] Sin ninguna prueba propia (testimonio, demo, número real); solo la garantía Hotmart. "Valor total $108 USD" tachado no tiene base verificable (observación de negocio pendiente del dueño, no bloqueante de craft). Fix: prueba verificable o retirar el ancla hasta tenerla.
-4. [Oferta vs código] Los comentarios del código dicen "pago único, sin trial", pero el copy vende "7 días gratis" con registro por correo; ningún plan pasa trialDias y no hay badge. Riesgo de contradicción con el paywall. Fix: alinear una sola verdad de trial entre landing, paywall y comentarios.
-5. [Verificación] El screenshot completo se ve a 76px de ancho: no se pudo verificar a ojo encaje óptico (chips, radios, padding) ni contraste por sección. Fix: entregar recortes por tramo (~1000px) para confirmar el eje de encaje.
-
-Observaciones: cuerpo de FAQ y planes cumple (aria-expanded, CTA >=52px, .boton-3d:active definido, reduced-motion respetado, PrecioAnimado ya arranca en el valor final). Sin desvío de paleta contra FICHA-ARTE en código (tokens var). No es clon vetado. Identidad: verde lima sobre casi-negro + Poppins, sostenida por video del hero y capturas; el kit sigue siendo algo intercambiable con otras apps fitness oscuras (3/4).
+1. [CtaButton, components/landing/ui.tsx; visible en el CTA tras AppPorDentro] La etiqueta del CTA se alinea a la izquierda en ese bloque y centrada en los demás; en todos parte en 2 líneas ("Crear mi plan de mañana / gratis") con una palabra huérfana. Fix: forzar text-center y whitespace-nowrap con texto más corto ("Empezar mis 7 días gratis") o reducir el tamaño de fuente para que quepa en 1 línea.
+2. [Oferta.tsx, tarjeta "Incluido" y 3 tarjetas de plan] Sigue habiendo demasiadas capas apiladas: lista de 5 con la columna "Incluido" repetida, bloque de ancla, bloque de 7 días, 3 planes y CTA. Pasa el umbral del gate cognitivo. Fix: quitar la columna "Incluido" (basta el check), colapsar Semestral y Mensual en una fila compacta bajo el Anual.
+3. [ui.tsx / landing completa] Movimiento a medias: hay reveal, whileTap y acordeón, pero ningún conteo animado ($2.50, $0.09/día) ni dibujado de barras o progreso. Fix: contar de 0 al precio con animate() de motion al entrar en vista (respetando useReducedMotion) y animar la barra de progreso del mockup.
+4. [Oferta.tsx y CtaFinal.tsx] No hay prueba social (decisión del dueño, no es defecto de craft). La prueba tangible existe (capturas reales, garantía Hotmart, ancla Fitbod), pero la garantía aparece lejos del primer CTA y el ancla es pequeña y gris. Fix: subir el ancla "Fitbod Elite $79.99/año" al titular de la oferta y repetir un sello "7 días de garantía Hotmart" pegado al CTA de la oferta.
+5. [FooterLegal.tsx, tramo 10; Hero.tsx, tramo 1] Vacío muerto de ~150px bajo el footer, y links legales con separadores "·" sueltos que se parten en 2 líneas. Además el hero tiene un CTA de 2 líneas sobre una foto oscura. Fix: reducir el padding-bottom del footer y darle a cada link su propio ítem con gap; acortar el CTA del hero.
+Observaciones: paleta y Poppins coinciden con FICHA-ARTE (sin desvío); no es un clon del ejemplo vetado; no hay emojis como íconos. Verificaciones de código: h3/h7 no observables en la landing (sin acciones destructivas ni atajos), por eso puntúan 3 y 2. El copy traza bien a la ficha del avatar, pero sin testimonios el eje de especificidad se queda en 3.

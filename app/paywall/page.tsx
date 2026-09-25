@@ -39,12 +39,11 @@ const PLANES: Record<PlanId, { nombre: string; meses: number; precioTotal: numbe
   anual: { nombre: 'Anual', meses: 12, precioTotal: 29.99 },
 };
 
-/** Fecha exacta hasta la que llegaría el acceso si pagas hoy — una fecha
- * concreta se puede anotar; "6 meses" se siente abstracto. */
-function fechaEnMeses(meses: number): string {
+/** Versión corta ("24 sep 2027") para líneas de una sola fila. */
+function fechaCorta(meses: number): string {
   const f = new Date();
   f.setMonth(f.getMonth() + meses);
-  return new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }).format(f);
+  return new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'short', year: 'numeric' }).format(f).replace(/\./g, '');
 }
 
 /** El checkout de Hotmart solo muestra el diseño de GymEvo (Checkout Builder)
@@ -255,14 +254,14 @@ export default function PaywallPage() {
             loop
             playsInline
             preload="auto"
-            className="h-32 w-full object-cover motion-reduce:hidden"
+            className="h-24 w-full object-cover motion-reduce:hidden"
           >
             <source src="/videos/hero-gimnasio.mp4" type="video/mp4" />
           </video>
           {/* Respaldo sin video para prefers-reduced-motion: mismo alto, sin
               movimiento, para que la tarjeta nunca se vea rota o vacía. */}
-          <div className="hidden h-32 w-full bg-[var(--surface-2)] motion-reduce:block" />
-          <div className="flex items-center gap-3 border-b border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] p-4">
+          <div className="hidden h-24 w-full bg-[var(--surface-2)] motion-reduce:block" />
+          <div className="flex items-center gap-3 p-4">
             <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--chip-bg)]">
               <RefreshCcw size={22} color="var(--accent)" />
             </span>
@@ -272,9 +271,6 @@ export default function PaywallPage() {
                 El Botón de Rescate te da otro ejercicio al instante, sin perder el día ni improvisar.
               </p>
             </div>
-          </div>
-          <div className="p-5">
-            <LineaDePago plan={plan} />
           </div>
         </motion.div>
 
@@ -301,14 +297,12 @@ export default function PaywallPage() {
                 onSelect={() => elegirPlan(id)}
                 deshabilitado={redirigiendo}
                 badge={id === 'anual' ? 'MÁS POPULAR' : undefined}
-                ahorro={ahorroPct > 0 ? `Ahorra ${ahorroPct}%` : undefined}
                 nombre={info.nombre}
-                precioTachado={id === 'anual' ? `$${PLANES.mensual.precioTotal.toFixed(2)}` : undefined}
                 precioMes={`$${precioMes.toFixed(2)}`}
                 detalle={
                   info.meses === 1
-                    ? `$${info.precioTotal.toFixed(2)} USD por 1 mes de acceso`
-                    : `$${info.precioTotal.toFixed(2)} USD por ${info.meses} meses de acceso (equivale a $${precioMes.toFixed(2)}/mes)`
+                    ? `$${info.precioTotal.toFixed(2)} USD por 1 mes`
+                    : `$${info.precioTotal.toFixed(2)} USD por ${info.meses} meses · ahorras ${ahorroPct}%`
                 }
                 trm={trm}
               />
@@ -352,6 +346,10 @@ export default function PaywallPage() {
           </button>
         )}
 
+        <p className="mt-2 text-center text-xs text-[var(--text-secondary)]">
+          Pago único · acceso hasta {fechaCorta(infoPlan.meses)} · no se renueva solo
+        </p>
+
         {/* Garantía nombrada junto al CTA (antes solo vivía en el trust row, lejos) */}
         <motion.p
           initial={reduce ? {} : { opacity: 0 }}
@@ -359,30 +357,27 @@ export default function PaywallPage() {
           transition={{ delay: 0.3, duration: 0.3 }}
           className="mt-2 flex items-center justify-center gap-1.5 text-center text-xs font-medium text-[var(--accent)]"
         >
-          <ShieldCheck size={13} /> Garantía de devolución de 7 días desde tu pago, sin preguntas
+          <ShieldCheck size={13} /> Garantía de devolución de 7 días, sin preguntas
         </motion.p>
 
-        {/* Prueba gratis (21/09/2026): siempre disponible para quien
-            todavía no eligió pagar; cuando termina, proxy.ts lo devuelve aquí
-            con ?fin_prueba=1 y este botón deja de mostrarse. */}
+        {/* Prueba gratis (21/09/2026): opción terciaria y una sola frase; cuando
+            termina, proxy.ts devuelve aquí con ?fin_prueba=1 y deja de mostrarse. */}
         {!renovando && !finPrueba && (
-          <motion.div
+          <motion.p
             initial={reduce ? {} : { opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.34, duration: 0.3 }}
-            className="mt-5"
+            className="mt-4 text-center text-sm text-[var(--text-secondary)]"
           >
+            ¿Prefieres probar antes?{' '}
             <button
               type="button"
               onClick={() => router.push('/login?desde=prueba')}
-              className="flex h-11 w-full items-center justify-center text-base font-semibold text-[var(--accent)] underline underline-offset-4"
+              className="min-h-11 font-semibold text-[var(--accent)] underline underline-offset-4"
             >
-              {`Probar ${DIAS_DE_PRUEBA} días gratis`}
+              {`Empieza ${DIAS_DE_PRUEBA} días gratis, sin tarjeta`}
             </button>
-            <p className="mt-1.5 text-center text-xs text-[var(--text-secondary)]">
-              Sin tarjeta. Al terminar los {DIAS_DE_PRUEBA} días, para seguir eliges un plan (la garantía de devolución es aparte: cuenta desde tu pago).
-            </p>
-          </motion.div>
+          </motion.p>
         )}
 
         {/* Si la redirección no ocurrió en unos segundos (red caída,
@@ -508,49 +503,12 @@ export default function PaywallPage() {
   );
 }
 
-/** Cómo funciona tu plan, en 3 pasos con fecha real (reemplaza el
- * timeline de prueba gratis, 21/09/2026). */
-function LineaDePago({ plan }: { plan: PlanId }) {
-  const info = PLANES[plan];
-  const nodos = [
-    { estado: 'lleno' as const, titulo: 'Hoy — activas tu plan', sub: 'Acceso completo de inmediato' },
-    {
-      estado: 'lleno' as const,
-      titulo: `Acceso hasta el ${fechaEnMeses(info.meses)}`,
-      sub: 'Todas tus rutinas, Botón de Rescate y registro de tus pesos',
-    },
-    { estado: 'vacio' as const, titulo: 'Antes de vencer — te avisamos', sub: 'Renuevas cuando quieras' },
-  ];
-  return (
-    <div className="flex flex-col">
-      {nodos.map((n, i) => (
-        <div key={n.titulo} className="flex gap-3">
-          <div className="flex flex-col items-center">
-            <span
-              className={`size-3 shrink-0 rounded-full ${
-                n.estado === 'lleno' ? 'bg-[var(--accent)]' : 'border-2 border-[var(--accent)] bg-transparent'
-              }`}
-            />
-            {i < nodos.length - 1 && <span className="w-px flex-1 bg-[var(--accent)]" />}
-          </div>
-          <div className="pb-5">
-            <p className="text-base font-semibold text-[var(--text-primary)]">{n.titulo}</p>
-            <p className="text-xs text-[var(--text-secondary)]">{n.sub}</p>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function PlanCard({
   seleccionado,
   onSelect,
   deshabilitado,
   badge,
-  ahorro,
   nombre,
-  precioTachado,
   precioMes,
   detalle,
   trm,
@@ -562,13 +520,11 @@ function PlanCard({
   badge?: string;
   /** "Ahorra N%" frente al precio mensual — la razón real para elegir un
    * plan más largo, no solo un adorno (curva de descuento de 02C). */
-  ahorro?: string;
   nombre: string;
   /** Precio de referencia tachado (el dispositivo ownable de FICHA-ARTE:
    * el mismo tachado verde que marca un ejercicio completado, aplicado aquí
    * al precio "antes" — reutiliza un rasgo YA probado en vez de inventar
    * uno nuevo, tras 2 rondas fallidas con la espiral decorativa). */
-  precioTachado?: string;
   precioMes: string;
   detalle: string;
   /** TRM del día (pesos colombianos por dólar) — null mientras carga o si
@@ -584,7 +540,7 @@ function PlanCard({
       whileTap={{ scale: 0.97 }}
       className={`relative flex flex-col rounded-[var(--radius-card)] border px-5 py-4 text-left transition-colors disabled:opacity-50 ${
         seleccionado
-          ? 'boton-3d-borde border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_6%,transparent)]'
+          ? 'boton-3d-borde border-transparent bg-[color-mix(in_oklab,var(--accent)_6%,transparent)]'
           : 'superficie-3d border-[color-mix(in_oklab,var(--text-tertiary)_38%,transparent)] bg-[var(--surface)]'
       }`}
     >
@@ -595,6 +551,14 @@ function PlanCard({
         <span className="absolute -top-2.5 left-4 rounded-full bg-[var(--accent-2-deep)] px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--text-primary)]">
           {badge}
         </span>
+      )}
+      {seleccionado && (
+        <motion.span
+          layoutId="plan-anillo"
+          aria-hidden="true"
+          transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+          className="pointer-events-none absolute inset-0 rounded-[var(--radius-card)] ring-2 ring-[var(--accent)]"
+        />
       )}
       {seleccionado && (
         <span
@@ -622,17 +586,7 @@ function PlanCard({
                 POPULAR" (hallazgo revisor-visual, 14/09/2026): texto
                 --accent-2 sobre su propio 16% de fondo medía ~2.8:1, bajo
                 AA — accent-2-deep sólido + texto primario da 7.6:1. */}
-            {ahorro && (
-              <span className="whitespace-nowrap rounded-full bg-[var(--accent-2-deep)] px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--text-primary)]">
-                {ahorro}
-              </span>
-            )}
           </div>
-          {precioTachado && (
-            <p className="text-xs tabular-nums text-[var(--text-tertiary)]">
-              Antes <span className="line-through decoration-[var(--accent)] decoration-2">{precioTachado}/mes</span>
-            </p>
-          )}
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right">
@@ -653,7 +607,7 @@ function PlanCard({
               <PrecioAnimado texto={precioMes} />
               <span className="text-xs font-normal text-[var(--text-secondary)]">/mes</span>
             </p>
-            <p className="mt-0.5 text-xs tabular-nums text-[var(--text-tertiary)]">
+            <p className="mt-0.5 text-[13px] tabular-nums text-[var(--text-secondary)]">
               USD{precioCOP ? ` · ≈ ${precioCOP}` : ''}
             </p>
           </div>
@@ -672,7 +626,7 @@ function PlanCard({
           se sorprende con el cargo real (hallazgo: "la explicación no está
           clara"). Va debajo de TODA la fila (no bajo el nombre a la
           izquierda) porque el ojo termina de leer en el precio, a la derecha. */}
-      <p className="mt-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-2 text-[12.5px] text-[var(--text-secondary)]">
+      <p className="mt-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-2 text-[13px] text-[var(--text-secondary)]">
         {detalle}
       </p>
     </motion.button>

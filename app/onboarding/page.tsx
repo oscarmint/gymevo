@@ -155,7 +155,8 @@ export default function OnboardingPage() {
   useEffect(() => {
     if (paso !== 'reconocimiento' || confirmandoSalida) return;
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Enter') ir(pasoIdx + 1);
+      const objetivo = e.target as HTMLElement | null;
+      if (e.key === 'Enter' && !objetivo?.closest('button, a, input, select, textarea')) ir(pasoIdx + 1);
     }
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
@@ -394,7 +395,24 @@ export default function OnboardingPage() {
                     transition={{ delay: reduce ? 0 : 0.08, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                     className="text-balance text-3xl font-bold leading-[1.1] tracking-[-0.02em] text-[var(--text-primary)] [font-family:var(--font-display)]"
                   >
-                    Te <span className="text-[var(--accent)]">entendemos</span>
+                    Te{' '}
+                    <span className="relative inline-block text-[var(--accent)]">
+                      entendemos
+                      {/* Trazo lima que se dibuja bajo la palabra clave: el mismo gesto del check
+                          de arriba y del tachado de ejercicio completado (dispositivo ownable). */}
+                      <svg aria-hidden="true" viewBox="0 0 120 8" preserveAspectRatio="none" className="absolute -bottom-1.5 left-0 h-2 w-full">
+                        <motion.path
+                          d="M2 5 L118 2.5"
+                          fill="none"
+                          stroke="var(--accent)"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          initial={{ pathLength: reduce ? 1 : 0 }}
+                          animate={{ pathLength: 1 }}
+                          transition={{ delay: reduce ? 0 : 0.5, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                        />
+                      </svg>
+                    </span>
                   </motion.h1>
                   <motion.p
                     initial={{ opacity: reduce ? 1 : 0, y: reduce ? 0 : 8 }}
@@ -424,7 +442,7 @@ export default function OnboardingPage() {
                     transition={{ delay: reduce ? 0 : 0.24, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                                         className="relative flex items-start gap-3 overflow-hidden rounded-[var(--radius-card)] bg-[var(--surface)] p-4 text-left"
                   >
-                    <span aria-hidden="true" className="absolute inset-x-0 top-0 h-0.5" style={{ background: 'linear-gradient(90deg, var(--accent), color-mix(in oklab, var(--accent-2) 70%, var(--accent)))' }} />
+                    <span aria-hidden="true" className="absolute inset-x-6 top-0 h-0.5" style={{ background: 'linear-gradient(90deg, transparent, var(--accent), transparent)' }} />
                     <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-[color-mix(in_oklab,var(--accent)_30%,transparent)] bg-[var(--chip-bg)]">
                       {nivel === 'intermedio' ? (
                         <TrendingUp size={17} color="var(--accent)" />
@@ -440,8 +458,8 @@ export default function OnboardingPage() {
                         </>
                       ) : (
                         <>
-                          <span className="font-semibold">Tu plan no cambia de la nada:</span> mismos
-                          ejercicios cada semana, para ver tu progreso real.
+                          <span className="font-semibold">Tu plan no cambia cada semana:</span> mismos
+                          ejercicios para que veas tu progreso real.
                         </>
                       )}
                     </p>
@@ -452,8 +470,8 @@ export default function OnboardingPage() {
                     transition={{ delay: reduce ? 0 : 0.32, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                                         className="relative flex items-start gap-3 overflow-hidden rounded-[var(--radius-card)] bg-[var(--surface)] p-4 text-left"
                   >
-                    <span aria-hidden="true" className="absolute inset-x-0 top-0 h-0.5" style={{ background: 'linear-gradient(90deg, var(--accent), color-mix(in oklab, var(--accent-2) 70%, var(--accent)))' }} />
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-[color-mix(in_oklab,var(--accent-2)_30%,transparent)] bg-[var(--chip-bg)]">
+                    <span aria-hidden="true" className="absolute inset-x-6 top-0 h-0.5" style={{ background: 'linear-gradient(90deg, transparent, var(--accent), transparent)' }} />
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-[color-mix(in_oklab,var(--accent)_30%,transparent)] bg-[var(--chip-bg)]">
                       <Activity size={17} color="var(--accent)" />
                     </span>
                     <p className="text-sm leading-relaxed text-[var(--text-primary)]">

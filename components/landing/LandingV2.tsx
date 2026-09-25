@@ -26,7 +26,7 @@ import { BotonVolverArriba, CtaButton, StickyCtaMobile } from '@/components/land
 import { CreditCard, Frown, RefreshCcw, ShieldAlert, Users } from 'lucide-react';
 
 const CTA_HREF = '/onboarding';
-const CTA_LABEL = 'Crear mi plan de mañana gratis';
+const CTA_LABEL = 'Crear mi plan gratis';
 
 export default function LandingV2() {
   return (
@@ -126,7 +126,7 @@ export default function LandingV2() {
           ],
         }}
         ctaGlobal={{
-          label: 'Crear mi plan de mañana gratis',
+          label: 'Crear mi plan gratis',
           href: CTA_HREF,
           nota: 'Al terminar los 7 días gratis, para seguir entrenando debes elegir un plan y realizar el pago.',
         }}
@@ -148,14 +148,13 @@ export default function LandingV2() {
           badge: 'MÁS POPULAR',
           precioMes: '$2.50',
           totalAnual: '$29.99 USD por 12 meses de acceso',
-          ahorro: 'Como tener 6 meses gratis',
+          ahorro: 'Ahorras 50% vs. mensual',
           ahorroDetalle: 'Son $29.99 por 12 meses, en vez de $59.88 si pagaras mes a mes.',
           descomposicionDia: 'menos de $0.09 al día',
           features: [
             'Tu plan de hoy, listo (Principiante o Intermedio)',
             'Botón de Rescate ilimitado',
             'Registro de pesos y progreso',
-            'Ruta Intermedio para romper el estancamiento',
           ],
         }}
         semestral={{
@@ -164,10 +163,8 @@ export default function LandingV2() {
           totalSemestral: '$19.99 USD por 6 meses de acceso',
           ahorro: 'Ahorras 33% vs. mensual',
           features: [
-            'Tu plan de hoy, listo cada día',
-            'Botón de Rescate ilimitado',
-            'Registro de pesos y progreso',
-            'Compromiso medio, sin atarte un año',
+            'Todo lo del Anual, por 6 meses',
+            'Sin atarte un año',
           ],
         }}
         mensual={{
@@ -175,9 +172,7 @@ export default function LandingV2() {
           precioMes: '$4.99',
           totalPago: '$4.99 USD por 1 mes de acceso',
           features: [
-            'Tu plan de hoy, listo cada día',
-            'Botón de Rescate ilimitado',
-            'Registro de pesos y progreso',
+            'Todo lo del Anual, mes a mes',
             'Renuévalo cuando quieras',
           ],
         }}
