@@ -1228,7 +1228,7 @@ export function obtenerEjercicio(id: string): Ejercicio {
 
 export function tituloRuta(nivel: Nivel, meta: Meta): string {
   const rutaLabel = nivel === 'principiante' ? 'Ruta Principiante' : 'Ruta Intermedio';
-  const metaLabel = meta === 'musculo' ? 'Hipertrofia' : 'Pérdida de grasa';
+  const metaLabel = meta === 'musculo' ? 'Ganar músculo' : 'Bajar grasa';
   return `${rutaLabel} · ${metaLabel}`;
 }
 

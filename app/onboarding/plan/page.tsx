@@ -87,7 +87,7 @@ export default function VistaPreviaDiaUnoPage() {
                 <div className="min-w-0 flex-1">
                   <p className="text-base font-semibold text-[var(--text-primary)]">{ej.nombre}</p>
                   <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                    {ej.series}×{ej.reps} · descanso {ej.descansoSeg}s
+                    {ej.series} series de {ej.reps} · descanso {ej.descansoSeg}s
                   </p>
                 </div>
                 <motion.button

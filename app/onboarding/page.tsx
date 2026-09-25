@@ -477,8 +477,8 @@ export default function OnboardingPage() {
                       <Activity size={17} color="var(--accent)" />
                     </span>
                     <p className="text-sm leading-relaxed text-[var(--text-primary)]">
-                      <span className="font-semibold">Tu constancia queda registrada:</span> ves tu
-                      racha y tu progreso reales, sesión a sesión.
+                      <span className="font-semibold">Sabes qué hacer al cruzar la puerta:</span> tu plan
+                      de hoy te espera y tu racha crece sesión a sesión.
                     </p>
                   </motion.div>
                 </div>

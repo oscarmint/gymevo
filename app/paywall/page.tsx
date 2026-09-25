@@ -301,7 +301,7 @@ export default function PaywallPage() {
                 precioMes={`$${precioMes.toFixed(2)}`}
                 detalle={
                   info.meses === 1
-                    ? `$${info.precioTotal.toFixed(2)} USD por 1 mes`
+                    ? `$${info.precioTotal.toFixed(2)} USD por 1 mes · el más caro por mes`
                     : `$${info.precioTotal.toFixed(2)} USD por ${info.meses} meses · ahorras ${ahorroPct}%${id === 'anual' ? ' · hasta 12 cuotas en Colombia' : ''}`
                 }
                 trm={trm}
@@ -544,7 +544,7 @@ function PlanCard({
         // bg-[var(--accent-2)] + texto --bg medía 3.68:1 (bajo el 4.5:1 de
         // AA para texto chico) — accent-2-deep + texto primario da 7.6:1,
         // misma familia tonal, ya pasa (hallazgo revisor-visual, 14/09/2026).
-        <span className="absolute -top-2.5 left-4 rounded-full bg-[var(--accent-2-deep)] px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--text-primary)]">
+        <span className="absolute -top-2.5 left-4 rounded-full bg-[var(--accent)] px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--bg)]">
           {badge}
         </span>
       )}
