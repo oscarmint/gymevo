@@ -10,7 +10,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
-import { Lock, RefreshCcw } from 'lucide-react';
+import { RefreshCcw } from 'lucide-react';
 import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { registrarEvento } from '@/lib/analitica';
 import { aplicarReemplazos, diasDePlan, ejerciciosDeSesion, nombreDeSesion, obtenerEjercicio, sesionDelCiclo, tituloRuta } from '@/lib/routine';
@@ -47,7 +47,10 @@ export default function VistaPreviaDiaUnoPage() {
   const ejercicios = aplicarReemplazos(ejerciciosBase, cambios);
   const nombreDia1 = nombreDeSesion(sesionDia1);
   // Las demás sesiones de SU plan (según los días que eligió), no nombres de relleno.
-  const restoSemana = Array.from({ length: diasPlan - 1 }, (_, i) => nombreDeSesion(sesionDelCiclo(i + 1, diasPlan)));
+  const restoSemana = Array.from({ length: diasPlan - 1 }, (_, i) => {
+    const sesion = sesionDelCiclo(i + 1, diasPlan);
+    return { nombre: nombreDeSesion(sesion), ejercicios: ejerciciosDeSesion(sesion, respuestas.nivel).slice(0, 3).map((e) => e.nombre) };
+  });
 
   return (
     <div className="min-h-dvh bg-[var(--bg)] px-5 pt-8 pb-10 [font-family:var(--font-body)]">
@@ -146,18 +149,24 @@ export default function VistaPreviaDiaUnoPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
             El resto de tu semana
           </p>
-          <div className="mt-3 flex flex-col gap-2">
-            {restoSemana.map((nombre, i) => (
-              <div
-                key={`${i}-${nombre}`}
-                className="flex items-center justify-between rounded-xl bg-[var(--surface-2)] px-4 py-3 opacity-70"
-              >
-                <span className="text-sm font-medium text-[var(--text-secondary)]">{nombre}</span>
-                <Lock size={15} color="var(--text-tertiary)" />
-              </div>
-            ))}
+          {/* Curiosidad en vez de candado (25/09/2026): los días que siguen se
+              ven vagamente bajo un desenfoque — la persona reconoce que hay
+              plan real detrás — y el texto encima invita a desbloquearlos. */}
+          <div className="relative mt-3">
+            <div aria-hidden="true" className="flex flex-col gap-2 blur-[5px] select-none">
+              {restoSemana.map((dia, i) => (
+                <div key={`${i}-${dia.nombre}`} className="rounded-xl bg-[var(--surface-2)] px-4 py-3">
+                  <p className="text-sm font-semibold text-[var(--text-primary)]">{dia.nombre}</p>
+                  <p className="mt-0.5 truncate text-xs text-[var(--text-secondary)]">{dia.ejercicios.join(' · ')}</p>
+                </div>
+              ))}
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <p className="rounded-full bg-[color-mix(in_oklab,var(--bg)_78%,transparent)] px-4 py-2 text-sm font-bold text-[var(--text-primary)] backdrop-blur-sm">
+                Desbloquea tu semana completa
+              </p>
+            </div>
           </div>
-          <p className="mt-2 text-center text-xs text-[var(--text-tertiary)]">Se desbloquea con tu plan</p>
         </div>
         )}
 
