@@ -2,7 +2,8 @@
 
 // LOADING "CONSTRUYENDO TU PLAN" — 50 §B. No es relleno: es la apertura del
 // paywall (patrón Noom). 4-6s, líneas personalizadas con respuestas reales,
-// nunca un spinner genérico.
+// nunca un spinner genérico. Al terminar pide el correo (login) ANTES de
+// mostrar el Día 1 y el paywall: el plan ya está hecho y se guarda en su cuenta.
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -47,7 +48,7 @@ export default function GenerandoPlanPage() {
         }, pasoMs * (i + 1))
       );
     });
-    timers.push(setTimeout(() => router.push('/onboarding/plan'), DURACION_TOTAL_MS + 500));
+    timers.push(setTimeout(() => router.push('/login?desde=plan'), DURACION_TOTAL_MS + 500));
     return () => timers.forEach(clearTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

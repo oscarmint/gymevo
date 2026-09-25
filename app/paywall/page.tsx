@@ -118,6 +118,18 @@ export default function PaywallPage() {
   const infoPlan = PLANES[plan];
   const totalCOP = trm ? formatearCOP(`$${infoPlan.precioTotal.toFixed(2)}`, trm) : null;
 
+  // Con la prueba gratis disponible (ni renovación ni fin de prueba), el botón
+  // principal es EMPEZAR la prueba y pagar pasa a ser la opción secundaria.
+  const modoPrueba = !renovando && !finPrueba;
+
+  function empezarPrueba() {
+    registrarEvento('trial_click');
+    // La cuenta (y con ella la prueba de 7 días) se crea en el login del
+    // onboarding; si alguien llega aquí sin cuenta, proxy.ts lo manda a
+    // /login y de ahí vuelve a /app.
+    router.push('/app');
+  }
+
   function elegirPlan(id: PlanId) {
     setPlan(id);
     localStorage.setItem(KEY_PLAN, id);
@@ -171,7 +183,7 @@ export default function PaywallPage() {
     // relative + fondo radial propio (mismo recurso de Hero/CtaFinal de la
     // landing, mismos tokens de acento) — antes era un fill plano, la única
     // de las 4 pantallas del dinero sin ningún elemento de profundidad.
-    <div className="relative flex min-h-dvh flex-col overflow-hidden bg-[var(--bg)] px-5 py-6 [font-family:var(--font-body)]">
+    <div className="relative flex min-h-dvh flex-col overflow-x-clip bg-[var(--bg)] px-5 py-6 [font-family:var(--font-body)]">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-0"
@@ -298,11 +310,11 @@ export default function PaywallPage() {
                 deshabilitado={redirigiendo}
                 badge={id === 'anual' ? 'MÁS POPULAR' : undefined}
                 nombre={info.nombre}
-                precioMes={`$${precioMes.toFixed(2)}`}
+                precio={`$${info.precioTotal.toFixed(2)}`}
                 detalle={
                   info.meses === 1
-                    ? `$${info.precioTotal.toFixed(2)} USD por 1 mes · el más caro por mes`
-                    : `$${info.precioTotal.toFixed(2)} USD por ${info.meses} meses · ahorras ${ahorroPct}%${id === 'anual' ? ' · hasta 12 cuotas en Colombia' : ''}`
+                    ? '1 mes de acceso · el más caro por mes'
+                    : `${info.meses} meses de acceso · equivale a $${precioMes.toFixed(2)} al mes · ahorras ${ahorroPct}%${id === 'anual' ? ' · hasta 12 cuotas en Colombia' : ''}`
                 }
                 trm={trm}
               />
@@ -317,22 +329,33 @@ export default function PaywallPage() {
         {/* (6) CTA — nunca dice "Suscríbete"; el texto cambia según si el
             plan elegido tiene trial o no (transparencia: el botón dice
             exactamente lo que va a pasar). */}
+        {/* Con la prueba disponible, el botón principal y su nota quedan fijos al
+            borde inferior: la persona lo ve sin tener que bajar por los 3 planes. */}
+        <div
+          className={
+            modoPrueba
+              ? 'sticky bottom-0 z-20 -mx-5 mt-3 bg-[color-mix(in_oklab,var(--bg)_92%,transparent)] px-5 pb-3 pt-2 backdrop-blur-md'
+              : ''
+          }
+        >
         <motion.button
           type="button"
-          onClick={pagar}
+          onClick={modoPrueba ? empezarPrueba : pagar}
           disabled={redirigiendo}
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.24, duration: 0.3 }}
           whileTap={redirigiendo ? undefined : { scale: 0.97 }}
-          className="boton-3d mt-3 flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-xl font-bold text-[var(--bg)] disabled:opacity-80"
+          className={`boton-3d flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-xl font-bold text-[var(--bg)] disabled:opacity-80 ${modoPrueba ? '' : 'mt-3'}`}
         >
           {redirigiendo ? (
             <>
               <Loader2 size={18} className="animate-spin motion-reduce:animate-none" /> Te llevamos a Hotmart, pago seguro…
             </>
           ) : (
-            `${renovando ? 'Renovar' : 'Activar'} mi plan · $${infoPlan.precioTotal.toFixed(2)} USD`
+            modoPrueba
+              ? `Empezar mis ${DIAS_DE_PRUEBA} días gratis`
+              : `${renovando ? 'Renovar' : 'Activar'} mi plan · $${infoPlan.precioTotal.toFixed(2)} USD`
           )}
         </motion.button>
 
@@ -346,9 +369,26 @@ export default function PaywallPage() {
           </button>
         )}
 
-        <p className="mt-2 text-center text-xs text-[var(--text-secondary)]">
-          Pagas una sola vez ${infoPlan.precioTotal.toFixed(2)} USD{totalCOP ? ` (≈ ${totalCOP})` : ''} · acceso hasta {fechaCorta(infoPlan.meses)} · sin renovación automática
-        </p>
+        {modoPrueba ? (
+          <p className="mt-2 text-center text-sm font-medium text-[var(--text-primary)]">
+            Hoy: $0, sin tarjeta. Si te gusta, pagas una sola vez ${infoPlan.precioTotal.toFixed(2)} USD
+            {totalCOP ? ` (≈ ${totalCOP})` : ''} por {infoPlan.meses} {infoPlan.meses === 1 ? 'mes' : 'meses'} de acceso. Sin renovación automática.
+          </p>
+        ) : (
+          <p className="mt-2 text-center text-xs text-[var(--text-secondary)]">
+            Pagas una sola vez ${infoPlan.precioTotal.toFixed(2)} USD{totalCOP ? ` (≈ ${totalCOP})` : ''} · acceso hasta {fechaCorta(infoPlan.meses)} · sin renovación automática
+          </p>
+        )}
+        </div>
+        {modoPrueba && !redirigiendo && (
+          <button
+            type="button"
+            onClick={pagar}
+            className="mt-3 flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_38%,transparent)] text-[15px] font-semibold text-[var(--text-primary)]"
+          >
+            {`Prefiero pagar ahora · $${infoPlan.precioTotal.toFixed(2)} USD`}
+          </button>
+        )}
         <p className="mt-1 flex items-center justify-center gap-1.5 text-center text-xs text-[var(--text-secondary)]">
           <Lock size={12} className="shrink-0" /> Tarjeta, Nequi o efectivo · pago seguro vía Hotmart
         </p>
@@ -363,28 +403,6 @@ export default function PaywallPage() {
           <ShieldCheck size={13} /> Garantía de devolución de 7 días, sin preguntas
         </motion.p>
 
-        {/* Prueba gratis (21/09/2026): opción terciaria y una sola frase; cuando
-            termina, proxy.ts devuelve aquí con ?fin_prueba=1 y deja de mostrarse. */}
-        {!renovando && !finPrueba && (
-          <motion.p
-            initial={reduce ? {} : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.34, duration: 0.3 }}
-            className="mt-4 text-center text-sm text-[var(--text-secondary)]"
-          >
-            ¿Prefieres probar antes?{' '}
-            <button
-              type="button"
-              onClick={() => {
-                registrarEvento('trial_click');
-                router.push('/login?desde=prueba');
-              }}
-              className="min-h-11 font-semibold text-[var(--accent)] underline underline-offset-4"
-            >
-              {`Empieza ${DIAS_DE_PRUEBA} días gratis, sin tarjeta`}
-            </button>
-          </motion.p>
-        )}
 
         {/* Si la redirección no ocurrió en unos segundos (red caída,
             bloqueador de popups, etc.) — nunca dejar al usuario mirando un
@@ -505,7 +523,7 @@ function PlanCard({
   deshabilitado,
   badge,
   nombre,
-  precioMes,
+  precio,
   detalle,
   trm,
 }: {
@@ -521,13 +539,13 @@ function PlanCard({
    * el mismo tachado verde que marca un ejercicio completado, aplicado aquí
    * al precio "antes" — reutiliza un rasgo YA probado en vez de inventar
    * uno nuevo, tras 2 rondas fallidas con la espiral decorativa). */
-  precioMes: string;
+  precio: string;
   detalle: string;
   /** TRM del día (pesos colombianos por dólar) — null mientras carga o si
    * falló, y entonces simplemente no se muestra la conversión. */
   trm: number | null;
 }) {
-  const precioCOP = trm ? formatearCOP(precioMes, trm) : null;
+  const precioCOP = trm ? formatearCOP(precio, trm) : null;
   return (
     <motion.button
       type="button"
@@ -600,11 +618,10 @@ function PlanCard({
                 seleccionado ? 'text-2xl font-bold' : 'text-lg font-semibold'
               }`}
             >
-              <PrecioAnimado texto={precioMes} />
-              <span className="text-xs font-normal text-[var(--text-secondary)]">/mes</span>
+              <PrecioAnimado texto={precio} />
             </p>
             <p className="mt-0.5 text-[13px] tabular-nums text-[var(--text-secondary)]">
-              USD{precioCOP ? ` · ≈ ${precioCOP}` : ''}
+              USD · pago único{precioCOP ? ` · ≈ ${precioCOP}` : ''}
             </p>
           </div>
           <span

@@ -24,12 +24,27 @@ const KEY = "gymevo_onboarding";
 
 export function guardarRespuestas(r: RespuestasOnboarding) {
   if (typeof window === "undefined") return;
-  sessionStorage.setItem(KEY, JSON.stringify(r));
+  const texto = JSON.stringify(r);
+  sessionStorage.setItem(KEY, texto);
+  // Respaldo: ahora la cuenta se crea ANTES de ver el plan, y el enlace del
+  // correo abre otra pestaña (sessionStorage no viaja entre pestañas).
+  try {
+    localStorage.setItem(KEY, texto);
+  } catch {
+    // sin localStorage (modo privado estricto): el código de 8 dígitos sigue en la misma pestaña
+  }
 }
 
 export function leerRespuestas(): RespuestasOnboarding | null {
   if (typeof window === "undefined") return null;
-  const raw = sessionStorage.getItem(KEY);
+  let raw = sessionStorage.getItem(KEY);
+  if (!raw) {
+    try {
+      raw = localStorage.getItem(KEY);
+    } catch {
+      raw = null;
+    }
+  }
   if (!raw) return null;
   try {
     return JSON.parse(raw) as RespuestasOnboarding;

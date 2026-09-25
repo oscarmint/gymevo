@@ -5,8 +5,8 @@
 // La sesión se abre desde el enlace del correo (app/auth/callback/route.ts),
 // no desde este formulario — este solo pide el email y dispara el envío.
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Info, Lock, Mail } from 'lucide-react';
 import { crearClienteSupabase } from '@/lib/supabase/client';
@@ -14,8 +14,11 @@ import { Logo } from '@/components/Logo';
 
 type Estado = 'idle' | 'enviando' | 'enviado' | 'error';
 
-export default function LoginPage() {
+function LoginContenido() {
   const router = useRouter();
+  const desdePlan = useSearchParams().get('desde') === 'plan';
+  // Tras el onboarding la persona vuelve a ver su Día 1; en cualquier otro caso entra a la app.
+  const destino = desdePlan ? '/onboarding/plan' : '/app';
   const [email, setEmail] = useState('');
   const [acepto, setAcepto] = useState(false);
   const [estado, setEstado] = useState<Estado>('idle');
@@ -32,7 +35,7 @@ export default function LoginPage() {
     const supabase = crearClienteSupabase();
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/app` },
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=${destino}` },
     });
 
     if (error) {
@@ -58,7 +61,7 @@ export default function LoginPage() {
     const supabase = crearClienteSupabase();
     await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/app` },
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=${destino}` },
     });
     setCountdown(60);
   }
@@ -84,8 +87,18 @@ export default function LoginPage() {
       setVerificando(false);
       return;
     }
-    router.push('/app');
+    router.push(destino);
   }
+
+  // Si ya tiene sesión, no se le vuelve a pedir el correo.
+  useEffect(() => {
+    if (!desdePlan) return;
+    crearClienteSupabase()
+      .auth.getUser()
+      .then(({ data }) => {
+        if (data.user) router.replace(destino);
+      });
+  }, [desdePlan, destino, router]);
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-[var(--bg)] px-6 [font-family:var(--font-body)]">
@@ -98,9 +111,13 @@ export default function LoginPage() {
         {estado !== 'enviado' ? (
           <>
             <h1 className="text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
-              Entra a tu plan
+              {desdePlan ? 'Tu plan está listo' : 'Entra a tu plan'}
             </h1>
-            <p className="mt-2 text-sm text-[var(--text-secondary)]">Para guardarlo y verlo en cualquier dispositivo</p>
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">
+              {desdePlan
+                ? 'Escribe tu correo para guardarlo y ver tu Día 1. Tus 7 días gratis empiezan aquí, sin tarjeta.'
+                : 'Para guardarlo y verlo en cualquier dispositivo'}
+            </p>
 
             <form onSubmit={enviar} className="mt-6 flex flex-col gap-3">
               <div className="relative">
@@ -147,7 +164,7 @@ export default function LoginPage() {
                 disabled={estado === 'enviando'}
                 className="boton-3d flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)] disabled:opacity-70"
               >
-                {estado === 'enviando' ? 'Enviando…' : 'Enviarme mi enlace de acceso'}
+                {estado === 'enviando' ? 'Enviando…' : desdePlan ? 'Guardar mi plan y ver mi Día 1' : 'Enviarme mi enlace de acceso'}
               </button>
             </form>
 
@@ -219,5 +236,13 @@ export default function LoginPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginContenido />
+    </Suspense>
   );
 }
