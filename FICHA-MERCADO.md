@@ -10,6 +10,7 @@
 - Mediana de precio de la categoría (mensual): ~$5-13 USD (Hevy Pro, Fitbod) · (anual): $23.99-59.99 USD | fuente: investigación del usuario (comparables citados: Hevy, Fitbod, MadMuscles) | fecha: 27/08/2026
 - Rango que cobran los líderes investigados: Hevy $23.99/año (~$2/mes) · Strong/Fitbod en rango similar | fecha: 27/08/2026
 - **Precio elegido para esta app:** $4.99/mes o $29.99/año (~$2.50/mes) · **Desvío respecto a la mediana:** dentro de rango (Hevy es el ancla directa, desvío <15%)
+- **Ancla de la oferta (24/09/2026)**: el tachado de la landing es UN comparable real, no una suma de partes: Fitbod Elite (rutinas adaptativas + registro + biblioteca de ejercicios) anual **desde $79.99 USD** (también figura $95.99) | fuente: ficha oficial de Fitbod en la App Store de EE. UU. (https://apps.apple.com/us/app/fitbod-workout-fitness-plans/id1041517543), consultada 24/09/2026. Referencia adicional: Hevy Pro $23.99/año (App Store, misma fecha). NO se valora por separado la nutrición: GymEvo calcula calorías y macros pero no registra comidas, y las apps de registro (MacroFactor $71.99/año, Cronometer $59.99/año) no son equivalentes — revisar la cifra cada 3 meses.
 - Precio por país/moneda: NO ENCONTRADO — se decide por criterio (USD único vía Hotmart) y se revisa el 27/02/2027
 
 ## 2. CICLO DE DECISIÓN — cuándo se puede juzgar una campaña

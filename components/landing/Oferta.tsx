@@ -62,6 +62,8 @@ export interface OfertaProps {
   stack?: {
     lineas: { resultado: string; valor: string }[];
     totalTachado: string;
+    /** Qué es el tachado (ej. "Una app equivalente…"): siempre un comparable real y citable. */
+    etiquetaTotal: string;
     nota?: string;
   };
   /** default 'oferta' — lo observa StickyCtaMobile. */
@@ -188,7 +190,7 @@ export function Oferta({
             </ul>
             <div className="mt-4 border-t border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] pt-4 text-right">
               <p className="text-[14px] text-[var(--text-secondary)]">
-                Pagando mes a mes: <span className="tabular-nums line-through">{stack.totalTachado}</span>
+                {stack.etiquetaTotal}: <span className="tabular-nums line-through">{stack.totalTachado}</span>
               </p>
               {stack.nota && (
                 <p className="mt-1 text-[16px] font-semibold text-[var(--text-primary)]">{stack.nota}</p>

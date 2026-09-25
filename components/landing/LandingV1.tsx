@@ -130,11 +130,14 @@ export default function LandingV1() {
         tituloMarked="Tu plan completo por menos de [acento]$0.09/día[/acento]"
         stack={{
           lineas: [
-            { resultado: 'GymEvo Pro con el Botón de Rescate (12 meses)', valor: '12 × $4.99' },
-            { resultado: 'Ruta Intermedio completa anti-estancamiento', valor: 'Incluida' },
-            { resultado: 'Guía de nutrición sin fórmulas complicadas', valor: 'Incluida' },
+            { resultado: 'Tu plan de rutinas por nivel y días, con calentamiento guiado', valor: 'Incluido' },
+            { resultado: '70 ejercicios con técnica ilustrada y Botón de Rescate', valor: 'Incluido' },
+            { resultado: 'Registro de series y pesos, con tu progreso y racha', valor: 'Incluido' },
+            { resultado: 'Ruta Intermedio: sube el peso según tu esfuerzo', valor: 'Incluido' },
+            { resultado: 'Tu alimentación: calorías y macros para tu objetivo', valor: 'Incluido' },
           ],
-          totalTachado: '$59.88 USD',
+          etiquetaTotal: 'Una app equivalente (Fitbod Elite, desde)',
+          totalTachado: '$79.99 USD/año',
           nota: 'Hoy: $2.50 USD/mes ($29.99 USD por 12 meses de acceso)',
         }}
         anual={{
