@@ -130,11 +130,11 @@ export default function LandingV1() {
         tituloMarked="Tu plan completo por menos de [acento]$0.09/día[/acento]"
         stack={{
           lineas: [
-            { resultado: 'GymEvo Pro con el Botón de Rescate (12 meses)', valor: '$60 USD' },
-            { resultado: 'Ruta Intermedio completa anti-estancamiento', valor: '$29 USD' },
-            { resultado: 'Guía de nutrición sin fórmulas complicadas', valor: '$19 USD' },
+            { resultado: 'GymEvo Pro con el Botón de Rescate (12 meses)', valor: '12 × $4.99' },
+            { resultado: 'Ruta Intermedio completa anti-estancamiento', valor: 'Incluida' },
+            { resultado: 'Guía de nutrición sin fórmulas complicadas', valor: 'Incluida' },
           ],
-          totalTachado: '$108 USD',
+          totalTachado: '$59.88 USD',
           nota: 'Hoy: $2.50 USD/mes ($29.99 USD por 12 meses de acceso)',
         }}
         anual={{

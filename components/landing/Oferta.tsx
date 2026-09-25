@@ -188,7 +188,7 @@ export function Oferta({
             </ul>
             <div className="mt-4 border-t border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] pt-4 text-right">
               <p className="text-[14px] text-[var(--text-secondary)]">
-                Valor total: <span className="tabular-nums line-through">{stack.totalTachado}</span>
+                Pagando mes a mes: <span className="tabular-nums line-through">{stack.totalTachado}</span>
               </p>
               {stack.nota && (
                 <p className="mt-1 text-[16px] font-semibold text-[var(--text-primary)]">{stack.nota}</p>

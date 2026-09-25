@@ -46,7 +46,7 @@
 ## 6. OFERTA
 - Título: Empieza gratis. Sigue por [acento]menos de $0.09/día[/acento]
 - Trial: 7 días
-- Stack: GymEvo Pro con el Botón de Rescate 12 meses ($60) · Ruta Intermedio anti-estancamiento ($29) · Guía de nutrición sin fórmulas ($19) — total $108, hoy $2.50/mes ($29.99/año)
+- Stack: GymEvo Pro con el Botón de Rescate 12 meses (12 × $4.99) · Ruta Intermedio (incluida) · Guía de nutrición (incluida) — pagando mes a mes: $59.88 (ancla verificable, 24/09/2026: sustituye al "total $108" sin fuente); hoy $2.50/mes ($29.99/año)
 - Anual (recomendado): $2.50/mes, se cobra $29.99/año, 6 meses gratis
 - Mensual: $4.99/mes
 
