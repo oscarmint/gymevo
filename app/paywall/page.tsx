@@ -254,7 +254,7 @@ export default function PaywallPage() {
           {/* Mini-demo del mecanismo (en vez de un video de gimnasio): el ejercicio A cambia por el B. */}
           <div aria-hidden="true" className="flex items-center gap-2 bg-[var(--surface-2)] px-4 py-4">
             <span className="min-w-0 flex-1 truncate rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] px-3 py-2 text-[13px] font-medium text-[var(--text-tertiary)] line-through decoration-[var(--accent)] decoration-2">
-              Prensa inclinada · ocupada
+              Prensa · ocupada
             </span>
             <RefreshCcw size={18} color="var(--accent)" className="shrink-0" />
             <span className="min-w-0 flex-1 truncate rounded-xl border border-[var(--accent)] bg-[var(--chip-bg)] px-3 py-2 text-[13px] font-semibold text-[var(--text-primary)]">
