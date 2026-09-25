@@ -2,6 +2,7 @@
 Última actualización: 2026-09-23 | Sesión actual: 10 (en curso)
 
 
+⏸️ CHECKPOINT — Vista previa al compartir CONFIRMADA por el usuario (25/09/2026): el enlace de gymevoapp.com sale con imagen y título en WhatsApp (paso 5 "todo ok, probado"). Quedan del lado del dueño: `VAPID_SUBJECT` en Vercel, contacto/garantía/nombre del producto en Hotmart.
 ⏸️ CHECKPOINT — Verificado en producción por el usuario (25/09/2026, deploy de 72287a7): correo `gymevo@outlook.com` en el pie, demo del Botón de Rescate en la vista previa del Día 1 y paywall con total en pesos — "todo ok, probado con éxito" (pasos 1 a 4). Falta comprobar la vista previa al compartir el enlace por WhatsApp (paso 5) y la variable `VAPID_SUBJECT` en Vercel.
 ⏸️ CHECKPOINT — Garantía CONFIRMADA por el dueño (25/09/2026): **7 días** (no 14). La web, el paywall y la política de reembolsos ya dicen 7; no hay nada que cambiar en el código. Pendiente del dueño: que el panel de Hotmart tenga exactamente 7 días de garantía y que el nombre/descripción del producto en el checkout la mencione.
 ⏸️ CHECKPOINT — Correo de soporte (25/09/2026, decisión del dueño): `soporte@gymevo.app` NO existía (dominio gymevo.app nunca comprado). Se reemplazó en paywall, privacidad, términos, reembolsos y landing por **gymevo@outlook.com**. PENDIENTE DEL DUEÑO: (1) actualizar `VAPID_SUBJECT` en las variables de Vercel (y `.env.local`) a `mailto:gymevo@outlook.com`; (2) poner el mismo correo como contacto en el panel de Hotmart; (3) más adelante, correo con dominio propio (gymevoapp.com) con reenvío a Gmail/Outlook.
