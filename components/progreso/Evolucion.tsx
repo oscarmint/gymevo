@@ -102,7 +102,7 @@ export function Evolucion({ progreso }: { progreso: Progreso }) {
           {/* Dato héroe + gráfico — un objeto principal, con su insight (17-VISUALIZACION-DATOS) */}
           <div className="mt-5 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
-              Peso total levantado en tus últimas {sesiones.length} sesiones
+              {sesiones.length === 1 ? 'Peso total levantado en tu última sesión' : `Peso total levantado en tus últimas ${sesiones.length} sesiones`}
             </p>
             <p className="mt-1 text-4xl font-bold tabular-nums leading-none text-[var(--text-primary)] [font-family:var(--font-display)]">
               {NUM.format(Math.round(volumenMostrado))} <span className="text-lg font-semibold text-[var(--text-secondary)]">{progreso.unidadPeso}</span>

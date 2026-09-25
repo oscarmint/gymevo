@@ -591,7 +591,7 @@ function PlanDelDia({
     return (
       <>
       <div
-        className="flex min-h-[calc(100dvh-5rem)] flex-col items-center justify-center overflow-hidden px-6 text-center"
+        className="flex min-h-[calc(100dvh-5rem)] flex-col items-center justify-center overflow-x-hidden px-6 py-6 text-center"
         onClick={etapa === 'entrenador' ? () => setEtapa('plan') : undefined}
         role={etapa === 'entrenador' ? 'button' : undefined}
         aria-label={etapa === 'entrenador' ? 'Toca para continuar' : undefined}
@@ -628,14 +628,14 @@ function PlanDelDia({
                 </>
               )}
             </p>
-            {!cumplida && <div className="mt-6 w-full max-w-sm">{selectorRutina}</div>}
-            <button
+                        <button
               type="button"
               onClick={iniciarEntrenamiento}
-              className="boton-3d mt-8 flex h-16 w-64 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-lg font-bold text-[var(--bg)]"
+              className="boton-3d mt-6 flex h-16 w-64 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-lg font-bold text-[var(--bg)]"
             >
               Iniciar entrenamiento
             </button>
+            {!cumplida && <div className="mt-8 w-full max-w-sm">{selectorRutina}</div>}
           </motion.div>
         ) : (
           <motion.div
