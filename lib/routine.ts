@@ -275,14 +275,16 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Cuádriceps', principal: true }],
     consejoTecnico: 'Espalda apoyada firmemente en el respaldo durante todo el movimiento.',
   } },
-  aductor_externo: { id: 'aductor_externo', nombre: 'Abductor de cadera (máquina sentado)', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/aductor-externo.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'aductor_externo_polea', guia: {
+  aductor_externo: { id: 'aductor_externo', nombre: 'Abducción de cadera en máquina (de pie)', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/aductor-externo.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'aductor_externo_polea', guia: {
     indicaciones: [
-      'Siéntate con las piernas juntas contra las almohadillas.',
-      'Empuja las piernas hacia afuera de forma controlada.',
-      'Haz una pausa breve en el punto de máxima apertura.',
+      'Párate sobre la plataforma, de espaldas a la máquina, y sujeta las manijas para dar equilibrio.',
+      'Coloca la cara externa del muslo contra la almohadilla de la palanca.',
+      'Mantén la pierna de apoyo fija y recta.',
+      'Empuja la pierna hacia afuera, alejándola del cuerpo.',
+      'Regresa lento y controlado a la posición inicial.',
     ],
     musculos: [{ nombre: 'Glúteo medio', principal: true }, { nombre: 'Abductores', principal: true }],
-    consejoTecnico: 'Pausa en el punto de contracción máxima antes de volver.',
+    consejoTecnico: 'Mantén el torso erguido y evita balancear el cuerpo: el movimiento lo hace la cadera, no la espalda.',
   } },
   aductor_interno: { id: 'aductor_interno', nombre: 'Aductor interno (máquina sentado)', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/aductor-interno.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'aductor_interno_polea', guia: {
     indicaciones: [
@@ -522,7 +524,7 @@ const CATALOGO: Record<string, Ejercicio> = {
       musculos: [{ nombre: 'Trapecio superior', principal: true }, { nombre: 'Elevador de la escápula' }, { nombre: 'Antebrazos' }],
       consejoTecnico: 'Sube los hombros en línea recta, sin rotarlos hacia adelante ni atrás.',
     } },
-  crunch_superior_horizontal: { id: 'crunch_superior_horizontal', nombre: 'Crunch superior horizontal', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-superior-horizontal.png', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_superior_horizontal_banco', guia: {
+  crunch_superior_horizontal: { id: 'crunch_superior_horizontal', nombre: 'Crunch superior horizontal', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-superior-horizontal.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_superior_horizontal_banco', guia: {
     indicaciones: [
       'Acuéstate en el banco con las rodillas flexionadas y las manos detrás de la cabeza.',
       'Sube el torso contrayendo el abdomen, sin tirar del cuello.',
@@ -855,15 +857,16 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Cuádriceps', principal: true }, { nombre: 'Glúteos', principal: true }],
     consejoTecnico: 'Mantén el torso erguido y no dejes que la rodilla delantera sobrepase la punta del pie.',
   } },
-  aduccion_cadera_banda: { id: 'aduccion_cadera_banda', nombre: 'Abducción de cadera acostado con banda', grupo: 'Pierna', grupoMuscular: 'gluteo', imagenExplicacion: '/explicaciones/aduccion-cadera-banda.jpg', series: 4, reps: '12-15 por pierna', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'aductor_externo', guia: {
+  aduccion_cadera_banda: { id: 'aduccion_cadera_banda', nombre: 'Aducción de cadera acostado con banda', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/aduccion-cadera-banda.jpg', series: 4, reps: '12-15', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'aductor_interno', guia: {
     indicaciones: [
-      'Acuéstate de lado con las piernas extendidas y una banda elástica justo por encima de las rodillas.',
-      'Apóyate en el codo o el brazo para sostener la cabeza.',
-      'Manteniendo el cuerpo alineado, eleva la pierna superior de forma controlada.',
-      'Baja lentamente sin perder la tensión de la banda.',
+      'Acuéstate boca arriba con las rodillas flexionadas y los pies apoyados.',
+      'Coloca una banda elástica alrededor de las rodillas.',
+      'Apoya las manos suavemente sobre las rodillas.',
+      'Aprieta las rodillas hacia el centro, contrayendo el interior del muslo.',
+      'Mantén la contracción unos segundos y suelta con control.',
     ],
-    musculos: [{ nombre: 'Glúteo medio', principal: true }, { nombre: 'Glúteo menor', principal: false }],
-    consejoTecnico: 'Evita girar la cadera hacia atrás o usar impulso para levantar la pierna.',
+    musculos: [{ nombre: 'Aductores', principal: true }],
+    consejoTecnico: 'Aprieta de forma controlada, sin despegar los pies del suelo. Respira de forma normal durante la contracción.',
   } },
   remo_polea_baja_pie: { id: 'remo_polea_baja_pie', nombre: 'Remo en polea baja, de pie, con las dos manos', grupo: 'Espalda', grupoMuscular: 'dorsal', imagenExplicacion: '/explicaciones/remo-polea-baja-pie.jpg', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_mancuerna_pie', guia: {
     indicaciones: [
