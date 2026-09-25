@@ -110,7 +110,7 @@ export default function LandingV1() {
         ctaHref={CTA_HREF}
       />
 
-      {/* 6. OFERTA — anual primero, PAGO ÚNICO en los 3 planes (sin trial ni suscripción)
+      {/* 6. OFERTA — anual primero. Modelo vigente (21/09/2026): 7 días gratis sin tarjeta y luego PAGO ÚNICO por el periodo elegido (sin suscripción que se renueve sola)
           (mismo esquema del paywall in-app, 21/09/2026 — nunca prometer en la landing
           algo que el paywall no cumple). */}
       <Oferta
