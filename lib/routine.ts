@@ -534,15 +534,16 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Recto abdominal (zona superior)', principal: true }],
     consejoTecnico: 'Enfócate en la contracción abdominal, no en la velocidad del movimiento.',
   } },
-  lumbares_maquina: { id: 'lumbares_maquina', nombre: 'Lumbares (máquina)', grupo: 'Espalda baja', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/lumbares.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha_abdominal' , guia: {
+  lumbares_maquina: { id: 'lumbares_maquina', nombre: 'Hiperextensión lumbar (banco 45°)', grupo: 'Espalda baja', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/lumbares.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha_abdominal' , guia: {
       indicaciones: [
-        'Ajusta el respaldo y las almohadillas para que queden a la altura de tu espalda y cadera.',
-        'Siéntate con los pies firmes y el pecho apoyado, con la espalda recta.',
-        'Empuja hacia atrás extendiendo el tronco hasta quedar alineado, sin arquear de más.',
-        'Vuelve lento a la posición inicial manteniendo la tensión.',
+        'Ajusta las almohadillas del banco para que queden justo debajo de la cadera.',
+        'Colócate boca abajo, con los pies en la plataforma y los tobillos bajo los rodillos.',
+        'Cruza los brazos sobre el pecho.',
+        'Baja el torso hacia el suelo doblando la cadera, con la espalda recta.',
+        'Sube hasta que el cuerpo quede en línea recta, sin arquear la espalda.',
       ],
       musculos: [{ nombre: 'Erectores espinales', principal: true }, { nombre: 'Glúteos' }, { nombre: 'Isquiotibiales' }],
-      consejoTecnico: 'Extiende solo hasta quedar recto: arquear de más la espalda carga la zona lumbar sin beneficio.',
+      consejoTecnico: 'Sube solo hasta alinear el cuerpo, sin pasarte hacia atrás. Muévete lento y sin impulso.',
     } },
 
   // Ejercicios NUEVOS agregados 15/09/2026 con la rutina de Principiante (ver

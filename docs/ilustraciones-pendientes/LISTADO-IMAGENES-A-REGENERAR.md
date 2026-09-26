@@ -19,7 +19,7 @@ Marca ✅ cuando la imagen ya esté descargada en `Downloads/Ejercicios/nuevas-g
 | ✅ | Ejercicio | Problema hoy | Guardar como |
 |---|---|---|---|
 | ☐ | Encogimientos con mancuernas | texto a un lado del dibujo | encogimientos-mancuernas.jpg |
-| ☐ | Lumbares (máquina) | texto a un lado, anatomía deforme | lumbares.jpg |
+| ☐ | Hiperextensión lumbar (banco 45°) | texto a un lado, anatomía deforme | lumbares.jpg |
 | ☐ | Remo en polea baja, de pie, con las dos manos | corchetes dentro del dibujo | remo-polea-baja-pie.jpg |
 
 ## Prioridad 3 — la imagen no es el ejercicio (2)
