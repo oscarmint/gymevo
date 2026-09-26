@@ -26,7 +26,7 @@ Marca ✅ cuando la imagen ya esté descargada en `Downloads/Ejercicios/nuevas-g
 | ✅ | Ejercicio | Problema hoy | Guardar como |
 |---|---|---|---|
 | ☐ | Crunch lateral en polea | muestra otro ejercicio | crunch-lateral-inclinado.jpg |
-| ☐ | Crunch superior horizontal en banco | usa la imagen de la máquina | crunch-superior-horizontal-banco.jpg |
+| ☐ | Encogimiento de rodillas en banco | usa la imagen de la máquina | crunch-superior-horizontal-banco.jpg |
 
 ## Prioridad 4 — baja resolución (11)
 | ✅ | Ejercicio | Ancho actual | Guardar como |

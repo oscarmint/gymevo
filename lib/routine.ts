@@ -758,14 +758,16 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Tríceps', principal: true }],
     consejoTecnico: 'Codos fijos apuntando hacia adelante durante todo el recorrido.',
   } },
-  crunch_superior_horizontal_banco: { id: 'crunch_superior_horizontal_banco', nombre: 'Crunch superior horizontal en banco', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-superior-horizontal.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_superior_horizontal', guia: {
+  crunch_superior_horizontal_banco: { id: 'crunch_superior_horizontal_banco', nombre: 'Encogimiento de rodillas en banco', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/encogimiento-rodillas-banco.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_superior_horizontal', guia: {
     indicaciones: [
-      'Acuéstate en el banco con las rodillas flexionadas.',
-      'Manos detrás de la cabeza sin jalar el cuello.',
-      'Sube el torso contrayendo el abdomen y baja lento.',
+      'Siéntate en el borde de un banco plano y sujeta el borde con las manos.',
+      'Inclina el torso hacia atrás con la espalda recta.',
+      'Estira las piernas hacia adelante con los pies sin tocar el suelo.',
+      'Exhala y lleva las rodillas hacia el pecho, acercando el torso a las piernas.',
+      'Estira las piernas lento y controlado, sin apoyar los pies.',
     ],
-    musculos: [{ nombre: 'Recto abdominal superior', principal: true }],
-    consejoTecnico: 'El movimiento sale del abdomen, no del cuello.',
+    musculos: [{ nombre: 'Recto abdominal', principal: true }, { nombre: 'Flexores de la cadera', principal: false }, { nombre: 'Oblicuos', principal: false }],
+    consejoTecnico: 'Mantén la espalda recta y el abdomen contraído todo el tiempo. No uses impulso ni apoyes los pies entre repeticiones.',
   } },
 
   // 10 variantes nuevas (22/09/2026, pedido del usuario tras revisar su
