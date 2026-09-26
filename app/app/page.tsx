@@ -30,6 +30,7 @@ import {
   indiceSesionActual,
   indicesHechosSemana,
   registrarSesionHecha,
+  textoAvanceRuta,
   leerSesionElegida,
   elegirSesion,
   semanasSeguidas,
@@ -285,6 +286,7 @@ function PlanDelDia({
               className="my-9 size-44"
             />
             <p className="text-center text-lg font-semibold text-[var(--text-primary)]">Entrenamiento completado.</p>
+            <p className="mt-2 text-center text-sm font-semibold text-[var(--accent)]">{textoAvanceRuta(progreso).texto}</p>
             <p className="mt-3 max-w-xs text-center text-base text-[var(--text-tertiary)]">
               Recuerda: el músculo se estimula aquí, pero crece mientras descansas.
             </p>
@@ -331,9 +333,9 @@ function PlanDelDia({
 
   useEffect(() => {
     if (etapa !== 'entrenador') return;
-    // 5s (antes 2s) — pedido explícito del usuario: 2s no alcanzaba a leer
-    // el consejo de calentamiento antes de que la pantalla avanzara sola.
-    const t = setTimeout(() => setEtapa('plan'), reduce ? 0 : 5000);
+    // 3s (26/09/2026, pedido del usuario; antes 5s y antes 2s): tiempo justo para
+    // leer el consejo sin sentir que la app se quedó esperando.
+    const t = setTimeout(() => setEtapa('plan'), reduce ? 0 : 3000);
     return () => clearTimeout(t);
   }, [etapa, reduce]);
 
@@ -697,7 +699,14 @@ function PlanDelDia({
           usuario: quitar el "Hola" y mostrar la fecha real. */}
       <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">
         {new Date().toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+        {' · '}
+        {textoAvanceRuta(progreso).texto}
       </p>
+      {textoAvanceRuta(progreso).fraccion !== null && (
+        <div aria-hidden="true" className="mt-2 h-1 w-full overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)]">
+          <div className="h-full rounded-full bg-[var(--accent)]" style={{ width: `${Math.max(2, (textoAvanceRuta(progreso).fraccion ?? 0) * 100)}%` }} />
+        </div>
+      )}
       {/* items-start (no items-center) + el Lottie FUERA del flujo del texto
           (shrink-0, su propia columna): con el título en 2 líneas, ponerlo
           inline o en flex-wrap lo empujaba a una tercera línea suelta y

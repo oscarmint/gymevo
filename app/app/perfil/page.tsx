@@ -37,6 +37,7 @@ export default function PerfilPage() {
   const [membresia, setMembresia] = useState<{ plan: string; estado: string | null } | null>(null);
   const [vencimiento, setVencimiento] = useState<Date | null>(null);
   const [pesoBorrador, setPesoBorrador] = useState('');
+  const [errorMacros, setErrorMacros] = useState<string | null>(null);
   const [estaturaBorrador, setEstaturaBorrador] = useState('');
   const [edadBorrador, setEdadBorrador] = useState('');
   const [sexoBorrador, setSexoBorrador] = useState<Sexo | null>(null);
@@ -155,10 +156,19 @@ export default function PerfilPage() {
   // (Mifflin-St Jeor) los necesita juntos — no tiene sentido calcular con
   // solo uno o dos.
   function guardarDatosMacros() {
+    setErrorMacros(null);
     const kg = Number(pesoBorrador);
     const cm = Number(estaturaBorrador);
     const anios = Number(edadBorrador);
-    if (!progreso || !sexoBorrador || !kg || kg <= 0 || !cm || cm <= 0 || !anios || anios <= 0) return;
+    if (!progreso || !sexoBorrador || !kg || !cm || !anios) {
+      setErrorMacros('Completa peso, estatura, edad y sexo para calcular.');
+      return;
+    }
+    // Rangos razonables: un dato a medias (ej. 6 kg) daba calorías absurdas.
+    if (kg < 30 || kg > 250) return setErrorMacros('Revisa tu peso: debe estar entre 30 y 250 kg.');
+    if (cm < 120 || cm > 230) return setErrorMacros('Revisa tu estatura: debe estar entre 120 y 230 cm.');
+    if (anios < 18 || anios > 90) return setErrorMacros('Revisa tu edad: debe estar entre 18 y 90 años.');
+    if (cinturaBorrador && (Number(cinturaBorrador) < 40 || Number(cinturaBorrador) > 200)) return setErrorMacros('Revisa tu cintura: debe estar entre 40 y 200 cm.');
     // Cintura es opcional (solo importa de verdad para Ruta B) — si el
     // usuario la deja vacía, no se pierde ni se fuerza a poner algo.
     const cinturaCm = cinturaBorrador ? Number(cinturaBorrador) : null;
@@ -785,6 +795,11 @@ export default function PerfilPage() {
                 >
                   Calcular mi alimentación
                 </button>
+                {errorMacros && (
+                  <p role="alert" className="mt-2 text-sm font-medium text-[var(--status-error)]">
+                    {errorMacros}
+                  </p>
+                )}
               </div>
             </motion.div>
           )}

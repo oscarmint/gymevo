@@ -1332,6 +1332,8 @@ export interface Progreso {
   fechaInicioMedidas: string | null;
   /** Rutinas del plan ya hechas la semana en curso (índices del ciclo). */
   rutinasHechas?: { semana: string; dias: number; indices: number[] } | null;
+  /** Día en que empezó su ruta (ISO). Alimenta "Día N de 90" / "Semana N". */
+  fechaInicioRuta?: string | null;
   /** Rutina elegida a mano para un día concreto (solo vale ese día). */
   rutinaElegida?: { fecha: string; indice: number } | null;
 }
@@ -1393,6 +1395,8 @@ export function leerProgreso(): Progreso {
   if (p.cinturaCm === undefined) p.cinturaCm = null;
   if (p.cinturaInicialCm === undefined) p.cinturaInicialCm = null;
   if (p.fechaInicioMedidas === undefined) p.fechaInicioMedidas = null;
+  // Quien ya usaba la app antes de este campo empieza a contar desde hoy.
+  if (!p.fechaInicioRuta) p.fechaInicioRuta = hoyISO();
   // Si cambió el día calendario desde el último completado y ya se había marcado
   // "hechosHoy", se limpia para el nuevo día (pero SIN romper la racha: eso solo
   // pasa si pasan ≥2 días sin completar, ver `racha en riesgo/rota` abajo).
@@ -1421,7 +1425,26 @@ export function posicionEnCiclo(p: Progreso): { posicion: number; total: number 
 }
 
 export function cambiarRuta(p: Progreso, nivel: Nivel, meta: Meta): Progreso {
-  return { ...p, nivel, meta };
+  // Cambiar de ruta reinicia la cuenta de días; cambiar solo la meta, no.
+  return { ...p, nivel, meta, fechaInicioRuta: nivel !== p.nivel ? hoyISO() : p.fechaInicioRuta };
+}
+
+export const DIAS_DE_RUTA = 90;
+
+/** Día de la ruta (1 = el día que empezó). Nunca menor que 1. */
+export function diaDeRuta(p: Progreso): number {
+  const inicio = p.fechaInicioRuta ?? hoyISO();
+  return Math.max(1, diasEntre(inicio, hoyISO()) + 1);
+}
+
+/** Texto corto de avance: "Día 12 de 90" (Principiante) o "Semana 2" (Intermedio). */
+export function textoAvanceRuta(p: Progreso): { texto: string; fraccion: number | null } {
+  const dia = diaDeRuta(p);
+  if (p.nivel === 'principiante') {
+    const d = Math.min(dia, DIAS_DE_RUTA);
+    return { texto: `Día ${d} de ${DIAS_DE_RUTA}`, fraccion: d / DIAS_DE_RUTA };
+  }
+  return { texto: `Semana ${Math.floor((dia - 1) / 7) + 1}`, fraccion: null };
 }
 
 /** Fija el ANCLA de progreso la primera vez que se registra peso y/o

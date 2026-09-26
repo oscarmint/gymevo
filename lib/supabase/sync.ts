@@ -61,7 +61,7 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
 
   const { data: perfil } = await supabase
     .from('profiles')
-    .select('nivel, meta, sexo, dias_semana, dia_actual, racha, ultimo_dia_completado, descanso_automatico, descanso_duracion_seg, sonido_descanso, peso_kg, unidad_peso, estatura_cm, edad, peso_inicial_kg, cintura_cm, cintura_inicial_cm, fecha_inicio_medidas, rutinas_hechas, rutina_elegida')
+    .select('nivel, meta, sexo, dias_semana, dia_actual, racha, ultimo_dia_completado, descanso_automatico, descanso_duracion_seg, sonido_descanso, peso_kg, unidad_peso, estatura_cm, edad, peso_inicial_kg, cintura_cm, cintura_inicial_cm, fecha_inicio_medidas, rutinas_hechas, rutina_elegida, fecha_inicio_ruta')
     .eq('id', user.id)
     .maybeSingle();
   if (!perfil) return null;
@@ -102,6 +102,7 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
     cinturaCm: perfil.cintura_cm === null ? null : Number(perfil.cintura_cm),
     cinturaInicialCm: perfil.cintura_inicial_cm === null ? null : Number(perfil.cintura_inicial_cm),
     fechaInicioMedidas: perfil.fecha_inicio_medidas,
+    fechaInicioRuta: perfil.fecha_inicio_ruta ?? null,
     rutinasHechas: (perfil.rutinas_hechas as Progreso['rutinasHechas']) ?? null,
     rutinaElegida: (perfil.rutina_elegida as Progreso['rutinaElegida']) ?? null,
   };
@@ -136,6 +137,7 @@ export function guardarProgresoRemoto(p: Progreso, onError?: () => void) {
         cintura_cm: p.cinturaCm,
         cintura_inicial_cm: p.cinturaInicialCm,
         fecha_inicio_medidas: p.fechaInicioMedidas,
+        fecha_inicio_ruta: p.fechaInicioRuta ?? null,
         rutinas_hechas: p.rutinasHechas ?? null,
         rutina_elegida: p.rutinaElegida ?? null,
       })
