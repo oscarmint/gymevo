@@ -28,7 +28,7 @@ export default function LandingV1() {
     <div className="min-h-dvh bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]">
       {/* 1. HERO */}
       <Hero
-        appName="GymEvo"
+        appName="GymEvoApp"
         loginHref="/login"
         h1Marked="Nunca más [acento]sin saber[/acento] qué hacer en el gym"
         subtitleMarked="El Botón de Rescate te da otro ejercicio [b]al instante[/b] sin pensar ni improvisar"
@@ -39,7 +39,7 @@ export default function LandingV1() {
           // eslint-disable-next-line @next/next/no-img-element -- Hero.tsx del kit usa <img> a propósito (portable, ver su comentario)
           <img
             src="/screenshots/frame-plan-del-dia.png"
-            alt="Plan del día en GymEvo: ejercicios de hoy, racha y Botón de Rescate"
+            alt="Plan del día en GymEvoApp: ejercicios de hoy, racha y Botón de Rescate"
             className="w-full"
           />
         }
@@ -222,16 +222,16 @@ export default function LandingV1() {
       {/* 9. CTA FINAL */}
       <CtaFinal
         h2Marked="Imagina entrar [acento]sin dudar[/acento] ni un segundo"
-        futurePacingMarked="Llegas a tu gimnasio, abres GymEvo, ves tu ejercicio de hoy y empiezas — sin buscar al entrenador, sin improvisar."
+        futurePacingMarked="Llegas a tu gimnasio, abres GymEvoApp, ves tu ejercicio de hoy y empiezas — sin buscar al entrenador, sin improvisar."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
         recap="Garantía del Primer Plan Claro · 7 días gratis"
-        psMarked="PS: GymEvo te dice exactamente qué hacer en el gimnasio, con el Botón de Rescate para cuando la máquina está ocupada. Pruébalo 7 días gratis — cualquier plan que elijas queda respaldado por la Garantía del Primer Plan Claro."
+        psMarked="PS: GymEvoApp te dice exactamente qué hacer en el gimnasio, con el Botón de Rescate para cuando la máquina está ocupada. Pruébalo 7 días gratis — cualquier plan que elijas queda respaldado por la Garantía del Primer Plan Claro."
       />
 
       {/* 10. FOOTER LEGAL */}
       <FooterLegal
-        appName="GymEvo"
+        appName="GymEvoApp"
         logo={<Logo className="size-5 text-[var(--accent)]" />}
         soporteEmail="gymevo@outlook.com"
         enlaces={[

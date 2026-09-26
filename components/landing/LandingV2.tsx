@@ -34,7 +34,7 @@ export default function LandingV2() {
     <div className="min-h-dvh bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]">
       {/* 1. HERO — ángulo: miedo a la mala técnica + dejar de improvisar */}
       <Hero
-        appName="GymEvo"
+        appName="GymEvoApp"
         loginHref="/login"
         h1Marked="Deja de [acento]entrenar a ciegas[/acento] con miedo a lesionarte"
         subtitleMarked="Un plan exacto, con la técnica correcta — [b]sin improvisar[/b] ni arriesgar tu espalda"
@@ -45,7 +45,7 @@ export default function LandingV2() {
           // eslint-disable-next-line @next/next/no-img-element -- Hero.tsx del kit usa <img> a propósito (portable, ver su comentario)
           <img
             src="/screenshots/frame-plan-del-dia.png"
-            alt="Plan del día en GymEvo: ejercicios de hoy, racha y Botón de Rescate"
+            alt="Plan del día en GymEvoApp: ejercicios de hoy, racha y Botón de Rescate"
             className="w-full"
           />
         }
@@ -227,16 +227,16 @@ export default function LandingV2() {
       {/* 9. CTA FINAL — reforzando el ángulo de confianza/técnica */}
       <CtaFinal
         h2Marked="Imagina entrar [acento]sin miedo a hacerlo mal[/acento]"
-        futurePacingMarked="Llegas a tu gimnasio, abres GymEvo, ves tu ejercicio de hoy y ejecutas con la técnica correcta — sin adivinar, sin miedo, sin vergüenza."
+        futurePacingMarked="Llegas a tu gimnasio, abres GymEvoApp, ves tu ejercicio de hoy y ejecutas con la técnica correcta — sin adivinar, sin miedo, sin vergüenza."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
         recap="Garantía del Primer Plan Claro · 7 días gratis"
-        psMarked="PS: GymEvo te dice exactamente qué hacer y cómo hacerlo bien en el gimnasio, con el Botón de Rescate para cuando la máquina está ocupada. Pruébalo 7 días gratis — cualquier plan que elijas queda respaldado por la Garantía del Primer Plan Claro."
+        psMarked="PS: GymEvoApp te dice exactamente qué hacer y cómo hacerlo bien en el gimnasio, con el Botón de Rescate para cuando la máquina está ocupada. Pruébalo 7 días gratis — cualquier plan que elijas queda respaldado por la Garantía del Primer Plan Claro."
       />
 
       {/* 10. FOOTER LEGAL — idéntico a V1 */}
       <FooterLegal
-        appName="GymEvo"
+        appName="GymEvoApp"
         logo={<Logo className="size-5 text-[var(--accent)]" />}
         soporteEmail="gymevo@outlook.com"
         enlaces={[
