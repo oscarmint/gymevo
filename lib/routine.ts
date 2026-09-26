@@ -356,7 +356,7 @@ const CATALOGO: Record<string, Ejercicio> = {
       consejoTecnico: 'Si la espalda baja se despega del suelo, flexiona un poco las rodillas y baja menos.',
     } },
 
-  press_banco_mancuernas: { id: 'press_banco_mancuernas', nombre: 'Press de banco plano con mancuernas', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/press-banco-mancuernas.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_pecho_hammer', guia: {
+  press_banco_mancuernas: { id: 'press_banco_mancuernas', nombre: 'Press de banco plano con mancuernas', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/press-banco-mancuernas.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_pecho_hammer', guia: {
     indicaciones: [
       'Acuéstate en el banco plano con una mancuerna en cada mano.',
       'Baja las mancuernas a los costados del pecho con los codos a 45° respecto al torso.',
