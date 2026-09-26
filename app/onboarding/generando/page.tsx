@@ -28,9 +28,9 @@ export default function GenerandoPlanPage() {
   const lineas = [
     `Analizando tu nivel: ${nivel.toLowerCase()}`,
     `Ajustando a tu meta: ${meta}`,
-    'Calculando el tiempo bajo tensión de cada ejercicio',
+    'Eligiendo los ejercicios de tu nivel',
     `Armando tu plan de ${dias} días/semana`,
-    `Preparando tu Botón de Rescate para ${horario}`,
+    'Preparando alternativas por si una máquina está ocupada',
   ];
 
   useEffect(() => {

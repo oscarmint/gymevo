@@ -3,6 +3,7 @@
 // PLAN DEL DÍA — M0 "el ritual diario" (56): la pantalla más vista de la app.
 // UNA misión: completar el entrenamiento de hoy. Protagonista de la Sesión 5.
 
+import { registrarEvento } from '@/lib/analitica';
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { useRouter } from 'next/navigation';
 import { Lottie } from 'lottie-react';
@@ -321,6 +322,13 @@ function PlanDelDia({
     return yaVisto ? 'plan' : 'saludo';
   });
 
+  // Precarga del GIF de la pantalla "Hoy toca construir" desde el saludo: pesa
+  // ~1.4 MB y en 4G llegaba tarde, dejando la pantalla en blanco unos segundos.
+  useEffect(() => {
+    const img = new window.Image();
+    img.src = '/ilustraciones/entrenador-inicio.gif';
+  }, []);
+
   useEffect(() => {
     if (etapa !== 'entrenador') return;
     // 5s (antes 2s) — pedido explícito del usuario: 2s no alcanzaba a leer
@@ -350,6 +358,7 @@ function PlanDelDia({
       return;
     }
     sessionStorage.setItem('gymevo_saludo_visto_dia', claveSesion);
+    registrarEvento('entrenamiento_iniciado');
     setEtapa('entrenador');
   }
 
@@ -438,6 +447,7 @@ function PlanDelDia({
   // una vez. El ejercicio se marca "hecho" solo cuando se completa la
   // última serie de su objetivo (`ej.series`).
   function registrar(ejercicioId: string) {
+    registrarEvento('serie_registrada');
     const ej = obtenerEjercicio(ejercicioId);
     const pesoTexto = pesos[ejercicioId];
     const peso = pesoTexto ? Number(pesoTexto) : 0;
@@ -495,6 +505,7 @@ function PlanDelDia({
   }
 
   function rescatar(ejercicioId: string) {
+    registrarEvento('rescate_usado');
     actualizar((p) => reemplazarEjercicio(p, ejercicioId));
   }
 
@@ -548,6 +559,7 @@ function PlanDelDia({
   }
 
   function finalizarEntrenamiento() {
+    registrarEvento('entrenamiento_completado');
     // La rutina hecha deja de estar disponible esta semana (calendario y selector).
     actualizar((p) => {
       const next = completarEntrenamiento(registrarSesionHecha(p, indiceActual));
@@ -668,6 +680,7 @@ function PlanDelDia({
             <p className="mx-auto mt-3 max-w-xs text-center text-sm text-[var(--text-tertiary)]">
               Estirar antes de levantar te debilita. Prepara el músculo con series de acercamiento (peso ligero).
             </p>
+            <p className="mt-4 text-xs text-[var(--text-tertiary)]">Toca la pantalla para continuar</p>
           </motion.div>
         )}
       </div>
@@ -749,7 +762,9 @@ function PlanDelDia({
         </div>
         <div>
           <p className={`text-sm font-semibold ${enRiesgo ? 'text-[var(--status-warning)]' : 'text-[var(--text-primary)]'}`}>
-            Racha: {rachaMostrada} {semanas === 1 ? 'semana' : 'semanas'}
+            {rachaMostrada === 0 && semana.hechos === 0
+              ? 'Tu primera semana empieza hoy'
+              : `Racha: ${rachaMostrada} ${semanas === 1 ? 'semana' : 'semanas'}`}
           </p>
           <p className="text-xs text-[var(--text-secondary)]">
             {enRiesgo
@@ -990,7 +1005,7 @@ function PlanDelDia({
                       44px en una sola fila, fáciles de tocar con una mano. El
                       nombre y la pista salen al elegir; cada círculo lleva su
                       nombre para lectores de pantalla. */}
-                  <div className="mt-1.5 flex items-center gap-3" role="radiogroup" aria-label="Qué tal se sintió la serie">
+                  <div className="mt-1 flex items-center gap-1" role="radiogroup" aria-label="Qué tal se sintió la serie">
                     {RIR_OPCIONES.map((op) => {
                       const activo = rirElegido[ej.id] === op.rir;
                       return (
@@ -1001,7 +1016,7 @@ function PlanDelDia({
                           aria-checked={activo}
                           aria-label={`${op.etiqueta}: ${op.pista}`}
                           onClick={() => setRirElegido((p) => ({ ...p, [ej.id]: op.rir }))}
-                          className="flex size-11 items-center justify-center rounded-full"
+                          className="flex h-[60px] w-14 flex-col items-center justify-center rounded-xl"
                         >
                           <span
                             className={`flex items-center justify-center rounded-full transition-all duration-150 ${
@@ -1011,6 +1026,7 @@ function PlanDelDia({
                           >
                             {activo && <Check size={16} color="var(--bg)" strokeWidth={3} />}
                           </span>
+                          <span className="mt-1 text-[10px] font-light leading-none text-[var(--text-secondary)] opacity-80">{op.etiqueta}</span>
                         </button>
                       );
                     })}

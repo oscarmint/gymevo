@@ -27,6 +27,10 @@ const TIPOS_VALIDOS = [
   'paywall_view',
   'checkout_click',
   'trial_click',
+  'entrenamiento_iniciado',
+  'serie_registrada',
+  'entrenamiento_completado',
+  'rescate_usado',
 ] as const;
 
 export async function POST(req: NextRequest) {

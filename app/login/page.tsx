@@ -29,12 +29,14 @@ function LoginContenido() {
   const [cargandoGoogle, setCargandoGoogle] = useState(false);
   const [errorGoogle, setErrorGoogle] = useState(false);
   const [errorAcepto, setErrorAcepto] = useState(false);
+  const [sacudida, setSacudida] = useState(0);
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
     if (!email.includes('@') || estado === 'enviando') return;
     if (!acepto) {
       setErrorAcepto(true);
+      setSacudida((n) => n + 1);
       return;
     }
     setEstado('enviando');
@@ -70,6 +72,7 @@ function LoginContenido() {
     if (cargandoGoogle) return;
     if (!acepto) {
       setErrorAcepto(true);
+      setSacudida((n) => n + 1);
       return;
     }
     setCargandoGoogle(true);
@@ -160,7 +163,14 @@ function LoginContenido() {
             {/* Autorización previa expresa (Ley 1581 de Colombia): checkbox
                 SIN premarcar, requerido para poder enviar el enlace — no se
                 crea ninguna cuenta sin este consentimiento explícito. */}
-            <label className="flex items-start gap-2.5 text-xs text-[var(--text-secondary)]">
+            <label
+              key={sacudida}
+              className={`flex items-start gap-3 rounded-xl p-2 -m-2 text-[13px] leading-snug ${
+                errorAcepto
+                  ? 'text-[var(--status-error)] [animation:sacudida_0.4s_ease-in-out] motion-reduce:[animation:none]'
+                  : 'text-[var(--text-secondary)]'
+              }`}
+            >
               <input
                 type="checkbox"
                 checked={acepto}
@@ -168,7 +178,7 @@ function LoginContenido() {
                   setAcepto(e.target.checked);
                   if (e.target.checked) setErrorAcepto(false);
                 }}
-                className="mt-0.5 size-4 shrink-0 accent-[var(--accent)]"
+                className="mt-0.5 size-5 shrink-0 accent-[var(--accent)]"
               />
               <span>
                 Autorizo el tratamiento de mis datos y acepto los{' '}
@@ -183,7 +193,7 @@ function LoginContenido() {
               </span>
             </label>
             {errorAcepto && (
-              <p className="mt-2 text-sm text-[var(--status-error)]">Marca la casilla para continuar.</p>
+              <p className="mt-2 text-sm text-[var(--status-error)]">Para continuar, acepta los Términos y la Política de Privacidad.</p>
             )}
             </div>
 
@@ -200,7 +210,7 @@ function LoginContenido() {
                 <path fill="#FBBC05" d="M5.29 14.29a7.2 7.2 0 0 1 0-4.58V6.62H1.29a12 12 0 0 0 0 10.76l4-3.09z" />
                 <path fill="#EA4335" d="M12 4.75c1.76 0 3.34.61 4.59 1.8l3.43-3.43C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.29 6.62l4 3.09C6.23 6.86 8.88 4.75 12 4.75z" />
               </svg>
-              {cargandoGoogle ? 'Abriendo Google…' : desdePlan ? 'Guardar mi plan con Google' : 'Continuar con Google'}
+              {cargandoGoogle ? 'Abriendo Google…' : 'Continuar con Google'}
             </button>
             {errorGoogle && (
               <p className="mt-2 text-sm text-[var(--status-error)]">
