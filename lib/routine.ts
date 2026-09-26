@@ -822,15 +822,6 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Trapecio superior', principal: true }],
     consejoTecnico: 'No gires los hombros — el movimiento es solo hacia arriba y abajo.',
   } },
-  crunch_banco_declinado: { id: 'crunch_banco_declinado', nombre: 'Crunch en banco declinado', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-banco-declinado.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_superior_horizontal_banco', guia: {
-    indicaciones: [
-      'Ajusta el banco declinado y engancha los pies en los rodillos.',
-      'Manos detrás de la cabeza, sin jalar el cuello.',
-      'Eleva el torso contrayendo el abdomen y baja de forma controlada.',
-    ],
-    musculos: [{ nombre: 'Recto abdominal', principal: true }],
-    consejoTecnico: 'Mantén caderas y espalda apoyadas; evita impulsarte con el torso.',
-  } },
   crunch_colchoneta: { id: 'crunch_colchoneta', nombre: 'Crunch superior en colchoneta (sin banco)', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-colchoneta.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'crunch_superior_horizontal_banco', guia: {
     indicaciones: [
       'Acuéstate boca arriba con las rodillas flexionadas y los pies apoyados.',
@@ -1224,6 +1215,7 @@ const EJERCICIO_DESCONOCIDO: Ejercicio = {
 // caer en "Ejercicio anterior".
 const SUSTITUTO_DE_RETIRADOS: Record<string, string> = {
   curl_hammer_polea_baja: 'curl_polea_baja_supino',
+  crunch_banco_declinado: 'crunch_lateral_inclinado',
 };
 
 export function obtenerEjercicio(id: string): Ejercicio {
