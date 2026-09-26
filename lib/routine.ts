@@ -257,7 +257,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     ],
     consejoTecnico: 'Mantén la columna neutral en todo momento para evitar lesiones lumbares. No redondees la espalda.',
   } },
-  prensa_inclinada: { id: 'prensa_inclinada', nombre: 'Prensa inclinada', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/prensa-inclinada.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'hack_inclinado', guia: {
+  prensa_inclinada: { id: 'prensa_inclinada', nombre: 'Prensa inclinada', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/prensa-inclinada.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'hack_inclinado', guia: {
     indicaciones: [
       'Ajusta el respaldo y coloca los pies al ancho de los hombros sobre la plataforma.',
       'Desciende hasta formar 90° en la rodilla, controlando el descenso.',
