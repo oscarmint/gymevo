@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
+import Link from 'next/link';
 import { AlertTriangle, Bell, BellOff, Camera, Check, ExternalLink, Eye, EyeOff, Flame, Loader2, LogOut, Pencil, Trash2 } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, SEXO_LABEL, leerRespuestas, type RespuestasOnboarding, type Sexo } from '@/lib/onboarding';
 import { calcularMacros } from '@/lib/macros';
@@ -845,6 +846,23 @@ export default function PerfilPage() {
       >
         <LogOut size={16} /> Cerrar sesión
       </motion.button>
+
+      {/* Aviso de salud + enlaces legales dentro de la app (47-LEGAL: el
+          disclaimer debe estar donde se usa el servicio, no solo en los
+          Términos). */}
+      <div className="mt-8 text-center text-xs leading-relaxed text-[var(--text-secondary)]">
+        <p>
+          GymEvo es una guía de entrenamiento, no consejo médico. Si tienes una condición de salud, consulta a un
+          profesional antes de empezar.
+        </p>
+        <p className="mt-2">
+          <Link href="/terminos" className="underline underline-offset-4">Términos</Link>
+          {' · '}
+          <Link href="/privacidad" className="underline underline-offset-4">Privacidad</Link>
+          {' · '}
+          <Link href="/reembolsos" className="underline underline-offset-4">Reembolsos</Link>
+        </p>
+      </div>
 
       {/* Zona de peligro — derecho de eliminación real (47-LEGAL-FISCAL-Y-
           PRIVACIDAD): un botón que de verdad borra los datos, no solo la

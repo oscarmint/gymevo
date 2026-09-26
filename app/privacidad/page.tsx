@@ -15,7 +15,7 @@ export default function PrivacidadPage() {
       </Link>
 
       <h1 className="text-4xl font-bold [font-family:var(--font-display)]">Política de Privacidad</h1>
-      <p className="mt-2 text-sm text-[var(--text-secondary)]">Última actualización: 4 de septiembre de 2026 (versión 2)</p>
+      <p className="mt-2 text-sm text-[var(--text-secondary)]">Última actualización: 26 de septiembre de 2026 (versión 3)</p>
 
       <div className="prosa-legal mt-8 flex flex-col gap-6 text-base leading-relaxed">
         <p>
@@ -38,16 +38,30 @@ export default function PrivacidadPage() {
         <section>
           <h2 className="text-lg font-semibold">Qué datos recogemos</h2>
           <ul className="mt-2 list-disc pl-5 flex flex-col gap-1">
-            <li>Tu correo electrónico, para crear tu cuenta y enviarte información sobre tu plan y sus vencimientos.</li>
+            <li>Tu correo electrónico (y tu nombre, si entras con Google), para crear tu cuenta, darte acceso y avisarte sobre tu plan y sus vencimientos.</li>
             <li>El nivel que elegiste (Principiante o Intermedio), tu meta (músculo o pérdida de grasa) y tu progreso dentro del plan.</li>
             <li>Tu historial de ejercicios: pesos, series y repeticiones que registras tú mismo.</li>
-            <li>Datos corporales que ingresas voluntariamente para calcular tus macros (peso, estatura, edad, cintura) — nunca obligatorios para usar la app.</li>
+            <li>
+              Datos corporales que ingresas voluntariamente para calcular tus macros (peso, estatura, edad,
+              cintura). Son datos relacionados con tu salud, que la ley colombiana considera sensibles: nunca
+              son obligatorios, no los necesitamos para darte tu plan y los usamos solo para ese cálculo.
+              Puedes borrarlos cuando quieras eliminando tu cuenta.
+            </li>
             <li>Tu nombre y, si decides subirla, una foto de perfil (desde tu cámara o galería).</li>
             <li>
               Si activas los recordatorios de entrenamiento, la suscripción técnica de notificaciones de tu
               navegador (un identificador de tu dispositivo, no tu ubicación ni datos personales adicionales).
             </li>
-            <li>Datos de pago: los procesa directamente Hotmart, nuestra plataforma de cobro — GymEvo nunca ve ni almacena el número de tu tarjeta.</li>
+            <li>
+              Datos de compra: el pago lo procesa directamente Hotmart, nuestra plataforma de cobro. GymEvo
+              nunca ve ni almacena el número de tu tarjeta; solo recibimos de Hotmart tu correo, el plan
+              elegido, las fechas y el estado del pago.
+            </li>
+            <li>
+              Conteos anónimos de uso (por ejemplo, cuántas personas ven la página o terminan el
+              cuestionario) y, si llegaste por un enlace de campaña, el nombre de esa campaña. No incluyen tu
+              nombre, tu correo, tu IP ni nada que te identifique.
+            </li>
           </ul>
           <p className="mt-2 text-sm text-[var(--text-secondary)]">
             GymEvo no usa inteligencia artificial para generar tu plan ni para procesar lo que escribes:
@@ -70,10 +84,11 @@ export default function PrivacidadPage() {
           <h2 className="text-lg font-semibold">Con quién compartimos datos</h2>
           <p className="mt-2">Compartimos datos únicamente con los proveedores que necesitamos para operar el servicio:</p>
           <ul className="mt-2 list-disc pl-5 flex flex-col gap-1">
-            <li><strong>Hotmart</strong> — procesa tu pago.</li>
+            <li><strong>Hotmart</strong> — procesa tu pago y nos informa de tu compra (correo, plan, fechas y estado).</li>
+            <li><strong>Google</strong> — solo si eliges &quot;Continuar con Google&quot;: confirma tu identidad y nos entrega tu correo y tu nombre.</li>
             <li><strong>Supabase</strong> — guarda tu cuenta, tu progreso y tu foto de perfil (base de datos, autenticación y almacenamiento de archivos).</li>
             <li><strong>Vercel</strong> — aloja y sirve la aplicación web.</li>
-            <li><strong>Resend</strong> — envía los correos de tu cuenta (enlace de acceso, avisos de cobro).</li>
+            <li><strong>Supabase (servicio de correo)</strong> — envía el correo con tu código de acceso.</li>
           </ul>
           <p className="mt-2">
             No compartimos tu información con anunciantes ni la usamos para publicidad de terceros. GymEvo
@@ -82,13 +97,32 @@ export default function PrivacidadPage() {
         </section>
 
         <section>
+          <h2 className="text-lg font-semibold">Cookies y almacenamiento en tu dispositivo</h2>
+          <p className="mt-2">
+            Usamos solo lo indispensable para que la app funcione: una cookie de sesión para mantenerte
+            dentro de tu cuenta y el almacenamiento local de tu navegador para recordar tu plan, tu progreso
+            y la campaña por la que llegaste. No usamos cookies de publicidad, de análisis de terceros ni
+            píxeles, por eso no te mostramos un aviso de cookies para aceptar o rechazar. Si algún día los
+            agregamos, te pediremos permiso antes y actualizaremos esta política.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-lg font-semibold">Edad mínima</h2>
+          <p className="mt-2">
+            GymEvo es solo para personas de 18 años o más. No recogemos a sabiendas datos de menores de
+            edad; si descubrimos una cuenta de un menor, la eliminamos.
+          </p>
+        </section>
+
+        <section>
           <h2 className="text-lg font-semibold">Dónde se guardan tus datos (transferencia internacional)</h2>
           <p className="mt-2">
-            Supabase, Vercel y Resend operan con infraestructura fuera de Colombia (principalmente en
-            Estados Unidos). Esto significa que tus datos viajan y se almacenan en esos países mientras te
-            damos el servicio. Estos proveedores se comprometen contractualmente a proteger tu información
-            bajo estándares equivalentes a los de la ley colombiana. Al usar GymEvo autorizas esta
-            transferencia, necesaria para que la app funcione.
+            Supabase, Vercel, Google y Hotmart operan con infraestructura fuera de Colombia (principalmente
+            en Estados Unidos). Esto significa que tus datos viajan y se almacenan en esos países mientras
+            te damos el servicio. Estos proveedores tienen sus propias políticas de protección de datos y
+            acuerdos de tratamiento de datos con sus clientes. Al marcar la casilla de aceptación al crear
+            tu cuenta autorizas esta transferencia, necesaria para que la app funcione.
           </p>
         </section>
 
@@ -100,9 +134,9 @@ export default function PrivacidadPage() {
             cualquier momento escribiéndonos, sin que eso afecte los tratamientos ya realizados legalmente.
           </p>
           <p className="mt-2 text-sm text-[var(--text-secondary)]">
-            GymEvo, por su tamaño actual, no supera el umbral de activos que exige inscribirse en el
-            Registro Nacional de Bases de Datos (RNBD) de la SIC. Revisamos esta condición periódicamente a
-            medida que el negocio crece.
+            GymEvo, por su tamaño actual, no está obligado a inscribirse en el Registro Nacional de Bases
+            de Datos (RNBD) de la SIC. Revisamos esta condición periódicamente a medida que el negocio
+            crece. Este documento es también nuestra política de tratamiento de datos personales.
           </p>
         </section>
 
@@ -110,13 +144,16 @@ export default function PrivacidadPage() {
           <h2 className="text-lg font-semibold">Tus derechos</h2>
           <p className="mt-2">
             Como titular de tus datos tienes derecho a conocerlos, actualizarlos, rectificarlos, pedir
-            prueba de tu autorización, solicitar su eliminación y revocar la autorización que nos diste.
-            Para ejercerlos, escríbenos a{" "}
+            prueba de tu autorización, ser informado del uso que damos a tus datos, solicitar su
+            eliminación, revocar la autorización que nos diste y presentar una queja ante la
+            Superintendencia de Industria y Comercio (SIC) si crees que no respetamos la ley. Si compras
+            desde México o Brasil, también puedes ejercer los derechos que te reconocen las leyes de tu
+            país. Para ejercerlos, escríbenos a{" "}
             <a href="mailto:gymevo@outlook.com" className="underline underline-offset-4">
               gymevo@outlook.com
             </a>
-            . Respondemos en un máximo de 5 días hábiles (15 días hábiles si tu solicitud es una queja
-            formal, según el plazo legal).
+            . Respondemos las consultas en un máximo de 10 días hábiles y los reclamos en un máximo de
+            15 días hábiles, que son los plazos de la ley; normalmente lo hacemos mucho antes.
           </p>
         </section>
 
@@ -124,10 +161,12 @@ export default function PrivacidadPage() {
           <h2 className="text-lg font-semibold">Cómo eliminar tu cuenta</h2>
           <p className="mt-2">
             Desde tu Perfil dentro de la app puedes eliminar tu cuenta con un botón directo. Al hacerlo
-            borramos tu perfil, tu historial de entrenamientos, tu foto y tus suscripciones a
-            notificaciones — de inmediato y sin necesidad de escribirnos. La única excepción es el registro
+            borramos tu perfil, tu historial de entrenamientos, tu foto, tus datos corporales y tus
+            suscripciones a notificaciones, de inmediato y sin necesidad de escribirnos. La única excepción es el registro
             de tu compra en Hotmart (correo, fechas y estado del plan), que conservamos porque la
             ley nos obliga a llevar contabilidad de nuestros ingresos; nunca lo usamos para otra cosa.
+            Mientras tu cuenta exista, guardamos tus datos para darte el servicio; los borramos cuando
+            eliminas tu cuenta o nos lo pides.
           </p>
         </section>
 

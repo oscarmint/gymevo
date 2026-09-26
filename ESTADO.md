@@ -1342,3 +1342,6 @@ Sesión 6 (integraciones reales y seguridad) — en curso.
 ## Notas para la próxima sesión
 - El usuario llegó con el "RESUMEN FINAL — IDEA VALIDADA PARA CONSTRUIR" completo (prompt de investigación externo). No se debe re-validar la idea ni proponer alternativas.
 - Nombre FINAL confirmado por el usuario: **GymEvo** (28/08/2026) — "Método Cero" queda solo como referencia interna del documento original, no se usa en producto ni copy.
+
+## ⏸️ CHECKPOINT — Auditoría legal (26/09/2026)
+Privacidad, Términos y Reembolsos pasan a versión 3 (26/09/2026). Cambios: Google nombrado como proveedor de acceso; se quitó Resend (el código no lo usa: el correo del código sale por Supabase); datos corporales declarados como sensibles y opcionales (Ley 1581); sección de cookies/almacenamiento local y conteos anónimos; edad mínima única de 18 (antes contradecía 13–17); plazos legales de respuesta 10/15 días hábiles (antes prometía 5); queja ante SIC y derechos MX/BR; cláusulas de uso aceptable, resultados, cambios y consumidor irrenunciable; aviso de salud + enlaces legales dentro de Perfil. FICHA-MERCADO: garantía real 7 días. Pendiente humano: confirmar SMTP de Supabase (si usa Resend/otro, nombrarlo), abogado local si supera ingresos relevantes; endpoint /api/cuenta/cancelar-suscripcion queda sin uso (pago único).

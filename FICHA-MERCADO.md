@@ -26,6 +26,7 @@
 ## 4. PRUEBA Y GARANTÍA (plazos que la pasarela permite DE VERDAD)
 - Plazos de prueba que admite la pasarela: NO ENCONTRADO — pendiente de verificar en el panel de Hotmart al crear la cuenta (Sesión 6)
 - Plazos de garantía/reembolso que admite: Hotmart aplica por política de plataforma un mínimo de 7 días de garantía sobre toda compra (dato público de Hotmart, no específico de esta cuenta) — **pendiente de confirmar el máximo configurable** al abrir la cuenta
+- **ACTUALIZADO 26/09/2026: garantía real = 7 días desde el pago (configurada en Hotmart por el dueño; landing, paywall y Reembolsos dicen lo mismo). El '14 días' de abajo es histórico.**
 - **Prueba elegida: 7 días · Garantía elegida: 14 días** (7 días de trial + 7 días de garantía Hotmart estándar contados desde el primer cobro — no se solapan: si cancela durante el trial no hay cobro que devolver; si paga y se arrepiente en su primera semana de cobro, tiene garantía)
 - Comprobación: garantía 14 > prueba 7 → **SÍ**
 - ¿Desde cuándo cuenta el plazo de garantía? Desde el primer cobro (no desde el registro) — **NO CONFIRMADO con la pasarela real todavía**; el copy publicado en landing/paywall/onboarding usa el plazo (7 días de trial, aviso antes del cobro) sin fijar que la garantía de 14 ya esté operativa — ver Problemas conocidos en ESTADO.md

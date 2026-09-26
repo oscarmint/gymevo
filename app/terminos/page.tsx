@@ -15,7 +15,7 @@ export default function TerminosPage() {
       </Link>
 
       <h1 className="text-4xl font-bold [font-family:var(--font-display)]">Términos y Condiciones</h1>
-      <p className="mt-2 text-sm text-[var(--text-secondary)]">Última actualización: 4 de septiembre de 2026 (versión 2)</p>
+      <p className="mt-2 text-sm text-[var(--text-secondary)]">Última actualización: 26 de septiembre de 2026 (versión 3)</p>
 
       <div className="prosa-legal mt-8 flex flex-col gap-6 text-base leading-relaxed">
         <section>
@@ -23,7 +23,8 @@ export default function TerminosPage() {
           <p className="mt-2">
             GymEvo es operado por <strong>Oscar Hernán Hernández Murillo</strong>, persona natural con domicilio en
             Colombia. Estos términos se rigen por las leyes de Colombia, y cualquier disputa se resuelve
-            ante sus autoridades competentes.
+            ante sus autoridades competentes, sin perjuicio de los derechos de consumidor que la ley de tu
+            país de residencia te reconozca y que no se pueden renunciar.
           </p>
         </section>
 
@@ -42,9 +43,8 @@ export default function TerminosPage() {
         <section>
           <h2 className="text-lg font-semibold">Edad mínima</h2>
           <p className="mt-2">
-            Debes tener al menos 18 años para crear una cuenta y contratar un plan en GymEvo.
-            Si tienes entre 13 y 17 años, necesitas la autorización de tu representante legal antes de usar
-            la app.
+            GymEvo es solo para personas de 18 años o más. Al crear tu cuenta declaras que tienes esa edad.
+            Si descubrimos que una cuenta pertenece a un menor, la cerramos.
           </p>
         </section>
 
@@ -66,7 +66,9 @@ export default function TerminosPage() {
             seguir usando la app debes elegir un plan y realizar el pago. Pagas por el período elegido con
             los medios de pago que ofrece Hotmart. No hay renovación automática: cuando tu acceso termine,
             decides si renuevas pagando de nuevo. Los meses de una renovación se suman al tiempo de acceso
-            que aún te quede. El pago lo procesa Hotmart.
+            que aún te quede. El pago lo procesa Hotmart, que actúa
+            como plataforma de venta; la app y tu acceso los da GymEvo. Durante programas de prueba
+            cerrada (beta) podemos darte un periodo de acceso gratuito más largo, sin ningún cobro.
           </p>
         </section>
 
@@ -82,12 +84,37 @@ export default function TerminosPage() {
         </section>
 
         <section>
+          <h2 className="text-lg font-semibold">Uso aceptable y tu contenido</h2>
+          <p className="mt-2">
+            Usa GymEvo solo para tu entrenamiento personal: no compartas tu cuenta, no intentes copiar el
+            contenido de forma automática ni vulnerar la seguridad. Los datos, la foto y los registros que
+            subes siguen siendo tuyos; solo nos das permiso para guardarlos y mostrártelos dentro de la app.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-lg font-semibold">Resultados</h2>
+          <p className="mt-2">
+            Los resultados dependen de tu constancia, tu alimentación, tu descanso y tu cuerpo. GymEvo no
+            garantiza pérdida de grasa, ganancia de músculo ni ningún resultado físico concreto.
+          </p>
+        </section>
+
+        <section>
           <h2 className="text-lg font-semibold">Vencimiento y renovación</h2>
           <p className="mt-2">
             Tu acceso dura hasta la fecha que ves en tu Perfil. Te avisamos antes de que venza para que
             puedas renovar, y después del vencimiento tienes unos días de gracia antes de que la app se
             bloquee. Como no hay cobros automáticos, no hay nada que cancelar: si no renuevas, el acceso
             simplemente termina. Los reembolsos se rigen por nuestra Política de Reembolsos.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-lg font-semibold">Cambios a estos términos</h2>
+          <p className="mt-2">
+            Si cambiamos estos términos de forma importante, te avisaremos por correo o dentro de la app
+            antes de que apliquen. Los cambios no afectan el periodo que ya pagaste.
           </p>
         </section>
 
@@ -105,7 +132,8 @@ export default function TerminosPage() {
           <p className="mt-2">
             GymEvo se ofrece &quot;tal cual&quot;. Dentro de lo permitido por la ley, no somos responsables por
             daños indirectos derivados del uso de la app. Nuestra responsabilidad total frente a ti nunca
-            supera el monto que pagaste por tu plan vigente.
+            supera el monto que pagaste por tu plan vigente. Nada de esto limita los derechos que la ley
+            de consumo de tu país te da y que no se pueden renunciar.
           </p>
         </section>
 

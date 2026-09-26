@@ -15,7 +15,7 @@ export default function ReembolsosPage() {
       </Link>
 
       <h1 className="text-4xl font-bold [font-family:var(--font-display)]">Política de Reembolsos</h1>
-      <p className="mt-2 text-sm text-[var(--text-secondary)]">Última actualización: 4 de septiembre de 2026 (versión 2)</p>
+      <p className="mt-2 text-sm text-[var(--text-secondary)]">Última actualización: 26 de septiembre de 2026 (versión 3)</p>
 
       <div className="prosa-legal mt-8 flex flex-col gap-6 text-base leading-relaxed">
         <section>
@@ -55,7 +55,9 @@ export default function ReembolsosPage() {
             </a>{" "}
             indicando el correo con el que compraste, o pide el reembolso directamente desde tu
             portal de compras de Hotmart. Procesamos las solicitudes que nos llegan por correo en un
-            máximo de 5 días hábiles.
+            máximo de 5 días hábiles. Al aprobarse un reembolso, tu acceso al plan reembolsado termina.
+            Si el dinero no aparece en tu medio de pago, el tiempo de devolución depende de tu banco o
+            tarjeta y de Hotmart.
           </p>
         </section>
 
