@@ -25,7 +25,7 @@ Marca ✅ cuando la imagen ya esté descargada en `Downloads/Ejercicios/nuevas-g
 ## Prioridad 3 — la imagen no es el ejercicio (2)
 | ✅ | Ejercicio | Problema hoy | Guardar como |
 |---|---|---|---|
-| ☐ | Crunch lateral inclinado (máquina) | muestra otro ejercicio | crunch-lateral-inclinado.jpg |
+| ☐ | Crunch lateral en polea | muestra otro ejercicio | crunch-lateral-inclinado.jpg |
 | ☐ | Crunch superior horizontal en banco | usa la imagen de la máquina | crunch-superior-horizontal-banco.jpg |
 
 ## Prioridad 4 — baja resolución (11)

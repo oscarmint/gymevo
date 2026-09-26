@@ -336,14 +336,16 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Isquiotibiales', principal: true }],
     consejoTecnico: 'Cadera y torso pegados al respaldo para evitar balanceo.',
   } },
-  crunch_lateral_inclinado: { id: 'crunch_lateral_inclinado', nombre: 'Crunch lateral inclinado (máquina)', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-lateral-inclinado.png', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha_abdominal', guia: {
+  crunch_lateral_inclinado: { id: 'crunch_lateral_inclinado', nombre: 'Crunch lateral en polea', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/crunch-lateral-inclinado.jpg', series: 4, reps: '10-12 por lado', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha_abdominal', guia: {
     indicaciones: [
-      'Recuéstate en una banca inclinada con las manos detrás de la cabeza.',
-      'Sube el torso girando hacia un lado, contrayendo el oblicuo.',
-      'Baja controladamente y alterna de lado.',
+      'Colócate de lado a la polea baja y sujeta el asa con la mano más cercana.',
+      'Separa los pies al ancho de la cadera y mantén el brazo estirado.',
+      'Inclina el torso hacia la polea hasta sentir el estiramiento del costado contrario.',
+      'Exhala y sube inclinándote un poco hacia el lado contrario, contrayendo los oblicuos.',
+      'Regresa lento, sin mover la cadera, y cambia de lado al terminar la serie.',
     ],
-    musculos: [{ nombre: 'Oblicuos', principal: true }, { nombre: 'Recto abdominal', principal: false }],
-    consejoTecnico: 'Enfoque en la contracción de los oblicuos, no en la velocidad.',
+    musculos: [{ nombre: 'Oblicuos', principal: true }, { nombre: 'Cuadrado lumbar', principal: false }],
+    consejoTecnico: 'Dobla desde la cintura, no desde el cuello. Mantén la cadera quieta, sin girar ni inclinarte hacia adelante.',
   } },
   elevacion_piernas: { id: 'elevacion_piernas', nombre: 'Elevación de piernas', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/elevacion-piernas.jpg', series: 4, reps: '10-12', descansoSeg: 45, tempo: '2-1-1', alternativaId: 'plancha_abdominal' , guia: {
       indicaciones: [
