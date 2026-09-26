@@ -7,7 +7,6 @@ import { registrarEvento } from '@/lib/analitica';
 import { capturarUTMDesdeURL } from '@/lib/utm';
 import { obtenerVarianteLanding, type VarianteLanding } from '@/lib/experimentos';
 import LandingV1 from '@/components/landing/LandingV1';
-import LandingV2 from '@/components/landing/LandingV2';
 
 export default function LandingGymEvo() {
   const router = useRouter();
@@ -57,5 +56,5 @@ export default function LandingGymEvo() {
 
   if (verificandoSesion || !variante) return null;
 
-  return variante === 'a' ? <LandingV1 /> : <LandingV2 />;
+  return <LandingV1 />;
 }

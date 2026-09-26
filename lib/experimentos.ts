@@ -15,29 +15,20 @@ export type VarianteLanding = 'a' | 'b';
 const CLAVE = 'gymevo_landing_variante';
 
 export function obtenerVarianteLanding(): VarianteLanding {
-  if (typeof window === 'undefined') return 'a'; // SSR: el cliente decide de verdad en el useEffect
-  try {
-    const guardada = localStorage.getItem(CLAVE);
-    if (guardada === 'a' || guardada === 'b') return guardada;
-    const nueva: VarianteLanding = Math.random() < 0.5 ? 'a' : 'b';
-    localStorage.setItem(CLAVE, nueva);
-    return nueva;
-  } catch {
-    // localStorage bloqueado (modo privado estricto, etc.) — no rompe la
-    // landing, solo no se puede "recordar" la variante entre visitas.
-    return Math.random() < 0.5 ? 'a' : 'b';
+  // 26/09/2026: a pedido del dueño, solo se usa UNA landing (LandingV1, la del
+  // mecanismo). El A/B queda apagado: todos ven 'a'. LandingV2 sigue en el repo
+  // por si se retoma el experimento, pero ya no se muestra.
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(CLAVE, 'a');
+    } catch {
+      // sin localStorage no pasa nada: la variante es fija.
+    }
   }
+  return 'a';
 }
 
-/** Lee la variante ya asignada sin crear una nueva si no existe — para
- * etiquetar eventos en pantallas posteriores (onboarding) con la misma
- * variante que vio la persona en la landing. */
+/** Variante para etiquetar eventos: con una sola landing siempre es 'a'. */
 export function leerVarianteLanding(): VarianteLanding | null {
-  if (typeof window === 'undefined') return null;
-  try {
-    const v = localStorage.getItem(CLAVE);
-    return v === 'a' || v === 'b' ? v : null;
-  } catch {
-    return null;
-  }
+  return 'a';
 }

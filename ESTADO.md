@@ -1356,3 +1356,6 @@ Decisiones del dueño: opción 1 de los 90 días (Día N de 90 en Principiante, 
 
 ## ⏸️ CHECKPOINT — Cambio de nombre a GymEvoApp + logo nuevo (26/09/2026)
 Decisión del dueño: nombre **GymEvoApp** (dominio gymevoapp.com se mantiene) y logo entregado por él (pesa + reloj de arena + flecha, calcado con potrace en el verde de la app; sin cambiar colores ni diseño). Hecho: Logo, íconos, OG/Twitter, email-logo, 63 textos en 19 archivos, docs de beta/Hotmart. Guía de lo que debe cambiar el dueño en `docs/CAMBIO-DE-NOMBRE-GYMEVOAPP.md`. Pendiente: búsqueda de marca en la SIC (riesgo de "GymEvo" en Play/ropa), subir tras "subir". Sin veredicto del revisor (cambio de marca, no de composición).
+
+## ⏸️ CHECKPOINT — Una sola landing (26/09/2026)
+Decisión del dueño: solo se usa UNA landing como prueba. Se dejó **LandingV1** ("Nunca más sin saber qué hacer en el gym", ángulo del mecanismo/Botón de Rescate); el A/B queda apagado (`lib/experimentos.ts` devuelve siempre 'a'; `app/page.tsx` ya no importa LandingV2, que queda en el repo sin usar). Cambiarla a la otra es una línea. Aviso anotado: el A/B "precio visible vs oculto" y "90 días antes del registro" se probarán más adelante con tráfico real, sobre esta única landing.
