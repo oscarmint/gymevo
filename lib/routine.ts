@@ -475,7 +475,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Bíceps braquial', principal: true }, { nombre: 'Braquial', principal: false }],
     consejoTecnico: 'Axilas bien apoyadas en el banco durante todo el recorrido.',
   } },
-  pajaros_pie_mancuerna: { id: 'pajaros_pie_mancuerna', nombre: 'Pájaros de pie con mancuerna', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/pajaros-pie-mancuerna.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'pajaros_maquina', guia: {
+  pajaros_pie_mancuerna: { id: 'pajaros_pie_mancuerna', nombre: 'Pájaros de pie con mancuerna', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/pajaros-pie-mancuerna.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'pajaros_maquina', guia: {
     indicaciones: [
       'De pie, inclina el torso hacia adelante manteniendo la espalda recta.',
       'Con las mancuernas, abre los brazos hacia los lados enfocando el deltoide posterior.',
