@@ -382,7 +382,7 @@ export default function PaywallPage() {
           </button>
         )}
         <p className="mt-1 flex items-center justify-center gap-1.5 text-center text-xs text-[var(--text-secondary)]">
-          <Lock size={12} className="shrink-0" /> Tarjeta, Nequi o efectivo · pago seguro vía Hotmart
+          <Lock size={12} className="shrink-0" /> Tarjeta, PSE, Nequi o efectivo · pago seguro vía Hotmart
         </p>
 
         <p className="mt-1 text-center text-xs font-medium text-[var(--accent)]">

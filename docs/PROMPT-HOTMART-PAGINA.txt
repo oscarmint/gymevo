@@ -1,0 +1,42 @@
+Crie uma página de vendas profissional em ESPANHOL (Latinoamérica, foco Colômbia) para o meu produto, que será usada para divulgar o produto e direcionar o visitante para a compra. Não faça perguntas. Use SOMENTE as informações abaixo, sem inventar funcionalidades, números, avaliações ou depoimentos.
+
+PRODUTO
+- Nome: GymEvoApp (escrito exatamente assim, tudo junto, com "App" em peso mais leve quando possível).
+- Uma frase: "Entra al gimnasio sabiendo qué hacer hoy."
+- Descrição: GymEvoApp é um aplicativo web (funciona no celular, sem baixar da loja) para quem é iniciante ou intermediário e treina em academias comerciais lotadas. Ele diz, todos os dias, qual treino fazer, com séries, repetições, carga sugerida e descanso, para deixar de improvisar. A rotina é FIXA: não muda sozinha todos os dias e não usa inteligência artificial.
+- Funcionalidades reais (use só estas):
+  1. Plano fixo por nível: Rota Iniciante de 90 dias (com "Dia N de 90" e barra de progresso) ou Rota Intermediário (por semanas), com os dias por semana que a pessoa escolher.
+  2. Botão de Resgate: se a máquina estiver ocupada, com um toque o app mostra outro exercício equivalente e a pessoa continua treinando. Pode tocar de novo para voltar ao original.
+  3. Técnica ilustrada: cada exercício tem ilustração e guia de como fazer antes de começar, e aquecimento guiado.
+  4. Registro de séries: peso e repetições de cada série, com sugestão de carga, cronômetro de descanso e esforço da série (Ligera, Buena, Pesada, Al límite) na rota intermediária.
+  5. Progresso: sequência de semanas, calendário do mês, evolução e marcas pessoais.
+  6. Nutrição simples: a pessoa escolhe a meta (ganhar músculo ou perder gordura) e o app calcula calorias e macros com os dados dela. São recomendações gerais, não prescrição médica.
+- Preços (pagamento ÚNICO por período, SEM renovação automática): Mensal US$ 4,99 (1 mês), Semestral US$ 19,99 (6 meses), Anual US$ 29,99 (12 meses; o melhor valor). No checkout aparece em moeda local (COP) e, na Colômbia, o plano anual pode ser parcelado em até 12 vezes. Pagamento com cartão, PSE, Nequi ou dinheiro em espécie (Efecty) via Hotmart.
+- Garantia: 7 dias, devolução do dinheiro sem perguntas, contados desde o pagamento.
+- URL para checkout: https://pay.hotmart.com/A107710465O?off=zizye3rj&hotfeature=51
+- Imagem do produto: https://hotmart.s3.amazonaws.com/product_pictures/fea10139-54c7-4857-b209-90e76d3fee9a/Gemini_Generated_Image_ohvqrtohvqrtohvq.jpg
+
+AUTOR
+- Imagem: //static-public.pages.hotmart.com/uploads/media/file/7176922/group_10288.png
+
+O QUE NÃO DIZER (proibido)
+- Não prometer resultados físicos concretos nem prazos de resultado (nada de "perca X kg em Y dias").
+- Não falar de "TUT" nem de tempos exatos por repetição, não falar de "mesociclos" nem de que o app "evolui sozinho" ou muda de nível automaticamente.
+- Não dizer que usa inteligência artificial (o diferencial é justamente que NÃO usa; o plano é fixo).
+- Não falar de "teste grátis" nem de "sem cartão" nesta página (o checkout não tem teste grátis; a proteção é a garantia de 7 dias).
+- Não citar concorrentes nem marcas de terceiros.
+
+ESTRUTURA SUGERIDA
+Hero (frase + botão "Empezar ahora" para o checkout) > Problema (chegar à academia sem saber o que fazer, máquina ocupada, medo de errar a técnica) > Solução (plano fixo + Botão de Resgate) > Como funciona em 3 passos (escolhe nível e meta; vê o treino de hoje; toca Resgate se precisar) > Funcionalidades (as 6 acima) > Planos e preços (3 cartões, anual em destaque) > Garantia de 7 dias > Perguntas frequentes (funciona no celular? / preciso baixar algo? / renova sozinho? não / posso mudar de nível? sim, no perfil) > Botão final.
+
+REGRAS
+- Mostrar avaliação apenas se for >= 4.0 (se não houver, não mostrar).
+- Mostrar depoimentos apenas se existirem (NÃO inventar; se não houver, omitir a seção).
+- Todos os botões levam ao checkout indicado.
+- O cabeçalho deve usar o nome "GymEvoApp" (e o logotipo do produto), nunca "GYM EVO" separado.
+
+CARACTERÍSTICAS DA PÁGINA
+- Tom de voz: inspirador, direto e claro, em espanhol neutro (tuteo).
+- Cor primária: #97D131
+- Cor secundária: #12161C
+- Estilo: escuro (fundo #12161C), texto claro, botões em #97D131 com texto escuro, bom contraste, mobile first.
