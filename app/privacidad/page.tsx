@@ -26,7 +26,7 @@ export default function PrivacidadPage() {
         <section>
           <h2 className="text-lg font-semibold">Quién es el responsable de tus datos</h2>
           <p className="mt-2">
-            GymEvo es operado por <strong>Oscar Hernán Hernández Murillo</strong>, persona natural, con domicilio en
+            GymEvo es operado por <strong>Oscar Hernán Hernández</strong>, persona natural, con domicilio en
             Colombia. Puedes contactarnos para cualquier tema de privacidad en{" "}
             <a href="mailto:gymevo@outlook.com" className="underline underline-offset-4">
               gymevo@outlook.com
@@ -88,7 +88,7 @@ export default function PrivacidadPage() {
             <li><strong>Google</strong> — solo si eliges &quot;Continuar con Google&quot;: confirma tu identidad y nos entrega tu correo y tu nombre.</li>
             <li><strong>Supabase</strong> — guarda tu cuenta, tu progreso y tu foto de perfil (base de datos, autenticación y almacenamiento de archivos).</li>
             <li><strong>Vercel</strong> — aloja y sirve la aplicación web.</li>
-            <li><strong>Supabase (servicio de correo)</strong> — envía el correo con tu código de acceso.</li>
+            <li><strong>Resend</strong> — envía el correo con tu código de acceso.</li>
           </ul>
           <p className="mt-2">
             No compartimos tu información con anunciantes ni la usamos para publicidad de terceros. GymEvo
@@ -118,7 +118,7 @@ export default function PrivacidadPage() {
         <section>
           <h2 className="text-lg font-semibold">Dónde se guardan tus datos (transferencia internacional)</h2>
           <p className="mt-2">
-            Supabase, Vercel, Google y Hotmart operan con infraestructura fuera de Colombia (principalmente
+            Supabase, Vercel, Resend, Google y Hotmart operan con infraestructura fuera de Colombia (principalmente
             en Estados Unidos). Esto significa que tus datos viajan y se almacenan en esos países mientras
             te damos el servicio. Estos proveedores tienen sus propias políticas de protección de datos y
             acuerdos de tratamiento de datos con sus clientes. Al marcar la casilla de aceptación al crear
