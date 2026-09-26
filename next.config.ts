@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   // Calendario e Historial se fusionaron en Progreso (23/09/2026): los links
   // viejos (guardados, capturas, marcadores) siguen funcionando.
-  // Cabeceras de seguridad básicas (auditoría 25/09/2026): nadie puede meter la app
+  // Cabeceras de seguridad básicas (auditoría 25/09/2026): la app con sesión y el panel no se pueden meter
   // en un iframe ajeno, el navegador no adivina tipos de archivo y no se filtra la
   // URL completa a otros sitios.
   async headers() {
@@ -19,11 +19,17 @@ const nextConfig: NextConfig = {
       {
         source: "/:path*",
         headers: [
-          { key: "X-Frame-Options", value: "DENY" },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         ],
+      },
+      // Solo la app con sesión y el panel de administrador no se pueden meter en
+      // un iframe ajeno. Landing, onboarding, login y paywall sí se pueden
+      // mostrar dentro de herramientas de prueba con marco de celular.
+      {
+        source: "/:zona(app|admin|api)/:path*",
+        headers: [{ key: "X-Frame-Options", value: "DENY" }],
       },
     ];
   },
