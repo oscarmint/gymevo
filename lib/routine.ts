@@ -365,7 +365,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Pectorales Mayores', principal: true }, { nombre: 'Deltoides Anteriores', principal: false }],
     consejoTecnico: 'Evita que las mancuernas se toquen en la parte superior; controla el descenso.',
   } },
-  press_inclinado_mancuerna: { id: 'press_inclinado_mancuerna', nombre: 'Press inclinado con mancuerna', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/press-inclinado-mancuerna.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_inclinado_hammer', guia: {
+  press_inclinado_mancuerna: { id: 'press_inclinado_mancuerna', nombre: 'Press inclinado con mancuerna', grupo: 'Pecho', grupoMuscular: 'pecho', imagenExplicacion: '/explicaciones/press-inclinado-mancuerna.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_inclinado_hammer', guia: {
     indicaciones: [
       'Ajusta el respaldo del banco entre 30 y 45 grados.',
       'Baja las mancuernas de forma controlada hasta la parte superior del pecho.',
