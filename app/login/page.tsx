@@ -118,6 +118,11 @@ function LoginContenido() {
       setVerificando(false);
       return;
     }
+    // Crear el perfil y abrir la prueba gratis ANTES de entrar a /app: el
+    // enlace del correo y Google ya lo hacen en /auth/callback, pero el
+    // código de 8 dígitos no pasa por ahí, y sin perfil el proxy manda a la
+    // persona de vuelta al paywall (bloqueo real, 26/09/2026).
+    await supabase.rpc('reconciliar_membresia');
     router.push(destino);
   }
 

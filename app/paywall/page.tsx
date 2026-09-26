@@ -23,6 +23,7 @@ import { formatearCOP, useTRM } from '@/lib/trm';
 import { PrecioAnimado } from '@/components/landing/ui';
 import { DIAS_DE_PRUEBA } from '@/lib/planes';
 import { registrarEvento } from '@/lib/analitica';
+import { crearClienteSupabase } from '@/lib/supabase/client';
 
 type PlanId = 'mensual' | 'semestral' | 'anual';
 
@@ -122,8 +123,16 @@ export default function PaywallPage() {
   // principal es EMPEZAR la prueba y pagar pasa a ser la opción secundaria.
   const modoPrueba = !renovando && !finPrueba;
 
-  function empezarPrueba() {
+  async function empezarPrueba() {
     registrarEvento('trial_click');
+    // Red de seguridad: si la cuenta existe pero aún no tiene perfil/prueba
+    // (por ejemplo entró con código antes del arreglo), se crea aquí y luego
+    // se entra a la app; sin sesión, la llamada falla y proxy.ts manda a /login.
+    try {
+      await crearClienteSupabase().rpc('reconciliar_membresia');
+    } catch {
+      // sin sesión o sin red: el flujo sigue y proxy.ts decide.
+    }
     // La cuenta (y con ella la prueba de 7 días) se crea en el login del
     // onboarding; si alguien llega aquí sin cuenta, proxy.ts lo manda a
     // /login y de ahí vuelve a /app.
