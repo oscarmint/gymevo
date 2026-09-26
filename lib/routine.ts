@@ -243,7 +243,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     ],
     consejoTecnico: 'Mantén el pecho arriba y las rodillas alineadas con las puntas de los pies.',
   } },
-  peso_muerto_barra: { id: 'peso_muerto_barra', nombre: 'Peso muerto con barra', grupo: 'Pierna', grupoMuscular: 'femoral', imagenExplicacion: '/explicaciones/peso-muerto-barra.png', series: 4, reps: '10-12', descansoSeg: 120, tempo: '3-1-1', alternativaId: 'peso_muerto_rumano_kettlebell', guia: {
+  peso_muerto_barra: { id: 'peso_muerto_barra', nombre: 'Peso muerto con barra', grupo: 'Pierna', grupoMuscular: 'femoral', imagenExplicacion: '/explicaciones/peso-muerto-barra.jpg', series: 4, reps: '10-12', descansoSeg: 120, tempo: '3-1-1', alternativaId: 'peso_muerto_rumano_kettlebell', guia: {
     indicaciones: [
       'Posiciona los pies a la anchura de las caderas con la barra sobre la mitad de los pies.',
       'Sujeta la barra con agarre prono o mixto, flexiona rodillas y caderas hasta que las espinillas toquen la barra.',
