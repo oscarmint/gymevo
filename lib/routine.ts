@@ -591,7 +591,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Dorsales anchos', principal: true }, { nombre: 'Trapecios', principal: false }, { nombre: 'Romboides', principal: false }, { nombre: 'Bíceps', principal: false }],
     consejoTecnico: 'Mantén los codos cerca del cuerpo y evita el impulso.',
   } },
-  hip_thrust_maquina: { id: 'hip_thrust_maquina', nombre: 'Hip thrust en máquina', grupo: 'Pierna', grupoMuscular: 'gluteo', imagenExplicacion: '/explicaciones/hip-thrust-maquina.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '2-1-1', alternativaId: 'hip_thrust_barra', guia: {
+  hip_thrust_maquina: { id: 'hip_thrust_maquina', nombre: 'Hip thrust en máquina', grupo: 'Pierna', grupoMuscular: 'gluteo', imagenExplicacion: '/explicaciones/hip-thrust-maquina.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '2-1-1', alternativaId: 'hip_thrust_barra', guia: {
     indicaciones: [
       'Siéntate con los pies firmes y el rodillo sobre las caderas.',
       'Mantén los pies a la anchura de las caderas.',
@@ -638,7 +638,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Deltoides posteriores', principal: true }, { nombre: 'Trapecio medio', principal: false }],
     consejoTecnico: 'Lidera con los codos y no encojas los hombros.',
   } },
-  jalon_unilateral_polea: { id: 'jalon_unilateral_polea', nombre: 'Jalón unilateral en polea alta', grupo: 'Espalda', grupoMuscular: 'dorsal', imagenExplicacion: '/explicaciones/jalon-unilateral-polea.png', series: 4, reps: '10-12 por lado', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'jalon_pecho', guia: {
+  jalon_unilateral_polea: { id: 'jalon_unilateral_polea', nombre: 'Jalón unilateral en polea alta', grupo: 'Espalda', grupoMuscular: 'dorsal', imagenExplicacion: '/explicaciones/jalon-unilateral-polea.jpg', series: 4, reps: '10-12 por lado', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'jalon_pecho', guia: {
     indicaciones: [
       'Arrodíllate con una pierna adelantada y agarra la polea con el brazo extendido.',
       'Jala hacia abajo y afuera apretando el dorsal.',
@@ -665,7 +665,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Bíceps braquial', principal: true }],
     consejoTecnico: 'No despegues los brazos del apoyo ni uses impulso.',
   } },
-  curl_femoral_acostado: { id: 'curl_femoral_acostado', nombre: 'Curl femoral (máquina acostado)', grupo: 'Pierna', grupoMuscular: 'femoral', imagenExplicacion: '/explicaciones/curl-femoral-acostado.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_femoral_maquina', guia: {
+  curl_femoral_acostado: { id: 'curl_femoral_acostado', nombre: 'Curl femoral (máquina acostado)', grupo: 'Pierna', grupoMuscular: 'femoral', imagenExplicacion: '/explicaciones/curl-femoral-acostado.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_femoral_maquina', guia: {
     indicaciones: [
       'Ajusta el rodillo a la altura de los tobillos.',
       'Acuéstate boca abajo y sujeta las asas laterales.',
