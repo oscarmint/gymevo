@@ -411,7 +411,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Tríceps', principal: true }],
     consejoTecnico: 'Core activado, espalda recta, codos cerrados durante todo el recorrido.',
   } },
-  press_militar_barra: { id: 'press_militar_barra', nombre: 'Press militar con barra sentado', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/press-militar-barra.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_militar_mancuernas', guia: {
+  press_militar_barra: { id: 'press_militar_barra', nombre: 'Press militar con barra sentado', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/press-militar-barra.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_militar_mancuernas', guia: {
     indicaciones: [
       'Siéntate en un banco con respaldo vertical, con la espalda apoyada y los pies firmes en el suelo.',
       'Sujeta la barra con las manos un poco más abiertas que los hombros y llévala a la altura de la clavícula.',
