@@ -411,14 +411,15 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Tríceps', principal: true }],
     consejoTecnico: 'Core activado, espalda recta, codos cerrados durante todo el recorrido.',
   } },
-  press_militar_barra: { id: 'press_militar_barra', nombre: 'Press militar con barra', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/press-militar-barra.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_militar_mancuernas', guia: {
+  press_militar_barra: { id: 'press_militar_barra', nombre: 'Press militar con barra sentado', grupo: 'Hombro', grupoMuscular: 'hombro', imagenExplicacion: '/explicaciones/press-militar-barra.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'press_militar_mancuernas', guia: {
     indicaciones: [
-      'De pie o sentado, sujeta la barra a la altura de los hombros con agarre firme.',
-      'Empuja la barra verticalmente hasta extender los brazos por completo.',
-      'Baja controladamente hasta los hombros.',
+      'Siéntate en un banco con respaldo vertical, con la espalda apoyada y los pies firmes en el suelo.',
+      'Sujeta la barra con las manos un poco más abiertas que los hombros y llévala a la altura de la clavícula.',
+      'Empuja la barra verticalmente hasta extender los brazos por completo, sin bloquear los codos.',
+      'Baja controladamente hasta la clavícula y repite.',
     ],
-    musculos: [{ nombre: 'Deltoides', principal: true }, { nombre: 'Tríceps', principal: false }],
-    consejoTecnico: 'Postura firme, abdomen contraído, empuje vertical sin arquear la espalda.',
+    musculos: [{ nombre: 'Deltoides', principal: true }, { nombre: 'Tríceps', principal: false }, { nombre: 'Trapecio', principal: false }],
+    consejoTecnico: 'Mantén la espalda pegada al respaldo y el abdomen contraído: el empuje es vertical, sin arquear la zona lumbar.',
   } },
 
   remo_barra: { id: 'remo_barra', nombre: 'Remo con barra', grupo: 'Espalda', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/remo-barra.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'remo_cerrado_maquina', guia: {

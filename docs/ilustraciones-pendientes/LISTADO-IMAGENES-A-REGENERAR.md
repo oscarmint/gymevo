@@ -11,7 +11,7 @@ Marca ✅ cuando la imagen ya esté descargada en `Downloads/Ejercicios/nuevas-g
 | ☐ | Extensión de tríceps (copa) | título cortado | extension-triceps-copa.jpg |
 | ☐ | Pájaros de pie con mancuerna | texto pintado | pajaros-pie-mancuerna.jpg |
 | ☐ | Press de banco plano con mancuernas | START/END en inglés | press-banco-mancuernas.jpg |
-| ☐ | Press militar con barra | corchetes | press-militar-barra.jpg |
+| ☐ | Press militar con barra sentado | corchetes | press-militar-barra.jpg |
 | ☐ | Jalón de pecho | corchetes | jalon-pecho.jpg |
 | ☐ | Jalón de pecho cerrado neutro | etiqueta cortada arriba | jalon-pecho-cerrado-neutro.jpg |
 
