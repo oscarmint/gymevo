@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Logo } from "@/components/Logo";
 
 export const metadata: Metadata = {
-  title: "Política de Privacidad — GymEvo",
+  title: "Política de Privacidad — GymEvoApp",
 };
 
 export default function PrivacidadPage() {
@@ -11,7 +11,7 @@ export default function PrivacidadPage() {
     <main className="mx-auto w-full max-w-2xl px-5 py-16 md:py-24 [font-family:var(--font-body)] text-[var(--text-primary)]">
       <Link href="/" className="mb-10 flex items-center gap-2 text-base font-semibold text-[var(--text-primary)]">
         <Logo className="size-9 text-[var(--accent)]" />
-        GymEvo
+        GymEvoApp
       </Link>
 
       <h1 className="text-4xl font-bold [font-family:var(--font-display)]">Política de Privacidad</h1>
@@ -19,14 +19,14 @@ export default function PrivacidadPage() {
 
       <div className="prosa-legal mt-8 flex flex-col gap-6 text-base leading-relaxed">
         <p>
-          En GymEvo nos tomamos en serio tu privacidad. Este documento explica qué información
+          En GymEvoApp nos tomamos en serio tu privacidad. Este documento explica qué información
           recogemos, para qué la usamos, con quién la compartimos y qué derechos tienes sobre ella.
         </p>
 
         <section>
           <h2 className="text-lg font-semibold">Quién es el responsable de tus datos</h2>
           <p className="mt-2">
-            GymEvo es operado por <strong>Oscar Hernán Hernández Murillo</strong>, persona natural, con domicilio en
+            GymEvoApp es operado por <strong>Oscar Hernán Hernández Murillo</strong>, persona natural, con domicilio en
             Colombia. Puedes contactarnos para cualquier tema de privacidad en{" "}
             <a href="mailto:gymevo@outlook.com" className="underline underline-offset-4">
               gymevo@outlook.com
@@ -53,7 +53,7 @@ export default function PrivacidadPage() {
               navegador (un identificador de tu dispositivo, no tu ubicación ni datos personales adicionales).
             </li>
             <li>
-              Datos de compra: el pago lo procesa directamente Hotmart, nuestra plataforma de cobro. GymEvo
+              Datos de compra: el pago lo procesa directamente Hotmart, nuestra plataforma de cobro. GymEvoApp
               nunca ve ni almacena el número de tu tarjeta; solo recibimos de Hotmart tu correo, el plan
               elegido, las fechas y el estado del pago.
             </li>
@@ -64,7 +64,7 @@ export default function PrivacidadPage() {
             </li>
           </ul>
           <p className="mt-2 text-sm text-[var(--text-secondary)]">
-            GymEvo no usa inteligencia artificial para generar tu plan ni para procesar lo que escribes:
+            GymEvoApp no usa inteligencia artificial para generar tu plan ni para procesar lo que escribes:
             tus rutinas y cálculos de macros siguen fórmulas fijas que diseñamos nosotros. Por eso tus datos
             no se envían a ningún proveedor de IA.
           </p>
@@ -91,7 +91,7 @@ export default function PrivacidadPage() {
             <li><strong>Resend</strong> — envía el correo con tu código de acceso.</li>
           </ul>
           <p className="mt-2">
-            No compartimos tu información con anunciantes ni la usamos para publicidad de terceros. GymEvo
+            No compartimos tu información con anunciantes ni la usamos para publicidad de terceros. GymEvoApp
             no usa cookies de rastreo ni píxeles publicitarios de ningún tipo.
           </p>
         </section>
@@ -110,7 +110,7 @@ export default function PrivacidadPage() {
         <section>
           <h2 className="text-lg font-semibold">Edad mínima</h2>
           <p className="mt-2">
-            GymEvo es solo para personas de 18 años o más. No recogemos a sabiendas datos de menores de
+            GymEvoApp es solo para personas de 18 años o más. No recogemos a sabiendas datos de menores de
             edad; si descubrimos una cuenta de un menor, la eliminamos.
           </p>
         </section>
@@ -134,7 +134,7 @@ export default function PrivacidadPage() {
             cualquier momento escribiéndonos, sin que eso afecte los tratamientos ya realizados legalmente.
           </p>
           <p className="mt-2 text-sm text-[var(--text-secondary)]">
-            GymEvo, por su tamaño actual, no está obligado a inscribirse en el Registro Nacional de Bases
+            GymEvoApp, por su tamaño actual, no está obligado a inscribirse en el Registro Nacional de Bases
             de Datos (RNBD) de la SIC. Revisamos esta condición periódicamente a medida que el negocio
             crece. Este documento es también nuestra política de tratamiento de datos personales.
           </p>

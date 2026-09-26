@@ -2,7 +2,7 @@
 // / 36-ANALÍTICA): "cuántos visitan y no se registran", "cuántos empiezan el
 // cuestionario y no lo terminan". Nunca guarda IP, user-agent, ni ningún dato
 // que identifique a la persona — solo suma 1 al tipo de evento, coherente con
-// lo que la Política de Privacidad promete ("GymEvo no usa cookies de rastreo
+// lo que la Política de Privacidad promete ("GymEvoApp no usa cookies de rastreo
 // ni píxeles publicitarios"). Usa la llave de servidor porque un visitante
 // anónimo no tiene sesión — event_log no permite insertar sin ella (a
 // propósito, ver migración 0011).

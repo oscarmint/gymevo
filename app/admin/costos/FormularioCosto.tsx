@@ -21,7 +21,7 @@ export function FormularioCosto() {
     <div className="rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
       <p className="text-sm font-semibold text-[var(--text-primary)]">Agregar un servicio</p>
       <p className="mt-1 text-sm text-[var(--text-secondary)]">
-        Todo lo que le cuesta mantener GymEvo funcionando cada mes: hosting, base de datos, correo, dominio, etc.
+        Todo lo que le cuesta mantener GymEvoApp funcionando cada mes: hosting, base de datos, correo, dominio, etc.
       </p>
       <form ref={formRef} action={enviar} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:flex-wrap">
         <div className="flex flex-1 min-w-40 flex-col gap-1">

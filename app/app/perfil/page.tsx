@@ -234,7 +234,7 @@ export default function PerfilPage() {
         if (resultado.ok) {
           setAvisosActivos(true);
         } else if (resultado.motivo === 'permiso-denegado') {
-          setErrorAvisos('Bloqueaste las notificaciones para GymEvo — actívalas desde los ajustes de tu navegador para este sitio.');
+          setErrorAvisos('Bloqueaste las notificaciones para GymEvoApp — actívalas desde los ajustes de tu navegador para este sitio.');
         } else {
           setErrorAvisos('No pudimos activar los avisos en este dispositivo. Intenta de nuevo.');
         }
@@ -867,7 +867,7 @@ export default function PerfilPage() {
           Términos). */}
       <div className="mt-8 text-center text-xs leading-relaxed text-[var(--text-secondary)]">
         <p>
-          GymEvo es una guía de entrenamiento, no consejo médico. Si tienes una condición de salud, consulta a un
+          GymEvoApp es una guía de entrenamiento, no consejo médico. Si tienes una condición de salud, consulta a un
           profesional antes de empezar.
         </p>
         <p className="mt-2">

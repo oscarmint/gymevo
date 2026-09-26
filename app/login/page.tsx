@@ -145,7 +145,7 @@ function LoginContenido() {
         )}
         <Link href="/" className="mb-8 flex items-center gap-2 text-base font-semibold text-[var(--text-primary)]">
           <Logo className="size-9 text-[var(--accent)]" />
-          GymEvo
+          GymEvoApp
         </Link>
 
         {estado !== 'enviado' ? (

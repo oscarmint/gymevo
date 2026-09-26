@@ -22,10 +22,10 @@ function clienteAdmin() {
 const DIA_MS = 86_400_000;
 
 const AVISOS: { dias: number; titulo: string; cuerpo: string }[] = [
-  { dias: 7, titulo: 'Tu acceso a GymEvo vence en 7 días', cuerpo: 'Renueva cuando quieras y no pierdas tu racha ni tu progreso.' },
+  { dias: 7, titulo: 'Tu acceso a GymEvoApp vence en 7 días', cuerpo: 'Renueva cuando quieras y no pierdas tu racha ni tu progreso.' },
   { dias: 3, titulo: 'Te quedan 3 días de acceso', cuerpo: 'Renueva en un minuto y no pierdas tu racha.' },
   { dias: 1, titulo: 'Tu acceso vence mañana', cuerpo: 'Renueva hoy y sigue entrenando sin interrupciones.' },
-  { dias: 0, titulo: 'Tu acceso a GymEvo vence hoy', cuerpo: 'Renueva ahora — te damos unos días de gracia, pero no lo dejes pasar.' },
+  { dias: 0, titulo: 'Tu acceso a GymEvoApp vence hoy', cuerpo: 'Renueva ahora — te damos unos días de gracia, pero no lo dejes pasar.' },
 ];
 
 const AVISOS_PRUEBA: { dias: number; titulo: string; cuerpo: string }[] = [

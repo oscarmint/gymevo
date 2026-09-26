@@ -47,7 +47,7 @@ function fechaCorta(meses: number): string {
   return new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'short', year: 'numeric' }).format(f).replace(/\./g, '');
 }
 
-/** El checkout de Hotmart solo muestra el diseño de GymEvo (Checkout Builder)
+/** El checkout de Hotmart solo muestra el diseño de GymEvoApp (Checkout Builder)
  * cuando el link lleva `checkoutMode=10`; sin él sale el diseño por defecto.
  * Se agrega aquí para no depender de cómo estén escritos los links en Vercel. */
 function conDisenoGymEvo(url: string): string {

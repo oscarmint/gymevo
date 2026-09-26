@@ -1,4 +1,4 @@
-GymEvo es tu plan fijo de gimnasio: cada día ves exactamente qué entrenar, con ejercicios, series, repeticiones y descanso según tu nivel (principiante o intermedio), tu meta (ganar músculo o bajar grasa) y los días por semana que elijas, de 1 a 6.
+GymEvoApp es tu plan fijo de gimnasio: cada día ves exactamente qué entrenar, con ejercicios, series, repeticiones y descanso según tu nivel (principiante o intermedio), tu meta (ganar músculo o bajar grasa) y los días por semana que elijas, de 1 a 6.
 
 Está hecho para quien va a un gimnasio comercial y se siente perdido, improvisa o lleva meses sin ver cambios. No cambia tu rutina todos los días: tu plan es fijo para que puedas medir tu progreso.
 

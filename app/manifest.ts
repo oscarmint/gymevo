@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 
-// Ícono + fondo que el celular usa al abrir GymEvo desde el acceso directo de
+// Ícono + fondo que el celular usa al abrir GymEvoApp desde el acceso directo de
 // la pantalla de inicio (Android) — antes no existía, así que Android caía al
 // solo el trazo de la pesa (favicon), sin fondo ni el nombre debajo. iOS usa
 // app/apple-icon.png para lo mismo (convención de archivo de Next.js, sin
@@ -9,8 +9,8 @@ import type { MetadataRoute } from 'next';
 // el rediseño del 03/09 — antes quedaban en el crema de la identidad vieja.
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'GymEvo',
-    short_name: 'GymEvo',
+    name: 'GymEvoApp',
+    short_name: 'GymEvoApp',
     description: 'El entrenador que tu gimnasio te cobra pero nunca te da.',
     start_url: '/',
     display: 'standalone',

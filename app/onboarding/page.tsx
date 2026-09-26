@@ -52,10 +52,10 @@ const RECONOCIMIENTO_POR_FRUSTRACION: Record<string, string> = {
   maquinas:
     'No te falta constancia: a las 6 PM, con la máquina ocupada, se pierde el hilo del plan. Por eso existe el Botón de Rescate — otro ejercicio en 1 toque, sin perder la sesión.',
   entrenadores:
-    'No es que no merezcas ayuda: nadie te atiende igual a las 6 PM con el gimnasio lleno. GymEvo sí está pendiente de ti, todos los días.',
+    'No es que no merezcas ayuda: nadie te atiende igual a las 6 PM con el gimnasio lleno. GymEvoApp sí está pendiente de ti, todos los días.',
   lesion:
     'Ese miedo es válido — casi nadie explica bien la técnica en un gimnasio comercial. Cada ejercicio de tu plan trae la forma correcta, sin adivinar.',
-  apps: 'Cada app te cambió la rutina sin avisar y solo te confundió más. GymEvo no hace eso: tu plan es fijo, con salida cuando la necesitas.',
+  apps: 'Cada app te cambió la rutina sin avisar y solo te confundió más. GymEvoApp no hace eso: tu plan es fijo, con salida cuando la necesitas.',
 };
 
 const OPCIONES_HORARIO: Opcion<Horario>[] = [

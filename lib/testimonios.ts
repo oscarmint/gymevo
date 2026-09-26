@@ -1,5 +1,5 @@
 // TESTIMONIOS REALES — regla del dueño (25/09/2026): aquí SOLO entran opiniones de personas
-// reales que usaron GymEvo (beta cerrada) y AUTORIZARON por escrito que se publique su
+// reales que usaron GymEvoApp (beta cerrada) y AUTORIZARON por escrito que se publique su
 // nombre y su frase. Nunca se inventan, se "mejoran" ni se completan. Mientras esta lista
 // esté vacía, la sección NO aparece en la landing (ver components/landing/Testimonios.tsx).
 //

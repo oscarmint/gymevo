@@ -1,6 +1,6 @@
-# Beta cerrada de GymEvo — material listo (25/09/2026)
+# Beta cerrada de GymEvoApp — material listo (25/09/2026)
 
-Objetivo: que 15 a 30 personas reales usen GymEvo 30 días y, si quieren, dejen una opinión que podamos publicar **con su permiso escrito**. Cero testimonios inventados.
+Objetivo: que 15 a 30 personas reales usen GymEvoApp 30 días y, si quieren, dejen una opinión que podamos publicar **con su permiso escrito**. Cero testimonios inventados.
 
 ## 1. A quién invitar
 - Gente de tu gimnasio, amigos y conocidos que **ya entrenan** (principiantes e intermedios).
@@ -9,7 +9,7 @@ Objetivo: que 15 a 30 personas reales usen GymEvo 30 días y, si quieren, dejen 
 
 ## 2. Mensaje de invitación (WhatsApp)
 
-> Hola [nombre] 👋 Estoy lanzando GymEvo, una app que te dice exactamente qué entrenar cada día en el gimnasio y, si la máquina está ocupada, con un toque te da otro ejercicio. Estoy armando un grupo pequeño de personas para probarla **30 días gratis** (sin tarjeta) y contarme qué les parece, con toda honestidad, lo bueno y lo malo.
+> Hola [nombre] 👋 Estoy lanzando GymEvoApp, una app que te dice exactamente qué entrenar cada día en el gimnasio y, si la máquina está ocupada, con un toque te da otro ejercicio. Estoy armando un grupo pequeño de personas para probarla **30 días gratis** (sin tarjeta) y contarme qué les parece, con toda honestidad, lo bueno y lo malo.
 >
 > ¿Te animas? Entra aquí: https://www.gymevoapp.com/?utm_source=whatsapp&utm_medium=beta&utm_campaign=invitacion
 > Y respóndeme este mensaje con **el correo con el que te vas a registrar**, para dejarte los 30 días.
@@ -18,7 +18,7 @@ Objetivo: que 15 a 30 personas reales usen GymEvo 30 días y, si quieren, dejen 
 
 Variante corta para recordatorio (a los 5 días):
 
-> ¿Cómo vas con GymEvo? Si algo no se entiende o falla, dímelo por aquí. Es justo lo que necesito saber.
+> ¿Cómo vas con GymEvoApp? Si algo no se entiende o falla, dímelo por aquí. Es justo lo que necesito saber.
 
 ## 3. Cómo se le dan los 30 días (lo hago yo)
 La app da 7 días gratis al crear la cuenta. Para la beta se extienden a 30.
@@ -31,25 +31,25 @@ La app da 7 días gratis al crear la cuenta. Para la beta se extienden a 30.
 Sin código de descuento ni pago de por medio.
 
 ## 4. Formulario de opinión (crear en Google Forms)
-Título: **Tu opinión sobre GymEvo (2 minutos)**
+Título: **Tu opinión sobre GymEvoApp (2 minutos)**
 
-1. ¿Cuántos días usaste GymEvo? (1–3 / 4–10 / 11–20 / más de 20)
+1. ¿Cuántos días usaste GymEvoApp? (1–3 / 4–10 / 11–20 / más de 20)
 2. ¿Qué nivel tienes? (Principiante / Intermedio)
 3. ¿Qué tan claro fue saber qué hacer en el gimnasio? (1 a 5)
 4. ¿Usaste el **Botón de Rescate**? (Sí / No). Si sí: ¿te sirvió? (1 a 5)
 5. ¿Qué fue lo **mejor** de la app? (párrafo)
 6. ¿Qué **no entendiste** o te molestó? (párrafo)
-7. ¿Pagarías por GymEvo? (Sí / Tal vez / No). ¿Cuánto te parecería justo al mes? (USD o COP)
+7. ¿Pagarías por GymEvoApp? (Sí / Tal vez / No). ¿Cuánto te parecería justo al mes? (USD o COP)
 8. ¿Se lo recomendarías a un amigo del gimnasio? (0 a 10)
 
 **Permiso para publicar (obligatorio para usar la opinión):**
-9. ¿Autorizas que publiquemos tu opinión (la frase de la pregunta 5) en la página de GymEvo?
+9. ¿Autorizas que publiquemos tu opinión (la frase de la pregunta 5) en la página de GymEvoApp?
    - Sí, con mi nombre y apellido inicial (ej. Camilo R.)
    - Sí, solo con mi nombre de pila
    - No, solo es para mejorar la app
 10. Nombre como quieres que aparezca: ______
 11. Ciudad (opcional): ______
-12. Texto de autorización (casilla): "Confirmo que escribí esta opinión libremente, que es mi experiencia real y autorizo a GymEvo a publicarla en su página web y redes con el nombre indicado. Puedo pedir que la retiren escribiendo a gymevo@outlook.com."
+12. Texto de autorización (casilla): "Confirmo que escribí esta opinión libremente, que es mi experiencia real y autorizo a GymEvoApp a publicarla en su página web y redes con el nombre indicado. Puedo pedir que la retiren escribiendo a gymevo@outlook.com."
 
 Configuración: activar "recopilar correos" para poder demostrar el permiso.
 

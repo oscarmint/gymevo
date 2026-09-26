@@ -63,7 +63,7 @@ export function calcularBMR(pesoKg: number, estaturaCm: number, edad: number, se
 
 /** Factor de actividad (PAL) — 15/09/2026: fijo en 1.55 (moderado/alto),
  * especificación exacta dada por el usuario ("calculadora_nutricional",
- * validada por medicina deportiva) porque el programa real de GymEvo
+ * validada por medicina deportiva) porque el programa real de GymEvoApp
  * entrena 6 días a la semana sin importar la ruta (Principiante o
  * Intermedio) — ya no depende de la respuesta de onboarding `diasSemana`
  * (esa sigue existiendo solo para mostrarla en Perfil, no para este cálculo).

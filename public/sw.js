@@ -4,7 +4,7 @@
 // aplicación" de verdad (sin él, solo ofrece "Crear acceso directo", que
 // abre la app dentro de una pestaña normal con la barra del navegador visible
 // — hallazgo real del usuario: la franja negra que veía era la barra de
-// Chrome, no algo de GymEvo).
+// Chrome, no algo de GymEvoApp).
 self.addEventListener('fetch', (event) => {
   event.respondWith(fetch(event.request));
 });
@@ -15,10 +15,10 @@ self.addEventListener('push', (event) => {
   try {
     datos = event.data.json();
   } catch {
-    datos = { titulo: 'GymEvo', cuerpo: event.data.text() };
+    datos = { titulo: 'GymEvoApp', cuerpo: event.data.text() };
   }
   event.waitUntil(
-    self.registration.showNotification(datos.titulo ?? 'GymEvo', {
+    self.registration.showNotification(datos.titulo ?? 'GymEvoApp', {
       body: datos.cuerpo,
       icon: '/icon.svg',
       badge: '/icon.svg',

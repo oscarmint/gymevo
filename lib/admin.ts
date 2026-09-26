@@ -426,7 +426,7 @@ export interface FichaUsuario {
 }
 
 /** Ficha de un usuario (equivalente a `users.$id.tsx` de MeritGO, adaptado
- * al dominio de GymEvo: en vez de "objetivo y preparación", muestra nivel/
+ * al dominio de GymEvoApp: en vez de "objetivo y preparación", muestra nivel/
  * meta/racha de la rutina). Todo por email — es la clave que comparten
  * `profiles` y `hotmart_purchases` (18-VENTA-HOTMART). */
 export async function obtenerFichaUsuario(id: string): Promise<FichaUsuario | null> {
