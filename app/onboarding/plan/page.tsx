@@ -39,7 +39,20 @@ export default function VistaPreviaDiaUnoPage() {
     registrarEvento('plan_preview_view');
   }, [router]);
 
-  if (!cargado || !respuestas) return null;
+  if (!cargado || !respuestas) {
+    // Esqueleto con la forma de la pantalla (nunca pantalla en blanco).
+    return (
+      <div aria-hidden="true" className="min-h-dvh bg-[var(--bg)] px-5 pt-8 pb-10">
+        <div className="mx-auto flex w-full max-w-md flex-col gap-3">
+          <div className="mx-auto h-3 w-32 rounded-full bg-[var(--surface-2)]" />
+          <div className="mx-auto h-7 w-64 rounded-lg bg-[var(--surface-2)]" />
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="h-[74px] rounded-2xl bg-[var(--surface)]" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   const diasPlan = diasDePlan(respuestas.diasSemana);
   const sesionDia1 = sesionDelCiclo(0, diasPlan);
@@ -108,7 +121,9 @@ export default function VistaPreviaDiaUnoPage() {
                   className={`flex size-11 shrink-0 items-center justify-center rounded-full border ${
                     cambiado
                       ? 'border-[var(--accent)] bg-[var(--accent)] text-[var(--bg)]'
-                      : 'border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-[var(--accent)]'
+                      : i === 0 && !ultimoCambio
+                        ? 'border-[var(--accent)] bg-[var(--chip-bg)] text-[var(--accent)] shadow-[0_0_0_4px_color-mix(in_oklab,var(--accent)_22%,transparent)]'
+                        : 'border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] text-[var(--text-tertiary)]'
                   }`}
                 >
                   <RefreshCcw size={18} />
@@ -138,7 +153,7 @@ export default function VistaPreviaDiaUnoPage() {
             <p className="text-sm font-medium text-[var(--text-primary)]" aria-live="polite">
               {ultimoCambio
                 ? '¡Listo! Así de rápido cambias de ejercicio en el gym, sin perder la sesión. Toca de nuevo para volver.'
-                : '¿Máquina ocupada? Pruébalo: toca ↻ en cualquier ejercicio.'}
+                : '¿Máquina ocupada? Pruébalo ahora: toca ↻ en el primer ejercicio.'}
             </p>
           </motion.div>
         </div>
@@ -162,7 +177,7 @@ export default function VistaPreviaDiaUnoPage() {
               ))}
             </div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <p className="rounded-full bg-[color-mix(in_oklab,var(--bg)_78%,transparent)] px-4 py-2 text-sm font-bold text-[var(--text-primary)] backdrop-blur-sm">
+              <p className="rounded-full border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] bg-[color-mix(in_oklab,var(--bg)_94%,transparent)] px-4 py-2 text-sm font-bold text-[var(--text-primary)]">
                 Desbloquea tu semana completa
               </p>
             </div>
@@ -170,16 +185,19 @@ export default function VistaPreviaDiaUnoPage() {
         </div>
         )}
 
-        <button
-          type="button"
-          onClick={() => router.push('/paywall')}
-          className="boton-3d mt-8 flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
-        >
-          Ver mi plan completo
-        </button>
-        <p className="mt-3 text-center text-xs text-[var(--text-secondary)]">
-          7 días gratis, sin tarjeta · sin renovación automática · garantía de 7 días
-        </p>
+        {/* CTA fijo al borde inferior: se ve sin bajar por todo el plan. */}
+        <div className="sticky bottom-0 z-20 -mx-5 mt-8 bg-[color-mix(in_oklab,var(--bg)_92%,transparent)] px-5 pb-4 pt-2 backdrop-blur-md">
+          <button
+            type="button"
+            onClick={() => router.push('/paywall')}
+            className="boton-3d flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
+          >
+            Activar mi plan completo
+          </button>
+          <p className="mt-2 text-center text-xs text-[var(--text-secondary)]">
+            Prueba de 7 días ya activa, sin tarjeta · pago único, sin renovación · Garantía del Primer Plan Claro: 7 días tras pagar
+          </p>
+        </div>
       </motion.div>
     </div>
   );

@@ -17,7 +17,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { AlertTriangle, Check, ChevronDown, Loader2, Lock, RefreshCcw, ShieldCheck, X } from 'lucide-react';
+import { AlertTriangle, Check, ChevronDown, Loader2, Lock, RefreshCcw, X } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { formatearCOP, useTRM } from '@/lib/trm';
 import { PrecioAnimado } from '@/components/landing/ui';
@@ -226,7 +226,7 @@ export default function PaywallPage() {
             no "Suscríbete" — + prueba visual del Botón de Rescate. */}
         <motion.div initial={reduce ? {} : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
           <p className="text-sm font-semibold text-[var(--text-tertiary)]">
-            {renovando ? 'Sigue donde ibas' : finPrueba ? 'Tu prueba gratis terminó' : 'Se acabó adivinar qué máquina usar'}
+            {renovando ? 'Sigue donde ibas' : finPrueba ? 'Tu prueba gratis terminó' : 'Máquina ocupada, ¿y ahora qué?'}
           </p>
           <h1 className="mt-1 text-balance text-3xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
             {renovando ? (
@@ -264,26 +264,18 @@ export default function PaywallPage() {
           className="mt-5 overflow-hidden rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)]"
         >
           {/* Mini-demo del mecanismo (en vez de un video de gimnasio): el ejercicio A cambia por el B. */}
-          <div aria-hidden="true" className="flex items-center gap-2 bg-[var(--surface-2)] px-4 py-4">
-            <span className="min-w-0 flex-1 truncate rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] px-3 py-2 text-[13px] font-medium text-[var(--text-tertiary)] line-through decoration-[var(--accent)] decoration-2">
+          <div aria-hidden="true" className="flex items-center gap-2 bg-[var(--surface-2)] px-4 py-3">
+            <span className="min-w-0 flex-1 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] px-2 py-2 text-center text-[12.5px] leading-tight font-medium text-[var(--text-tertiary)] line-through decoration-[var(--accent)] decoration-2">
               Prensa ocupada
             </span>
             <RefreshCcw size={18} color="var(--accent)" className="shrink-0" />
-            <span className="min-w-0 flex-1 truncate rounded-xl border border-[var(--accent)] bg-[var(--chip-bg)] px-3 py-2 text-[13px] font-semibold text-[var(--text-primary)]">
-              Hack inclinado
+            <span className="min-w-0 flex-1 rounded-xl border border-[var(--accent)] bg-[var(--chip-bg)] px-2 py-2 text-center text-[12.5px] leading-tight font-semibold text-[var(--text-primary)]">
+              Sentadilla guiada
             </span>
           </div>
-          <div className="flex items-center gap-3 p-4">
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--chip-bg)]">
-              <RefreshCcw size={22} color="var(--accent)" />
-            </span>
-            <div>
-              <p className="text-sm font-semibold text-[var(--text-primary)]">¿Máquina ocupada? Un toque y listo.</p>
-              <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                El Botón de Rescate te da otro ejercicio al instante, sin perder el día ni improvisar.
-              </p>
-            </div>
-          </div>
+          <p className="px-4 py-2.5 text-[13px] text-[var(--text-secondary)]">
+            <strong className="font-semibold text-[var(--text-primary)]">Un toque y tienes otro ejercicio.</strong>
+          </p>
         </motion.div>
 
         {/* (2) Estructura de precios — Anual primero y pre-seleccionado
@@ -295,7 +287,7 @@ export default function PaywallPage() {
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16, duration: 0.3 }}
-          className="mt-6 flex flex-col gap-3"
+          className="mt-5 flex flex-col gap-3"
         >
           {(['anual', 'semestral', 'mensual'] as const).map((id) => {
             const info = PLANES[id];
@@ -371,8 +363,8 @@ export default function PaywallPage() {
 
         {modoPrueba ? (
           <p className="mt-2 text-center text-sm font-medium text-[var(--text-primary)]">
-            Hoy: $0, sin tarjeta. Si te gusta, pagas una sola vez ${infoPlan.precioTotal.toFixed(2)} USD
-            {totalCOP ? ` (≈ ${totalCOP})` : ''} por {infoPlan.meses} {infoPlan.meses === 1 ? 'mes' : 'meses'} de acceso. Sin renovación automática.
+            Hoy $0, sin tarjeta. Si sigues: pago único de ${infoPlan.precioTotal.toFixed(2)} USD
+            {totalCOP ? ` (≈ ${totalCOP})` : ''}, sin renovación.
           </p>
         ) : (
           <p className="mt-2 text-center text-xs text-[var(--text-secondary)]">
@@ -393,16 +385,9 @@ export default function PaywallPage() {
           <Lock size={12} className="shrink-0" /> Tarjeta, Nequi o efectivo · pago seguro vía Hotmart
         </p>
 
-        {/* Garantía nombrada junto al CTA (antes solo vivía en el trust row, lejos) */}
-        <motion.p
-          initial={reduce ? {} : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.3 }}
-          className="mt-2 flex items-center justify-center gap-1.5 text-center text-xs font-medium text-[var(--accent)]"
-        >
-          <ShieldCheck size={13} /> Si pagas y no te convence: devolución de 7 días, sin preguntas
-        </motion.p>
-
+        <p className="mt-1 text-center text-xs font-medium text-[var(--accent)]">
+          Garantía del Primer Plan Claro: 7 días para pedir tu dinero de vuelta tras pagar
+        </p>
 
         {/* Si la redirección no ocurrió en unos segundos (red caída,
             bloqueador de popups, etc.) — nunca dejar al usuario mirando un

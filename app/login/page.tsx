@@ -8,7 +8,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Info, Lock, Mail } from 'lucide-react';
+import { ArrowLeft, Info, Lock, Mail } from 'lucide-react';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { Logo } from '@/components/Logo';
 
@@ -131,6 +131,15 @@ function LoginContenido() {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-[var(--bg)] px-6 [font-family:var(--font-body)]">
       <div className="w-full max-w-sm">
+        {desdePlan && estado !== 'enviado' && (
+          <button
+            type="button"
+            onClick={() => router.push('/onboarding')}
+            className="-ml-2 mb-2 flex h-11 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-[var(--text-secondary)]"
+          >
+            <ArrowLeft size={18} /> Atrás
+          </button>
+        )}
         <Link href="/" className="mb-8 flex items-center gap-2 text-base font-semibold text-[var(--text-primary)]">
           <Logo className="size-9 text-[var(--accent)]" />
           GymEvo
