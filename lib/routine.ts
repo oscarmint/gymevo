@@ -581,7 +581,7 @@ const CATALOGO: Record<string, Ejercicio> = {
 
   // Ejercicios del Excel de variaciones (21/09/2026). Los que no traen
   // imagenExplicacion usan la silueta de respaldo hasta tener ilustración.
-  remo_mancuerna_banco: { id: 'remo_mancuerna_banco', nombre: 'Remo con mancuerna apoyado en banco', grupo: 'Espalda', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/remo-mancuerna-banco.png', series: 4, reps: '10-12 por brazo', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_mancuerna_pie', guia: {
+  remo_mancuerna_banco: { id: 'remo_mancuerna_banco', nombre: 'Remo con mancuerna apoyado en banco', grupo: 'Espalda', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/remo-mancuerna-banco.jpg', series: 4, reps: '10-12 por brazo', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_mancuerna_pie', guia: {
     indicaciones: [
       'Apoya una rodilla y la mano del mismo lado en el banco, con la espalda recta.',
       'Sujeta la mancuerna con el brazo extendido.',
