@@ -431,7 +431,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Dorsales', principal: true }, { nombre: 'Trapecio', principal: false }],
     consejoTecnico: 'Torso inclinado, espalda recta, jalar hacia la cintura.',
   } },
-  jalon_pecho: { id: 'jalon_pecho', nombre: 'Jalón de pecho', grupo: 'Espalda', grupoMuscular: 'dorsal', imagenExplicacion: '/explicaciones/jalon-pecho.png', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'jalon_unilateral_polea', guia: {
+  jalon_pecho: { id: 'jalon_pecho', nombre: 'Jalón de pecho', grupo: 'Espalda', grupoMuscular: 'dorsal', imagenExplicacion: '/explicaciones/jalon-pecho.jpg', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'jalon_unilateral_polea', guia: {
     indicaciones: [
       'Sujeta la barra con agarre amplio, siéntate con las rodillas fijas.',
       'Saca el pecho y jala la barra hacia la parte alta del pecho activando los dorsales.',
