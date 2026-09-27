@@ -266,7 +266,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Cuádriceps', principal: true }, { nombre: 'Glúteo', principal: false }],
     consejoTecnico: 'Desciende hasta 90°. No bloquear rodillas al extender.',
   } },
-  extension_cuadriceps: { id: 'extension_cuadriceps', nombre: 'Extensión de cuádriceps', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/extension-cuadriceps.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'step_up_banco', guia: {
+  extension_cuadriceps: { id: 'extension_cuadriceps', nombre: 'Extensión de cuádriceps', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/extension-cuadriceps.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'step_up_banco', guia: {
     indicaciones: [
       'Siéntate con la espalda apoyada firmemente en el respaldo.',
       'Extiende ambas piernas hasta casi bloquear la rodilla.',
@@ -327,7 +327,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Glúteos', principal: true }],
     consejoTecnico: 'Contracción de un segundo arriba, sin arquear la zona lumbar en exceso.',
   } },
-  curl_femoral_maquina: { id: 'curl_femoral_maquina', nombre: 'Curl femoral (máquina sentado)', grupo: 'Pierna', grupoMuscular: 'femoral', imagenExplicacion: '/explicaciones/curl-femoral-maquina.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_femoral_acostado', guia: {
+  curl_femoral_maquina: { id: 'curl_femoral_maquina', nombre: 'Curl femoral (máquina sentado)', grupo: 'Pierna', grupoMuscular: 'femoral', imagenExplicacion: '/explicaciones/curl-femoral-maquina.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_femoral_acostado', guia: {
     indicaciones: [
       'Acuéstate boca abajo con la cadera y el torso pegados al respaldo.',
       'Flexiona las rodillas llevando el rodillo hacia los glúteos.',
@@ -442,7 +442,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Dorsal ancho', principal: true }, { nombre: 'Bíceps', principal: false }],
     consejoTecnico: 'Saca el pecho, jala activando los dorsales, no solo los brazos.',
   } },
-  remo_cerrado_maquina: { id: 'remo_cerrado_maquina', nombre: 'Remo cerrado en máquina', grupo: 'Espalda', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/remo-cerrado-maquina.png', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_barra', guia: {
+  remo_cerrado_maquina: { id: 'remo_cerrado_maquina', nombre: 'Remo cerrado en máquina', grupo: 'Espalda', grupoMuscular: 'espalda', imagenExplicacion: '/explicaciones/remo-cerrado-maquina.jpg', series: 4, reps: '10-12', descansoSeg: 75, tempo: '3-1-1', alternativaId: 'remo_barra', guia: {
     indicaciones: [
       'Siéntate con el pecho apoyado en el soporte de la máquina.',
       'Jala las manijas hacia el torso juntando los omóplatos al final.',
@@ -460,16 +460,18 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Dorsales', principal: true }, { nombre: 'Bíceps', principal: false }],
     consejoTecnico: 'Jalar hacia el pecho superior manteniendo los codos pegados, sin balancear el torso.',
   } },
-  curl_barra: { id: 'curl_barra', nombre: 'Curl con barra', grupo: 'Bíceps', grupoMuscular: 'biceps', imagenExplicacion: '/explicaciones/curl-barra.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_supinacion_maquina', guia: {
+  curl_barra: { id: 'curl_barra', nombre: 'Curl con barra Z', grupo: 'Bíceps', grupoMuscular: 'biceps', imagenExplicacion: '/explicaciones/curl-barra.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_supinacion_maquina', guia: {
     indicaciones: [
-      'De pie, sujeta la barra con agarre supino a la anchura de los hombros.',
-      'Flexiona los codos subiendo la barra sin balancear el torso.',
-      'Baja controladamente hasta extender los brazos.',
+      'Ponte de pie con los pies al ancho de la cadera y el torso erguido.',
+      'Sujeta la barra Z con un agarre al ancho de los hombros.',
+      'Mantén los codos pegados al torso durante todo el movimiento.',
+      'Flexiona los codos elevando la barra hasta la altura del pecho.',
+      'Baja de forma controlada hasta estirar los brazos, sin balancear el cuerpo.',
     ],
-    musculos: [{ nombre: 'Bíceps braquial', principal: true }],
-    consejoTecnico: 'Agarre supino, sin balancear el torso para ayudarte con impulso.',
+    musculos: [{ nombre: 'Bíceps braquial', principal: true }, { nombre: 'Braquial', principal: false }, { nombre: 'Antebrazos', principal: false }],
+    consejoTecnico: 'No balancees el cuerpo ni despegues los codos del torso. Controla la fase de bajada.',
   } },
-  curl_supinacion_maquina: { id: 'curl_supinacion_maquina', nombre: 'Curl supinación en máquina', grupo: 'Bíceps', grupoMuscular: 'biceps', imagenExplicacion: '/explicaciones/curl-supinacion-maquina.png', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_scott_barra_z', guia: {
+  curl_supinacion_maquina: { id: 'curl_supinacion_maquina', nombre: 'Curl supinación en máquina', grupo: 'Bíceps', grupoMuscular: 'biceps', imagenExplicacion: '/explicaciones/curl-supinacion-maquina.jpg', series: 4, reps: '10-12', descansoSeg: 60, tempo: '2-1-1', alternativaId: 'curl_scott_barra_z', guia: {
     indicaciones: [
       'Siéntate con las axilas bien apoyadas en el banco de la máquina.',
       'Sujeta las manijas con agarre supino y flexiona los codos.',
@@ -497,7 +499,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Deltoides Laterales', principal: true }],
     consejoTecnico: 'Ligera flexión de codos, sin usar impulso del cuerpo para levantar el peso.',
   } },
-  plancha_abdominal: { id: 'plancha_abdominal', nombre: 'Plancha abdominal', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/plancha-abdominal.png', series: 3, reps: '30-60 seg', descansoSeg: 45, tempo: 'isométrico', alternativaId: 'dead_bug', guia: {
+  plancha_abdominal: { id: 'plancha_abdominal', nombre: 'Plancha abdominal', grupo: 'Abdomen', grupoMuscular: 'core', imagenExplicacion: '/explicaciones/plancha-abdominal.jpg', series: 3, reps: '30-60 seg', descansoSeg: 45, tempo: 'isométrico', alternativaId: 'dead_bug', guia: {
     indicaciones: [
       'Apoya antebrazos y puntas de los pies en el suelo, cuerpo alineado de cabeza a talones.',
       'Aprieta el abdomen y los glúteos, sin dejar caer ni elevar la cadera.',
@@ -675,7 +677,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Isquiosurales', principal: true }, { nombre: 'Gastrocnemio', principal: false }],
     consejoTecnico: 'Mantén las caderas pegadas al banco y evita tirones bruscos.',
   } },
-  hack_inclinado: { id: 'hack_inclinado', nombre: 'Hack inclinado', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/hack-inclinado.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'prensa_inclinada', guia: {
+  hack_inclinado: { id: 'hack_inclinado', nombre: 'Hack inclinado', grupo: 'Pierna', grupoMuscular: 'cuadriceps', imagenExplicacion: '/explicaciones/hack-inclinado.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '3-1-1', alternativaId: 'prensa_inclinada', guia: {
     indicaciones: [
       'Apoya la espalda plana y los hombros bajo las almohadillas.',
       'Pon los pies en la plataforma a la anchura de los hombros.',
