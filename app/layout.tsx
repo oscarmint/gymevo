@@ -34,6 +34,11 @@ export const metadata: Metadata = {
     description: "Tu plan fijo de gimnasio y un Botón de Rescate para cuando la máquina está ocupada.",
   },
   icons: { icon: [{ url: "/icon.svg", type: "image/svg+xml" }, { url: "/favicon-48.png", sizes: "48x48", type: "image/png" }], apple: "/apple-icon.png" },
+  // Sin esto, iOS usa el <title> completo de arriba como nombre del ícono al
+  // "Agregar a inicio" desde Safari, y lo corta a algo como "GymEvoApp — Qu…"
+  // (27/09/2026, hallazgo del usuario). En Android el nombre corto lo define
+  // app/manifest.ts (ya es "GymEvoApp", no se toca).
+  appleWebApp: { title: "GymEvoApp", statusBarStyle: "black-translucent" },
 };
 
 // viewportFit "cover" deja que la app dibuje detrás de la barra de gestos de
