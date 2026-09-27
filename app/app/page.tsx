@@ -183,6 +183,11 @@ function PlanDelDia({
   // ESTADO.md). Sin selección no se manda `rir` al log: la sugerencia de
   // peso simplemente no aparece la próxima vez, no bloquea nada.
   const [rirElegido, setRirElegido] = useState<Record<string, number>>({});
+  // Nombre del chip de esfuerzo tocado, visible 1s y luego se esfuma (25/09/2026,
+  // pedido explícito: la fila queda prolija sin una etiqueta fija bajo cada
+  // círculo — el nombre aparece solo al tocar, como confirmación breve).
+  const [chipTocado, setChipTocado] = useState<{ ejId: string; rir: number } | null>(null);
+  const timerChipRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Recordatorio del último peso usado (pedido del usuario): NO se muestra
   // solo, es un enlace que la persona toca si quiere recordarlo — algunos
   // prefieren no verlo y decidir el peso por su cuenta. Tres estados por
@@ -329,6 +334,12 @@ function PlanDelDia({
   useEffect(() => {
     const img = new window.Image();
     img.src = '/ilustraciones/entrenador-inicio.gif';
+  }, []);
+
+  // Limpia el temporizador del tooltip de esfuerzo si la pantalla se cierra
+  // antes de que pasen los 1000ms.
+  useEffect(() => () => {
+    if (timerChipRef.current) clearTimeout(timerChipRef.current);
   }, []);
 
   useEffect(() => {
@@ -1010,13 +1021,17 @@ function PlanDelDia({
                 {nivel === 'intermedio' && (
                   <div className="mt-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">¿Qué tal se sintió la serie?</p>
-                  {/* Escala de color en vez de texto (25/09/2026): 4 círculos de
-                      44px en una sola fila, fáciles de tocar con una mano. El
-                      nombre y la pista salen al elegir; cada círculo lleva su
-                      nombre para lectores de pantalla. */}
-                  <div className="mt-1 flex items-center gap-1" role="radiogroup" aria-label="Qué tal se sintió la serie">
+                  {/* Escala de color en vez de texto (25/09/2026): 4 círculos en
+                      una sola fila, fáciles de tocar con una mano. Prolijo a
+                      propósito: ningún nombre queda escrito de forma permanente
+                      bajo los círculos — al tocar uno, su nombre aparece 1s
+                      justo encima y se esfuma solo (confirmación breve, no
+                      texto fijo). Cada círculo lleva su nombre para lectores
+                      de pantalla, que no dependen de esta animación. */}
+                  <div className="mt-2 flex items-center gap-3" role="radiogroup" aria-label="Qué tal se sintió la serie">
                     {RIR_OPCIONES.map((op) => {
                       const activo = rirElegido[ej.id] === op.rir;
+                      const mostrandoTooltip = chipTocado?.ejId === ej.id && chipTocado.rir === op.rir;
                       return (
                         <button
                           key={op.rir}
@@ -1024,18 +1039,35 @@ function PlanDelDia({
                           role="radio"
                           aria-checked={activo}
                           aria-label={`${op.etiqueta}: ${op.pista}`}
-                          onClick={() => setRirElegido((p) => ({ ...p, [ej.id]: op.rir }))}
-                          className="flex h-[60px] w-14 flex-col items-center justify-center rounded-xl"
+                          onClick={() => {
+                            setRirElegido((p) => ({ ...p, [ej.id]: op.rir }));
+                            if (timerChipRef.current) clearTimeout(timerChipRef.current);
+                            setChipTocado({ ejId: ej.id, rir: op.rir });
+                            timerChipRef.current = setTimeout(() => setChipTocado(null), 1000);
+                          }}
+                          className="relative flex size-11 items-center justify-center rounded-full"
                         >
+                          <AnimatePresence>
+                            {mostrandoTooltip && (
+                              <motion.span
+                                initial={{ opacity: 0, y: 4 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.15 }}
+                                className="pointer-events-none absolute bottom-full mb-1 whitespace-nowrap rounded-full bg-[var(--text-primary)] px-2 py-0.5 text-xs font-semibold text-[var(--bg)]"
+                              >
+                                {op.etiqueta}
+                              </motion.span>
+                            )}
+                          </AnimatePresence>
                           <span
-                            className={`flex items-center justify-center rounded-full transition-all duration-150 ${
+                            className={`flex items-center justify-center rounded-full transition-transform duration-150 ${
                               activo ? 'size-9 ring-2 ring-[var(--text-primary)] ring-offset-2 ring-offset-[var(--surface)]' : 'size-7 opacity-70'
                             }`}
                             style={{ backgroundColor: op.color }}
                           >
                             {activo && <Check size={16} color="var(--bg)" strokeWidth={3} />}
                           </span>
-                          <span className="mt-1 text-[10px] font-light leading-none text-[var(--text-secondary)] opacity-80">{op.etiqueta}</span>
                         </button>
                       );
                     })}
