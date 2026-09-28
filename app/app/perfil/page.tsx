@@ -109,7 +109,11 @@ export default function PerfilPage() {
         guardarNombreLocal(remoto);
       }
     });
-    esAdmin().then(setMostrarAccesoAdmin);
+    // Si la comprobación falla (red inestable, etc.) no se queda en silencio
+    // con el botón oculto para siempre: reintenta una vez a los 3s.
+    esAdmin()
+      .then(setMostrarAccesoAdmin)
+      .catch(() => setTimeout(() => esAdmin().then(setMostrarAccesoAdmin).catch(() => {}), 3000));
     leerCorreoRemoto().then(setCorreo);
     setAvatarUrl(leerAvatarLocal());
     leerAvatarRemoto().then((remoto) => {
