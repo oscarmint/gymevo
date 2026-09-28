@@ -8,7 +8,7 @@ import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateActio
 import { useRouter } from 'next/navigation';
 import { Lottie } from 'lottie-react';
 import { motion, AnimatePresence, useReducedMotion, animate } from 'motion/react';
-import { Check, ChevronRight, Dumbbell, FileText, Flame, Info, Moon, PlayCircle, RefreshCcw, TrendingUp, Undo2, Volume2, VolumeX, WifiOff, X, Zap } from 'lucide-react';
+import { Check, ChevronRight, Dumbbell, FileText, Flame, Info, Moon, PlayCircle, RefreshCcw, TrendingUp, Undo2, WifiOff, X, Zap } from 'lucide-react';
 import { leerRespuestas } from '@/lib/onboarding';
 import animacionFitness from '@/public/animaciones/fitness.json';
 import { CuerpoMuscular } from '@/components/CuerpoMuscular';
@@ -53,10 +53,6 @@ import { BannerRenovacion } from '@/components/BannerRenovacion';
 import CalentamientoGuiado, { DURACION_CALENTAMIENTO_MIN } from '@/components/CalentamientoGuiado';
 import { guardarLogRemoto, guardarProgresoRemoto, leerProgresoRemoto, sincronizarPerfilInicial } from '@/lib/supabase/sync';
 
-/** Opciones de duración del descanso — el usuario elige una al empezar el
- * plan del día (no por ejercicio: un solo cronómetro para todo hoy). */
-const DURACIONES_DESCANSO = [30, 60, 120, 180];
-
 /** Chips de esfuerzo (RIR, Repeticiones en Reserva) — solo Ruta Intermedio,
  * ver `sugerenciaPeso` en lib/routine.ts. 4 opciones (no 5) para que quepan
  * cómodas en una fila a 375px sin scroll horizontal. */
@@ -66,10 +62,6 @@ const RIR_OPCIONES: { rir: number; etiqueta: string; pista: string; color: strin
   { rir: 1, etiqueta: 'Pesada', pista: 'Podías hacer 1 más', color: 'color-mix(in oklab, var(--status-warning) 45%, var(--status-error))' },
   { rir: 0, etiqueta: 'Al límite', pista: 'No podías hacer ni una más', color: 'var(--status-error)' },
 ];
-
-function etiquetaDuracion(seg: number): string {
-  return seg < 60 ? `${seg}s` : `${seg / 60} min`;
-}
 
 /** Valor inicial del selector de repeticiones — fijo en 6 (a pedido
  * explícito del usuario), editable por el usuario según lo que hizo de
@@ -210,9 +202,6 @@ function PlanDelDia({
   const [celebrarHito, setCelebrarHito] = useState<number | null>(null);
   const [celebrarFin, setCelebrarFin] = useState(false);
   const [cardioAbierto, setCardioAbierto] = useState(false);
-  // Se muestra al prender el interruptor de descanso automático, se oculta al
-  // elegir una duración (pedido del usuario: no quedar expandido a diario).
-  const [mostrarOpcionesDescanso, setMostrarOpcionesDescanso] = useState(false);
   // "¿Cómo se hace?" y "Explicación del ejercicio" quedan ocultos detrás de
   // un botón de hoja junto al de rescate, por ejercicio (pedido del usuario:
   // pantalla de entrenamiento más prolija).
@@ -541,50 +530,6 @@ function PlanDelDia({
     actualizar((p) => reemplazarEjercicio(p, ejercicioId));
   }
 
-  function alternarDescansoAutomatico() {
-    // Bug real encontrado (22/09/2026): llamar a un setState DISTINTO desde
-    // DENTRO del actualizador que le pasamos a `actualizar` (que a su vez
-    // llama a `setProgreso`) es inválido en React — React lo ejecuta durante
-    // la fase de render, no en el momento del clic, y eso disparaba "Cannot
-    // update a component while rendering a different component" y dejaba
-    // TODAS las actualizaciones de estado siguientes de este componente sin
-    // aplicarse de forma confiable (los botones de duración dejaban de
-    // responder). El setState del otro hook va SIEMPRE afuera de `actualizar`.
-    // Tampoco sirve leer el "next" que devuelve el actualizador de setState
-    // por una variable capturada: React no garantiza ejecutarlo de forma
-    // síncrona en el momento del clic (bug real, encontrado probando esto
-    // mismo) — se calcula el próximo valor directo desde `progreso` (el prop
-    // ya actualizado de este render), no desde el actualizador.
-    const prender = !progreso.descansoAutomatico;
-    actualizar((p) => {
-      const next = { ...p, descansoAutomatico: !p.descansoAutomatico };
-      guardarProgresoRemoto(next, () => setErrorSync(true));
-      return next;
-    });
-    // Al encenderlo se vuelven a mostrar las opciones de duración (pedido del
-    // usuario: para cambiar la duración ya elegida, hay que apagar y volver a
-    // prender — así el control no se queda expandido a diario estorbando la
-    // lista de ejercicios, una vez elegida la duración).
-    setMostrarOpcionesDescanso(prender);
-  }
-
-  function elegirDuracionDescanso(seg: number) {
-    actualizar((p) => {
-      const next = { ...p, descansoDuracionSeg: seg };
-      guardarProgresoRemoto(next, () => setErrorSync(true));
-      return next;
-    });
-    setMostrarOpcionesDescanso(false);
-  }
-
-  function alternarSonidoDescanso() {
-    actualizar((p) => {
-      const next = { ...p, sonidoDescanso: !p.sonidoDescanso };
-      guardarProgresoRemoto(next, () => setErrorSync(true));
-      return next;
-    });
-  }
-
   function urlComoSeHace(nombreEjercicio: string): string {
     const q = encodeURIComponent(`${nombreEjercicio} técnica correcta`);
     return `https://www.youtube.com/results?search_query=${q}`;
@@ -858,72 +803,13 @@ function PlanDelDia({
       )}
       {calentando && tren && <CalentamientoGuiado tren={tren} onCerrar={() => setCalentando(false)} />}
 
-      {/* Interruptor: el usuario decide si el descanso arranca solo o no */}
-      <motion.button
-        type="button"
-        whileTap={{ scale: 0.97 }}
-        onClick={alternarDescansoAutomatico}
-        className="mt-4 flex w-full items-center justify-between rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] px-4 py-3"
-      >
-        <span className="text-sm font-medium text-[var(--text-primary)]">Descanso automático entre series</span>
-        <span
-          aria-hidden="true"
-          className={`relative flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
-            progreso.descansoAutomatico ? 'bg-[var(--accent)]' : 'bg-[var(--surface-2)]'
-          }`}
-        >
-          <span
-            className={`absolute size-5 rounded-full bg-[var(--bg)] shadow-[var(--shadow-1)] transition-transform ${
-              progreso.descansoAutomatico ? 'translate-x-5' : 'translate-x-0.5'
-            }`}
-          />
-        </span>
-      </motion.button>
-
-      {/* Duración del cronómetro de descanso — se muestra solo al encender el
-          interruptor y hasta elegir una duración; después queda colapsada
-          (pedido del usuario) y solo reaparece si se apaga y se vuelve a
-          prender el interruptor de arriba. */}
-      <AnimatePresence>
-        {progreso.descansoAutomatico && mostrarOpcionesDescanso && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden"
-          >
-            <div className="mt-2 flex gap-2 pb-1.5">
-              {DURACIONES_DESCANSO.map((seg) => {
-                const activa = progreso.descansoDuracionSeg === seg;
-                return (
-                  <motion.button
-                    key={seg}
-                    type="button"
-                    onClick={() => elegirDuracionDescanso(seg)}
-                    aria-pressed={activa}
-                    className={`flex h-9 flex-1 items-center justify-center rounded-xl text-xs font-semibold ${
-                      activa
-                        ? 'boton-3d bg-[var(--accent)] text-[var(--bg)]'
-                        : 'superficie-3d border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
-                    }`}
-                  >
-                    {etiquetaDuracion(seg)}
-                  </motion.button>
-                );
-              })}
-            </div>
-            <button
-              type="button"
-              onClick={alternarSonidoDescanso}
-              aria-pressed={progreso.sonidoDescanso}
-              className="mt-2 flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)]"
-            >
-              {progreso.sonidoDescanso ? <Volume2 size={14} /> : <VolumeX size={14} />}
-              Sonido al terminar el descanso
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* El interruptor de descanso automático y su duración/sonido se
+          mudaron a Perfil (pedido del usuario, 28/09/2026, "entrenador, no
+          panel administrativo"): se configuran una vez, no necesitan vivir
+          como caja diaria en la pantalla de entrenar. Se siguen LEYENDO aquí
+          (progreso.descansoAutomatico/descansoDuracionSeg/sonidoDescanso, ver
+          `registrar()` y `duracionEstimadaMin` más arriba), solo se dejó de
+          poder EDITARLOS desde esta pantalla. */}
 
       {/* (2) LA ACCIÓN DE 1 TAP — la lista de ejercicios de hoy */}
       <div className="mt-4 flex flex-col gap-3 pb-28">

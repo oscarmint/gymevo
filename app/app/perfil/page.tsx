@@ -7,10 +7,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
-import { AlertTriangle, Bell, BellOff, Camera, Check, ExternalLink, Eye, EyeOff, Flame, Loader2, LogOut, Pencil, ShieldCheck, Trash2 } from 'lucide-react';
+import { AlertTriangle, Bell, BellOff, Camera, Check, ExternalLink, Eye, EyeOff, Flame, Loader2, LogOut, Pencil, ShieldCheck, Trash2, Volume2, VolumeX } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, SEXO_LABEL, leerRespuestas, type RespuestasOnboarding, type Sexo } from '@/lib/onboarding';
 import { calcularMacros } from '@/lib/macros';
-import { DIAS_MAX_PLAN, posicionEnCiclo, semanasSeguidas, aplicarReemplazos, cambiarDias, cambiarRuta, ejerciciosDeSesion, sesionActual, leerSesionElegida, guardarProgreso, leerProgreso, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
+import { DIAS_MAX_PLAN, DURACIONES_DESCANSO, etiquetaDuracion, posicionEnCiclo, semanasSeguidas, aplicarReemplazos, cambiarDias, cambiarRuta, ejerciciosDeSesion, sesionActual, leerSesionElegida, guardarProgreso, leerProgreso, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
 import type { Meta, Nivel } from '@/lib/onboarding';
 import { leerAvatarLocal, guardarAvatarLocal, leerNombreLocal, guardarNombreLocal } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
@@ -223,6 +223,33 @@ export default function PerfilPage() {
   function cambiarUnidadPeso(unidad: 'kg' | 'lb') {
     if (!progreso) return;
     const next = { ...progreso, unidadPeso: unidad };
+    setProgreso(next);
+    guardarProgreso(next);
+    guardarProgresoRemoto(next);
+  }
+
+  // Descanso automático entre series — se mudó aquí desde la pantalla de
+  // entrenar (pedido del usuario, 28/09/2026): se configura una vez, no
+  // necesita vivir como caja diaria en medio de la rutina.
+  function alternarDescansoAutomatico() {
+    if (!progreso) return;
+    const next = { ...progreso, descansoAutomatico: !progreso.descansoAutomatico };
+    setProgreso(next);
+    guardarProgreso(next);
+    guardarProgresoRemoto(next);
+  }
+
+  function elegirDuracionDescanso(seg: number) {
+    if (!progreso) return;
+    const next = { ...progreso, descansoDuracionSeg: seg };
+    setProgreso(next);
+    guardarProgreso(next);
+    guardarProgresoRemoto(next);
+  }
+
+  function alternarSonidoDescanso() {
+    if (!progreso) return;
+    const next = { ...progreso, sonidoDescanso: !progreso.sonidoDescanso };
     setProgreso(next);
     guardarProgreso(next);
     guardarProgresoRemoto(next);
@@ -815,6 +842,68 @@ export default function PerfilPage() {
                   </p>
                 )}
               </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Descanso automático entre series — mudado aquí desde la pantalla de
+          entrenar (pedido del usuario, 28/09/2026): se configura una vez, no
+          necesita vivir como caja diaria en medio de la rutina. */}
+      <div className="superficie-3d mt-6 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)] p-4">
+        <button type="button" onClick={alternarDescansoAutomatico} className="flex w-full items-center justify-between gap-3">
+          <span className="text-sm font-semibold text-[var(--text-primary)]">Descanso automático entre series</span>
+          <span
+            aria-hidden="true"
+            className={`relative flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
+              progreso.descansoAutomatico ? 'bg-[var(--accent)]' : 'bg-[var(--surface-2)]'
+            }`}
+          >
+            <span
+              className={`absolute size-5 rounded-full bg-[var(--bg)] shadow-[var(--shadow-1)] transition-transform ${
+                progreso.descansoAutomatico ? 'translate-x-5' : 'translate-x-0.5'
+              }`}
+            />
+          </span>
+        </button>
+        <AnimatePresence>
+          {progreso.descansoAutomatico && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="mt-3 flex gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-3">
+                {DURACIONES_DESCANSO.map((seg) => {
+                  const activa = progreso.descansoDuracionSeg === seg;
+                  return (
+                    <motion.button
+                      key={seg}
+                      type="button"
+                      onClick={() => elegirDuracionDescanso(seg)}
+                      aria-pressed={activa}
+                      whileTap={{ scale: 0.97 }}
+                      className={`flex h-9 flex-1 items-center justify-center rounded-xl text-xs font-semibold ${
+                        activa
+                          ? 'boton-3d bg-[var(--accent)] text-[var(--bg)]'
+                          : 'superficie-3d border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] text-[var(--text-secondary)]'
+                      }`}
+                    >
+                      {etiquetaDuracion(seg)}
+                    </motion.button>
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                onClick={alternarSonidoDescanso}
+                aria-pressed={progreso.sonidoDescanso}
+                className="mt-2 flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)]"
+              >
+                {progreso.sonidoDescanso ? <Volume2 size={14} /> : <VolumeX size={14} />}
+                Sonido al terminar el descanso
+              </button>
             </motion.div>
           )}
         </AnimatePresence>

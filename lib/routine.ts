@@ -1426,6 +1426,15 @@ export function posicionEnCiclo(p: Progreso): { posicion: number; total: number 
   return { posicion: (sesionesHechasSemana(p) % total) + 1, total };
 }
 
+/** Opciones de duración del descanso — el usuario elige una en Ajustes (no
+ * por ejercicio: un solo cronómetro para todo el entrenamiento). Compartido
+ * entre la pantalla de entrenar (solo lectura) y Perfil (donde se cambia). */
+export const DURACIONES_DESCANSO = [30, 60, 120, 180];
+
+export function etiquetaDuracion(seg: number): string {
+  return seg < 60 ? `${seg}s` : `${seg / 60} min`;
+}
+
 export function cambiarRuta(p: Progreso, nivel: Nivel, meta: Meta): Progreso {
   // Cambiar de ruta reinicia la cuenta de días; cambiar solo la meta, no.
   return { ...p, nivel, meta, fechaInicioRuta: nivel !== p.nivel ? hoyISO() : p.fechaInicioRuta };
