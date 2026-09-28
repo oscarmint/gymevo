@@ -1098,6 +1098,13 @@ function PlanDelDia({
                 {nivel === 'intermedio' && (
                   <div className="mt-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">¿Qué tal se sintió la serie?</p>
+                  {/* Explica el PARA QUÉ (pedido del usuario, 28/09/2026): esto
+                      no es un dato decorativo, sí cambia el próximo
+                      entrenamiento (ver sugerenciaPeso más abajo) — sin decir
+                      eso, se siente como otro campo más que llenar. Es
+                      opcional (el log se guarda igual sin tocar nada), así
+                      que el texto no debe sonar a obligación. */}
+                  <p className="mt-0.5 text-xs text-[var(--text-tertiary)]">Opcional — así te sugerimos el peso ideal la próxima vez.</p>
                   {/* Escala de color en vez de texto (25/09/2026): 4 círculos en
                       una sola fila, fáciles de tocar con una mano. Prolijo a
                       propósito: ningún nombre queda escrito de forma permanente
