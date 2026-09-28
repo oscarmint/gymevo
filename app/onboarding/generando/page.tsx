@@ -48,7 +48,9 @@ export default function GenerandoPlanPage() {
         }, pasoMs * (i + 1))
       );
     });
-    timers.push(setTimeout(() => router.push('/login?desde=plan'), DURACION_TOTAL_MS + 500));
+    // Al llegar a 100% se muestra "Tu ruta está lista" un instante (700ms)
+    // antes de pasar al login: cierre del momento, no un salto brusco.
+    timers.push(setTimeout(() => router.push('/login?desde=plan'), DURACION_TOTAL_MS + 500 + 700));
     return () => timers.forEach(clearTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -83,7 +85,7 @@ export default function GenerandoPlanPage() {
       </div>
 
       <h1 className="mt-8 text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">
-        Construyendo tu plan…
+        {pct === 100 ? 'Tu ruta está lista' : 'Construyendo tu plan…'}
       </h1>
 
       <ul className="mt-8 flex w-full max-w-xs flex-col gap-4">
