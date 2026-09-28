@@ -166,12 +166,17 @@ function LoginContenido() {
 
         {estado !== 'enviado' ? (
           <>
+            {desdePlan && (
+              <p className="mb-3 inline-block rounded-full bg-[var(--accent)] px-3 py-1 text-[13px] font-bold uppercase tracking-[0.04em] text-[var(--bg)]">
+                7 días gratis · sin tarjeta hoy
+              </p>
+            )}
             <h1 className="text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
               {desdePlan ? 'Tu plan está listo' : 'Entra a tu plan'}
             </h1>
             <p className="mt-2 text-sm text-[var(--text-secondary)]">
               {desdePlan
-                ? 'Guarda tu plan y empieza tus 7 días gratis, sin tarjeta.'
+                ? 'Guarda tu plan y empieza tu prueba. Después, si sigues, pagas una sola vez — sin renovación automática.'
                 : 'Para guardarlo y verlo en cualquier dispositivo'}
             </p>
 
