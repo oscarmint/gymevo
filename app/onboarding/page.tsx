@@ -48,6 +48,18 @@ const OPCIONES_FRUSTRACION: Opcion<string>[] = [
   { value: 'apps', label: 'Ya probé apps que me cambian la rutina cada día', icon: Zap },
 ];
 
+// Promesa corta que aparece bajo la opción justo al tocarla (27/09/2026,
+// pedido del usuario): que cada respuesta se sienta como una entrega de valor
+// inmediata, no solo un dato que se guarda. Es distinta y más corta que
+// RECONOCIMIENTO_POR_FRUSTRACION de abajo: esta es el anticipo de 1 línea;
+// la otra es la explicación completa que ya vive en su propia pantalla.
+const VALOR_POR_FRUSTRACION: Record<string, string> = {
+  maquinas: 'GymEvo te dará una alternativa cuando ocurra.',
+  entrenadores: 'GymEvo estará pendiente de ti, todos los días.',
+  lesion: 'Tendrás una guía visual antes de cada ejercicio.',
+  apps: 'Tu plan será fijo — no cambia solo porque sí.',
+};
+
 const RECONOCIMIENTO_POR_FRUSTRACION: Record<string, string> = {
   maquinas:
     'No te falta constancia: a las 6 PM, con la máquina ocupada, se pierde el hilo del plan. Por eso existe el Botón de Rescate — otro ejercicio en 1 toque, sin perder la sesión.',
@@ -183,7 +195,7 @@ export default function OnboardingPage() {
     setPasoIdx(siguiente);
   }
 
-  function seleccionarYAvanzar<T>(setter: (v: T) => void, valor: T) {
+  function seleccionarYAvanzar<T>(setter: (v: T) => void, valor: T, esperaMs = 260) {
     if (avanzando.current) return;
     avanzando.current = true;
     setter(valor);
@@ -191,7 +203,7 @@ export default function OnboardingPage() {
       avanzando.current = false;
       if (pasoIdx < PASOS.length - 1) ir(pasoIdx + 1);
       else terminar();
-    }, 260);
+    }, esperaMs);
   }
 
   function terminar() {
@@ -359,7 +371,8 @@ export default function OnboardingPage() {
               <Chips
                 opciones={OPCIONES_FRUSTRACION}
                 valor={frustracion}
-                onSelect={(v) => seleccionarYAvanzar(setFrustracion, v)}
+                valorPorOpcion={VALOR_POR_FRUSTRACION}
+                onSelect={(v) => seleccionarYAvanzar(setFrustracion, v, 1100)}
               />
               <TarjetaRuta nivel={nivel} meta={meta} horario={horario} dias={null} />
             </PantallaPregunta>
@@ -714,9 +727,13 @@ function Chips<T extends string>({
   opciones,
   valor,
   onSelect,
+  valorPorOpcion,
 }: {
   opciones: Opcion<T>[];
   valor: T | null;
+  /** Promesa de 1 línea que aparece bajo la opción justo al tocarla (opcional —
+   * si una pregunta no la trae, se comporta igual que antes). */
+  valorPorOpcion?: Partial<Record<T, string>>;
   onSelect: (v: T) => void;
 }) {
   const reduce = useReducedMotion();
@@ -734,9 +751,10 @@ function Chips<T extends string>({
       {opciones.map((o, i) => {
         const seleccionado = valor === o.value;
         const Icono = o.icon;
+        const valorOpcion = valorPorOpcion?.[o.value];
         return (
+          <div key={o.value}>
           <motion.button
-            key={o.value}
             id={`chip-${o.value}`}
             type="button"
             role="radio"
@@ -775,6 +793,24 @@ function Chips<T extends string>({
               </motion.span>
             )}
           </motion.button>
+          {/* Promesa de 1 línea bajo la opción, justo al tocarla (27/09/2026,
+              pedido del usuario): que la respuesta se sienta como una entrega
+              de valor, no solo un dato que se guarda. */}
+          <AnimatePresence>
+            {seleccionado && valorOpcion && (
+              <motion.p
+                initial={reduce ? false : { opacity: 0, height: 0, y: -4 }}
+                animate={{ opacity: 1, height: 'auto', y: 0 }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: reduce ? 0 : 0.25 }}
+                className="mt-2 flex items-start gap-2 px-1 text-sm text-[var(--accent)]"
+              >
+                <Check size={15} strokeWidth={2.5} className="mt-0.5 shrink-0" />
+                <span>{valorOpcion}</span>
+              </motion.p>
+            )}
+          </AnimatePresence>
+          </div>
         );
       })}
     </div>
