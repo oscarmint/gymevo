@@ -589,17 +589,29 @@ function PlanDelDia({
   const idsHoy = useMemo(() => aplicarReemplazos(ejercicios, progreso.reemplazosHoy), [ejercicios, progreso.reemplazosHoy]);
   const todosHechos = idsHoy.every((e) => progreso.hechosHoy.includes(e.id));
   const enRiesgo = rachaEnRiesgo(progreso);
+  const completadosHoy = idsHoy.filter((e) => progreso.hechosHoy.includes(e.id)).length;
   // La llama se llena según el progreso REAL de hoy (ejercicios ya marcados
   // hechos / total de hoy) — a pedido explícito del usuario, no es decorativa.
-  const progresoLlamaPct = idsHoy.length
-    ? Math.round((idsHoy.filter((e) => progreso.hechosHoy.includes(e.id)).length / idsHoy.length) * 100)
-    : 0;
+  const progresoLlamaPct = idsHoy.length ? Math.round((completadosHoy / idsHoy.length) * 100) : 0;
   const tren = calentamientoDeSesion(sesion);
   const cardio = cardioDeSesion(sesion, nivel);
+  // Duración estimada de hoy (pedido del usuario, 28/09/2026): 40s de
+  // ejecución por serie + el descanso configurado entre series (o 45s típico
+  // si el descanso automático está apagado) + el calentamiento si aplica.
+  // Es una estimación, no un cronómetro — por eso siempre se muestra con "~".
+  const duracionEstimadaMin = useMemo(() => {
+    const totalSeries = idsHoy.reduce((acc, ej) => acc + ej.series, 0);
+    const segDescansoPorSerie = progreso.descansoAutomatico ? progreso.descansoDuracionSeg : 45;
+    const segundos = totalSeries * (40 + segDescansoPorSerie) + (tren ? DURACION_CALENTAMIENTO_MIN * 60 : 0);
+    return Math.max(1, Math.round(segundos / 60));
+  }, [idsHoy, progreso.descansoAutomatico, progreso.descansoDuracionSeg, tren]);
 
-  // El domingo es el día de descanso (y con 6 días, la semana completa también):
-  // solo hay "entrenamiento libre", que no se registra.
-  if (esDomingo(hoy) || (cumplida && progreso.diasSemana >= DIAS_MAX_PLAN)) {
+  // El descanso forzado se gana, no se impone por calendario (pedido del
+  // usuario, 28/09/2026): si ya cumplió todos los días de su semana, domingo
+  // (o cualquier día, con un plan de 6/6) es descanso. Si todavía le falta
+  // una sesión, puede entrenarla aunque sea domingo — antes el domingo
+  // bloqueaba SIEMPRE, incluso a alguien con días pendientes.
+  if (cumplida && (esDomingo(hoy) || progreso.diasSemana >= DIAS_MAX_PLAN)) {
     return (
       <>
         <PantallaDescanso domingo={esDomingo(hoy)} />
@@ -736,6 +748,21 @@ function PlanDelDia({
           style={{ width: 56, height: 56 }}
         />
       </div>
+
+      {/* Resumen de hoy (pedido del usuario, 28/09/2026): cuántos ejercicios
+          son, cuánto toma aprox. y cuántos ya van — para saber de un vistazo
+          qué tan largo es el día y cuánto falta, sin tener que contar tarjetas. */}
+      {idsHoy.length > 0 && (
+        <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 text-xs font-medium text-[var(--text-secondary)]">
+          <span>{idsHoy.length} {idsHoy.length === 1 ? 'ejercicio' : 'ejercicios'}</span>
+          <span aria-hidden="true" className="text-[var(--text-tertiary)]">·</span>
+          <span>~{duracionEstimadaMin} min</span>
+          <span aria-hidden="true" className="text-[var(--text-tertiary)]">·</span>
+          <span className={completadosHoy === idsHoy.length ? 'font-semibold text-[var(--accent)]' : ''}>
+            {completadosHoy} de {idsHoy.length} completados
+          </span>
+        </p>
+      )}
 
       {/* Aviso si la sincronización remota falla — nunca en silencio (heurística 9),
           con "Reintentar" real (control y libertad, heurística 3) */}

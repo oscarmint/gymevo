@@ -54,8 +54,8 @@ const OPCIONES_FRUSTRACION: Opcion<string>[] = [
 // RECONOCIMIENTO_POR_FRUSTRACION de abajo: esta es el anticipo de 1 línea;
 // la otra es la explicación completa que ya vive en su propia pantalla.
 const VALOR_POR_FRUSTRACION: Record<string, string> = {
-  maquinas: 'GymEvo te dará una alternativa cuando ocurra.',
-  entrenadores: 'GymEvo estará pendiente de ti, todos los días.',
+  maquinas: 'GymEvoApp te dará una alternativa cuando ocurra.',
+  entrenadores: 'GymEvoApp estará pendiente de ti, todos los días.',
   lesion: 'Tendrás una guía visual antes de cada ejercicio.',
   apps: 'Tu plan será fijo — no cambia solo porque sí.',
 };
