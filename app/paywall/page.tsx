@@ -296,7 +296,7 @@ export default function PaywallPage() {
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16, duration: 0.3 }}
-          className="mt-5 flex flex-col gap-3"
+          className={`mt-5 flex flex-col gap-3 ${modoPrueba ? 'pb-32' : ''}`}
         >
           {(['anual', 'semestral', 'mensual'] as const).map((id) => {
             const info = PLANES[id];
