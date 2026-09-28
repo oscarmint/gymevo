@@ -201,6 +201,12 @@ function PlanDelDia({
   // impone un tiempo porque cada quien decide cuánto necesita, solo se
   // informa el mínimo recomendado.
   const [avisoCambioEjercicio, setAvisoCambioEjercicio] = useState<string | null>(null);
+  // Destello breve en el punto recién marcado (pedido del usuario,
+  // 28/09/2026): solo cuando registrar una serie NO dispara ya un aviso por
+  // su cuenta (el cronómetro de descanso automático, o el modal de "terminaste
+  // el ejercicio" en la última serie) — ahí faltaba cualquier confirmación.
+  const [serieRecienRegistrada, setSerieRecienRegistrada] = useState<{ ejId: string; indice: number } | null>(null);
+  const timerSerieRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [celebrarHito, setCelebrarHito] = useState<number | null>(null);
   const [celebrarFin, setCelebrarFin] = useState(false);
   const [cardioAbierto, setCardioAbierto] = useState(false);
@@ -492,6 +498,14 @@ function PlanDelDia({
       // energía antes del siguiente.
       setAvisoCambioEjercicio(ej.nombre);
       return;
+    }
+
+    if (!progreso.descansoAutomatico) {
+      // Sin descanso automático, registrar una serie que no es la última no
+      // dispara ningún otro aviso — sin este destello quedaba en silencio.
+      if (timerSerieRef.current) clearTimeout(timerSerieRef.current);
+      setSerieRecienRegistrada({ ejId: ejercicioId, indice: yaHechas });
+      timerSerieRef.current = setTimeout(() => setSerieRecienRegistrada(null), 650);
     }
 
     if (progreso.descansoAutomatico) {
@@ -959,18 +973,30 @@ function PlanDelDia({
                     <div className="mt-1.5 flex items-center gap-2" role="img" aria-label={`Serie ${serieActual} de ${ej.series}`}>
                       {Array.from({ length: ej.series }).map((_, idxSerie) => {
                         const serieHecha = idxSerie < seriesHechas;
+                        const enDestello = !reduce && serieRecienRegistrada?.ejId === ej.id && serieRecienRegistrada.indice === idxSerie;
                         return (
-                          <span
+                          <motion.span
                             key={idxSerie}
                             aria-hidden="true"
-                            className={`flex size-3 items-center justify-center rounded-full ${
+                            animate={enDestello ? { scale: [1, 1.6, 1] } : { scale: 1 }}
+                            transition={{ duration: 0.5, ease: 'easeOut' }}
+                            className={`relative flex size-3 items-center justify-center rounded-full ${
                               serieHecha
                                 ? 'bg-[var(--accent)]'
                                 : 'border border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)]'
                             }`}
                           >
                             {serieHecha && <Check size={8} color="var(--bg)" strokeWidth={3.5} />}
-                          </span>
+                            {enDestello && (
+                              <motion.span
+                                aria-hidden="true"
+                                initial={{ opacity: 0.5, scale: 1 }}
+                                animate={{ opacity: 0, scale: 2.2 }}
+                                transition={{ duration: 0.5, ease: 'easeOut' }}
+                                className="absolute inset-0 rounded-full bg-[var(--accent)]"
+                              />
+                            )}
+                          </motion.span>
                         );
                       })}
                       <span className="text-xs font-semibold text-[var(--accent)]">
