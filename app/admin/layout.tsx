@@ -2,11 +2,12 @@
 // admin en Supabase (migración 0011). Nunca confiar en ocultar este link.
 
 import Link from 'next/link';
-import { CreditCard, DollarSign, LayoutDashboard, ScrollText, Users } from 'lucide-react';
+import { CreditCard, DollarSign, Filter, LayoutDashboard, ScrollText, Users } from 'lucide-react';
 
 const TABS = [
   { href: '/admin', label: 'Resumen', icon: LayoutDashboard },
   { href: '/admin/usuarios', label: 'Usuarios', icon: Users },
+  { href: '/admin/embudo', label: 'Embudo', icon: Filter },
   { href: '/admin/pagos', label: 'Pagos', icon: CreditCard },
   { href: '/admin/costos', label: 'Costos', icon: DollarSign },
   { href: '/admin/auditoria', label: 'Auditoría', icon: ScrollText },

@@ -2,7 +2,8 @@
 // (17-VISUALIZACION-DATOS: Tufte, un dato héroe por card). Ningún número se
 // inventa: lo que no tiene fuente real hoy se rotula "Sin datos".
 
-import { AlertTriangle, CheckCircle2, DollarSign, Dumbbell, Eye, Megaphone, NotebookPen, TrendingDown, TrendingUp, UserX, Users } from 'lucide-react';
+import Link from 'next/link';
+import { AlertTriangle, ArrowLeft, CheckCircle2, DollarSign, Dumbbell, Eye, Megaphone, NotebookPen, TrendingDown, TrendingUp, UserX, Users } from 'lucide-react';
 import { calcularAvisos, obtenerAtribucionUTM, obtenerChurn, obtenerExperimentoLanding, obtenerResumenFunnel, obtenerResumenUso, obtenerResumenUsuarios, obtenerResumenVentas, obtenerVentasPorSemana } from '@/lib/admin';
 import { GraficoVentas } from './GraficoVentas';
 
@@ -76,6 +77,10 @@ export default async function AdminPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      <Link href="/app/perfil" className="flex w-fit items-center gap-1.5 text-sm font-medium text-[var(--text-secondary)]">
+        <ArrowLeft size={15} /> Volver a mi perfil de la app
+      </Link>
+
       {/* AVISOS — banner arriba de todo (21-BACKOFFICE) */}
       <div className="flex flex-col gap-2">
         {avisos.map((a, i) => (
@@ -157,6 +162,9 @@ export default async function AdminPage() {
         <p className="mt-2 text-xs text-[var(--text-tertiary)]">
           Las vistas cuentan cada carga de página (no visitantes únicos) — recién se empezó a medir, así que los números crecen día a día.
         </p>
+        <Link href="/admin/embudo?etapa=prueba_vencida" className="mt-2 inline-block text-sm font-semibold text-[var(--accent)]">
+          Ver quiénes son →
+        </Link>
       </section>
 
       {/* CAMPAÑAS — de dónde viene cada visitante (link con utm_source) y hasta

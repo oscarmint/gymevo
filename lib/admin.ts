@@ -134,6 +134,88 @@ export async function buscarUsuarios(query: string): Promise<UsuarioFila[]> {
   }));
 }
 
+export type EtapaUsuario = 'en_prueba' | 'prueba_vencida' | 'pagando' | 'cancelado';
+
+export const ETAPA_LABEL: Record<EtapaUsuario, string> = {
+  en_prueba: 'En prueba gratis',
+  prueba_vencida: 'Se registró y no compró',
+  pagando: 'Pagando',
+  cancelado: 'Canceló o se venció',
+};
+
+interface FilaEtapa extends UsuarioFila {
+  etapa: EtapaUsuario;
+}
+
+/** Clasifica a CADA usuario registrado en una sola etapa del embudo, usando
+ * solo datos reales que ya existen (profiles + hotmart_purchases) — nunca
+ * "visitas sin registro" acá, porque esas son anónimas (21-BACKOFFICE, ver
+ * obtenerResumenFunnel para ese conteo agregado sin nombres). */
+async function clasificarUsuarios(): Promise<FilaEtapa[]> {
+  const supabase = await crearClienteSupabaseServidor();
+  const [{ data: perfiles }, { data: compras }] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('id, email, nombre, plan, membership_status, role, created_at, access_until, trial_ends_at')
+      .order('created_at', { ascending: false }),
+    supabase.from('hotmart_purchases').select('email, status').order('updated_at', { ascending: false }),
+  ]);
+
+  // La primera fila de cada correo es la compra más reciente (ya viene
+  // ordenada por updated_at desc), así que el Map se queda con esa.
+  const estadoPorEmail = new Map<string, string>();
+  for (const c of compras ?? []) {
+    if (!estadoPorEmail.has(c.email)) estadoPorEmail.set(c.email, c.status);
+  }
+
+  const ahora = Date.now();
+  return (perfiles ?? []).map((p) => {
+    const estadoCompra = p.email ? estadoPorEmail.get(p.email) : undefined;
+    let etapa: EtapaUsuario;
+    if (p.plan !== 'pro' && estadoCompra && ESTADOS_CANCELADO.includes(estadoCompra)) {
+      etapa = 'cancelado';
+    } else if (p.plan === 'pro') {
+      etapa = 'pagando';
+    } else if (p.trial_ends_at && new Date(p.trial_ends_at).getTime() > ahora) {
+      etapa = 'en_prueba';
+    } else {
+      etapa = 'prueba_vencida';
+    }
+    return {
+      id: p.id,
+      email: p.email,
+      nombre: p.nombre,
+      plan: p.plan,
+      membershipStatus: p.membership_status,
+      role: p.role,
+      createdAt: p.created_at,
+      accessUntil: p.access_until,
+      etapa,
+    };
+  });
+}
+
+/** Cuántos usuarios registrados hay en cada etapa — para los chips del
+ * apartado "Embudo" del panel. Nunca inventa: si no hay ninguno en una
+ * etapa, el número es 0 de verdad. */
+export async function obtenerConteoEtapas(): Promise<Record<EtapaUsuario, number>> {
+  const filas = await clasificarUsuarios();
+  const conteo: Record<EtapaUsuario, number> = { en_prueba: 0, prueba_vencida: 0, pagando: 0, cancelado: 0 };
+  for (const f of filas) conteo[f.etapa]++;
+  return conteo;
+}
+
+/** Los usuarios de UNA etapa, más recientes primero — para la lista debajo
+ * de los chips (pedido explícito del dueño: no solo el número, poder ver
+ * quiénes son y entrar a su ficha para actuar). */
+export async function obtenerUsuariosPorEtapa(etapa: EtapaUsuario): Promise<UsuarioFila[]> {
+  const filas = await clasificarUsuarios();
+  return filas
+    .filter((f) => f.etapa === etapa)
+    .map(({ etapa: _etapa, ...resto }) => resto)
+    .slice(0, 200);
+}
+
 export interface UsuarioCancelado {
   email: string;
   status: string;
