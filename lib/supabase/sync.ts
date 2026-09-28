@@ -213,6 +213,19 @@ export async function leerCorreoRemoto(): Promise<string | null> {
   return data.user?.email ?? null;
 }
 
+/** Solo para mostrar u ocultar el botón "Panel de administrador" en Perfil —
+ * la puerta real es proxy.ts, que vuelve a comprobar `role` en el servidor
+ * antes de dejar entrar a /admin (nunca confiar en esto para bloquear acceso). */
+export async function esAdmin(): Promise<boolean> {
+  const supabase = crearClienteSupabase();
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData.user;
+  if (!user) return false;
+
+  const { data: perfil } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
+  return perfil?.role === 'admin';
+}
+
 export function guardarNombreRemoto(nombre: string, onError?: () => void) {
   const supabase = crearClienteSupabase();
   supabase.auth.getUser().then(({ data }) => {

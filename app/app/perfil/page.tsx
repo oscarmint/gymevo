@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
-import { AlertTriangle, Bell, BellOff, Camera, Check, ExternalLink, Eye, EyeOff, Flame, Loader2, LogOut, Pencil, Trash2 } from 'lucide-react';
+import { AlertTriangle, Bell, BellOff, Camera, Check, ExternalLink, Eye, EyeOff, Flame, Loader2, LogOut, Pencil, ShieldCheck, Trash2 } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, SEXO_LABEL, leerRespuestas, type RespuestasOnboarding, type Sexo } from '@/lib/onboarding';
 import { calcularMacros } from '@/lib/macros';
 import { DIAS_MAX_PLAN, posicionEnCiclo, semanasSeguidas, aplicarReemplazos, cambiarDias, cambiarRuta, ejerciciosDeSesion, sesionActual, leerSesionElegida, guardarProgreso, leerProgreso, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
@@ -15,7 +15,7 @@ import type { Meta, Nivel } from '@/lib/onboarding';
 import { leerAvatarLocal, guardarAvatarLocal, leerNombreLocal, guardarNombreLocal } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { activarAvisos, desactivarAvisos, estaSuscrito, pushSoportado } from '@/lib/push-client';
-import { guardarNombreRemoto, guardarProgresoRemoto, leerAvatarRemoto, leerCorreoRemoto, leerMembresiaRemota, leerNombreRemoto, leerVencimientoRemoto, subirAvatar } from '@/lib/supabase/sync';
+import { esAdmin, guardarNombreRemoto, guardarProgresoRemoto, leerAvatarRemoto, leerCorreoRemoto, leerMembresiaRemota, leerNombreRemoto, leerVencimientoRemoto, subirAvatar } from '@/lib/supabase/sync';
 import { useConteo } from '@/lib/useConteo';
 
 const ESTADO_MEMBRESIA_LABEL: Record<string, string> = {
@@ -78,6 +78,7 @@ export default function PerfilPage() {
   // revisa si este navegador ya está suscrito; `false` también cubre el caso
   // de un navegador que no soporta push (el botón se oculta, ver JSX).
   const [avisosActivos, setAvisosActivos] = useState<boolean | null>(null);
+  const [mostrarAccesoAdmin, setMostrarAccesoAdmin] = useState(false);
   const [avisosSoportados, setAvisosSoportados] = useState(true);
   const [cargandoAvisos, setCargandoAvisos] = useState(false);
   const [errorAvisos, setErrorAvisos] = useState<string | null>(null);
@@ -108,6 +109,7 @@ export default function PerfilPage() {
         guardarNombreLocal(remoto);
       }
     });
+    esAdmin().then(setMostrarAccesoAdmin);
     leerCorreoRemoto().then(setCorreo);
     setAvatarUrl(leerAvatarLocal());
     leerAvatarRemoto().then((remoto) => {
@@ -851,6 +853,18 @@ export default function PerfilPage() {
         >
           {errorAvisos}
         </p>
+      )}
+
+      {/* Solo visible para tu cuenta de administrador (esAdmin() consulta
+          profiles.role) — la puerta real que decide si puedes entrar de
+          verdad vive en proxy.ts, en el servidor. */}
+      {mostrarAccesoAdmin && (
+        <Link
+          href="/admin"
+          className="superficie-3d mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-[color-mix(in_oklab,var(--accent)_35%,transparent)] bg-[var(--surface)] text-sm font-semibold text-[var(--accent)]"
+        >
+          <ShieldCheck size={16} /> Panel de administrador
+        </Link>
       )}
 
       <motion.button

@@ -16,9 +16,13 @@ type Estado = 'idle' | 'enviando' | 'enviado' | 'error';
 
 function LoginContenido() {
   const router = useRouter();
-  const desdePlan = useSearchParams().get('desde') === 'plan';
-  // Tras el onboarding la persona vuelve a ver su Día 1; en cualquier otro caso entra a la app.
-  const destino = desdePlan ? '/onboarding/plan' : '/app';
+  const desdeParam = useSearchParams().get('desde');
+  const desdePlan = desdeParam === 'plan';
+  // Tras el onboarding la persona vuelve a ver su Día 1; si proxy.ts mandó
+  // aquí con ?desde=admin (alguien sin sesión intentando /admin), vuelve al
+  // panel en vez de caer siempre en /app — sin esto, un admin sin sesión
+  // nunca llegaba a /admin al iniciar sesión.
+  const destino = desdePlan ? '/onboarding/plan' : desdeParam === 'admin' ? '/admin' : '/app';
   const [email, setEmail] = useState('');
   const [acepto, setAcepto] = useState(false);
   const [estado, setEstado] = useState<Estado>('idle');
