@@ -433,14 +433,13 @@ export default function PerfilPage() {
           </motion.button>
         </div>
 
-        {/* Resumen siempre a la vista (pedido explícito): días de
-            entrenamiento, nivel, meta y unidad de registro — sin tocar
-            "Editar". Las casillas para CAMBIARLos solo aparecen al editar. */}
+        {/* Resumen siempre a la vista (pedido explícito): nivel, meta y
+            unidad de registro — sin tocar "Editar". Las casillas para
+            CAMBIARLos solo aparecen al editar. Los días de entrenamiento NO
+            se repiten aquí (pedido del usuario, 28/09/2026): ya se leen en
+            "Entrenas ... · X días/semana" arriba — el móvil no sobra espacio
+            para decir el mismo número dos veces en la misma tarjeta. */}
         <dl className="mt-4 flex flex-col gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4 text-sm">
-          <div className="flex items-center justify-between">
-            <dt className="text-[var(--text-secondary)]">Días de entrenamiento</dt>
-            <dd className="font-medium text-[var(--text-primary)]">{progreso.diasSemana} por semana</dd>
-          </div>
           <div className="flex items-center justify-between">
             <dt className="text-[var(--text-secondary)]">Nivel</dt>
             <dd className="font-medium text-[var(--text-primary)]">{NIVEL_LABEL[nivel]}</dd>
@@ -575,8 +574,11 @@ export default function PerfilPage() {
               <Flame size={18} color="var(--accent)" fill="var(--accent)" />
             </div>
           </div>
+          {/* "de {total}" se quitó (pedido del usuario, 28/09/2026): ese
+              número es el mismo de "X días/semana" del subtítulo de arriba,
+              repetido una tercera vez en esta misma tarjeta. */}
           <span className="text-sm font-medium text-[var(--text-primary)]">
-            Racha de {semanasSeguidas(progreso)} {semanasSeguidas(progreso) === 1 ? 'semana' : 'semanas'} · Toca la sesión {posicionEnCiclo(progreso).posicion} de {posicionEnCiclo(progreso).total}
+            Racha de {semanasSeguidas(progreso)} {semanasSeguidas(progreso) === 1 ? 'semana' : 'semanas'} · Vas en la sesión {posicionEnCiclo(progreso).posicion}
           </span>
         </div>
       </div>
