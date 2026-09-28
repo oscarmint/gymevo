@@ -67,7 +67,7 @@ const RECONOCIMIENTO_POR_FRUSTRACION: Record<string, string> = {
     'No es que no merezcas ayuda: nadie te atiende igual a las 6 PM con el gimnasio lleno. GymEvoApp sí está pendiente de ti, todos los días.',
   lesion:
     'Ese miedo es válido — casi nadie explica bien la técnica en un gimnasio comercial. Cada ejercicio de tu plan trae la forma correcta, sin adivinar.',
-  apps: 'Cada app te cambió la rutina sin avisar y solo te confundió más. GymEvoApp no hace eso: tu plan es fijo, con salida cuando la necesitas.',
+  apps: 'No necesitas otra rutina distinta cada día — necesitas saber qué toca hoy y seguir una ruta. Por eso tu plan en GymEvoApp es fijo: los ejercicios ya están decididos, sin adivinar.',
 };
 
 const OPCIONES_HORARIO: Opcion<Horario>[] = [
