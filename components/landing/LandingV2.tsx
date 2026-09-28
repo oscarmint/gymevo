@@ -17,6 +17,7 @@ import { Problema } from '@/components/landing/Problema';
 import { Agitacion } from '@/components/landing/Agitacion';
 import { Solucion } from '@/components/landing/Solucion';
 import { AppPorDentro } from '@/components/landing/AppPorDentro';
+import { Mecanismos } from '@/components/landing/Mecanismos';
 import { Oferta } from '@/components/landing/Oferta';
 import { Garantia } from '@/components/landing/Garantia';
 import { Faq } from '@/components/landing/Faq';
@@ -24,7 +25,7 @@ import { CtaFinal } from '@/components/landing/CtaFinal';
 import { FooterLegal } from '@/components/landing/FooterLegal';
 import { Testimonios } from '@/components/landing/Testimonios';
 import { BotonVolverArriba, CtaButton, StickyCtaMobile } from '@/components/landing/ui';
-import { CreditCard, Frown, RefreshCcw, ShieldAlert, Users } from 'lucide-react';
+import { BookOpenCheck, CalendarCheck2, ClipboardList, CreditCard, Frown, RefreshCcw, ShieldAlert, Users } from 'lucide-react';
 
 const CTA_HREF = '/onboarding';
 const CTA_LABEL = 'Empezar mis 7 días gratis';
@@ -103,9 +104,19 @@ export default function LandingV2() {
         <CtaButton href={CTA_HREF}>{CTA_LABEL}</CtaButton>
       </div>
 
+      {/* 4.5 MECANISMOS — idéntico a V1 (no es parte del ángulo a probar, ver Mecanismos.tsx) */}
+      <Mecanismos
+        items={[
+          { icon: RefreshCcw, pregunta: '¿Máquina ocupada?', respuesta: 'Rescate' },
+          { icon: BookOpenCheck, pregunta: '¿No recuerdas cómo hacerlo?', respuesta: 'Técnica' },
+          { icon: CalendarCheck2, pregunta: '¿No sabes qué toca hoy?', respuesta: 'Plan' },
+          { icon: ClipboardList, pregunta: '¿No recuerdas cuánto levantaste?', respuesta: 'Registro' },
+        ]}
+      />
+
       {/* 5. LA APP POR DENTRO — idéntico a V1 (no es parte del ángulo a probar) */}
       <AppPorDentro
-        tituloMarked="Tu gimnasio, por fin [acento]bajo control[/acento]"
+        tituloMarked="Así se ve tu plan, [acento]por dentro[/acento]"
         frames={[
           { label: 'Eliges tu nivel y tu meta', src: '/screenshots/frame-onboarding.png', alt: 'Onboarding: elige tu meta' },
           { label: 'Tu ejercicio de hoy, listo', src: '/screenshots/frame-plan-del-dia.png', alt: 'Plan del día con ejercicios y racha' },
