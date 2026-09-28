@@ -685,8 +685,14 @@ export default function PerfilPage() {
             });
             return (
               <div className="mt-4 grid grid-cols-[1fr_1.4fr_1fr] gap-2">
+                {/* Tamaño y tipografía bajados a propósito (pedido del
+                    usuario, 28/09/2026): antes esta cifra igualaba en tamaño
+                    Y en tipografía de titular al "Hola, {nombre}" de arriba
+                    de esta misma pantalla — competía visualmente con la
+                    identidad de entrenamiento. GymEvoApp = entrenamiento;
+                    nutrición es un extra útil, no otro producto. */}
                 <div className="col-span-3 rounded-xl bg-[var(--chip-bg)] px-4 py-3">
-                  <p className="text-2xl font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+                  <p className="text-xl font-bold tabular-nums text-[var(--text-primary)]">
                     <KcalDato kcal={macros.kcal} /> <span className="text-sm font-semibold text-[var(--text-secondary)]">calorías al día</span>
                   </p>
                 </div>
@@ -1091,7 +1097,7 @@ function MacroDato({ label, gramos }: { label: string; gramos: number }) {
   const mostrado = useConteo(gramos);
   return (
     <div className="rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] px-3 py-2.5">
-      <p className="text-lg font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{Math.round(mostrado)}g</p>
+      <p className="text-base font-bold tabular-nums text-[var(--text-primary)]">{Math.round(mostrado)}g</p>
       <p className="text-xs text-[var(--text-secondary)]">{label}</p>
     </div>
   );
