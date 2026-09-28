@@ -317,7 +317,7 @@ const CATALOGO: Record<string, Ejercicio> = {
     musculos: [{ nombre: 'Gastrocnemio', principal: true }, { nombre: 'Sóleo', principal: true }],
     consejoTecnico: 'Evita rebotar en la posición baja: controla el descenso para aprovechar todo el estiramiento del gemelo.',
   } },
-  hip_thrust_barra: { id: 'hip_thrust_barra', nombre: 'Hip thrust con barra', grupo: 'Pierna', grupoMuscular: 'gluteo', imagenExplicacion: '/explicaciones/hip-thrust-barra.png', series: 4, reps: '10-12', descansoSeg: 90, tempo: '2-1-1', alternativaId: 'hip_thrust_maquina', guia: {
+  hip_thrust_barra: { id: 'hip_thrust_barra', nombre: 'Hip thrust con barra', grupo: 'Pierna', grupoMuscular: 'gluteo', imagenExplicacion: '/explicaciones/hip-thrust-barra.jpg', series: 4, reps: '10-12', descansoSeg: 90, tempo: '2-1-1', alternativaId: 'hip_thrust_maquina', guia: {
     indicaciones: [
       'Apoya la parte alta de la espalda en el banco y coloca la barra sobre las caderas.',
       'Mantén los pies firmes en el suelo a la anchura de las caderas.',
