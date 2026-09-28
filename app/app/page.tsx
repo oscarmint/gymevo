@@ -8,7 +8,7 @@ import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateActio
 import { useRouter } from 'next/navigation';
 import { Lottie } from 'lottie-react';
 import { motion, AnimatePresence, useReducedMotion, animate } from 'motion/react';
-import { Check, Dumbbell, FileText, Flame, Info, Moon, PlayCircle, RefreshCcw, TrendingUp, Undo2, Volume2, VolumeX, WifiOff, X, Zap } from 'lucide-react';
+import { Check, ChevronRight, Dumbbell, FileText, Flame, Info, Moon, PlayCircle, RefreshCcw, TrendingUp, Undo2, Volume2, VolumeX, WifiOff, X, Zap } from 'lucide-react';
 import { leerRespuestas } from '@/lib/onboarding';
 import animacionFitness from '@/public/animaciones/fitness.json';
 import { CuerpoMuscular } from '@/components/CuerpoMuscular';
@@ -217,6 +217,11 @@ function PlanDelDia({
   // un botón de hoja junto al de rescate, por ejercicio (pedido del usuario:
   // pantalla de entrenamiento más prolija).
   const [ayudasAbiertas, setAyudasAbiertas] = useState<Record<string, boolean>>({});
+  // "Entrenador, no panel administrativo" (pedido del usuario, 28/09/2026):
+  // por defecto solo el ejercicio que sigue (o uno ya hecho) muestra su
+  // tarjeta completa; los demás pendientes son una fila simple hasta que el
+  // usuario la toca a propósito — así no hay 6 formularios abiertos a la vez.
+  const [expandidoManual, setExpandidoManual] = useState<Record<string, boolean>>({});
   // Calentamiento guiado (pantalla completa con contador por ejercicio).
   const [calentando, setCalentando] = useState(false);
   // celebrarFin como dependencia es intencional: regenera las posiciones del
@@ -943,6 +948,68 @@ function PlanDelDia({
             // Autorregulación (Ruta Intermedio, 15/09/2026): solo en la
             // primera serie, y solo si la vez pasada quedó un RIR guardado.
             const sugerencia = nivel === 'intermedio' && seriesHechas === 0 ? sugerenciaPeso(progreso, ej.id) : null;
+
+            // Fila compacta: pendiente, no es la que sigue, y el usuario no
+            // la abrió a propósito. Sin peso/reps/ayudas/esfuerzo — solo lo
+            // necesario para ubicarse en la lista. Un toque la abre entera.
+            if (!hecho && !esProxima && !expandidoManual[ej.id]) {
+              return (
+                <motion.button
+                  key={ej.id}
+                  type="button"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  whileTap={{ scale: 0.99 }}
+                  onClick={() => setExpandidoManual((p) => ({ ...p, [ej.id]: true }))}
+                  aria-label={`Ver ${ej.nombre}, ejercicio ${i + 1} de ${idsHoy.length}`}
+                  className="flex w-full items-center justify-between gap-3 border-b border-[color-mix(in_oklab,var(--text-tertiary)_14%,transparent)] px-1 py-3 text-left"
+                >
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+                      Ejercicio {i + 1}/{idsHoy.length}
+                    </p>
+                    <p className="mt-0.5 truncate text-sm font-medium text-[var(--text-primary)]">{ej.nombre}</p>
+                    <p className="mt-0.5 text-xs text-[var(--text-tertiary)]">
+                      {ej.series}×{ej.reps}
+                    </p>
+                  </div>
+                  <ChevronRight size={18} color="var(--text-tertiary)" className="shrink-0" />
+                </motion.button>
+              );
+            }
+
+            // Fila compacta: ya hecho. El nombre tachado + "Deshacer" bastan
+            // — no necesita la tarjeta completa con borde que sí lleva el
+            // ejercicio activo.
+            if (hecho) {
+              return (
+                <motion.div
+                  key={ej.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="flex items-center justify-between gap-3 border-b border-[color-mix(in_oklab,var(--text-tertiary)_14%,transparent)] px-1 py-3"
+                >
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+                      Ejercicio {i + 1}/{idsHoy.length}
+                    </p>
+                    <p className="mt-0.5 truncate text-sm font-medium text-[var(--text-tertiary)] line-through decoration-[var(--accent)] decoration-2">
+                      {ej.nombre}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => deshacer(ej.id)}
+                    className="flex shrink-0 items-center gap-1 text-xs font-medium text-[var(--text-tertiary)]"
+                  >
+                    <Check size={13} color="var(--accent)" /> Deshacer
+                  </button>
+                </motion.div>
+              );
+            }
+
             return (
             <motion.div
               key={ej.id}
