@@ -939,8 +939,14 @@ function PlanDelDia({
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
+                  {/* Efecto de progreso (pedido del usuario, 28/09/2026): "voy
+                      en la mitad" se siente ejercicio por ejercicio, no solo
+                      al final del día — de ahí la posición dentro de los N. */}
+                  <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[var(--text-tertiary)]">
+                    Ejercicio {i + 1}/{idsHoy.length}
+                  </p>
                   <p
-                    className={`text-base font-semibold ${
+                    className={`mt-0.5 text-base font-semibold ${
                       hecho ? 'text-[var(--text-tertiary)] line-through decoration-[var(--accent)] decoration-2' : 'text-[var(--text-primary)]'
                     }`}
                   >
@@ -950,9 +956,27 @@ function PlanDelDia({
                     {ej.series}×{ej.reps}
                   </p>
                   {!hecho && (
-                    <p className="mt-1 text-xs font-semibold text-[var(--accent)]">
-                      Serie {serieActual} de {ej.series}
-                    </p>
+                    <div className="mt-1.5 flex items-center gap-2" role="img" aria-label={`Serie ${serieActual} de ${ej.series}`}>
+                      {Array.from({ length: ej.series }).map((_, idxSerie) => {
+                        const serieHecha = idxSerie < seriesHechas;
+                        return (
+                          <span
+                            key={idxSerie}
+                            aria-hidden="true"
+                            className={`flex size-3 items-center justify-center rounded-full ${
+                              serieHecha
+                                ? 'bg-[var(--accent)]'
+                                : 'border border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)]'
+                            }`}
+                          >
+                            {serieHecha && <Check size={8} color="var(--bg)" strokeWidth={3.5} />}
+                          </span>
+                        );
+                      })}
+                      <span className="text-xs font-semibold text-[var(--accent)]">
+                        Serie {serieActual} de {ej.series}
+                      </span>
+                    </div>
                   )}
                   {!hecho && registroAnterior && pesoAnteriorEstado[ej.id] !== 'expirado' && (
                     pesoAnteriorEstado[ej.id] === 'visible' ? (
