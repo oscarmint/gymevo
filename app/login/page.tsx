@@ -17,7 +17,11 @@ type Estado = 'idle' | 'enviando' | 'enviado' | 'error';
 function LoginContenido() {
   const router = useRouter();
   const desdeParam = useSearchParams().get('desde');
-  const desdePlan = desdeParam === 'plan';
+  // 'app' es el camino real hoy (28/09/2026): tras ver su Día 1 y el paywall,
+  // "Empezar mis 7 días gratis" intenta entrar a /app sin sesión y proxy.ts
+  // manda aquí con ?desde=app — misma copy de "guarda tu plan" que antes
+  // solo se mostraba viniendo directo del onboarding (?desde=plan, ya sin uso).
+  const desdePlan = desdeParam === 'plan' || desdeParam === 'app';
   // Tras el onboarding la persona vuelve a ver su Día 1; si proxy.ts mandó
   // aquí con ?desde=admin (alguien sin sesión intentando /admin), vuelve al
   // panel en vez de caer siempre en /app — sin esto, un admin sin sesión
@@ -146,7 +150,10 @@ function LoginContenido() {
         {desdePlan && estado !== 'enviado' && (
           <button
             type="button"
-            onClick={() => router.push('/onboarding')}
+            // Vuelve un paso, no al inicio: si llegó desde el paywall
+            // (?desde=app) ya vio su Día 1 y los planes, así que Atrás lo
+            // regresa al paywall, no le borra el camino hasta el cuestionario.
+            onClick={() => router.push(desdeParam === 'app' ? '/paywall' : '/onboarding')}
             className="-ml-2 mb-2 flex h-11 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-[var(--text-secondary)]"
           >
             <ArrowLeft size={18} /> Atrás

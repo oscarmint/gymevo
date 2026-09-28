@@ -49,8 +49,16 @@ export default function GenerandoPlanPage() {
       );
     });
     // Al llegar a 100% se muestra "Tu ruta está lista" un instante (700ms)
-    // antes de pasar al login: cierre del momento, no un salto brusco.
-    timers.push(setTimeout(() => router.push('/login?desde=plan'), DURACION_TOTAL_MS + 500 + 700));
+    // antes de pasar a la vista previa: cierre del momento, no un salto brusco.
+    // 28/09/2026 (pedido del dueño): va a /onboarding/plan, NO a /login — la
+    // persona ve su Día 1 real (ejercicios, series) ANTES de que se le pida
+    // guardar el plan o registrarse, coherente con la regla UX #2 ("valor
+    // visible antes de pedir registro"). Esa pantalla ya lee sessionStorage
+    // y no necesita sesión; recién su botón "Activar mi plan completo" lleva
+    // al paywall, y solo al elegir "Empezar mis 7 días gratis" ahí, proxy.ts
+    // pide iniciar sesión (al intentar entrar a /app sin cuenta) — el login
+    // pasa a ser la puerta natural de /app, no un paso forzado de en medio.
+    timers.push(setTimeout(() => router.push('/onboarding/plan'), DURACION_TOTAL_MS + 500 + 700));
     return () => timers.forEach(clearTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
