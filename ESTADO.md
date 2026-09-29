@@ -1397,4 +1397,7 @@ Además en esta sesión: bug real corregido (el "Iniciar entrenamiento" volvía 
 
 **Todo lo anterior ya se subió a GitHub** (push hecho tras confirmación explícita del dueño). Nota: se detectó que hay OTRA sesión de Claude Code trabajando en paralelo sobre el mismo `app/app/page.tsx` (un commit con un fix de wrapping en Android apareció solo, sin que esta sesión lo hiciera) — mismo patrón ya anotado el 27/09 con `app/onboarding/page.tsx`. No se debe asumir que el árbol de trabajo está "quieto" entre turnos.
 
-Pendiente sin resolver: landing/onboarding/paywall siguen NO LISTA (ver ronda 7 arriba); prompt de arquitectura de MeritGO pegado por el dueño sigue sin aclarar si aplica a este proyecto.
+Pendiente sin resolver: landing/onboarding/paywall siguen NO LISTA (ver ronda 7 arriba).
+
+## ⏸️ CHECKPOINT — Cola de revisión de pagos en el panel (29/09/2026)
+El prompt de MeritGO SÍ era para GymEvoApp (aclarado por el dueño). Alcance acordado con el dueño (eligió entre 3 opciones): solo los módulos de revisión/aprobación, no roles ni banco de contenido — GymEvoApp no tiene ejercicios generados por IA que necesiten aprobación, su catálogo es fijo. Auditoría ya cubría el módulo equivalente de MeritGO (log de acciones del admin), no se tocó. Se agregó lo que de verdad faltaba: `contarPagosPorRevisar()` en `lib/admin.ts` (pagos atrasados/reembolsos/contracargos de los últimos 14 días), integrado al aviso del Resumen (ahora es un enlace directo, antes solo informaba) y un filtro nuevo "Necesitan atención" en Pagos. tsc + build limpios, ya subido a GitHub.
