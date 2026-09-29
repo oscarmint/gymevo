@@ -1,9 +1,15 @@
 # VEREDICTO revisor-visual — onboarding
-Fecha: 2026-09-26 12:00
-Screenshot: docs/revisiones/onboarding-paso1-375.png (+ onboarding-captura-375.png, onboarding-plan-375.png)
-Usabilidad: 29/40
-Craft: 13/20
-Copy (si vende): 13/20
+Fecha: 2026-09-28 00:00
+Screenshot: docs/revisiones/onboarding-375.png (+ onboarding-frustracion-valor-375.png, onboarding-captura-375.png, onboarding-plan-375.png)
+Usabilidad: 35/40
+Craft: 16/20
+Copy (si vende): 16/20
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
-Top defectos: 1) Vista previa Día 1: el CTA "Activar mi plan completo" queda al final de un scroll de ~1270px, fuera de la primera vista, y el halo lima del primer ↻ compite con él como acción primaria; fix: CTA sticky al fondo y bajar el halo a un pulso sutil o quitarlo una vez tocado. 2) Microcopy de la vista previa "pago único, sin renovación" contradice FICHA-AVATAR ($4.99 USD/mes, aviso antes del cobro) y no da precio ni garantía nombrada junto al CTA; fix: alinear con el paywall real y poner precio + garantía en esa línea. 3) Login y vista previa con fondo plano #12161c sin profundidad ni dispositivo ownable (solo el paso 1 tiene renglones y resplandor); fix: llevar el fondo con gradiente y renglones a las tres pantallas. 4) Paso 1: la tarjeta "Tu ruta se está armando" (etiqueta verde militar de bajo contraste, 2 bloques de texto) pesa más que las 2 opciones de la pregunta; fix: reducir a una línea o quitarla en pasos de 2 chips, subir el contraste de la etiqueta. 5) Login: logo multicolor de Google sobre el botón lima, dos botones de peso alto, sin motion de entrada; fix: botón Google en superficie clara/neutra o logo monocromo, y stagger de entrada como en el resto del flujo.
+
+Top defectos:
+1. [Paso "¿Qué te frustra?" — texto de valor bajo el chip elegido] Solo 1.1s entre que aparece la frase de valor (ej. "GymEvo te dará una alternativa cuando ocurra") y el auto-avance a la siguiente pregunta: para una frase de 6-8 palabras es un tiempo ajustado, sobre todo la primera vez que el usuario ve este patrón → subir a ~1.6-1.8s o cambiar a un botón "Siguiente" en vez de auto-avance ciego (app/onboarding/page.tsx, seleccionarYAvanzar(setFrustracion, v, 1100)).
+2. [Tarjeta "TU RUTA SE ESTÁ ARMANDO" repetida en cada paso del onboarding] Usa el ícono NotebookPen y el copy "Cada respuesta se guarda aquí, como en una libreta" — es la metáfora de "cuaderno" de la dirección de arte ANTERIOR ("Cuaderno de Sala"), que FICHA-ARTE.md declara explícitamente reemplazada por la dirección Héroe/Atleta de gimnasio (verde eléctrico, Poppins, mundo de hierro/gimnasio nocturno). Rompe la consistencia de identidad frente al resto de la app (login, vista del Día 1), que sí respira la identidad nueva → quitar el ícono de libreta y el copy "como en una libreta"; usar un ícono/lenguaje coherente con el gimnasio (clipboard de entrenamiento, check de progreso) (app/onboarding/page.tsx, componente TarjetaRuta).
+3. [Vista previa Día 1, microcopy bajo el CTA sticky] "Prueba de 7 días ya activa, sin tarjeta · pago único, sin renovación · Garantía del Primer Plan Claro: 7 días tras pagar" mete 3 ideas en una sola línea densa (11-13px) y puede leerse contradictorio a primera vista: ¿es gratis o ya es pago único? → partir en 2 líneas cortas: "7 días gratis, sin tarjeta" y, debajo, "Luego pago único · Garantía de 7 días" (app/onboarding/plan/page.tsx).
+4. [Vista previa Día 1, botón principal "Activar mi plan completo"] El verbo "Activar" sugiere que el plan queda activo de inmediato, pero el botón solo navega al paywall — todavía no se paga ni se activa nada → usar un verbo más honesto, ej. "Ver mi plan completo" o "Continuar a mi prueba gratis" (app/onboarding/plan/page.tsx).
+5. [Login, checkbox de autorización de datos] Bloquea tanto "Continuar con Google" como el envío por correo, pero un usuario que toca Google directo sin leer el checkbox solo se entera del bloqueo cuando falla (shake + mensaje) — es corrección de error, no prevención → atenuar visualmente el botón de Google (opacidad reducida, sin quitar el tap) mientras la casilla no esté marcada, para prevenir el error en vez de solo reaccionar a él (app/login/page.tsx, continuarConGoogle).
