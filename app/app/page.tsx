@@ -323,9 +323,17 @@ function PlanDelDia({
   // el número solo podría repetirse entre semanas — con la fecha del último
   // entrenamiento cerrado nunca se confunde una sesión con otra.
   const claveSesion = `${progreso.ultimaFecha ?? ''}:${progreso.diaActual}`;
+  // Se guarda por FECHA REAL + claveSesion, y en localStorage (no
+  // sessionStorage) (pedido del usuario, 29/09/2026): si ya entró a
+  // entrenar hoy, debe seguir abierto en "plan" aunque cierre la app o
+  // cambie a otra — sessionStorage se borraba solo con eso. Incluir la fecha
+  // de HOY en la clave es lo que lo cierra solo al llegar la medianoche: si
+  // no entrenó, `claveSesion` (que depende de progreso, no del calendario)
+  // sigue igual, pero la fecha cambió, así que mañana vuelve a pedir el saludo.
+  const claveSaludoHoy = `${hoy}:${claveSesion}`;
   const [etapa, setEtapa] = useState<'saludo' | 'entrenador' | 'plan'>(() => {
     if (typeof window === 'undefined') return 'plan';
-    const yaVisto = sessionStorage.getItem('gymevo_saludo_visto_dia') === claveSesion;
+    const yaVisto = localStorage.getItem('gymevo_saludo_visto_dia') === claveSaludoHoy;
     return yaVisto ? 'plan' : 'saludo';
   });
 
@@ -354,15 +362,17 @@ function PlanDelDia({
   // real encontrado por el usuario: al terminar el día y avanzar a uno nuevo
   // (diaActual cambia sin recargar la página), "etapa" se quedaba en 'plan'
   // para siempre, sin volver a mostrar el saludo/"vamos con toda". Este
-  // efecto SÍ reacciona a que diaActual cambió — recalcula la etapa con la
-  // misma regla de arriba cada vez que se avanza de día en la misma sesión.
-  const claveAnteriorRef = useRef(claveSesion);
+  // efecto SÍ reacciona a que cambió el día del plan O la fecha real —
+  // recalcula la etapa con la misma regla de arriba en ambos casos (sin
+  // esto, si el usuario dejaba la pestaña abierta toda la noche sin
+  // entrenar, nunca volvía a ver el saludo al día siguiente).
+  const claveAnteriorRef = useRef(claveSaludoHoy);
   useEffect(() => {
-    if (claveAnteriorRef.current === claveSesion) return;
-    claveAnteriorRef.current = claveSesion;
-    const yaVisto = sessionStorage.getItem('gymevo_saludo_visto_dia') === claveSesion;
+    if (claveAnteriorRef.current === claveSaludoHoy) return;
+    claveAnteriorRef.current = claveSaludoHoy;
+    const yaVisto = localStorage.getItem('gymevo_saludo_visto_dia') === claveSaludoHoy;
     setEtapa(yaVisto ? 'plan' : 'saludo');
-  }, [claveSesion]);
+  }, [claveSaludoHoy]);
 
   function iniciarEntrenamiento() {
     // Semana completa: para entrenar más hay que sumar días en el perfil.
@@ -370,7 +380,7 @@ function PlanDelDia({
       router.push('/app/perfil?editar=dias');
       return;
     }
-    sessionStorage.setItem('gymevo_saludo_visto_dia', claveSesion);
+    localStorage.setItem('gymevo_saludo_visto_dia', claveSaludoHoy);
     registrarEvento('entrenamiento_iniciado');
     setEtapa('entrenador');
   }
