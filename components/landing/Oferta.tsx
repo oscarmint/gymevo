@@ -13,6 +13,7 @@ import { BellRing, CheckCircle2, Gift, Star } from 'lucide-react';
 import { CheckCustom, CtaButton, Hairline, Kicker, PrecioAnimado, SectionShell, useReveal, VIEWPORT_ONCE } from './ui';
 import { MarkedCopy, warnCopy, warnRango } from './MarkedCopy';
 import { formatearCOP, useTRM } from '@/lib/trm';
+import { registrarEvento } from '@/lib/analitica';
 
 export interface PlanOferta {
   nombre: string;
@@ -265,6 +266,7 @@ export function Oferta({
                 <motion.a
                   whileTap={{ scale: 0.97 }}
                   href={semestral.ctaHref}
+                  onClick={() => registrarEvento('cta_click')}
                   className="mt-6 flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-[16px] font-semibold text-[var(--accent)] transition-colors duration-150 hover:bg-[var(--chip-bg)] [touch-action:manipulation]"
                 >
                   {semestral.ctaLabel}
@@ -291,6 +293,7 @@ export function Oferta({
               <motion.a
                 whileTap={{ scale: 0.97 }}
                 href={mensual.ctaHref}
+                onClick={() => registrarEvento('cta_click')}
                 className="mt-6 flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] text-[16px] font-semibold text-[var(--accent)] transition-colors duration-150 hover:bg-[var(--chip-bg)] [touch-action:manipulation]"
               >
                 {mensual.ctaLabel}

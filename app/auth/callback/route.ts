@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
+import { registrarEventoServidor } from '@/lib/analitica-servidor';
 
 // Adonde llega el usuario al tocar el link del correo (magic link de Supabase Auth).
 export async function GET(request: Request) {
@@ -16,6 +17,7 @@ export async function GET(request: Request) {
       // de que exista la fila del perfil — un usuario que acaba de pagar
       // vería el paywall otra vez en su primer clic. Ver lib/supabase/sync.ts.
       await supabase.rpc('reconciliar_membresia');
+      await registrarEventoServidor('signup_completed');
       return NextResponse.redirect(`${origin}${next}`);
     }
   }

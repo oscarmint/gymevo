@@ -9,17 +9,26 @@ import { leerUTM } from './utm';
 
 export type EventoEmbudo =
   | 'landing_view'
+  | 'cta_click'
   | 'onboarding_start'
   | 'onboarding_complete'
   | 'plan_preview_view'
   | 'demo_rescate'
+  | 'signup_started'
+  | 'signup_completed'
   | 'paywall_view'
   | 'checkout_click'
   | 'trial_click'
+  | 'trial_started'
+  | 'purchase'
   | 'entrenamiento_iniciado'
+  | 'first_workout_started'
   | 'serie_registrada'
+  | 'first_set_registered'
   | 'entrenamiento_completado'
-  | 'rescate_usado';
+  | 'rescate_usado'
+  | 'technique_viewed'
+  | 'progress_viewed';
 
 // `variante` es opcional: solo la landing y el onboarding (que heredan la
 // variante ya asignada, ver lib/experimentos.ts) la mandan — sirve para

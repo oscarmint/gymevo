@@ -10,6 +10,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
 import { ArrowUp, Check } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { registrarEvento } from '@/lib/analitica';
 
 // Baseline de movimiento #2 (obligatoria): un precio/número con formato de
 // texto ("$4.99") cuenta 0→N al entrar en vista, nunca estático. Parsea el
@@ -169,6 +170,7 @@ export function CtaButton({
     <motion.a
       href={href}
       data-cta-pagina=""
+      onClick={() => registrarEvento('cta_click')}
       whileTap={{ scale: 0.97 }}
       className={`boton-3d inline-flex items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] px-6 text-center text-[17px] font-semibold text-[var(--bg)] transition-colors duration-150 hover:bg-[color-mix(in_oklab,var(--accent)_88%,var(--text-primary))] [touch-action:manipulation] ${
         alto === 56 ? 'h-14' : 'h-[52px]'
@@ -255,6 +257,7 @@ export function StickyCtaMobile({
         >
           <motion.a
             href={href}
+            onClick={() => registrarEvento('cta_click')}
             whileTap={{ scale: 0.97 }}
             className="boton-3d flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] [touch-action:manipulation]"
           >

@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { ArrowLeft, Info, Lock, Mail } from 'lucide-react';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { Logo } from '@/components/Logo';
+import { registrarEvento } from '@/lib/analitica';
 
 type Estado = 'idle' | 'enviando' | 'enviado' | 'error';
 
@@ -60,6 +61,7 @@ function LoginContenido() {
       return;
     }
 
+    registrarEvento('signup_started');
     setEstado('enviado');
     setCountdown(60);
     const tick = setInterval(() => {
@@ -92,7 +94,11 @@ function LoginContenido() {
     if (error) {
       setErrorGoogle(true);
       setCargandoGoogle(false);
+      return;
     }
+    // El registro sigue en Google (redirige de inmediato) — se manda ANTES
+    // de que la página se vaya, aunque la respuesta del fetch nunca se vea.
+    registrarEvento('signup_started');
   }
 
   async function reenviar() {
@@ -131,6 +137,10 @@ function LoginContenido() {
     // código de 8 dígitos no pasa por ahí, y sin perfil el proxy manda a la
     // persona de vuelta al paywall (bloqueo real, 26/09/2026).
     await supabase.rpc('reconciliar_membresia');
+    // El enlace del correo y Google registran 'signup_completed' en
+    // /auth/callback (ruta de servidor) — el código de 8 dígitos no pasa por
+    // ahí, así que se registra aquí mismo.
+    registrarEvento('signup_completed');
     router.push(destino);
   }
 
@@ -167,7 +177,7 @@ function LoginContenido() {
         {estado !== 'enviado' ? (
           <>
             {desdePlan && (
-              <p className="mb-3 inline-block rounded-full bg-[var(--accent)] px-3 py-1 text-[13px] font-bold uppercase tracking-[0.04em] text-[var(--bg)]">
+              <p className="mb-3 inline-block rounded-full bg-[var(--accent)] px-3 py-1 text-xs font-bold uppercase tracking-[0.04em] text-[var(--bg)]">
                 7 días gratis · sin tarjeta hoy
               </p>
             )}
@@ -186,7 +196,7 @@ function LoginContenido() {
                 crea ninguna cuenta sin este consentimiento explícito. */}
             <label
               key={sacudida}
-              className={`flex items-start gap-3 rounded-xl p-2 -m-2 text-[13px] leading-snug ${
+              className={`flex items-start gap-3 rounded-xl p-2 -m-2 text-xs leading-snug ${
                 errorAcepto
                   ? 'text-[var(--status-error)] [animation:sacudida_0.4s_ease-in-out] motion-reduce:[animation:none]'
                   : 'text-[var(--text-secondary)]'

@@ -20,17 +20,24 @@ function clienteAdmin() {
 // Lista blanca — nunca se inserta un `type` arbitrario que alguien mande.
 const TIPOS_VALIDOS = [
   'landing_view',
+  'cta_click',
   'onboarding_start',
   'onboarding_complete',
   'plan_preview_view',
   'demo_rescate',
+  'signup_started',
+  'signup_completed',
   'paywall_view',
   'checkout_click',
   'trial_click',
   'entrenamiento_iniciado',
+  'first_workout_started',
   'serie_registrada',
+  'first_set_registered',
   'entrenamiento_completado',
   'rescate_usado',
+  'technique_viewed',
+  'progress_viewed',
 ] as const;
 
 export async function POST(req: NextRequest) {

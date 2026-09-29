@@ -382,6 +382,12 @@ function PlanDelDia({
     }
     localStorage.setItem('gymevo_saludo_visto_dia', claveSaludoHoy);
     registrarEvento('entrenamiento_iniciado');
+    // 'entrenamiento_iniciado' se dispara TODOS los días — para medir
+    // activación real (pedido del usuario, 29/09/2026: "% que llega a su
+    // primer entrenamiento", no solo "% que compra") hace falta un evento
+    // aparte que solo ocurra la primerísima vez, antes de que exista ningún
+    // registro (progreso.logs vacío).
+    if (progreso.logs.length === 0) registrarEvento('first_workout_started');
     setEtapa('entrenador');
   }
 
@@ -471,6 +477,10 @@ function PlanDelDia({
   // última serie de su objetivo (`ej.series`).
   function registrar(ejercicioId: string) {
     registrarEvento('serie_registrada');
+    // Igual que 'first_workout_started': solo la PRIMERA serie que la
+    // persona registra en toda su vida en la app (progreso.logs vacío
+    // todavía) — es el momento real de activación, no cada serie de cada día.
+    if (progreso.logs.length === 0) registrarEvento('first_set_registered');
     const ej = obtenerEjercicio(ejercicioId);
     const pesoTexto = pesos[ejercicioId];
     const peso = pesoTexto ? Number(pesoTexto) : 0;
@@ -1008,13 +1018,17 @@ function PlanDelDia({
                         href={urlComoSeHace(ej.nombre)}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={() => registrarEvento('technique_viewed')}
                         className="inline-flex items-center gap-1 text-xs font-medium text-[var(--accent)]"
                       >
                         <PlayCircle size={13} /> ¿Cómo se hace?
                       </a>
                       <button
                         type="button"
-                        onClick={() => setExplicando(ej.id)}
+                        onClick={() => {
+                          registrarEvento('technique_viewed');
+                          setExplicando(ej.id);
+                        }}
                         className="inline-flex items-center gap-1 text-xs font-medium text-[var(--accent-2)]"
                       >
                         <Dumbbell size={13} /> Explicación del ejercicio

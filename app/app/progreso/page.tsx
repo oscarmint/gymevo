@@ -10,6 +10,7 @@
 
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { registrarEvento } from '@/lib/analitica';
 import { diasDelMes, resumenDelMes } from '@/lib/calendario';
 import { elegirSesion, guardarProgreso, hoyISO, nombreDeSesion, rutinasDisponiblesSemana } from '@/lib/routine';
 import { guardarProgresoRemoto } from '@/lib/supabase/sync';
@@ -38,6 +39,10 @@ function ProgresoContenido() {
   const [vista, setVista] = useState<Vista>(parametros.get('vista') === 'evolucion' ? 'evolucion' : 'calendario');
   const [elegida, setElegida] = useState<string | null>(fechaParametro);
   const [mesElegido, setMesElegido] = useState<{ anio: number; mes0: number } | null>(null);
+
+  useEffect(() => {
+    registrarEvento('progress_viewed');
+  }, []);
   const detalleRef = useRef<HTMLDivElement>(null);
   const eligioDia = useRef(false);
 

@@ -124,6 +124,17 @@ export async function POST(req: NextRequest) {
   const result = status === 'duplicate' ? 'duplicate' : status === 'illegal_transition' ? 'illegal' : 'applied';
   await admin.from('webhook_log').insert({ event_id: eventId, type: event, result });
 
+  // Embudo (29/09/2026, pedido del dueño): 'purchase' y 'trial_started' solo
+  // se registran cuando Hotmart CONFIRMA el pago o el arranque de la prueba
+  // (no cuando el usuario solo hace clic en "pagar" — eso ya se veía con
+  // checkout_click/trial_click, pero nunca se sabía si de verdad se concretaba).
+  // Solo en transiciones aplicadas de verdad, nunca en duplicados/ilegales
+  // (un webhook reentregado no debe inflar el conteo).
+  if (result === 'applied') {
+    if (newStatus === 'active') await admin.from('event_log').insert({ type: 'purchase' });
+    else if (newStatus === 'trialing') await admin.from('event_log').insert({ type: 'trial_started' });
+  }
+
   // 6. Siempre 200 cuando la decisión se tomó (incluido duplicate/illegal) —
   //    así Hotmart deja de reintentar. Solo 5xx en fallo real de verdad.
   return NextResponse.json({ received: true, result: status });
