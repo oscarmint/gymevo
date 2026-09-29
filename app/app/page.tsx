@@ -704,10 +704,40 @@ function PlanDelDia({
           día del programa) arriba, chiquita; abajo la misión de hoy, con la
           animación de cierre (Lottie) coronándola. Pedido explícito del
           usuario: quitar el "Hola" y mostrar la fecha real. */}
-      <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">
-        {new Date().toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-        {' · '}
-        {textoAvanceRuta(progreso).texto}
+      {/* Racha + progreso de la ruta fusionados en un solo renglón (pedido
+          del usuario, 29/09/2026, parte 2 de "entrenador, no panel
+          administrativo"): antes eran DOS piezas separadas — este kicker con
+          solo la fecha y el día del plan, y más abajo una tarjeta con borde
+          completa solo para la racha. Ahora comparten la misma línea, con la
+          llamita chica inline en vez de su propia caja. */}
+      <p className="flex flex-wrap items-center gap-x-1.5 text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">
+        <span>{new Date().toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
+        <span aria-hidden="true">·</span>
+        <span className={`relative inline-flex ${enRiesgo ? 'text-[var(--status-warning)]' : ''}`} style={{ width: 14, height: 14 }}>
+          <Flame size={14} color={enRiesgo ? 'var(--status-warning)' : 'var(--accent)'} fill="none" className="absolute inset-0" />
+          <span
+            className="absolute inset-0 overflow-hidden"
+            style={{
+              clipPath: `inset(${100 - progresoLlamaPct}% 0 0 0)`,
+              transition: reduce ? 'none' : 'clip-path 500ms cubic-bezier(0.16,1,0.3,1)',
+            }}
+          >
+            <Flame size={14} color={enRiesgo ? 'var(--status-warning)' : 'var(--accent)'} fill={enRiesgo ? 'var(--status-warning)' : 'var(--accent)'} />
+          </span>
+        </span>
+        <span className={enRiesgo ? 'text-[var(--status-warning)]' : ''}>
+          {rachaMostrada === 0 && semana.hechos === 0 ? 'Primera semana' : `Racha: ${rachaMostrada} sem`}
+        </span>
+        <span aria-hidden="true">·</span>
+        <span>{textoAvanceRuta(progreso).texto}</span>
+      </p>
+      {/* El detalle accionable de la semana (cuántas sesiones faltan, o
+          cuántas ya van) sigue visible, pero como texto simple — ya no en
+          su propia tarjeta con borde. */}
+      <p className={`mt-1 text-xs ${enRiesgo ? 'font-medium text-[var(--status-warning)]' : 'text-[var(--text-tertiary)]'}`}>
+        {enRiesgo
+          ? `Te ${semana.faltan === 1 ? 'falta 1 sesión' : `faltan ${semana.faltan} sesiones`} esta semana y ${semana.diasRestantes === 1 ? 'queda 1 día' : `quedan ${semana.diasRestantes} días`}.`
+          : `Esta semana: ${semana.hechos} de ${semana.meta} ${semana.meta === 1 ? 'día' : 'días'} de entrenamiento.`}
       </p>
       {textoAvanceRuta(progreso).fraccion !== null && (
         <div aria-hidden="true" className="mt-2 h-1 w-full overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)]">
@@ -722,7 +752,7 @@ function PlanDelDia({
           última palabra. */}
       <div className="mt-1 flex items-start gap-2">
         <h1 className="min-w-0 flex-1 text-balance text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
-          {`Hoy vamos con: ${nombreDeSesion(sesion)}`}
+          {`Hoy entrenamos: ${nombreDeSesion(sesion)}`}
         </h1>
         <Lottie
           src={animacionFitness}
@@ -769,41 +799,6 @@ function PlanDelDia({
       )}
 
       <BannerRenovacion />
-
-      {/* (3) ESTADO DE LA RACHA — M4 racha en riesgo si aplica (color de aviso
-          real de FICHA-ARTE, no un gris tenue — la alerta debe leerse como tal) */}
-      <div
-        className={`mt-4 flex items-center gap-3 rounded-2xl border p-4 ${
-          enRiesgo
-            ? 'border-[color-mix(in_oklab,var(--status-warning)_30%,transparent)] bg-[color-mix(in_oklab,var(--status-warning)_6%,transparent)]'
-            : 'border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[var(--chip-bg)]'
-        }`}
-      >
-        <div className="relative" style={{ width: 22, height: 22 }}>
-          <Flame size={22} color={enRiesgo ? 'var(--status-warning)' : 'var(--accent)'} fill="none" className="absolute inset-0" />
-          <div
-            className="absolute inset-0 overflow-hidden"
-            style={{
-              clipPath: `inset(${100 - progresoLlamaPct}% 0 0 0)`,
-              transition: reduce ? 'none' : 'clip-path 500ms cubic-bezier(0.16,1,0.3,1)',
-            }}
-          >
-            <Flame size={22} color="var(--accent)" fill="var(--accent)" />
-          </div>
-        </div>
-        <div>
-          <p className={`text-sm font-semibold ${enRiesgo ? 'text-[var(--status-warning)]' : 'text-[var(--text-primary)]'}`}>
-            {rachaMostrada === 0 && semana.hechos === 0
-              ? 'Tu primera semana empieza hoy'
-              : `Racha: ${rachaMostrada} ${semanas === 1 ? 'semana' : 'semanas'}`}
-          </p>
-          <p className="text-xs text-[var(--text-secondary)]">
-            {enRiesgo
-              ? `Te ${semana.faltan === 1 ? 'falta 1 sesión' : `faltan ${semana.faltan} sesiones`} esta semana y ${semana.diasRestantes === 1 ? 'queda 1 día' : `quedan ${semana.diasRestantes} días`}.`
-              : `Esta semana: ${semana.hechos} de ${semana.meta} ${semana.meta === 1 ? 'día' : 'días'} de entrenamiento.`}
-          </p>
-        </div>
-      </div>
 
       {/* Calentamiento antes de los ejercicios principales — nunca es opcional
           (5-7 min, activa lo que vas a trabajar y protege articulaciones). */}
@@ -945,7 +940,7 @@ function PlanDelDia({
                       reps — separarlo en su propia línea era repetir el
                       número de series y gastar un renglón de más. */}
                   {!hecho && (
-                    <div className="mt-1 flex items-center gap-2" role="img" aria-label={`Serie ${serieActual} de ${ej.series}, ${ej.reps} repeticiones`}>
+                    <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1" role="img" aria-label={`Serie ${serieActual} de ${ej.series}, ${ej.reps} repeticiones`}>
                       {Array.from({ length: ej.series }).map((_, idxSerie) => {
                         const serieHecha = idxSerie < seriesHechas;
                         const enDestello = !reduce && serieRecienRegistrada?.ejId === ej.id && serieRecienRegistrada.indice === idxSerie;
@@ -974,7 +969,7 @@ function PlanDelDia({
                           </motion.span>
                         );
                       })}
-                      <span className="text-xs font-semibold text-[var(--accent)]">
+                      <span className="whitespace-nowrap text-xs font-semibold text-[var(--accent)]">
                         Serie {serieActual} de {ej.series} · {ej.reps} reps
                       </span>
                     </div>
