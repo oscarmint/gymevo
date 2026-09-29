@@ -81,25 +81,36 @@ export default async function AdminPage() {
         <ArrowLeft size={15} /> Volver a mi perfil de la app
       </Link>
 
-      {/* AVISOS — banner arriba de todo (21-BACKOFFICE) */}
+      {/* AVISOS — banner arriba de todo (21-BACKOFFICE). Los que apuntan a
+          algo puntual por revisar (href) llevan directo ahí ya filtrado —
+          la "cola de revisión" de GymEvoApp, a su escala (29/09/2026). */}
       <div className="flex flex-col gap-2">
-        {avisos.map((a, i) => (
-          <div
-            key={i}
-            className={`flex items-start gap-2.5 rounded-xl border p-3.5 text-sm ${
-              a.tipo === 'ok'
-                ? 'border-[color-mix(in_oklab,var(--accent)_30%,transparent)] bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] text-[var(--text-primary)]'
-                : 'border-[color-mix(in_oklab,var(--status-warning)_35%,transparent)] bg-[color-mix(in_oklab,var(--status-warning)_8%,transparent)] text-[var(--text-primary)]'
-            }`}
-          >
-            {a.tipo === 'ok' ? (
-              <CheckCircle2 size={17} color="var(--accent)" className="mt-0.5 shrink-0" />
-            ) : (
-              <AlertTriangle size={17} color="var(--status-warning)" className="mt-0.5 shrink-0" />
-            )}
-            <p>{a.mensaje}</p>
-          </div>
-        ))}
+        {avisos.map((a, i) => {
+          const clases = `flex items-start gap-2.5 rounded-xl border p-3.5 text-sm transition-colors duration-150 ${
+            a.tipo === 'ok'
+              ? 'border-[color-mix(in_oklab,var(--accent)_30%,transparent)] bg-[color-mix(in_oklab,var(--accent)_8%,transparent)] text-[var(--text-primary)]'
+              : 'border-[color-mix(in_oklab,var(--status-warning)_35%,transparent)] bg-[color-mix(in_oklab,var(--status-warning)_8%,transparent)] text-[var(--text-primary)]'
+          } ${a.href ? 'hover:bg-[color-mix(in_oklab,var(--status-warning)_14%,transparent)]' : ''}`;
+          const contenido = (
+            <>
+              {a.tipo === 'ok' ? (
+                <CheckCircle2 size={17} color="var(--accent)" className="mt-0.5 shrink-0" />
+              ) : (
+                <AlertTriangle size={17} color="var(--status-warning)" className="mt-0.5 shrink-0" />
+              )}
+              <p>{a.mensaje}</p>
+            </>
+          );
+          return a.href ? (
+            <Link key={i} href={a.href} className={clases}>
+              {contenido}
+            </Link>
+          ) : (
+            <div key={i} className={clases}>
+              {contenido}
+            </div>
+          );
+        })}
       </div>
 
       {/* VENTAS */}

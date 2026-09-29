@@ -15,7 +15,10 @@ const ESTADO_LABEL: Record<string, string> = {
   chargeback: 'Contracargo',
 };
 
-const FILTROS = ['', 'active', 'trialing', 'past_due', 'cancelled', 'expired', 'refunded', 'chargeback'];
+// 'problema' junta past_due + refunded + chargeback (ver obtenerPagos en
+// lib/admin.ts) — es adonde llega el aviso de "pagos por revisar" del Resumen.
+const FILTROS = ['', 'problema', 'active', 'trialing', 'past_due', 'cancelled', 'expired', 'refunded', 'chargeback'];
+const ESTADO_LABEL_EXTRA: Record<string, string> = { problema: 'Necesitan atención' };
 
 export default async function AdminPagosPage({ searchParams }: { searchParams: Promise<{ estado?: string; q?: string }> }) {
   const { estado, q } = await searchParams;
@@ -39,7 +42,7 @@ export default async function AdminPagosPage({ searchParams }: { searchParams: P
           >
             {FILTROS.map((f) => (
               <option key={f} value={f}>
-                {f ? (ESTADO_LABEL[f] ?? f) : 'Todos los estados'}
+                {f ? (ESTADO_LABEL_EXTRA[f] ?? ESTADO_LABEL[f] ?? f) : 'Todos los estados'}
               </option>
             ))}
           </select>

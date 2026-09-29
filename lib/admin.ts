@@ -459,6 +459,27 @@ export async function obtenerExperimentoLanding(): Promise<FilaExperimentoLandin
 export interface AvisoAdmin {
   tipo: 'aviso' | 'ok';
   mensaje: string;
+  /** Si el aviso señala algo puntual que revisar (no solo informa), lleva
+   * directo a esa pantalla ya filtrada — evitar que el dueño tenga que
+   * adivinar dónde mirar. */
+  href?: string;
+}
+
+/** Cuántas compras necesitan que el dueño las revise — el equivalente real,
+ * en la escala de GymEvoApp, a una "cola de revisión" (29/09/2026, pedido
+ * del dueño, spec de MeritGO): no hay pagos manuales que aprobar (todo pasa
+ * por el checkout de Hotmart), así que lo que de verdad necesita ojo humano
+ * es un pago atrasado, un reembolso o un contracargo RECIENTE — uno de hace
+ * meses ya está resuelto y no debería seguir sonando la alarma. */
+export async function contarPagosPorRevisar(dias = 14): Promise<number> {
+  const supabase = await crearClienteSupabaseServidor();
+  const desde = new Date(Date.now() - dias * 24 * 60 * 60 * 1000).toISOString();
+  const { count } = await supabase
+    .from('hotmart_purchases')
+    .select('email', { count: 'exact', head: true })
+    .in('status', ['past_due', 'chargeback', 'refunded'])
+    .gte('updated_at', desde);
+  return count ?? 0;
 }
 
 /** Avisos automáticos — solo dispara sobre datos REALES que ya existen hoy
@@ -466,7 +487,7 @@ export interface AvisoAdmin {
  * apagados hasta que existan sus fuentes (costo de IA no aplica a esta app,
  * gasto por canal y ganancia conciliada no están instrumentados todavía). */
 export async function calcularAvisos(): Promise<AvisoAdmin[]> {
-  const salud = await obtenerSaludWebhook();
+  const [salud, pagosPorRevisar] = await Promise.all([obtenerSaludWebhook(), contarPagosPorRevisar()]);
   const avisos: AvisoAdmin[] = [];
 
   if (salud.fallosRecientes > 0) {
@@ -479,6 +500,13 @@ export async function calcularAvisos(): Promise<AvisoAdmin[]> {
     avisos.push({
       tipo: 'aviso',
       mensaje: 'El webhook de Hotmart nunca ha recibido un evento. Si ya vendes, revisa que esté bien configurado en tu panel de Hotmart.',
+    });
+  }
+  if (pagosPorRevisar > 0) {
+    avisos.push({
+      tipo: 'aviso',
+      mensaje: `Tienes ${pagosPorRevisar} pago${pagosPorRevisar === 1 ? '' : 's'} con problema en los últimos 14 días (atrasado, reembolso o contracargo) — revísalo en Pagos.`,
+      href: '/admin/pagos?estado=problema',
     });
   }
 
@@ -574,7 +602,11 @@ export async function obtenerPagos(filtroEstado: string, query: string): Promise
     .select('email, status, first_paid_at, access_until, updated_at, agregado_manualmente')
     .order('updated_at', { ascending: false })
     .limit(200);
-  if (filtroEstado) q = q.eq('status', filtroEstado);
+  // 'problema' es un filtro sintético (no un status real de la tabla): junta
+  // los 3 estados que de verdad necesitan que el dueño los revise — mismo
+  // criterio que contarPagosPorRevisar más arriba.
+  if (filtroEstado === 'problema') q = q.in('status', ['past_due', 'chargeback', 'refunded']);
+  else if (filtroEstado) q = q.eq('status', filtroEstado);
   if (query.trim()) q = q.ilike('email', `%${query.trim()}%`);
   const { data } = await q;
   return (data ?? []).map((f) => ({
