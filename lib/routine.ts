@@ -1506,18 +1506,55 @@ const INCREMENTO_SUGERIDO: Record<'kg' | 'lb', number> = { kg: 2.5, lb: 5 };
 
 /** Sugerencia de peso para la próxima vez, basada en el RIR (Repeticiones en
  * Reserva) que el usuario reportó la última vez — autorregulación simple
- * (15/09/2026, Ruta Intermedio): si sobró margen (RIR 3-4, "fácil"/"muy
- * fácil"), sugiere subir un incremento chico; si costó (RIR 0-1, "al fallo"/
- * "duro"), sugiere mantener el mismo peso para consolidar la técnica; RIR 2
- * ("moderado") también mantiene, es la zona correcta para seguir ahí. Sin
- * RIR registrado (log viejo, o Ruta Principiante que no lo pregunta) no hay
- * sugerencia — se usa el dato plano de `ultimoRegistro` como hasta ahora. */
-export function sugerenciaPeso(p: Progreso, ejercicioId: string): { pesoSugerido: number; subio: boolean } | null {
+ * (15/09/2026, Ruta Intermedio). Sin RIR registrado (log viejo, o Ruta
+ * Principiante que no lo pregunta) no hay sugerencia.
+ *
+ * El comportamiento CAMBIA según la META (29/09/2026, opción 3 elegida por
+ * el dueño tras revisar evidencia real — ver fuentes en el commit): en
+ * déficit calórico la capacidad de recuperación es menor, así que empujar
+ * carga tan agresivo como para ganar músculo es más riesgo que beneficio.
+ * - Meta MÚSCULO: si sobró margen la última vez (RIR 3-4, "Ligera"), sugiere
+ *   subir un incremento chico de inmediato — empuja la progresión tan
+ *   pronto el semáforo lo permite. RIR 0-2 mantiene.
+ * - Meta GRASA: si la ÚLTIMA fue "Pesada" o "Al límite" (RIR 0-1), avisa
+ *   explícitamente que no es momento de subir (antes eso quedaba en
+ *   silencio, igual que "Buena"). Si sobró margen, pide DOS veces SEGUIDAS
+ *   "Ligera" antes de subir — más conservador que en músculo. */
+export function sugerenciaPeso(p: Progreso, ejercicioId: string, meta: Meta): { pesoSugerido: number; subio: boolean; mensaje: string } | null {
   const ultimo = ultimoRegistro(p, ejercicioId);
   if (!ultimo || ultimo.rir === undefined || ultimo.peso <= 0) return null;
   const incremento = INCREMENTO_SUGERIDO[p.unidadPeso];
+  const unidad = p.unidadPeso;
+
+  if (meta === 'grasa') {
+    if (ultimo.rir <= 1) {
+      return {
+        pesoSugerido: ultimo.peso,
+        subio: false,
+        mensaje: `Ya diste bastante la vez pasada — mantén ${ultimo.peso}${unidad} y dale una sesión más antes de subir.`,
+      };
+    }
+    const rirAnterior = p.logs
+      .filter((l) => l.ejercicioId === ejercicioId && l.fecha < ultimo.fecha && l.rir !== undefined)
+      .sort((a, b) => (a.fecha < b.fecha ? 1 : a.fecha > b.fecha ? -1 : 0))[0]?.rir;
+    const subio = ultimo.rir >= 3 && rirAnterior !== undefined && rirAnterior >= 3;
+    return {
+      pesoSugerido: subio ? ultimo.peso + incremento : ultimo.peso,
+      subio,
+      mensaje: subio
+        ? `Dos veces seguidas te sobró margen — prueba con ${ultimo.peso + incremento}${unidad} hoy.`
+        : `Mantén ${ultimo.peso}${unidad} — en déficit, el peso se sube con calma.`,
+    };
+  }
+
   const subio = ultimo.rir >= 3;
-  return { pesoSugerido: subio ? ultimo.peso + incremento : ultimo.peso, subio };
+  return {
+    pesoSugerido: subio ? ultimo.peso + incremento : ultimo.peso,
+    subio,
+    mensaje: subio
+      ? `Te sobró margen — prueba con ${ultimo.peso + incremento}${unidad} hoy.`
+      : `Mantén ${ultimo.peso}${unidad} — la vez pasada costó.`,
+  };
 }
 
 /** Deshace un registro de hoy (control y libertad — heurística 3): quita la

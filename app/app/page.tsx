@@ -843,7 +843,7 @@ function PlanDelDia({
             const registroAnterior = seriesHechas === 0 ? ultimoRegistro(progreso, ej.id) : null;
             // Autorregulación (Ruta Intermedio, 15/09/2026): solo en la
             // primera serie, y solo si la vez pasada quedó un RIR guardado.
-            const sugerencia = nivel === 'intermedio' && seriesHechas === 0 ? sugerenciaPeso(progreso, ej.id) : null;
+            const sugerencia = nivel === 'intermedio' && seriesHechas === 0 ? sugerenciaPeso(progreso, ej.id, meta) : null;
 
             // Fila compacta: pendiente, no es la que sigue, y el usuario no
             // la abrió a propósito. Sin peso/reps/ayudas/esfuerzo — solo lo
@@ -999,9 +999,7 @@ function PlanDelDia({
                   {!hecho && sugerencia && (
                     <p className="mt-1 flex items-center gap-1 text-xs font-medium text-[var(--accent)]">
                       <TrendingUp size={13} />
-                      {sugerencia.subio
-                        ? `Te sobró margen — prueba con ${sugerencia.pesoSugerido}${progreso.unidadPeso} hoy.`
-                        : `Mantén ${sugerencia.pesoSugerido}${progreso.unidadPeso} — la vez pasada costó.`}
+                      {sugerencia.mensaje}
                     </p>
                   )}
                   {!hecho && ayudasAbiertas[ej.id] && (
