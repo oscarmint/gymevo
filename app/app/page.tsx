@@ -929,11 +929,13 @@ function PlanDelDia({
                   >
                     {ej.nombre}
                   </p>
-                  <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-                    {ej.series}×{ej.reps}
-                  </p>
+                  {/* Series y reps en el mismo renglón que "Serie X de Y"
+                      (pedido del usuario, 29/09/2026): el total de series ya
+                      se lee ahí ("de {ej.series}"), así que solo faltaban las
+                      reps — separarlo en su propia línea era repetir el
+                      número de series y gastar un renglón de más. */}
                   {!hecho && (
-                    <div className="mt-1.5 flex items-center gap-2" role="img" aria-label={`Serie ${serieActual} de ${ej.series}`}>
+                    <div className="mt-1 flex items-center gap-2" role="img" aria-label={`Serie ${serieActual} de ${ej.series}, ${ej.reps} repeticiones`}>
                       {Array.from({ length: ej.series }).map((_, idxSerie) => {
                         const serieHecha = idxSerie < seriesHechas;
                         const enDestello = !reduce && serieRecienRegistrada?.ejId === ej.id && serieRecienRegistrada.indice === idxSerie;
@@ -963,7 +965,7 @@ function PlanDelDia({
                         );
                       })}
                       <span className="text-xs font-semibold text-[var(--accent)]">
-                        Serie {serieActual} de {ej.series}
+                        Serie {serieActual} de {ej.series} · {ej.reps} reps
                       </span>
                     </div>
                   )}
