@@ -7,7 +7,7 @@
 
 import Link from 'next/link';
 import { CreditCard, Eye, RefreshCcw, TrendingDown, UserX } from 'lucide-react';
-import { ETAPA_LABEL, obtenerConteoEtapas, obtenerResumenFunnel, obtenerUsuariosPorEtapa, type EtapaUsuario } from '@/lib/admin';
+import { ETAPA_LABEL, obtenerConteoEtapas, obtenerEmbudoPorPasos, obtenerResumenFunnel, obtenerUsuariosPorEtapa, type EtapaUsuario } from '@/lib/admin';
 
 const PLAN_LABEL: Record<string, string> = { pro: 'Pro', free: 'Gratis' };
 
@@ -26,7 +26,13 @@ export default async function EmbudoPage({ searchParams }: { searchParams: Promi
   const { etapa: etapaParam } = await searchParams;
   const etapaActiva: EtapaUsuario = (ETAPAS.find((e) => e.id === etapaParam)?.id ?? 'prueba_vencida') as EtapaUsuario;
 
-  const [conteos, funnel, usuarios] = await Promise.all([obtenerConteoEtapas(), obtenerResumenFunnel(), obtenerUsuariosPorEtapa(etapaActiva)]);
+  const [conteos, funnel, usuarios, pasos] = await Promise.all([
+    obtenerConteoEtapas(),
+    obtenerResumenFunnel(),
+    obtenerUsuariosPorEtapa(etapaActiva),
+    obtenerEmbudoPorPasos(),
+  ]);
+  const maximoPasos = Math.max(1, ...pasos.map((p) => p.conteo));
 
   return (
     <div className="flex flex-col gap-6">
@@ -37,6 +43,46 @@ export default async function EmbudoPage({ searchParams }: { searchParams: Promi
         </p>
       </div>
 
+      {/* GENERAL — el resumen de un vistazo: de todo el que llega a la
+          landing, cuántos terminan pagando (pedido del dueño, 29/09/2026).
+          Últimos 30 días, mismo criterio anónimo que el resto del embudo. */}
+      {pasos.length > 0 && (
+        <div className="rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[var(--chip-bg)] p-5">
+          <p className="text-sm text-[var(--text-secondary)]">
+            De <span className="font-semibold text-[var(--text-primary)]">{pasos[0].conteo}</span> visitas a la landing en los últimos 30 días,{' '}
+            <span className="font-semibold text-[var(--text-primary)]">{pasos[pasos.length - 1].conteo}</span> terminaron pagando —{' '}
+            <span className="font-bold text-[var(--accent)]">
+              {pasos[0].conteo > 0 ? Math.round((pasos[pasos.length - 1].conteo / pasos[0].conteo) * 100 * 10) / 10 : 0}%
+            </span>{' '}
+            de conversión de punta a punta.
+          </p>
+        </div>
+      )}
+
+      {/* DESGLOSADO — el camino completo paso a paso, para ver EXACTAMENTE
+          dónde se cae la gente (landing, onboarding, plan, paywall, registro,
+          prueba, primer entrenamiento, pago) — no solo cuántos ya se
+          registraron, que es lo que cubren las 4 etapas de abajo. */}
+      <div className="rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
+        <p className="mb-1 text-sm font-semibold text-[var(--text-primary)]">Por pasos (últimos 30 días)</p>
+        <p className="mb-4 text-xs text-[var(--text-tertiary)]">Cuántas veces pasó cada cosa — no personas únicas, ni guarda quién es cada una.</p>
+        <div className="flex flex-col gap-3">
+          {pasos.map((p) => (
+            <div key={p.id} className="flex items-center gap-3">
+              <p className="w-40 shrink-0 truncate text-xs text-[var(--text-secondary)]">{p.etiqueta}</p>
+              <div className="h-2 flex-1 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)]">
+                <div className="h-full rounded-full bg-[var(--accent)]" style={{ width: `${Math.max(2, (p.conteo / maximoPasos) * 100)}%` }} />
+              </div>
+              <p className="w-10 shrink-0 text-right text-sm font-semibold tabular-nums text-[var(--text-primary)]">{p.conteo}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="mb-1 text-sm font-semibold text-[var(--text-primary)]">Ya registrados, por etapa</p>
+        <p className="mb-3 text-xs text-[var(--text-tertiary)]">De aquí para abajo, solo quienes ya crearon una cuenta — toca una etapa para ver quiénes son.</p>
+      </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
         <div className="rounded-[var(--radius-card)] border border-dashed border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] bg-[var(--surface)] p-4 opacity-80">
           <Eye size={15} className="text-[var(--text-tertiary)]" />

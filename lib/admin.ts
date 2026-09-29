@@ -9,6 +9,7 @@
 // la pantalla lo rotula "Sin datos", nunca un 0 que parezca real.
 
 import { crearClienteSupabaseServidor } from './supabase/server';
+import type { EventoEmbudo } from './analitica';
 
 export interface ResumenVentas {
   totalCompras: number;
@@ -348,6 +349,46 @@ export async function obtenerResumenFunnel(): Promise<ResumenFunnel> {
     onboardingIniciado30d: onboardingIniciado ?? 0,
     onboardingCompletado30d: onboardingCompletado ?? 0,
   };
+}
+
+export interface PasoEmbudo {
+  id: string;
+  etiqueta: string;
+  conteo: number;
+}
+
+// Orden REAL del camino en GymEvoApp (pedido del dueño, 29/09/2026: "en qué
+// punto quedan los usuarios" — no solo cuántos ya se registraron, sino desde
+// la landing). No es el orden típico de otras apps: aquí la persona ve su
+// plan y los precios ANTES de que se le pida guardar/registrarse (decisión
+// del dueño del 28/09, ver checkpoint "El plan se ve ANTES de pedir
+// registro"), así que el paso de registro va después del paywall, no antes.
+const DEFINICION_PASOS_EMBUDO: { id: string; etiqueta: string; tipo: EventoEmbudo }[] = [
+  { id: 'landing', etiqueta: 'Vio la landing', tipo: 'landing_view' },
+  { id: 'cta', etiqueta: 'Tocó "Empezar"', tipo: 'cta_click' },
+  { id: 'onboarding_inicio', etiqueta: 'Empezó el cuestionario', tipo: 'onboarding_start' },
+  { id: 'onboarding_fin', etiqueta: 'Terminó el cuestionario', tipo: 'onboarding_complete' },
+  { id: 'plan', etiqueta: 'Vio su plan (Día 1)', tipo: 'plan_preview_view' },
+  { id: 'paywall', etiqueta: 'Vio los precios', tipo: 'paywall_view' },
+  { id: 'registro_inicio', etiqueta: 'Empezó a guardar su cuenta', tipo: 'signup_started' },
+  { id: 'registro_fin', etiqueta: 'Se registró de verdad', tipo: 'signup_completed' },
+  { id: 'prueba', etiqueta: 'Empezó su prueba gratis', tipo: 'trial_started' },
+  { id: 'primer_entreno', etiqueta: 'Hizo su primer entrenamiento', tipo: 'first_workout_started' },
+  { id: 'compra', etiqueta: 'Pagó de verdad', tipo: 'purchase' },
+];
+
+/** El camino completo paso a paso, desde la landing hasta el pago — cuántos
+ * llegaron a cada uno en los últimos N días (pedido del dueño, 29/09/2026).
+ * Usa los eventos anónimos de event_log (ninguno guarda quién es la
+ * persona), así que es un conteo de VECES que pasó cada cosa, no de
+ * personas únicas — mismo criterio que ya usa `obtenerResumenFunnel`. */
+export async function obtenerEmbudoPorPasos(dias = 30): Promise<PasoEmbudo[]> {
+  const supabase = await crearClienteSupabaseServidor();
+  const desde = new Date(Date.now() - dias * 24 * 60 * 60 * 1000).toISOString();
+  const conteos = await Promise.all(
+    DEFINICION_PASOS_EMBUDO.map((p) => supabase.from('event_log').select('id', { count: 'exact', head: true }).eq('type', p.tipo).gte('created_at', desde))
+  );
+  return DEFINICION_PASOS_EMBUDO.map((p, i) => ({ id: p.id, etiqueta: p.etiqueta, conteo: conteos[i].count ?? 0 }));
 }
 
 export interface FilaAtribucionUTM {
