@@ -7,7 +7,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { animate, AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
-import { Activity, Check, Repeat, ChevronLeft, NotebookPen, PlayCircle, RefreshCcw, ShieldAlert, TrendingUp, Users, X, Zap } from 'lucide-react';
+import { Activity, Check, Repeat, ChevronLeft, PlayCircle, RefreshCcw, Route, ShieldAlert, TrendingUp, Users, X, Zap } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
   guardarRespuestas,
@@ -372,7 +372,7 @@ export default function OnboardingPage() {
                 opciones={OPCIONES_FRUSTRACION}
                 valor={frustracion}
                 valorPorOpcion={VALOR_POR_FRUSTRACION}
-                onSelect={(v) => seleccionarYAvanzar(setFrustracion, v, 1100)}
+                onSelect={(v) => seleccionarYAvanzar(setFrustracion, v, 1700)}
               />
               <TarjetaRuta nivel={nivel} meta={meta} horario={horario} dias={null} />
             </PantallaPregunta>
@@ -650,15 +650,17 @@ function TarjetaRuta({
           responde al tap. El ámbar (2ª nota de FICHA-ARTE) vive en ese
           hairline + el ícono/etiqueta, de forma REAL y visible. */}
       <div className="flex items-center gap-2">
-        <NotebookPen size={16} color="var(--accent-2)" aria-hidden="true" />
+        <Route size={16} color="var(--accent-2)" aria-hidden="true" />
         <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent-2)]">Tu ruta se está armando</p>
       </div>
 
       {!hayAlgunaRespuesta ? (
         // Arranque honesto: nunca las 4 filas en "—" a la vez (se lee como
         // widget roto) — un mensaje de bienvenida mientras no hay nada que mostrar.
+        // Metáfora de "libreta" quitada (ronda 7 del revisor, 29/09/2026):
+        // identidad visual anterior, ya reemplazada por la del ebook/GymEvoApp.
         <p className="mt-3 text-sm leading-relaxed text-[var(--text-secondary)]">
-          Cada respuesta se guarda aquí, como en una libreta. En un momento verás cómo se llena.
+          Cada respuesta que des arma tu ruta. En un momento verás cómo se llena.
         </p>
       ) : (
         <div className="mt-3 flex flex-col gap-3">

@@ -192,7 +192,7 @@ export default function VistaPreviaDiaUnoPage() {
             onClick={() => router.push('/paywall')}
             className="boton-3d flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
           >
-            Activar mi plan completo
+            Ver mi plan completo
           </button>
           <p className="mt-2 text-center text-xs text-[var(--text-secondary)]">
             Prueba de 7 días ya activa, sin tarjeta · pago único, sin renovación · Garantía del Primer Plan Claro: 7 días tras pagar

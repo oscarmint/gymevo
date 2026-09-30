@@ -381,11 +381,16 @@ export default function PaywallPage() {
           </p>
         )}
         </div>
+        {/* Menos peso visual que el CTA principal (ronda 7 del revisor,
+            29/09/2026): antes era un botón completo con borde, casi tan
+            fuerte como "Empezar 7 días gratis" de arriba — se lee como una
+            segunda decisión igual de válida, cuando el 99% debería seguir el
+            flujo de prueba. Ahora es texto simple, sin caja. */}
         {modoPrueba && !redirigiendo && (
           <button
             type="button"
             onClick={pagar}
-            className="mt-3 flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_38%,transparent)] text-[15px] font-semibold text-[var(--text-primary)]"
+            className="mt-3 flex h-10 w-full items-center justify-center text-sm font-medium text-[var(--text-tertiary)] underline-offset-2 hover:underline"
           >
             {`Prefiero pagar ahora · $${infoPlan.precioTotal.toFixed(2)} USD`}
           </button>
@@ -428,7 +433,7 @@ export default function PaywallPage() {
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.32, duration: 0.3 }}
-          className="mt-8 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-5"
+          className="mt-6 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-5"
         >
           {/* Antes vivía aquí también un bloque de 3 viñetas (hoy no pagas /
               fecha de aviso / cancela cuando quieras) — el revisor-visual lo

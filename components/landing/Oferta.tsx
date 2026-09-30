@@ -196,6 +196,11 @@ export function Oferta({
               {stack.nota && (
                 <p className="mt-1 text-[16px] font-semibold text-[var(--text-primary)]">{stack.nota}</p>
               )}
+              {/* Fuente del ancla — ronda 7 del revisor, 29/09/2026: el número
+                  ya estaba verificado en FICHA-MERCADO.md, pero no se veía en
+                  la propia landing. Verificado: ficha oficial de Fitbod en la
+                  App Store de EE. UU., consultada 24/09/2026. */}
+              <p className="mt-1 text-xs text-[var(--text-tertiary)]">Fuente: ficha oficial de Fitbod en la App Store (EE. UU.), 24/09/2026.</p>
             </div>
           </motion.div>
         )}
