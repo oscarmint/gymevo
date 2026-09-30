@@ -557,6 +557,12 @@ function PlanDelDia({
 
   function finalizarEntrenamiento() {
     registrarEvento('entrenamiento_completado');
+    // La métrica que de verdad importa (pedido del dueño, 29/09/2026): no
+    // "cuántos compran", sino "% que llega a completar su primer
+    // entrenamiento" — alguien que paga y nunca entrena es una venta, no un
+    // cliente retenido. Se detecta viendo si YA existía algún registro de
+    // un día anterior a hoy; si no, este es el primero de su vida en la app.
+    if (!progreso.logs.some((l) => l.fecha < hoy)) registrarEvento('first_workout_completed');
     // La rutina hecha deja de estar disponible esta semana (calendario y selector).
     actualizar((p) => {
       const next = completarEntrenamiento(registrarSesionHecha(p, indiceActual));

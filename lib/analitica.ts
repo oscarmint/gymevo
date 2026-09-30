@@ -26,6 +26,7 @@ export type EventoEmbudo =
   | 'serie_registrada'
   | 'first_set_registered'
   | 'entrenamiento_completado'
+  | 'first_workout_completed'
   | 'rescate_usado'
   | 'technique_viewed'
   | 'progress_viewed';

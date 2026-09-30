@@ -373,7 +373,8 @@ const DEFINICION_PASOS_EMBUDO: { id: string; etiqueta: string; tipo: EventoEmbud
   { id: 'registro_inicio', etiqueta: 'Empezó a guardar su cuenta', tipo: 'signup_started' },
   { id: 'registro_fin', etiqueta: 'Se registró de verdad', tipo: 'signup_completed' },
   { id: 'prueba', etiqueta: 'Empezó su prueba gratis', tipo: 'trial_started' },
-  { id: 'primer_entreno', etiqueta: 'Hizo su primer entrenamiento', tipo: 'first_workout_started' },
+  { id: 'primer_entreno', etiqueta: 'Empezó su primer entrenamiento', tipo: 'first_workout_started' },
+  { id: 'primer_entreno_fin', etiqueta: 'Completó su primer entrenamiento', tipo: 'first_workout_completed' },
   { id: 'compra', etiqueta: 'Pagó de verdad', tipo: 'purchase' },
 ];
 

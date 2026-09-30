@@ -43,21 +43,32 @@ export default async function EmbudoPage({ searchParams }: { searchParams: Promi
         </p>
       </div>
 
-      {/* GENERAL — el resumen de un vistazo: de todo el que llega a la
-          landing, cuántos terminan pagando (pedido del dueño, 29/09/2026).
-          Últimos 30 días, mismo criterio anónimo que el resto del embudo. */}
-      {pasos.length > 0 && (
-        <div className="rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[var(--chip-bg)] p-5">
-          <p className="text-sm text-[var(--text-secondary)]">
-            De <span className="font-semibold text-[var(--text-primary)]">{pasos[0].conteo}</span> visitas a la landing en los últimos 30 días,{' '}
-            <span className="font-semibold text-[var(--text-primary)]">{pasos[pasos.length - 1].conteo}</span> terminaron pagando —{' '}
-            <span className="font-bold text-[var(--accent)]">
-              {pasos[0].conteo > 0 ? Math.round((pasos[pasos.length - 1].conteo / pasos[0].conteo) * 100 * 10) / 10 : 0}%
-            </span>{' '}
-            de conversión de punta a punta.
-          </p>
-        </div>
-      )}
+      {/* GENERAL — el resumen de un vistazo. La métrica que de verdad
+          importa (pedido explícito del dueño, 29/09/2026) va PRIMERO y más
+          grande: no "cuántos compran", sino "cuántos llegan a completar su
+          primer entrenamiento" — alguien que paga y nunca entrena es una
+          venta, no un cliente retenido. La conversión a pago se muestra
+          debajo, como dato secundario. Últimos 30 días, mismo criterio
+          anónimo que el resto del embudo. */}
+      {pasos.length > 0 && (() => {
+        const landing = pasos[0].conteo;
+        const primerEntrenoCompleto = pasos.find((p) => p.id === 'primer_entreno_fin')?.conteo ?? 0;
+        const compras = pasos[pasos.length - 1].conteo;
+        const pct = (n: number) => (landing > 0 ? Math.round((n / landing) * 100 * 10) / 10 : 0);
+        return (
+          <div className="rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_25%,transparent)] bg-[var(--chip-bg)] p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.05em] text-[var(--text-tertiary)]">La métrica que de verdad importa</p>
+            <p className="mt-1 text-sm text-[var(--text-secondary)]">
+              De <span className="font-semibold text-[var(--text-primary)]">{landing}</span> visitas a la landing en los últimos 30 días,{' '}
+              <span className="font-semibold text-[var(--text-primary)]">{primerEntrenoCompleto}</span> completaron su primer entrenamiento —{' '}
+              <span className="text-2xl font-bold text-[var(--accent)] [font-family:var(--font-display)]">{pct(primerEntrenoCompleto)}%</span>.
+            </p>
+            <p className="mt-3 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-3 text-xs text-[var(--text-tertiary)]">
+              De esas mismas visitas, {compras} terminaron pagando ({pct(compras)}% de conversión de punta a punta).
+            </p>
+          </div>
+        );
+      })()}
 
       {/* DESGLOSADO — el camino completo paso a paso, para ver EXACTAMENTE
           dónde se cae la gente (landing, onboarding, plan, paywall, registro,
