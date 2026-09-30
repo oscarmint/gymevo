@@ -31,7 +31,7 @@ export default function LandingV1() {
       <Hero
         appName="GymEvoApp"
         loginHref="/login"
-        h1Marked="Tu gimnasio, por fin [acento]bajo control[/acento]"
+        h1Marked="Deja de [acento]improvisar[/acento] en el gimnasio"
         subtitleMarked="El Botón de Rescate te da otro ejercicio [b]al instante[/b] sin pensar ni improvisar"
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}

@@ -7,7 +7,7 @@
 > da un plan fijo y un ejercicio alternativo al instante cuando el tuyo está ocupado."
 
 ## 1. HERO
-- H1: Nunca más [acento]sin saber qué hacer[/acento] en el gym (9 palabras, 4U's: útil+urgente+específico+único vía el eco literal del dolor #1 de FICHA-AVATAR.md — "vergüenza de quedarme parado sin saber qué más hacer")
+- H1 (29/09/2026, análisis de marketing del dueño): Deja de [acento]improvisar[/acento] en el gimnasio — "improvisar" es el verbo textual del dolor de identidad #5 en FICHA-AVATAR.md ("Siento que solo voy al gimnasio a improvisar y a perder mi tiempo") y está en la lista de verbos que la ficha ordena usar. Más específico que las 2 versiones anteriores ("Nunca más sin saber qué hacer en el gym", "Tu gimnasio, por fin bajo control").
 - Subtítulo: El Botón de Rescate te da otro ejercicio [b]al instante[/b] sin pensar ni improvisar
 - CTA: Crear mi plan de mañana gratis → /onboarding
 - Prueba social (día 1, honesta): Garantía Hotmart de 7 días — sin preguntas
