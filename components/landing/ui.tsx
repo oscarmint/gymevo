@@ -11,6 +11,7 @@ import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion
 import { ArrowUp, Check } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { registrarEvento } from '@/lib/analitica';
+import { useConteo } from '@/lib/useConteo';
 
 // Baseline de movimiento #2 (obligatoria): un precio/número con formato de
 // texto ("$4.99") cuenta 0→N al entrar en vista, nunca estático. Parsea el
@@ -18,10 +19,26 @@ import { registrarEvento } from '@/lib/analitica';
 // mismo formato de origen. Compartido entre Oferta.tsx (landing) y el paywall
 // — antes vivía solo dentro de Oferta.tsx, duplicarlo ahí hubiera repetido el
 // mismo parseo/timing en la segunda pantalla que también muestra precio.
+//
+// 29/09/2026 — un revisor anterior había encontrado que esto parpadeaba y lo
+// dejó estático como parche (rompiendo la baseline obligatoria). La causa
+// real era animar el texto completo con un useEffect casero; useConteo (ya
+// usado en Perfil) solo re-anima cuando el NÚMERO cambia de verdad — cambiar
+// de plan sí merece un conteo nuevo, pero un re-render normal ya no dispara
+// nada, así que no hay parpadeo.
 export function PrecioAnimado({ texto }: { texto: string }) {
-  // Un precio nunca cuenta desde cero ni parpadea (hallazgo del revisor): se muestra
-  // siempre su valor real, desde el primer render.
-  return <span>{texto}</span>;
+  const coincide = texto.match(/^(\D*)([\d.,]+)(.*)$/);
+  const numero = coincide ? Number(coincide[2].replace(',', '.')) : NaN;
+  const mostrado = useConteo(Number.isFinite(numero) ? numero : 0);
+  if (!coincide || !Number.isFinite(numero)) return <span>{texto}</span>;
+  const decimales = coincide[2].includes('.') || coincide[2].includes(',') ? 2 : 0;
+  return (
+    <span>
+      {coincide[1]}
+      {mostrado.toFixed(decimales)}
+      {coincide[3]}
+    </span>
+  );
 }
 
 /* ── <Accent> — la palabra que vende, en el acento del kit ─────────────────── */

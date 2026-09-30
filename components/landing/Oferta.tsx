@@ -193,14 +193,15 @@ export function Oferta({
               <p className="text-[14px] text-[var(--text-secondary)]">
                 {stack.etiquetaTotal}: <span className="tabular-nums line-through">{stack.totalTachado}</span>
               </p>
+              {/* Fuente del ancla, pegada al precio que respalda (ronda 8 del
+                  revisor, 29/09/2026: antes vivía después de la nota, con
+                  contraste terciario — casi invisible pese a ser el respaldo
+                  del claim comparativo). Verificado: ficha oficial de Fitbod
+                  en la App Store de EE. UU., consultada 24/09/2026. */}
+              <p className="text-xs text-[var(--text-secondary)]">Fuente: ficha oficial de Fitbod en la App Store (EE. UU.), 24/09/2026.</p>
               {stack.nota && (
                 <p className="mt-1 text-[16px] font-semibold text-[var(--text-primary)]">{stack.nota}</p>
               )}
-              {/* Fuente del ancla — ronda 7 del revisor, 29/09/2026: el número
-                  ya estaba verificado en FICHA-MERCADO.md, pero no se veía en
-                  la propia landing. Verificado: ficha oficial de Fitbod en la
-                  App Store de EE. UU., consultada 24/09/2026. */}
-              <p className="mt-1 text-xs text-[var(--text-tertiary)]">Fuente: ficha oficial de Fitbod en la App Store (EE. UU.), 24/09/2026.</p>
             </div>
           </motion.div>
         )}
