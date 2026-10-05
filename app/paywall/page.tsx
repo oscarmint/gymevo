@@ -17,7 +17,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { AlertTriangle, Check, ChevronDown, Loader2, Lock, RefreshCcw, X } from 'lucide-react';
+import { AlertTriangle, Check, ChevronDown, Loader2, Lock, Mail, RefreshCcw, ShieldCheck, X } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { formatearCOP, useTRM } from '@/lib/trm';
 import { PrecioAnimado } from '@/components/landing/ui';
@@ -395,13 +395,19 @@ export default function PaywallPage() {
             {`Prefiero pagar ahora · $${infoPlan.precioTotal.toFixed(2)} USD`}
           </button>
         )}
-        <p className="mt-1 flex items-center justify-center gap-1.5 text-center text-xs text-[var(--text-secondary)]">
-          <Lock size={12} className="shrink-0" /> Tarjeta, PSE, Nequi o efectivo · pago seguro vía Hotmart
-        </p>
-
-        <p className="mt-1 text-center text-xs font-medium text-[var(--accent)]">
-          Garantía del Primer Plan Claro: 7 días para pedir tu dinero de vuelta tras pagar
-        </p>
+        {/* Una sola superficie de confianza (ronda 8 del revisor, 05/10/2026):
+            candado y garantía eran 2 líneas sueltas más en una pila de 5
+            reaseguros bajo el botón. Juntas se leen como UN bloque, con la
+            garantía primero — responde la objeción más cara del avatar
+            (cobros ocultos / no poder recuperar el dinero). */}
+        <div className="mt-3 rounded-xl border border-[color-mix(in_oklab,var(--accent)_28%,transparent)] bg-[var(--chip-bg)] px-3 py-3 text-center">
+          <p className="flex items-center justify-center gap-1.5 text-xs font-semibold text-[var(--accent)]">
+            <ShieldCheck size={14} className="shrink-0" /> Garantía del Primer Plan Claro: 7 días para pedir tu dinero de vuelta tras pagar
+          </p>
+          <p className="mt-1.5 flex items-center justify-center gap-1.5 text-xs text-[var(--text-secondary)]">
+            <Lock size={12} className="shrink-0" /> Tarjeta, PSE, Nequi o efectivo · pago seguro vía Hotmart
+          </p>
+        </div>
 
         {/* Si la redirección no ocurrió en unos segundos (red caída,
             bloqueador de popups, etc.) — nunca dejar al usuario mirando un
@@ -500,14 +506,17 @@ export default function PaywallPage() {
           initial={reduce ? {} : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.48, duration: 0.3 }}
-          className="mt-5 flex items-center justify-center gap-1 text-sm text-[var(--text-secondary)]"
+          className="mt-5 flex items-center justify-center gap-1 text-sm font-medium text-[var(--text-primary)]"
         >
-          <button type="button" onClick={() => router.push('/')} className="px-2 py-3">
+          <button type="button" onClick={() => router.push('/')} className="px-2 py-3 underline-offset-2 hover:underline">
             Ahora no
           </button>
-          <span aria-hidden="true">·</span>
-          <a href="mailto:gymevo@outlook.com?subject=Restaurar%20mi%20compra" className="px-2 py-3">
-            ¿Ya pagaste? Escríbenos
+          <span aria-hidden="true" className="text-[var(--text-tertiary)]">·</span>
+          <a
+            href="mailto:gymevo@outlook.com?subject=Restaurar%20mi%20compra"
+            className="inline-flex items-center gap-1.5 px-2 py-3 underline-offset-2 hover:underline"
+          >
+            <Mail size={14} className="shrink-0" aria-hidden="true" /> ¿Ya pagaste? Escríbenos
           </a>
         </motion.div>
 

@@ -160,7 +160,7 @@ export default function VistaPreviaDiaUnoPage() {
 
         {/* El resto de la ruta — bloqueado con honestidad, no relleno inventado */}
         {restoSemana.length > 0 && (
-        <div className="mt-8">
+        <div className="mt-8 pb-4">
           <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
             El resto de tu semana
           </p>
@@ -177,9 +177,16 @@ export default function VistaPreviaDiaUnoPage() {
               ))}
             </div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <p className="rounded-full border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] bg-[color-mix(in_oklab,var(--bg)_94%,transparent)] px-4 py-2 text-sm font-bold text-[var(--text-primary)]">
+              {/* Botón de verdad (ronda 8 del revisor): antes era un <p> con forma
+                  de píldora tocable que no hacía nada — "todo lo que parece
+                  tocable, hace algo". Lleva al mismo destino que el CTA fijo. */}
+              <button
+                type="button"
+                onClick={() => router.push('/paywall')}
+                className="rounded-full border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] bg-[color-mix(in_oklab,var(--bg)_94%,transparent)] px-4 py-2 text-sm font-bold text-[var(--text-primary)] [touch-action:manipulation] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+              >
                 Desbloquea tu semana completa
-              </p>
+              </button>
             </div>
           </div>
         </div>
@@ -192,7 +199,7 @@ export default function VistaPreviaDiaUnoPage() {
             onClick={() => router.push('/paywall')}
             className="boton-3d flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
           >
-            Ver mi plan completo
+            Quiero mi semana completa
           </button>
           <p className="mt-2 text-center text-xs text-[var(--text-secondary)]">
             Prueba de 7 días ya activa, sin tarjeta · pago único, sin renovación · Garantía del Primer Plan Claro: 7 días tras pagar
