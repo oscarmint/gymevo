@@ -202,7 +202,7 @@ export default function VistaPreviaDiaUnoPage() {
             Quiero mi semana completa
           </button>
           <p className="mt-2 text-center text-xs text-[var(--text-secondary)]">
-            Prueba de 7 días ya activa, sin tarjeta · pago único, sin renovación · Garantía del Primer Plan Claro: 7 días tras pagar
+            7 días gratis, sin tarjeta · pago único, sin renovación · Garantía del Primer Plan Claro
           </p>
         </div>
       </motion.div>

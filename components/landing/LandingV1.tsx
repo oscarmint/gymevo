@@ -187,7 +187,7 @@ export default function LandingV1() {
           totalPago: '$4.99 USD por 1 mes de acceso',
           features: [
             'Todo lo del Anual, mes a mes',
-            'Renuévalo cuando quieras',
+            'Sin renovación automática: si quieres seguir, pagas de nuevo',
           ],
         }}
       />

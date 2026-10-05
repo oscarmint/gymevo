@@ -74,6 +74,9 @@ export default function PaywallPage() {
   const [respuestas, setRespuestas] = useState<RespuestasOnboarding | null>(null);
   const [plan, setPlan] = useState<PlanId>('anual');
   const [redirigiendo, setRedirigiendo] = useState(false);
+  // Estado de carga de "Empezar mis 7 días gratis" (ronda 9 del revisor): el
+  // rpc tarda y antes el botón no mostraba nada ni se bloqueaba → doble tap.
+  const [iniciandoPrueba, setIniciandoPrueba] = useState(false);
   const [errorRedirect, setErrorRedirect] = useState<string | null>(null);
   const [puedeCerrar, setPuedeCerrar] = useState(false);
   // FAQ colapsada por defecto (hallazgo revisor-visual, 14/09/2026): el
@@ -124,6 +127,8 @@ export default function PaywallPage() {
   const modoPrueba = !renovando && !finPrueba;
 
   async function empezarPrueba() {
+    if (iniciandoPrueba) return;
+    setIniciandoPrueba(true);
     registrarEvento('trial_click');
     // Red de seguridad: si la cuenta existe pero aún no tiene perfil/prueba
     // (por ejemplo entró con código antes del arreglo), se crea aquí y luego
@@ -296,7 +301,7 @@ export default function PaywallPage() {
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16, duration: 0.3 }}
-          className={`mt-5 flex flex-col gap-3 ${modoPrueba ? 'pb-32' : ''}`}
+          className={`mt-5 flex flex-col gap-3 ${modoPrueba ? 'pb-24' : ''}`}
         >
           {(['anual', 'semestral', 'mensual'] as const).map((id) => {
             const info = PLANES[id];
@@ -314,7 +319,7 @@ export default function PaywallPage() {
                 precio={`$${info.precioTotal.toFixed(2)}`}
                 detalle={
                   info.meses === 1
-                    ? 'Pago único · 1 mes de acceso · el más caro por mes'
+                    ? 'Pago único · 1 mes de acceso · sin ahorro frente a los otros planes'
                     : `Pago único · ${info.meses} meses de acceso · equivale a $${precioMes.toFixed(2)} al mes · ahorras ${ahorroPct}%${id === 'anual' ? ' · hasta 12 cuotas en Colombia' : ''}`
                 }
                 trm={trm}
@@ -342,16 +347,20 @@ export default function PaywallPage() {
         <motion.button
           type="button"
           onClick={modoPrueba ? empezarPrueba : pagar}
-          disabled={redirigiendo}
+          disabled={redirigiendo || iniciandoPrueba}
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.24, duration: 0.3 }}
-          whileTap={redirigiendo ? undefined : { scale: 0.97 }}
+          whileTap={redirigiendo || iniciandoPrueba ? undefined : { scale: 0.97 }}
           className={`boton-3d flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-xl font-bold text-[var(--bg)] disabled:opacity-80 ${modoPrueba ? '' : 'mt-3'}`}
         >
           {redirigiendo ? (
             <>
               <Loader2 size={18} className="animate-spin motion-reduce:animate-none" /> Te llevamos a Hotmart, pago seguro…
+            </>
+          ) : iniciandoPrueba ? (
+            <>
+              <Loader2 size={18} className="animate-spin motion-reduce:animate-none" /> Preparando tu prueba…
             </>
           ) : (
             modoPrueba
@@ -390,7 +399,7 @@ export default function PaywallPage() {
           <button
             type="button"
             onClick={pagar}
-            className="mt-3 flex h-10 w-full items-center justify-center text-sm font-medium text-[var(--text-tertiary)] underline-offset-2 hover:underline"
+            className="mt-3 flex h-10 w-full items-center justify-center text-sm font-medium text-[var(--text-secondary)] underline-offset-2 hover:underline"
           >
             {`Prefiero pagar ahora · $${infoPlan.precioTotal.toFixed(2)} USD`}
           </button>
@@ -506,7 +515,7 @@ export default function PaywallPage() {
           initial={reduce ? {} : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.48, duration: 0.3 }}
-          className="mt-5 flex items-center justify-center gap-1 text-sm font-medium text-[var(--text-primary)]"
+          className="mt-5 flex items-center justify-center gap-1 text-sm text-[var(--text-secondary)]"
         >
           <button type="button" onClick={() => router.push('/')} className="px-2 py-3 underline-offset-2 hover:underline">
             Ahora no

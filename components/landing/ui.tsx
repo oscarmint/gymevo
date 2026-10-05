@@ -6,12 +6,11 @@
 // alternancia base/elevado, reveal con reduced-motion): las secciones componen,
 // no re-estilan. Consume SOLO los tokens de tokens.css.
 
-import { useEffect, useState, type ReactNode } from 'react';
-import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { AnimatePresence, animate, motion, useInView, useReducedMotion, type Variants } from 'motion/react';
 import { ArrowUp, Check } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { registrarEvento } from '@/lib/analitica';
-import { useConteo } from '@/lib/useConteo';
 
 // Baseline de movimiento #2 (obligatoria): un precio/número con formato de
 // texto ("$4.99") cuenta 0→N al entrar en vista, nunca estático. Parsea el
@@ -20,20 +19,38 @@ import { useConteo } from '@/lib/useConteo';
 // — antes vivía solo dentro de Oferta.tsx, duplicarlo ahí hubiera repetido el
 // mismo parseo/timing en la segunda pantalla que también muestra precio.
 //
-// 29/09/2026 — un revisor anterior había encontrado que esto parpadeaba y lo
-// dejó estático como parche (rompiendo la baseline obligatoria). La causa
-// real era animar el texto completo con un useEffect casero; useConteo (ya
-// usado en Perfil) solo re-anima cuando el NÚMERO cambia de verdad — cambiar
-// de plan sí merece un conteo nuevo, pero un re-render normal ya no dispara
-// nada, así que no hay parpadeo.
+// 29/09/2026 — un revisor había visto parpadeo y lo dejó estático como parche
+// (rompiendo la baseline obligatoria). 05/10/2026 — reescrito con useInView +
+// framer-motion animate: cuenta una vez al entrar en vista, y re-cuenta solo si
+// el NÚMERO cambia de verdad (cambiar de plan en el paywall); un re-render
+// normal no dispara nada, así que no hay parpadeo.
 export function PrecioAnimado({ texto }: { texto: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const reduce = useReducedMotion();
+  // El conteo arranca cuando el precio ENTRA en vista (ronda 9 del revisor:
+  // antes arrancaba al montar la página y, al llegar el usuario ~7000px más
+  // abajo, ya había terminado), y el valor inicial es el REAL — así el HTML
+  // del servidor nunca pinta "$0.00" ni parpadea antes de hidratar.
+  const enVista = useInView(ref, { once: true, amount: 0.4 });
   const coincide = texto.match(/^(\D*)([\d.,]+)(.*)$/);
   const numero = coincide ? Number(coincide[2].replace(',', '.')) : NaN;
-  const mostrado = useConteo(Number.isFinite(numero) ? numero : 0);
-  if (!coincide || !Number.isFinite(numero)) return <span>{texto}</span>;
+  const valido = Number.isFinite(numero);
+  // null = todavía no se animó (se muestra el valor real, también en el
+  // HTML del servidor); un número = fotograma actual del conteo.
+  const [animado, setAnimado] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!valido || reduce || !enVista) return;
+    const controles = animate(0, numero, { duration: 0.6, ease: [0.16, 1, 0.3, 1], onUpdate: (v) => setAnimado(v) });
+    return () => controles.stop();
+  }, [enVista, numero, valido, reduce]);
+
+  const mostrado = reduce || !enVista || animado === null ? numero : animado;
+
+  if (!coincide || !valido) return <span>{texto}</span>;
   const decimales = coincide[2].includes('.') || coincide[2].includes(',') ? 2 : 0;
   return (
-    <span>
+    <span ref={ref}>
       {coincide[1]}
       {mostrado.toFixed(decimales)}
       {coincide[3]}
