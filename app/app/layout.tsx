@@ -6,6 +6,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { CalendarDays, Dumbbell, User } from 'lucide-react';
+import { PrecargarImagenes } from '@/components/PrecargarImagenes';
 
 const TABS = [
   { href: '/app', label: 'Plan de hoy', icon: Dumbbell },
@@ -18,6 +19,7 @@ export default function AppShellLayout({ children }: { children: React.ReactNode
 
   return (
     <div className="flex min-h-dvh flex-col bg-[var(--bg)] [font-family:var(--font-body)]">
+      <PrecargarImagenes />
       <div className="flex-1 pb-20">{children}</div>
 
       {/* pb-1 en el Link (no pb-2.5) — ese aire extra se sumaba al margen de

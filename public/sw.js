@@ -1,12 +1,87 @@
-// Service worker de notificaciones push. El handler de "fetch" de abajo es
-// un simple paso-directo (no cachea nada, no cambia ninguna respuesta) — pero
-// SU SOLA PRESENCIA es lo que Chrome/Android exige para ofrecer "Instalar
-// aplicación" de verdad (sin él, solo ofrece "Crear acceso directo", que
-// abre la app dentro de una pestaña normal con la barra del navegador visible
-// — hallazgo real del usuario: la franja negra que veía era la barra de
-// Chrome, no algo de GymEvoApp).
+// Service worker de GymEvoApp: notificaciones push + caché de las imágenes.
+//
+// 1) CACHÉ DE IMÁGENES (pedido del dueño, 05/10/2026: "que queden en el caché
+//    y no dependa del internet" — en muchos gimnasios no hay señal). Solo se
+//    cachean las imágenes de ejercicios/ilustraciones (mismo origen, GET),
+//    con "stale-while-revalidate": se sirve al instante lo que ya está
+//    guardado y, si hay internet, se refresca en segundo plano — así una
+//    imagen corregida (mismo nombre de archivo) llega sola en la siguiente
+//    visita, sin que haya que cambiar nada aquí. Nada más se cachea: ni
+//    páginas, ni datos, ni la API (podrían quedar viejos o de otra sesión).
+// 2) El resto de las peticiones pasa directo a la red, como antes. SU SOLA
+//    PRESENCIA es además lo que Chrome/Android exige para ofrecer "Instalar
+//    aplicación" de verdad (sin él, solo ofrece "Crear acceso directo", que
+//    abre la app dentro de una pestaña normal con la barra del navegador).
+
+const CACHE_IMAGENES = 'gymevo-imagenes-v1';
+const RUTAS_IMAGENES = /^\/(explicaciones|ilustraciones|animaciones)\//;
+
+self.addEventListener('install', () => {
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    (async () => {
+      // Borra cachés de versiones anteriores de este mismo service worker.
+      const nombres = await caches.keys();
+      await Promise.all(nombres.filter((n) => n.startsWith('gymevo-imagenes-') && n !== CACHE_IMAGENES).map((n) => caches.delete(n)));
+      await self.clients.claim();
+    })()
+  );
+});
+
+async function imagenConCache(request) {
+  const cache = await caches.open(CACHE_IMAGENES);
+  const guardada = await cache.match(request);
+  const red = fetch(request)
+    .then((respuesta) => {
+      if (respuesta && respuesta.ok) cache.put(request, respuesta.clone());
+      return respuesta;
+    })
+    .catch(() => null);
+
+  if (guardada) {
+    // Se refresca en segundo plano; la persona ve la guardada de inmediato.
+    red.catch(() => {});
+    return guardada;
+  }
+  const respuesta = await red;
+  return respuesta ?? Response.error();
+}
+
 self.addEventListener('fetch', (event) => {
-  event.respondWith(fetch(event.request));
+  const { request } = event;
+  const url = new URL(request.url);
+  if (request.method === 'GET' && url.origin === self.location.origin && RUTAS_IMAGENES.test(url.pathname)) {
+    event.respondWith(imagenConCache(request));
+    return;
+  }
+  event.respondWith(fetch(request));
+});
+
+// La app pide guardar de antemano las imágenes de su plan (ver
+// components/PrecargarImagenes.tsx): así ya están en el teléfono antes de
+// entrar al gimnasio, sin esperar a que la persona abra cada ejercicio.
+self.addEventListener('message', (event) => {
+  const datos = event.data;
+  if (!datos || datos.tipo !== 'PRECARGAR' || !Array.isArray(datos.urls)) return;
+  event.waitUntil(
+    (async () => {
+      const cache = await caches.open(CACHE_IMAGENES);
+      for (const ruta of datos.urls) {
+        // Solo rutas propias de imágenes — nunca una URL arbitraria que llegue por mensaje.
+        if (typeof ruta !== 'string' || !RUTAS_IMAGENES.test(ruta)) continue;
+        try {
+          if (await cache.match(ruta)) continue;
+          const respuesta = await fetch(ruta);
+          if (respuesta.ok) await cache.put(ruta, respuesta);
+        } catch {
+          // Sin conexión o archivo faltante: se intenta de nuevo en la próxima visita.
+        }
+      }
+    })()
+  );
 });
 
 self.addEventListener('push', (event) => {
