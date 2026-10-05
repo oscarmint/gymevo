@@ -2,9 +2,12 @@
 //
 // 1) CACHÉ DE IMÁGENES (pedido del dueño, 05/10/2026: "que queden en el caché
 //    y no dependa del internet" — en muchos gimnasios no hay señal). Solo se
-//    cachean las imágenes de ejercicios/ilustraciones (mismo origen, GET),
-//    con "stale-while-revalidate": se sirve al instante lo que ya está
-//    guardado y, si hay internet, se refresca en segundo plano — así una
+//    cachean las imágenes de ejercicios/ilustraciones (mismo origen, GET)
+//    A MEDIDA QUE LA PERSONA LAS ABRE — nunca se descargan por adelantado,
+//    ni siquiera las del plan (decisión del dueño: no gastar datos del
+//    teléfono en imágenes que quizá nunca se vean). Usa "stale-while-
+//    revalidate": se sirve al instante lo que ya está guardado y, si hay
+//    internet, se refresca en segundo plano — así una
 //    imagen corregida (mismo nombre de archivo) llega sola en la siguiente
 //    visita, sin que haya que cambiar nada aquí. Nada más se cachea: ni
 //    páginas, ni datos, ni la API (podrían quedar viejos o de otra sesión).
@@ -58,30 +61,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   event.respondWith(fetch(request));
-});
-
-// La app pide guardar de antemano las imágenes de su plan (ver
-// components/PrecargarImagenes.tsx): así ya están en el teléfono antes de
-// entrar al gimnasio, sin esperar a que la persona abra cada ejercicio.
-self.addEventListener('message', (event) => {
-  const datos = event.data;
-  if (!datos || datos.tipo !== 'PRECARGAR' || !Array.isArray(datos.urls)) return;
-  event.waitUntil(
-    (async () => {
-      const cache = await caches.open(CACHE_IMAGENES);
-      for (const ruta of datos.urls) {
-        // Solo rutas propias de imágenes — nunca una URL arbitraria que llegue por mensaje.
-        if (typeof ruta !== 'string' || !RUTAS_IMAGENES.test(ruta)) continue;
-        try {
-          if (await cache.match(ruta)) continue;
-          const respuesta = await fetch(ruta);
-          if (respuesta.ok) await cache.put(ruta, respuesta);
-        } catch {
-          // Sin conexión o archivo faltante: se intenta de nuevo en la próxima visita.
-        }
-      }
-    })()
-  );
 });
 
 self.addEventListener('push', (event) => {
