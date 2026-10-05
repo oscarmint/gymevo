@@ -1,9 +1,9 @@
 # VEREDICTO revisor-visual — landing
-Fecha: 2026-09-30 00:00
+Fecha: 2026-10-05 12:00
 Screenshot: docs/revisiones/landing-375.png
-Usabilidad: 28/40
+Usabilidad: 31/40
 Craft: 14/20
-Copy (si vende): 17/20
+Copy (si vende): 18/20
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
-Top defectos: 1. [entre FAQ y footer, ~CtaFinal] sección de fondo claro sin contenido legible en el screenshot (posible fallo de contraste/reveal real, no solo de mi captura anterior) → verificar en producción que h2/CTA/PS de CtaFinal.tsx se vean con opacidad 1 y contraste AA, no solo tras animación. 2. [Oferta → precios, ui.tsx L21-25] PrecioAnimado quedó estático a propósito (comentario del código) rompiendo la baseline obligatoria de conteo animado en números héroe → resolver el bug de parpadeo con key/AnimatePresence en vez de eliminar la animación. 3. [página completa, ~8800px] header sin acceso directo a Precios/FAQ (decisión documentada, no descuido) → igual conviene una micro-nav o ancla sticky para quien ya decidió comprar, evitar forzar scroll completo. 4. [Oferta → stack de valor, Oferta.tsx L203] línea "Fuente: ficha oficial de Fitbod..." en text-tertiary 12px, casi invisible en el screenshot pese a respaldar el claim comparativo del precio → subir a text-secondary o acercarla visualmente al total tachado. 5. [heurística 7, toda la página] cero atajos/flexibilidad para el usuario avanzado (aceptable en landing, pero puntúa bajo por rúbrica) → sin acción requerida, solo anotado.
+Top defectos: 1) PrecioAnimado/useConteo cuenta al montar la pagina (no al entrar en vista) y el HTML inicial renderiza 0.00: el conteo corre fuera de pantalla y el usuario nunca lo ve; hay riesgo de flash "$0.00" en SSR/hidratacion. 2) Carga cognitiva alta: pagina de ~9900px con 5 preguntas de dolor, 4 mecanismos, stack de 5 lineas + como-funciona + 3 planes antes del CTA de oferta. 3) Contradiccion de copy: "Renuevalo cuando quieras" (Mensual) vs "pago unico / sin renovacion automatica". 4) Screenshot ilegible a la resolucion entregada (73x2000 en vista): detalles de encaje y contraste por seccion no verificables. 5) Sin prueba social real (solo garantia) y sin valor por linea en el stack: eje especificidad/oferta en 3.
