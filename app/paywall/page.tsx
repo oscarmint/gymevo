@@ -288,9 +288,16 @@ export default function PaywallPage() {
               Sentadilla guiada
             </span>
           </div>
-          <p className="px-4 py-2 text-[13px] text-[var(--text-secondary)]">
+          <p className="px-4 pt-2 text-[13px] text-[var(--text-secondary)]">
             <strong className="font-semibold text-[var(--text-primary)]">Así funciona el rescate:</strong> un toque y tienes otro ejercicio.
           </p>
+          <ul className="flex flex-wrap gap-x-3 gap-y-1 px-4 pb-2.5 pt-1.5 text-[12px] font-medium text-[var(--text-primary)]">
+            {['Plan por nivel y días', '70 ejercicios con técnica', 'Registro y progreso'].map((t) => (
+              <li key={t} className="flex items-center gap-1">
+                <Check size={12} color="var(--accent)" strokeWidth={3} aria-hidden="true" /> {t}
+              </li>
+            ))}
+          </ul>
         </motion.div>
 
         {/* (2) Estructura de precios — Anual primero y pre-seleccionado
@@ -302,8 +309,11 @@ export default function PaywallPage() {
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16, duration: 0.3 }}
-          className="mt-5 flex flex-col gap-2.5"
+          className="mt-4 flex flex-col gap-2.5"
         >
+          {modoPrueba && (
+            <p className="text-[13px] font-semibold text-[var(--text-secondary)]">Tu plan para cuando termine la prueba</p>
+          )}
           {(['anual', 'semestral', 'mensual'] as const).map((id) => {
             const info = PLANES[id];
             const precioMes = info.precioTotal / info.meses;
@@ -315,7 +325,7 @@ export default function PaywallPage() {
                 seleccionado={plan === id}
                 onSelect={() => elegirPlan(id)}
                 deshabilitado={redirigiendo}
-                badge={id === 'anual' ? 'MÁS POPULAR' : undefined}
+                badge={id === 'anual' ? `MEJOR PRECIO · AHORRAS ${ahorroPct}%` : undefined}
                 nombre={info.nombre}
                 precio={`$${info.precioTotal.toFixed(2)}`}
                 detalle={
@@ -587,7 +597,7 @@ function PlanCard({
         // bg-[var(--accent-2)] + texto --bg medía 3.68:1 (bajo el 4.5:1 de
         // AA para texto chico) — accent-2-deep + texto primario da 7.6:1,
         // misma familia tonal, ya pasa (hallazgo revisor-visual, 14/09/2026).
-        <span className="absolute -top-2.5 left-4 rounded-full bg-[var(--accent)] px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.05em] text-[var(--bg)]">
+        <span className="absolute -top-2.5 left-4 z-10 rounded-full bg-[var(--accent)] px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.04em] text-[var(--bg)]">
           {badge}
         </span>
       )}
@@ -646,7 +656,7 @@ function PlanCard({
               <PrecioAnimado texto={precio} />
             </p>
             <p className="mt-0.5 text-[13px] tabular-nums text-[var(--text-secondary)]">
-              USD{precioCOP ? ` · ≈ ${precioCOP}` : ''}
+              USD{seleccionado && precioCOP ? ` · ≈ ${precioCOP}` : ''}
             </p>
           </div>
           <span

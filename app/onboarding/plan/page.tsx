@@ -10,7 +10,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MotionConfig, motion } from 'motion/react';
-import { RefreshCcw } from 'lucide-react';
+import { Lock, RefreshCcw } from 'lucide-react';
 import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { registrarEvento } from '@/lib/analitica';
 import { aplicarReemplazos, diasDePlan, ejerciciosDeSesion, nombreDeSesion, obtenerEjercicio, sesionDelCiclo, tituloRuta } from '@/lib/routine';
@@ -86,7 +86,7 @@ export default function VistaPreviaDiaUnoPage() {
         <p className="text-center text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">
           {tituloRuta(respuestas.nivel, respuestas.meta)}
         </p>
-        <h1 className="mt-2 text-balance text-center text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
+        <h1 className="mt-2 text-balance text-center text-[32px] font-extrabold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
           Tu <span className="text-[var(--accent)]">Día 1</span>: {nombreDia1}
         </h1>
         <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
@@ -191,13 +191,9 @@ export default function VistaPreviaDiaUnoPage() {
               {/* Botón de verdad (ronda 8 del revisor): antes era un <p> con forma
                   de píldora tocable que no hacía nada — "todo lo que parece
                   tocable, hace algo". Lleva al mismo destino que el CTA fijo. */}
-              <button
-                type="button"
-                onClick={() => router.push('/paywall')}
-                className="rounded-full border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] bg-[color-mix(in_oklab,var(--bg)_94%,transparent)] px-4 py-2 text-sm font-bold text-[var(--text-primary)] [touch-action:manipulation] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
-              >
-                Desbloquea tu semana completa
-              </button>
+              <p className="flex items-center gap-1.5 text-sm font-bold text-[var(--text-primary)]">
+                <Lock size={14} aria-hidden="true" /> Se desbloquea con tu prueba gratis
+              </p>
             </div>
           </div>
         </div>
@@ -205,19 +201,27 @@ export default function VistaPreviaDiaUnoPage() {
 
         {/* CTA fijo al borde inferior: se ve sin bajar por todo el plan. */}
         <div className="sticky bottom-0 z-20 -mx-5 mt-8 bg-[color-mix(in_oklab,var(--bg)_92%,transparent)] px-5 pb-4 pt-2 backdrop-blur-md">
-          <button
+          <motion.button
             type="button"
+            whileTap={{ scale: 0.97 }}
             onClick={() => router.push('/paywall')}
             className="boton-3d flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-[var(--bg)]"
           >
             Quiero mi semana completa
-          </button>
+          </motion.button>
           <p className="mt-2 text-center text-xs text-[var(--text-secondary)]">
-            7 días gratis, sin tarjeta
+            7 días gratis sin tarjeta · después pago único desde $4.99 USD
           </p>
           <p className="mt-0.5 text-center text-xs text-[var(--text-secondary)]">
-            Después, pago único desde $4.99 USD · sin renovación · garantía de 7 días tras pagar
+            Garantía del Primer Plan Claro: 7 días tras pagar · sin renovación
           </p>
+          <button
+            type="button"
+            onClick={() => router.push('/onboarding')}
+            className="mx-auto mt-1 flex h-9 items-center px-3 text-xs font-medium text-[var(--text-tertiary)] underline underline-offset-2"
+          >
+            Cambiar mis respuestas
+          </button>
         </div>
       </motion.div>
     </div>
