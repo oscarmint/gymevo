@@ -4,6 +4,7 @@
 // UNA misión: completar el entrenamiento de hoy. Protagonista de la Sesión 5.
 
 import { registrarEvento } from '@/lib/analitica';
+import { escribirLocal, leerLocal } from '@/lib/almacen';
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { useRouter } from 'next/navigation';
 import { Lottie } from 'lottie-react';
@@ -333,7 +334,7 @@ function PlanDelDia({
   const claveSaludoHoy = `${hoy}:${claveSesion}`;
   const [etapa, setEtapa] = useState<'saludo' | 'entrenador' | 'plan'>(() => {
     if (typeof window === 'undefined') return 'plan';
-    const yaVisto = localStorage.getItem('gymevo_saludo_visto_dia') === claveSaludoHoy;
+    const yaVisto = leerLocal('gymevo_saludo_visto_dia') === claveSaludoHoy;
     return yaVisto ? 'plan' : 'saludo';
   });
 
@@ -370,7 +371,7 @@ function PlanDelDia({
   useEffect(() => {
     if (claveAnteriorRef.current === claveSaludoHoy) return;
     claveAnteriorRef.current = claveSaludoHoy;
-    const yaVisto = localStorage.getItem('gymevo_saludo_visto_dia') === claveSaludoHoy;
+    const yaVisto = leerLocal('gymevo_saludo_visto_dia') === claveSaludoHoy;
     setEtapa(yaVisto ? 'plan' : 'saludo');
   }, [claveSaludoHoy]);
 
@@ -380,7 +381,7 @@ function PlanDelDia({
       router.push('/app/perfil?editar=dias');
       return;
     }
-    localStorage.setItem('gymevo_saludo_visto_dia', claveSaludoHoy);
+    escribirLocal('gymevo_saludo_visto_dia', claveSaludoHoy);
     registrarEvento('entrenamiento_iniciado');
     // 'entrenamiento_iniciado' se dispara TODOS los días — para medir
     // activación real (pedido del usuario, 29/09/2026: "% que llega a su

@@ -2,27 +2,25 @@
 // llamen", no necesariamente el de su correo). Cache local igual que el resto
 // del progreso: se ve al instante, Supabase manda cuando responde.
 
+import { escribirLocal, leerLocal } from './almacen';
+
 const KEY = 'gymevo_nombre';
 
 export function leerNombreLocal(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem(KEY);
+  return leerLocal(KEY);
 }
 
 export function guardarNombreLocal(nombre: string) {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(KEY, nombre);
+  escribirLocal(KEY, nombre);
 }
 
 // Foto de perfil — mismo patrón de caché local que el nombre.
 const KEY_AVATAR = 'gymevo_avatar_url';
 
 export function leerAvatarLocal(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem(KEY_AVATAR);
+  return leerLocal(KEY_AVATAR);
 }
 
 export function guardarAvatarLocal(url: string) {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(KEY_AVATAR, url);
+  escribirLocal(KEY_AVATAR, url);
 }

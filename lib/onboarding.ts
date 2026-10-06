@@ -20,31 +20,24 @@ export interface RespuestasOnboarding {
   sexo?: Sexo;
 }
 
+import { escribirLocal, escribirSesion, leerLocal, leerSesion } from "./almacen";
+
 const KEY = "gymevo_onboarding";
 
 export function guardarRespuestas(r: RespuestasOnboarding) {
   if (typeof window === "undefined") return;
   const texto = JSON.stringify(r);
-  sessionStorage.setItem(KEY, texto);
+  // Ambos protegidos (auditoría 05/10/2026): con el almacenamiento bloqueado,
+  // sessionStorage.setItem lanzaba y "Fijar mi meta" no avanzaba.
+  escribirSesion(KEY, texto);
   // Respaldo: ahora la cuenta se crea ANTES de ver el plan, y el enlace del
   // correo abre otra pestaña (sessionStorage no viaja entre pestañas).
-  try {
-    localStorage.setItem(KEY, texto);
-  } catch {
-    // sin localStorage (modo privado estricto): el código de 8 dígitos sigue en la misma pestaña
-  }
+  escribirLocal(KEY, texto);
 }
 
 export function leerRespuestas(): RespuestasOnboarding | null {
   if (typeof window === "undefined") return null;
-  let raw = sessionStorage.getItem(KEY);
-  if (!raw) {
-    try {
-      raw = localStorage.getItem(KEY);
-    } catch {
-      raw = null;
-    }
-  }
+  const raw = leerSesion(KEY) ?? leerLocal(KEY);
   if (!raw) return null;
   try {
     return JSON.parse(raw) as RespuestasOnboarding;

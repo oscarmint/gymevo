@@ -64,7 +64,10 @@ export async function POST(req: NextRequest) {
   }
 
   const event = payload.event ?? '';
-  const email = payload.data?.buyer?.email;
+  // Normalizado: Hotmart puede mandar `Juan@Gmail.com` y Supabase Auth guarda
+  // los correos en minúsculas; sin esto la compra no se enlazaba con la cuenta
+  // y la persona pagaba sin recibir acceso (auditoría 05/10/2026).
+  const email = payload.data?.buyer?.email?.trim().toLowerCase();
   const subscriberCode = payload.data?.subscription?.subscriber?.code;
   const eventId =
     payload.id ?? payload.event_id ?? payload.data?.purchase?.transaction ?? `${event}:${email ?? ''}:${ts ?? ''}`;

@@ -4,6 +4,7 @@
 // ESTADO.md → Modelo de datos). Por ahora vive en localStorage, client-only.
 
 import { leerRespuestas, type Meta, type Nivel, type Sexo } from './onboarding';
+import { escribirLocal, leerLocal } from './almacen';
 
 // REESTRUCTURACIÓN 03/09/2026 — calendario de 7 días, cardio por ruta y
 // diferenciación principiante/intermedio, a especificación exacta dada por
@@ -1364,21 +1365,47 @@ function respuestasDias(): number {
   return r ? diasDePlan(r.diasSemana) : DIAS_MAX_PLAN;
 }
 
+/** Progreso de alguien que empieza de cero. Si el onboarding ya se completó en
+ * esta sesión, hereda su nivel/meta (evita que el primer progreso guardado
+ * nazca con los valores por defecto pisando lo que acaba de elegir). */
+function crearProgresoInicial(): Progreso {
+  const respuestas = leerRespuestas();
+  const inicial: Progreso = { nivel: respuestas?.nivel ?? 'principiante', meta: respuestas?.meta ?? 'musculo', sexo: respuestas?.sexo ?? null, diasSemana: diasDePlan(respuestas?.diasSemana), diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: false, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
+  escribirLocal(KEY, JSON.stringify(inicial));
+  return inicial;
+}
+
+/** Clave donde se guarda una copia del progreso cuando el dato local está
+ * dañado — para poder recuperarlo a mano en vez de perderlo sin rastro. */
+const KEY_CORRUPTO = 'gymevo_progreso_corrupto';
+
+/** ¿Lo guardado tiene la forma mínima que el resto de la app da por hecha?
+ * Sin esta guarda, un valor truncado o editado rompía `/app` en cada carga
+ * (auditoría 05/10/2026): `p.hechosHoy.length` lanzaba y el dato persistía. */
+function progresoConFormaValida(x: unknown): x is Progreso {
+  if (!x || typeof x !== 'object') return false;
+  const p = x as Record<string, unknown>;
+  return Array.isArray(p.logs) && Array.isArray(p.hechosHoy);
+}
+
 export function leerProgreso(): Progreso {
   if (typeof window === 'undefined') {
     return { nivel: 'principiante', meta: 'musculo', sexo: null, diasSemana: 4, diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: false, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
   }
-  const raw = localStorage.getItem(KEY);
-  if (!raw) {
-    // Primera vez: si el onboarding ya se completó en esta sesión, hereda
-    // su nivel/meta (evita que el primer progreso guardado nazca con los
-    // valores por defecto pisando lo que el usuario acaba de elegir).
-    const respuestas = leerRespuestas();
-    const inicial: Progreso = { nivel: respuestas?.nivel ?? 'principiante', meta: respuestas?.meta ?? 'musculo', sexo: respuestas?.sexo ?? null, diasSemana: diasDePlan(respuestas?.diasSemana), diaActual: 1, racha: 0, ultimaFecha: null, hechosHoy: [], reemplazosHoy: {}, logs: [], descansoAutomatico: false, descansoDuracionSeg: 60, sonidoDescanso: true, pesoKg: null, unidadPeso: 'lb', estaturaCm: null, edad: null, pesoInicialKg: null, cinturaCm: null, cinturaInicialCm: null, fechaInicioMedidas: null };
-    localStorage.setItem(KEY, JSON.stringify(inicial));
-    return inicial;
+  const raw = leerLocal(KEY);
+  if (!raw) return crearProgresoInicial();
+  let p: Progreso;
+  try {
+    const parseado: unknown = JSON.parse(raw);
+    if (!progresoConFormaValida(parseado)) throw new Error('forma inesperada');
+    p = parseado;
+  } catch {
+    // Dato dañado: se guarda una copia aparte y se arranca limpio — la cuenta
+    // (si hay sesión) devuelve el progreso remoto al abrir /app.
+    escribirLocal(KEY_CORRUPTO, raw);
+    return crearProgresoInicial();
   }
-  const p = JSON.parse(raw) as Progreso;
+  if (p.reemplazosHoy === undefined || p.reemplazosHoy === null) p.reemplazosHoy = {};
   // Compatibilidad con progreso guardado antes de este campo.
   if (p.nivel === undefined) p.nivel = leerRespuestas()?.nivel ?? 'principiante';
   if (p.meta === undefined) p.meta = leerRespuestas()?.meta ?? 'musculo';
@@ -1471,8 +1498,9 @@ export function registrarMedidasIniciales(p: Progreso, nuevoPesoKg: number | nul
 }
 
 export function guardarProgreso(p: Progreso) {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(KEY, JSON.stringify(p));
+  // Protegido: con cuota llena o almacenamiento bloqueado, setItem lanzaba y
+  // el clic que guarda (registrar una serie, terminar) se quedaba sin hacer nada.
+  escribirLocal(KEY, JSON.stringify(p));
 }
 
 export function marcarHecho(p: Progreso, ejercicioId: string): Progreso {

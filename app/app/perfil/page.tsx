@@ -17,6 +17,7 @@ import { crearClienteSupabase } from '@/lib/supabase/client';
 import { activarAvisos, desactivarAvisos, estaSuscrito, pushSoportado } from '@/lib/push-client';
 import { esAdmin, guardarNombreRemoto, guardarProgresoRemoto, leerAvatarRemoto, leerCorreoRemoto, leerMembresiaRemota, leerNombreRemoto, leerVencimientoRemoto, subirAvatar } from '@/lib/supabase/sync';
 import { useConteo } from '@/lib/useConteo';
+import { limpiarDatosLocales } from '@/lib/datos-locales';
 
 const ESTADO_MEMBRESIA_LABEL: Record<string, string> = {
   trialing: 'En prueba gratis',
@@ -290,8 +291,7 @@ export default function PerfilPage() {
       }
       const supabase = crearClienteSupabase();
       await supabase.auth.signOut();
-      sessionStorage.clear();
-      localStorage.removeItem('gymevo_progreso');
+      limpiarDatosLocales();
       router.push('/');
     } catch {
       setErrorEliminar('No pudimos eliminar tu cuenta. Intenta de nuevo o escríbenos a soporte.');
@@ -322,8 +322,10 @@ export default function PerfilPage() {
   async function cerrarSesion() {
     const supabase = crearClienteSupabase();
     await supabase.auth.signOut();
-    sessionStorage.clear();
-    localStorage.removeItem('gymevo_progreso');
+    // Borra TODO lo `gymevo_*` de este dispositivo (nombre, foto, respuestas del
+    // onboarding, plan elegido…), no solo el progreso: antes un segundo usuario
+    // del mismo navegador veía el nombre y la foto del anterior.
+    limpiarDatosLocales();
     router.push('/');
   }
 

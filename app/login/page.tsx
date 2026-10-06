@@ -23,15 +23,17 @@ function LoginContenido() {
   // manda aquí con ?desde=app — misma copy de "guarda tu plan" que antes
   // solo se mostraba viniendo directo del onboarding (?desde=plan, ya sin uso).
   const desdePlan = desdeParam === 'plan' || desdeParam === 'app';
-  // Tras el onboarding la persona vuelve a ver su Día 1; si proxy.ts mandó
-  // aquí con ?desde=admin (alguien sin sesión intentando /admin), vuelve al
-  // panel en vez de caer siempre en /app — sin esto, un admin sin sesión
-  // nunca llegaba a /admin al iniciar sesión.
-  const destino = desdePlan ? '/onboarding/plan' : desdeParam === 'admin' ? '/admin' : '/app';
+  // Destino tras entrar. Antes 'app' también iba a /onboarding/plan, así que
+  // quien ya había visto su Día 1 y el paywall volvía a verlos (bucle de dos
+  // pantallas en el momento de mayor intención, auditoría 05/10/2026): ahora
+  // 'app' entra directo a /app. Solo el flujo viejo ?desde=plan vuelve al Día 1.
+  // ?desde=admin (alguien sin sesión intentando /admin) vuelve al panel.
+  const destino = desdeParam === 'plan' ? '/onboarding/plan' : desdeParam === 'admin' ? '/admin' : '/app';
   const [email, setEmail] = useState('');
   const [acepto, setAcepto] = useState(false);
   const [estado, setEstado] = useState<Estado>('idle');
   const [countdown, setCountdown] = useState(0);
+  const [errorReenvio, setErrorReenvio] = useState(false);
   const [codigo, setCodigo] = useState('');
   const [errorCodigo, setErrorCodigo] = useState(false);
   const [verificando, setVerificando] = useState(false);
@@ -64,16 +66,17 @@ function LoginContenido() {
     registrarEvento('signup_started');
     setEstado('enviado');
     setCountdown(60);
-    const tick = setInterval(() => {
-      setCountdown((c) => {
-        if (c <= 1) {
-          clearInterval(tick);
-          return 0;
-        }
-        return c - 1;
-      });
-    }, 1000);
   }
+
+  // La cuenta regresiva vive en un efecto ligado al propio contador: antes el
+  // setInterval se creaba solo en enviar() y se detenía al llegar a 0, así que
+  // "Reenviar" ponía el contador en 60 sin que nada lo hiciera bajar y el botón
+  // quedaba bloqueado para siempre. También se limpia al salir de la pantalla.
+  useEffect(() => {
+    if (countdown <= 0) return;
+    const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [countdown]);
 
   // Google (Bloque 2): el método principal — un toque, sin escribir correo ni
   // esperar un código. Requiere activar el proveedor Google en Supabase
@@ -103,11 +106,16 @@ function LoginContenido() {
 
   async function reenviar() {
     if (countdown > 0) return;
+    setErrorReenvio(false);
     const supabase = crearClienteSupabase();
-    await supabase.auth.signInWithOtp({
+    const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=${destino}` },
     });
+    if (error) {
+      setErrorReenvio(true);
+      return;
+    }
     setCountdown(60);
   }
 
@@ -276,7 +284,7 @@ function LoginContenido() {
                 disabled={estado === 'enviando'}
                 className="flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_38%,transparent)] text-base font-semibold text-[var(--text-primary)] disabled:opacity-70"
               >
-                {estado === 'enviando' ? 'Enviando…' : desdePlan ? 'Guardar mi plan y ver mi Día 1' : 'Enviarme mi enlace de acceso'}
+                {estado === 'enviando' ? 'Enviando…' : desdePlan ? 'Entrar y empezar mis 7 días gratis' : 'Enviarme mi enlace de acceso'}
               </button>
             </form>
 
@@ -314,6 +322,11 @@ function LoginContenido() {
             >
               {countdown > 0 ? `Reenviar en ${countdown}s` : 'Reenviar enlace'}
             </button>
+            {errorReenvio && (
+              <p role="alert" className="mt-2 text-xs font-medium text-[var(--status-error)]">
+                No pudimos reenviar el enlace. Revisa tu conexión e intenta de nuevo.
+              </p>
+            )}
 
             {/* Respaldo: si el enlace "ya expiró" sin que lo hayas tocado (tu
                 correo lo escaneó solo), el mismo correo trae este código. */}

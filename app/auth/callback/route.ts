@@ -6,7 +6,14 @@ import { registrarEventoServidor } from '@/lib/analitica-servidor';
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/app';
+  // Solo rutas internas: con `?next=@sitio-malo.com` el destino armado
+  // (`${origin}${next}`) sería `https://host@sitio-malo.com` y mandaría a la
+  // persona a otro dominio justo después de iniciar sesión (auditoría 05/10/2026).
+  const nextCrudo = searchParams.get('next') ?? '/app';
+  const next =
+    nextCrudo.startsWith('/') && !nextCrudo.startsWith('//') && !nextCrudo.includes('@') && !nextCrudo.includes('\\')
+      ? nextCrudo
+      : '/app';
 
   if (code) {
     const supabase = await crearClienteSupabaseServidor();

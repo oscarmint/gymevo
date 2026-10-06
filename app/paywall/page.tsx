@@ -23,6 +23,7 @@ import { formatearCOP, useTRM } from '@/lib/trm';
 import { PrecioAnimado } from '@/components/landing/ui';
 import { DIAS_DE_PRUEBA } from '@/lib/planes';
 import { registrarEvento } from '@/lib/analitica';
+import { escribirLocal, leerLocal } from '@/lib/almacen';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 
 type PlanId = 'mensual' | 'semestral' | 'anual';
@@ -103,7 +104,7 @@ export default function PaywallPage() {
     setFinPrueba(params.get('fin_prueba') === '1');
     // Recuerda la última elección entre visitas (hallazgo revisor-visual:
     // sin esto, un usuario que cierra y vuelve pierde su plan preferido).
-    const guardado = localStorage.getItem(KEY_PLAN);
+    const guardado = leerLocal(KEY_PLAN);
     if (guardado === 'mensual' || guardado === 'semestral' || guardado === 'anual') {
       setPlan(guardado);
     }
@@ -146,7 +147,7 @@ export default function PaywallPage() {
 
   function elegirPlan(id: PlanId) {
     setPlan(id);
-    localStorage.setItem(KEY_PLAN, id);
+    escribirLocal(KEY_PLAN, id);
   }
 
   function pagar() {
@@ -415,6 +416,12 @@ export default function PaywallPage() {
           </p>
           <p className="mt-1.5 flex items-center justify-center gap-1.5 text-xs text-[var(--text-secondary)]">
             <Lock size={12} className="shrink-0" /> Tarjeta, PSE, Nequi o efectivo · pago seguro vía Hotmart
+          </p>
+          {/* El acceso se enlaza por correo (webhook de Hotmart): pagar con otro
+              correo deja a la persona sin acceso y termina en reembolso — justo
+              con el avatar que más teme las estafas (auditoría 05/10/2026). */}
+          <p className="mt-1.5 text-xs text-[var(--text-secondary)]">
+            En Hotmart usa el mismo correo con el que entraste, para que tu acceso se active solo.
           </p>
         </div>
 

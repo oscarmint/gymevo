@@ -9,6 +9,8 @@
 // campaña que la trajo la primera vez — eso es lo que de verdad responde
 // "¿qué campaña convierte?", no la última que tocó antes de pagar.
 
+import { escribirLocal, leerLocal } from './almacen';
+
 const KEY = 'gymevo_utm';
 
 export interface UTM {
@@ -19,7 +21,7 @@ export interface UTM {
 
 export function capturarUTMDesdeURL(): void {
   if (typeof window === 'undefined') return;
-  if (localStorage.getItem(KEY)) return; // ya hay uno guardado — first-touch, no se pisa
+  if (leerLocal(KEY)) return; // ya hay uno guardado — first-touch, no se pisa
   const params = new URLSearchParams(window.location.search);
   const source = params.get('utm_source');
   if (!source) return; // sin utm_source no hay campaña que atribuir
@@ -28,12 +30,11 @@ export function capturarUTMDesdeURL(): void {
     medium: params.get('utm_medium'),
     campaign: params.get('utm_campaign'),
   };
-  localStorage.setItem(KEY, JSON.stringify(utm));
+  escribirLocal(KEY, JSON.stringify(utm));
 }
 
 export function leerUTM(): UTM | null {
-  if (typeof window === 'undefined') return null;
-  const raw = localStorage.getItem(KEY);
+  const raw = leerLocal(KEY);
   if (!raw) return null;
   try {
     return JSON.parse(raw) as UTM;
