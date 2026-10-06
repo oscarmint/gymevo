@@ -9,7 +9,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { MotionConfig, motion } from 'motion/react';
+import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import { Lock, RefreshCcw } from 'lucide-react';
 import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { registrarEvento } from '@/lib/analitica';
@@ -62,7 +62,7 @@ export default function VistaPreviaDiaUnoPage() {
   // Las demás sesiones de SU plan (según los días que eligió), no nombres de relleno.
   const restoSemana = Array.from({ length: diasPlan - 1 }, (_, i) => {
     const sesion = sesionDelCiclo(i + 1, diasPlan);
-    return { nombre: nombreDeSesion(sesion), ejercicios: ejerciciosDeSesion(sesion, respuestas.nivel).slice(0, 3).map((e) => e.nombre) };
+    return { nombre: nombreDeSesion(sesion), total: ejerciciosDeSesion(sesion, respuestas.nivel).length };
   });
 
   return (
@@ -106,7 +106,7 @@ export default function VistaPreviaDiaUnoPage() {
             <p className="text-sm font-medium text-[var(--text-primary)]" aria-live="polite">
               {ultimoCambio
                 ? '¡Listo! Así de rápido cambias de ejercicio en el gym, sin perder la sesión. Toca de nuevo para volver.'
-                : '¿Máquina ocupada? Pruébalo ahora: toca ↻ en el primer ejercicio.'}
+                : '¿Máquina ocupada? Prueba tu Botón de Rescate: toca ↻ en el primer ejercicio.'}
             </p>
           </motion.div>
 
@@ -126,7 +126,18 @@ export default function VistaPreviaDiaUnoPage() {
                 }`}
               >
                 <div className="min-w-0 flex-1">
-                  <p className="text-base font-semibold text-[var(--text-primary)]">{ej.nombre}</p>
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.p
+                      key={ej.id}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.18 }}
+                      className="text-base font-semibold text-[var(--text-primary)]"
+                    >
+                      {ej.nombre}
+                    </motion.p>
+                  </AnimatePresence>
                   <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
                     {ej.series} series de {ej.reps} · descanso {ej.descansoSeg}s
                   </p>
@@ -173,28 +184,22 @@ export default function VistaPreviaDiaUnoPage() {
         {restoSemana.length > 0 && (
         <div className="mt-8 pb-4">
           <p className="text-xs font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
-            El resto de tu semana
+            El resto de tu semana · se desbloquea con tu prueba gratis
           </p>
-          {/* Curiosidad en vez de candado (25/09/2026): los días que siguen se
-              ven vagamente bajo un desenfoque — la persona reconoce que hay
-              plan real detrás — y el texto encima invita a desbloquearlos. */}
-          <div className="relative mt-3">
-            <div aria-hidden="true" className="flex flex-col gap-2 blur-[5px] select-none">
-              {restoSemana.map((dia, i) => (
-                <div key={`${i}-${dia.nombre}`} className="rounded-xl bg-[var(--surface-2)] px-4 py-3">
-                  <p className="text-sm font-semibold text-[var(--text-primary)]">{dia.nombre}</p>
-                  <p className="mt-0.5 truncate text-xs text-[var(--text-secondary)]">{dia.ejercicios.join(' · ')}</p>
+          {/* Días reales de SU plan (nombre y cantidad de ejercicios), sin
+              desenfoque: la persona ve que hay plan detrás y qué se abre. */}
+          <div className="mt-3 flex flex-col gap-2">
+            {restoSemana.map((dia, i) => (
+              <div key={`${i}-${dia.nombre}`} className="flex items-center gap-3 rounded-xl bg-[var(--surface-2)] px-4 py-3">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-[var(--text-primary)]">
+                    Día {i + 2} · {dia.nombre}
+                  </p>
+                  <p className="mt-0.5 text-xs text-[var(--text-secondary)]">{dia.total} ejercicios</p>
                 </div>
-              ))}
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              {/* Botón de verdad (ronda 8 del revisor): antes era un <p> con forma
-                  de píldora tocable que no hacía nada — "todo lo que parece
-                  tocable, hace algo". Lleva al mismo destino que el CTA fijo. */}
-              <p className="flex items-center gap-1.5 text-sm font-bold text-[var(--text-primary)]">
-                <Lock size={14} aria-hidden="true" /> Se desbloquea con tu prueba gratis
-              </p>
-            </div>
+                <Lock size={14} className="shrink-0 text-[var(--text-tertiary)]" aria-hidden="true" />
+              </div>
+            ))}
           </div>
         </div>
         )}

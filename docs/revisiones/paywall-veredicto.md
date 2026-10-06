@@ -1,9 +1,9 @@
-# VEREDICTO revisor-visual — paywall (ronda 12)
+# VEREDICTO revisor-visual — paywall
 Fecha: 2026-10-06 12:00
 Screenshot: docs/revisiones/paywall-375.png
-Usabilidad: 29/40
-Craft: 14/20
-Copy (si vende): 15/20
+Usabilidad: 30/40
+Craft: 15/20
+Copy (si vende): 14/20
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
-Top defectos: 1) Badge "MEJOR PRECIO · AHORRAS 50%" tachado por el anillo de la tarjeta seleccionada (el ring se pinta encima del badge). 2) Plan Mensual no visible en el primer viewport: la barra fija corta Semestral a la mitad y tapa Mensual; en la captura completa Mensual no aparece y queda un hueco muerto bajo la barra. 3) Mini-demo "Prensa ocupada / Sentadilla guiada" parece interactiva y no hace nada (aria-hidden, sin handler). 4) Garantia nombrada fuera del primer viewport, separada del CTA por "Prefiero pagar ahora" y un hueco; mas de 3 tamanos tipograficos (30/24/18/16/14.5/13/12.5/12/11). 5) Pantalla densa: demo + 3 bullets + encabezado + 3 tarjetas + CTA + 2 notas + caja de confianza de 3 lineas + FAQ + 2 enlaces; la seleccion de plan no afecta al CTA de prueba.
+Top defectos: 1) Primer viewport: la barra fija tapa la tarjeta Mensual y solo asoma una franja cortada; el señuelo de 3 planes no se ve completo antes de decidir. 2) Copy emocion 2/4: el unico dolor es el kicker "Maquina ocupada, y ahora que?"; no agita el miedo a lesionarse ni la vergüenza (FICHA-AVATAR dolores 1 y 4). 3) La garantia nombrada ("Primer Plan Claro") esta bajo el pliegue; junto al CTA solo dice "garantia de 7 dias" sin nombre. 4) Redundancia en la tarjeta Anual: "AHORRAS 50%" en el badge y otra vez en el detalle; el bloque de 3 viñetas, la nota y la caja de garantia repiten promesas. 5) Jerarquia/profundidad en 3/4: precio de la tarjeta compite con el titular, texto tachado "Prensa ocupada" en gris terciario de bajo contraste, fondo con profundidad apenas perceptible.

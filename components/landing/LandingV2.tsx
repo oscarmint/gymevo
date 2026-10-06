@@ -40,7 +40,7 @@ export default function LandingV2() {
         subtitleMarked="Un plan exacto, con la técnica correcta — [b]sin improvisar[/b] ni arriesgar tu espalda"
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
-        socialProof={<span>Garantía del Primer Plan Claro: 7 días desde tu pago</span>}
+        socialProof={<span>Sin tarjeta · 7 días gratis · sin renovación automática</span>}
         visual={
           // eslint-disable-next-line @next/next/no-img-element -- Hero.tsx del kit usa <img> a propósito (portable, ver su comentario)
           <img

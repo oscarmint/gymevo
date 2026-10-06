@@ -91,6 +91,7 @@ export default function PaywallPage() {
   // solo que todavía no hace nada, sin acortar el tiempo de lectura pedido).
   const [cerrarMeneo, setCerrarMeneo] = useState(false);
   const [renovando, setRenovando] = useState(false);
+  const [demoAlterna, setDemoAlterna] = useState(false);
   const [finPrueba, setFinPrueba] = useState(false);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
@@ -279,19 +280,36 @@ export default function PaywallPage() {
           className="mt-5 overflow-hidden rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)]"
         >
           {/* Mini-demo del mecanismo (en vez de un video de gimnasio): el ejercicio A cambia por el B. */}
-          <div aria-hidden="true" className="flex items-center gap-2 bg-[var(--surface-2)] px-4 py-3">
+          {/* Es tocable de verdad: cada toque cambia la alternativa, igual que el
+              Botón de Rescate dentro de la app. */}
+          <button
+            type="button"
+            onClick={() => setDemoAlterna((v) => !v)}
+            aria-label="Probar el Botón de Rescate: cambiar la alternativa a Prensa ocupada"
+            className="flex w-full items-center gap-2 bg-[var(--surface-2)] px-4 py-3 text-left"
+          >
             <span className="min-w-0 flex-1 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] px-2 py-2 text-center text-[12.5px] leading-tight font-medium text-[var(--text-tertiary)] line-through decoration-[var(--accent)] decoration-2">
               Prensa ocupada
             </span>
-            <RefreshCcw size={18} color="var(--accent)" className="shrink-0" />
-            <span className="min-w-0 flex-1 rounded-xl border border-[var(--accent)] bg-[var(--chip-bg)] px-2 py-2 text-center text-[12.5px] leading-tight font-semibold text-[var(--text-primary)]">
-              Sentadilla guiada
+            <motion.span animate={reduce ? {} : { rotate: demoAlterna ? 180 : 0 }} transition={{ duration: 0.25 }} className="shrink-0">
+              <RefreshCcw size={18} color="var(--accent)" />
+            </motion.span>
+            <span className="relative min-w-0 flex-1 overflow-hidden rounded-xl border border-[var(--accent)] bg-[var(--chip-bg)] px-2 py-2 text-center text-[12.5px] leading-tight font-semibold text-[var(--text-primary)]">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={demoAlterna ? 'b' : 'a'}
+                  initial={reduce ? {} : { opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reduce ? {} : { opacity: 0, y: -6 }}
+                  transition={{ duration: 0.15 }}
+                  className="block"
+                >
+                  {demoAlterna ? 'Zancadas con mancuernas' : 'Sentadilla guiada'}
+                </motion.span>
+              </AnimatePresence>
             </span>
-          </div>
-          <p className="px-4 pt-2 text-[13px] text-[var(--text-secondary)]">
-            <strong className="font-semibold text-[var(--text-primary)]">Así funciona el rescate:</strong> un toque y tienes otro ejercicio.
-          </p>
-          <ul className="flex flex-wrap gap-x-3 gap-y-1 px-4 pb-2.5 pt-1.5 text-[12px] font-medium text-[var(--text-primary)]">
+          </button>
+          <ul className="flex flex-wrap gap-x-3 gap-y-1 px-4 pb-2.5 pt-2 text-[12px] font-medium text-[var(--text-primary)]">
             {['Plan por nivel y días', '70 ejercicios con técnica', 'Registro y progreso'].map((t) => (
               <li key={t} className="flex items-center gap-1">
                 <Check size={12} color="var(--accent)" strokeWidth={3} aria-hidden="true" /> {t}
@@ -392,8 +410,7 @@ export default function PaywallPage() {
 
         {modoPrueba ? (
           <p className="mt-2 text-center text-sm font-medium text-[var(--text-primary)]">
-            Hoy $0, sin tarjeta. Si sigues: pago único de ${infoPlan.precioTotal.toFixed(2)} USD
-            {totalCOP ? ` (≈ ${totalCOP})` : ''}, sin renovación.
+            Hoy $0, sin tarjeta. Si sigues: pago único de ${infoPlan.precioTotal.toFixed(2)} USD, sin renovación y con garantía de 7 días.
           </p>
         ) : (
           <p className="mt-2 text-center text-xs text-[var(--text-secondary)]">
