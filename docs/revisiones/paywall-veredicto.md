@@ -1,9 +1,9 @@
-# VEREDICTO revisor-visual — paywall (ronda 9)
-Fecha: 2026-10-05 12:00
+# VEREDICTO revisor-visual — paywall (ronda 10)
+Fecha: 2026-10-05 13:00
 Screenshot: docs/revisiones/paywall-375.png
-Usabilidad: 29/40
-Craft: 15/20
-Copy (si vende): 17/20
-Fidelidad (si hubo referencia): FIEL
+Usabilidad: 28/40
+Craft: 13/20
+Copy (si vende): 12/20
+Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
-Top defectos: (1) CTA principal "Empezar mis 7 días gratis" sin estado de carga: empezarPrueba() hace await rpc y no desactiva el botón ni muestra spinner (doble-tap, sensación de cuelgue); (2) inversión de jerarquía en la pila bajo el CTA: "Ahora no · ¿Ya pagaste? Escríbenos" quedó en text-primary medio, más brillante que "Prefiero pagar ahora" (text-tertiary), así que la salida pesa más que la acción secundaria; (3) la elección de plan no cambia lo que hace el CTA (siempre inicia prueba) y a primera vista el sticky tapa la tarjeta Mensual, de modo que el señuelo queda oculto; (4) pb-32 deja ~110px de aire muerto entre Mensual y el CTA en la captura de scroll; (5) sin prueba ni número que ancle el valor (ej. "menos de $0.09/día" de la ficha) y 6 bloques de reaseguro/enlaces bajo el CTA.
+Top defectos: (1) app/paywall/page.tsx lineas 348-371 y 307-329: la eleccion de plan no cambia el CTA principal (en modoPrueba siempre llama empezarPrueba, que no usa el plan) y el pago real queda en un enlace de texto pequeno "Prefiero pagar ahora" (linea 399); el usuario elige entre 3 precios y el boton dice otra cosa, dos CTAs que compiten; (2) app/paywall/page.tsx linea 305 (pb-24 sobre la lista) + sticky de linea 341: en el primer viewport la barra fija tapa la tarjeta Mensual (el precio ancla del senuelo nunca se ve sin hacer scroll) y en scroll natural quedan ~96px de vacio muerto entre la lista y el CTA; (3) app/paywall/page.tsx lineas 281-293: la mini-demo "Prensa ocupada / Sentadilla guiada" parece un selector tapable y es aria-hidden sin accion (gate de carga cognitiva: elemento que parece interactivo y no hace nada); ademas es el unico argumento de valor, el paywall no lista que se recibe (plan fijo, Boton de Rescate, ruta de 90 dias) ni usa el anclaje "menos de $0.09/dia" de FICHA-AVATAR; (4) app/paywall/page.tsx lineas 413-426: garantia "Primer Plan Claro" (7 dias tras pagar) queda debajo del enlace de pago y lejos del CTA principal; 3 reaseguros de 12px apilados mas la nota bajo el boton repiten precio y "sin renovacion" 3 veces (heuristica 8) y el texto de detalle de cada plan es 13px en gris con jerga ("hasta 12 cuotas en Colombia"); (5) identidad e identidad de movimiento: verde lima + Poppins coincide con FICHA-ARTE pero el unico dispositivo ownable (tachado verde) solo aparece en un chip diminuto, sin hairline ni chips SVG de beneficios, y el conteo/anillos/celebracion no existen: solo stagger, PrecioAnimado y whileTap (whileTap de PlanCard no respeta reduced-motion).
