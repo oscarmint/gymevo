@@ -156,16 +156,17 @@ export default function LandingV2() {
           ],
           etiquetaTotal: 'Una app equivalente (Fitbod Elite, desde)',
           totalTachado: '$79.99 USD/año',
-          nota: 'Hoy: $2.50 USD/mes ($29.99 USD por 12 meses de acceso) — menos que una mensualidad de muchos gimnasios',
+          nota: 'Hoy: $29.99 USD en un solo pago por 12 meses ($2.50 al mes) — menos que una mensualidad de muchos gimnasios',
         }}
         anual={{
           nombre: 'Anual',
           badge: 'MÁS POPULAR',
-          precioMes: '$2.50',
-          totalAnual: '$29.99 USD por 12 meses de acceso',
+          precioMes: '$29.99',
+          sufijo: 'pago único',
+          totalAnual: '12 meses de acceso · sin renovación automática',
           ahorro: 'Ahorras 50% vs. mensual',
           ahorroDetalle: 'Son $29.99 por 12 meses, en vez de $59.88 si pagaras mes a mes.',
-          descomposicionDia: 'menos de $0.09 al día',
+          descomposicionDia: 'Equivale a $2.50 al mes · menos de $0.09 al día',
           features: [
             'Tu plan de hoy, listo (Principiante o Intermedio)',
             'Botón de Rescate ilimitado',
@@ -174,8 +175,9 @@ export default function LandingV2() {
         }}
         semestral={{
           nombre: 'Semestral',
-          precioMes: '$3.33',
-          totalSemestral: '$19.99 USD por 6 meses de acceso',
+          precioMes: '$19.99',
+          sufijo: 'pago único',
+          totalSemestral: '6 meses de acceso · equivale a $3.33 al mes',
           ahorro: 'Ahorras 33% vs. mensual',
           features: [
             'Todo lo del Anual, por 6 meses',
@@ -185,7 +187,8 @@ export default function LandingV2() {
         mensual={{
           nombre: 'Mensual',
           precioMes: '$4.99',
-          totalPago: '$4.99 USD por 1 mes de acceso',
+          sufijo: 'pago único',
+          totalPago: '1 mes de acceso · sin ahorro',
           features: [
             'Todo lo del Anual, mes a mes',
             'Sin renovación automática: si quieres seguir, pagas de nuevo',

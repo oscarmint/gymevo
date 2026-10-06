@@ -86,7 +86,7 @@ export function CtaFinal({
 
         <motion.div variants={item} className="mt-8 w-full sm:w-auto">
           {/* Acento pleno sobre fondo invertido = el máximo contraste de la página */}
-          <CtaButton href={ctaHref} alto={56}>
+          <CtaButton href={ctaHref} alto={56} sobreClaro>
             {ctaLabel}
           </CtaButton>
         </motion.div>

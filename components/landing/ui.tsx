@@ -194,11 +194,15 @@ export function CtaButton({
   children,
   alto = 52,
   fullMobile = true,
+  sobreClaro = false,
 }: {
   href: string;
   children: ReactNode;
   alto?: 52 | 56;
   fullMobile?: boolean;
+  /** Para bloques de fondo claro (CTA final): el lima no llega a 3:1 sobre
+   * crema, así que el botón usa el verde oscuro de la ficha. */
+  sobreClaro?: boolean;
 }) {
   return (
     <motion.a
@@ -206,7 +210,10 @@ export function CtaButton({
       data-cta-pagina=""
       onClick={() => registrarEvento('cta_click')}
       whileTap={{ scale: 0.97 }}
-      className={`boton-3d inline-flex items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] px-6 text-center text-[17px] font-semibold text-[var(--bg)] transition-colors duration-150 hover:bg-[color-mix(in_oklab,var(--accent)_88%,var(--text-primary))] [touch-action:manipulation] ${
+      style={sobreClaro ? { background: 'var(--accent-2-deep)', color: 'var(--text-primary)', boxShadow: '0 6px 0 0 color-mix(in oklab, var(--accent-2-deep) 70%, black)' } : undefined}
+      className={`boton-3d inline-flex items-center justify-center rounded-[var(--radius-button)] px-6 text-center text-[17px] font-semibold transition-colors duration-150 [touch-action:manipulation] ${
+        sobreClaro ? '' : 'bg-[var(--accent)] text-[var(--bg)] hover:bg-[color-mix(in_oklab,var(--accent)_88%,var(--text-primary))]'
+      } ${
         alto === 56 ? 'h-14' : 'h-[52px]'
       } ${fullMobile ? 'w-full sm:w-auto' : ''}`}
     >

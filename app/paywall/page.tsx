@@ -288,8 +288,8 @@ export default function PaywallPage() {
               Sentadilla guiada
             </span>
           </div>
-          <p className="px-4 py-2.5 text-[13px] text-[var(--text-secondary)]">
-            <strong className="font-semibold text-[var(--text-primary)]">Un toque y tienes otro ejercicio.</strong>
+          <p className="px-4 py-2 text-[13px] text-[var(--text-secondary)]">
+            <strong className="font-semibold text-[var(--text-primary)]">Así funciona el rescate:</strong> un toque y tienes otro ejercicio.
           </p>
         </motion.div>
 
@@ -302,7 +302,7 @@ export default function PaywallPage() {
           initial={reduce ? {} : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16, duration: 0.3 }}
-          className={`mt-5 flex flex-col gap-3 ${modoPrueba ? 'pb-24' : ''}`}
+          className="mt-5 flex flex-col gap-2.5"
         >
           {(['anual', 'semestral', 'mensual'] as const).map((id) => {
             const info = PLANES[id];
@@ -320,8 +320,8 @@ export default function PaywallPage() {
                 precio={`$${info.precioTotal.toFixed(2)}`}
                 detalle={
                   info.meses === 1
-                    ? 'Pago único · 1 mes de acceso · sin ahorro frente a los otros planes'
-                    : `Pago único · ${info.meses} meses de acceso · equivale a $${precioMes.toFixed(2)} al mes · ahorras ${ahorroPct}%${id === 'anual' ? ' · hasta 12 cuotas en Colombia' : ''}`
+                    ? '1 mes de acceso · sin ahorro'
+                    : `${info.meses} meses · $${precioMes.toFixed(2)} al mes · ahorras ${ahorroPct}%`
                 }
                 trm={trm}
               />
@@ -569,14 +569,15 @@ function PlanCard({
    * falló, y entonces simplemente no se muestra la conversión. */
   trm: number | null;
 }) {
+  const reduce = useReducedMotion();
   const precioCOP = trm ? formatearCOP(precio, trm) : null;
   return (
     <motion.button
       type="button"
       onClick={onSelect}
       disabled={deshabilitado}
-      whileTap={{ scale: 0.97 }}
-      className={`relative flex flex-col rounded-[var(--radius-card)] border px-5 py-4 text-left transition-colors disabled:opacity-50 ${
+      whileTap={reduce ? undefined : { scale: 0.97 }}
+      className={`relative flex flex-col rounded-[var(--radius-card)] border px-5 py-3 text-left transition-colors disabled:opacity-50 ${
         seleccionado
           ? 'boton-3d-borde border-transparent bg-[color-mix(in_oklab,var(--accent)_6%,transparent)]'
           : 'superficie-3d border-[color-mix(in_oklab,var(--text-tertiary)_38%,transparent)] bg-[var(--surface)]'
@@ -663,7 +664,7 @@ function PlanCard({
           se sorprende con el cargo real (hallazgo: "la explicación no está
           clara"). Va debajo de TODA la fila (no bajo el nombre a la
           izquierda) porque el ojo termina de leer en el precio, a la derecha. */}
-      <p className="mt-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-2 text-[13px] text-[var(--text-secondary)]">
+      <p className="mt-1.5 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-1.5 text-[13px] text-[var(--text-secondary)]">
         {detalle}
       </p>
     </motion.button>

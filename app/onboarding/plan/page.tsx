@@ -9,7 +9,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'motion/react';
+import { MotionConfig, motion } from 'motion/react';
 import { RefreshCcw } from 'lucide-react';
 import { leerRespuestas, type RespuestasOnboarding } from '@/lib/onboarding';
 import { registrarEvento } from '@/lib/analitica';
@@ -66,18 +66,28 @@ export default function VistaPreviaDiaUnoPage() {
   });
 
   return (
-    <div className="min-h-dvh bg-[var(--bg)] px-5 pt-8 pb-10 [font-family:var(--font-body)]">
+    <MotionConfig reducedMotion="user">
+    <div className="relative min-h-dvh overflow-x-clip bg-[var(--bg)] px-5 pt-8 pb-10 [font-family:var(--font-body)]">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          background:
+            'radial-gradient(560px 340px at 85% -8%, color-mix(in oklab, var(--accent) 9%, transparent) 0%, transparent 60%), ' +
+            'radial-gradient(420px 300px at 0% 15%, color-mix(in oklab, var(--accent-2) 8%, transparent) 0%, transparent 55%)',
+        }}
+      />
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="mx-auto w-full max-w-md"
+        className="relative z-10 mx-auto w-full max-w-md"
       >
         <p className="text-center text-xs font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">
           {tituloRuta(respuestas.nivel, respuestas.meta)}
         </p>
         <h1 className="mt-2 text-balance text-center text-2xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
-          Tu Día 1: {nombreDia1}
+          Tu <span className="text-[var(--accent)]">Día 1</span>: {nombreDia1}
         </h1>
         <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
           Hecho con tus respuestas — nada que armar, nada que adivinar.
@@ -85,6 +95,21 @@ export default function VistaPreviaDiaUnoPage() {
 
         {/* Día 1 — el resultado REAL, no una promesa (5 trabajos del onboarding: crear deseo) */}
         <div className="mt-6 flex flex-col gap-3">
+          {/* Botón de Rescate, presente desde el Día 1 — el mecanismo, no una lista de features */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="flex items-start gap-3 rounded-2xl border border-[color-mix(in_oklab,var(--accent)_30%,transparent)] bg-[var(--chip-bg)] p-4"
+          >
+            <RefreshCcw size={18} color="var(--accent)" className="mt-0.5 shrink-0" />
+            <p className="text-sm font-medium text-[var(--text-primary)]" aria-live="polite">
+              {ultimoCambio
+                ? '¡Listo! Así de rápido cambias de ejercicio en el gym, sin perder la sesión. Toca de nuevo para volver.'
+                : '¿Máquina ocupada? Pruébalo ahora: toca ↻ en el primer ejercicio.'}
+            </p>
+          </motion.div>
+
           {(verTodos ? ejercicios : ejercicios.slice(0, 5)).map((ej, i) => {
             const original = ejerciciosBase[i];
             const cambiado = ej.id !== original.id;
@@ -142,20 +167,6 @@ export default function VistaPreviaDiaUnoPage() {
             </button>
           )}
 
-          {/* Botón de Rescate, presente desde el Día 1 — el mecanismo, no una lista de features */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.08 + ejercicios.length * 0.06 }}
-            className="flex items-start gap-3 rounded-2xl border border-[color-mix(in_oklab,var(--accent)_30%,transparent)] bg-[var(--chip-bg)] p-4"
-          >
-            <RefreshCcw size={18} color="var(--accent)" className="mt-0.5 shrink-0" />
-            <p className="text-sm font-medium text-[var(--text-primary)]" aria-live="polite">
-              {ultimoCambio
-                ? '¡Listo! Así de rápido cambias de ejercicio en el gym, sin perder la sesión. Toca de nuevo para volver.'
-                : '¿Máquina ocupada? Pruébalo ahora: toca ↻ en el primer ejercicio.'}
-            </p>
-          </motion.div>
         </div>
 
         {/* El resto de la ruta — bloqueado con honestidad, no relleno inventado */}
@@ -202,10 +213,14 @@ export default function VistaPreviaDiaUnoPage() {
             Quiero mi semana completa
           </button>
           <p className="mt-2 text-center text-xs text-[var(--text-secondary)]">
-            7 días gratis, sin tarjeta · pago único, sin renovación · Garantía del Primer Plan Claro
+            7 días gratis, sin tarjeta
+          </p>
+          <p className="mt-0.5 text-center text-xs text-[var(--text-secondary)]">
+            Después, pago único desde $4.99 USD · sin renovación · garantía de 7 días tras pagar
           </p>
         </div>
       </motion.div>
     </div>
+    </MotionConfig>
   );
 }

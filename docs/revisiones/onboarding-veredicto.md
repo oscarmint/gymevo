@@ -1,16 +1,22 @@
-# VEREDICTO revisor-visual — onboarding (/onboarding/plan, Tu Día 1)
-Fecha: 2026-10-05 12:00
+# VEREDICTO revisor-visual — onboarding (Tu Día 1, /onboarding/plan) — ronda 11
+Fecha: 2026-10-06 12:00
 Screenshot: docs/revisiones/onboarding-375.png
-Usabilidad: 31/40
-Craft: 12/20
-Copy (si vende): 11/20
+Usabilidad: 27/40
+Craft: 13/20
+Copy (si vende): 12/20
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 Top defectos:
-1. Carga/valor - app/onboarding/plan/page.tsx l.145-158 y l.196: la tarjeta del Botón de Rescate (el mecanismo, la única pista de que el icono de refrescar es interactivo) queda fuera del primer viewport y tapada por el CTA sticky en la captura; el usuario ve 5 iconos circulares sin explicación. Fix: mover la pista encima de la lista o a un subtítulo corto y dejar el pulso solo en el primer icono.
-2. Copy de oferta - l.76-83 y l.202-206: ninguna pieza dice precio ni qué se recibe (cuántos días, 90 días, plan fijo); el microcopy bajo el CTA son tres claims pegados en 11-12px, la garantía no tiene plazo. Falta H1 con promesa de FICHA-AVATAR (plan exacto, sin cobros ocultos). Fix: añadir línea de precio ("US$X pago único") y plazo de la garantía; separar en 2 líneas.
-3. Craft/identidad y profundidad - página entera: fondo plano #12161c, 5 tarjetas idénticas, un solo dispositivo (verde lima + canto 3D del botón); sin hairline degradé, sin chips SVG de beneficios, sin textura. El bloque "resto de tu semana" difuminado casi no se distingue y deja ~300px de vacío muerto al final de la captura completa. Fix: añadir fondo con tinte/gradiente, una superficie elevada para el bloque bloqueado y un hairline degradé en el CTA/tarjeta héroe.
-4. Jerarquía/movimiento - l.79 y 88-133: titular text-2xl sin palabras clave en acento (Día 1 / Pierna completa en blanco plano), no hay número héroe; sin reduced-motion explícito en la pantalla (solo CSS global, motion no lo respeta), sin celebración ni transición al paywall. Fix: resaltar "Día 1" en acento, envolver con MotionConfig reducedMotion="user".
-5. Encaje/usabilidad - l.164 y l.196-207: el label "El resto de tu semana" queda cortado bajo el backdrop del CTA sticky; el CTA sticky y el botón "Desbloquea tu semana completa" compiten (dos primarios al mismo destino, la píldora tiene contraste bajo sobre el blur); el mismo ícono de refrescar sin etiqueta visible en 5 filas (solo aria-label). Fix: añadir pb al contenedor para que no lo tape, quitar la píldora o volverla secundaria clara, rotular el primer botón "Cambiar".
+1. [Microcopy bajo CTA] Oferta contradictoria y sin nombre: "7 días gratis, sin tarjeta" + "pago único desde $4.99 USD" (¿único o desde?) y la garantía aparece como "garantía de 7 días" sin el nombre "Primer Plan Claro" (falla el sub-check binario de garantía nombrada). Fix: una línea con precio exacto y garantía nombrada, ej. "7 días gratis sin tarjeta · después $4.99 USD único · Garantía Primer Plan Claro".
+2. [Titular y jerarquía] El h1 es de 24px y no hay héroe: título, cards de ejercicio (16px semibold) y CTA pesan casi igual; "Día 1" en acento ayuda pero no crea 4 niveles. Fix: subir el h1 a 32-36px/800 y bajar el peso de las cards.
+3. [Zona inferior, bajo el CTA fijo] Segundo CTA ("Desbloquea tu semana completa") sobre cards borrosas, con el mismo destino que el CTA principal, más el botón sticky que tapa la 5ª card y el botón "+N ejercicios". Fix: quitar el pill del blur (o dejarlo como texto) y dar al sticky un fade/padding para que no corte contenido.
+4. [Movimiento] Solo stagger y tap scale en el botón de rescate; el CTA héroe no tiene whileTap en el código (depende de .boton-3d), el Botón de Rescate no celebra el cambio y no hay transición de salida. Fix: whileTap 0.97 en el CTA y un micro-feedback (pulso/check) al cambiar de ejercicio.
+5. [Control y errores] No hay volver/salir hacia el onboarding ni estado de error o fallo de lectura (redirige en silencio). Fix: enlace "Cambiar mis respuestas" visible y un mensaje con acción si faltan respuestas.
 
-Notas de verificación: CTA vivo = contraste OK, h-14 (56px) OK, canto 3D, habilitado siempre, falta whileTap propio en el CTA (solo clase boton-3d, no verificado :active). Control/atajos (h3/h7): sin botón volver ni salir visible en esta pantalla; el cambio de ejercicio es reversible (toca de nuevo). Gate de carga cognitiva: 1 falla (acciones: icono x5 + 2 CTAs). Paleta y Poppins coinciden con FICHA-ARTE. Garantía "Primer Plan Claro" no aparece en FICHA-MERCADO.md (plazo no verificable). Hallazgo de proceso: la captura no muestra la tarjeta de pista que el código renderiza; puede ser una captura anterior o estar tapada por el sticky.
+Notas de verificación:
+- Cambios de la ronda verificados: pista del Botón de Rescate arriba de la lista (sí); "Día 1" en acento (sí); radiales de fondo (en el código; en el screenshot casi imperceptibles); MotionConfig reducedMotion="user" (sí); microcopy en 2 líneas con precio (sí).
+- Gate de carga cognitiva: 0-1 fallas (5 ítems visibles, 1 CTA primario); aprobado.
+- Craft detalle: jerarquía 2, profundidad 3, identidad 3, movimiento 2, encaje 3.
+- Usabilidad detalle: h1:3 h2:3 h3:2 h4:3 h5:3 h6:3 h7:2 h8:3 h9:2 h10:3.
+- Copy detalle: idea 3, especificidad 2, emoción 2, oferta 2, acción 3. FICHA-MERCADO.md no se verificó con este revisor; el precio "$4.99 USD" frente a "/mes" en FICHA-AVATAR debe conciliarse.
+- Paleta (#12161c, #97d131) y Poppins coinciden con FICHA-ARTE.
