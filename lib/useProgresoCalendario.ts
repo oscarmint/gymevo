@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { leerProgreso, type Progreso } from './routine';
-import { leerProgresoRemoto } from './supabase/sync';
+import { fusionarProgreso, leerProgresoRemoto } from './supabase/sync';
 
 /** Progreso para el calendario: primero lo local (rápido, funciona sin red) y
  * luego el remoto si hay sesión, que trae los registros de todos los
@@ -16,7 +16,7 @@ export function useProgresoCalendario(): Progreso | null {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setProgreso(local);
     leerProgresoRemoto().then((remoto) => {
-      if (remoto) setProgreso(remoto);
+      if (remoto) setProgreso(fusionarProgreso(local, remoto));
     });
   }, []);
 

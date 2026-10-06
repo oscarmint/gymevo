@@ -68,7 +68,7 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
 
   const { data: logsRemotos } = await supabase
     .from('workout_logs')
-    .select('fecha, ejercicio_id, peso, reps, series')
+    .select('fecha, ejercicio_id, peso, reps, series, rir')
     .eq('user_id', user.id)
     .order('created_at', { ascending: true });
 
@@ -78,6 +78,7 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
     peso: Number(l.peso),
     reps: l.reps,
     series: l.series,
+    ...(l.rir === null || l.rir === undefined ? {} : { rir: l.rir }),
   }));
 
   return {
@@ -105,6 +106,23 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
     fechaInicioRuta: perfil.fecha_inicio_ruta ?? null,
     rutinasHechas: (perfil.rutinas_hechas as Progreso['rutinasHechas']) ?? null,
     rutinaElegida: (perfil.rutina_elegida as Progreso['rutinaElegida']) ?? null,
+  };
+}
+
+const claveLog = (l: RegistroLog) => `${l.fecha}|${l.ejercicioId}|${l.peso}|${l.reps}|${l.series}`;
+
+/** Une el progreso de la cuenta con el del teléfono SIN pisar lo que todavía no
+ * subió: el perfil y los registros viejos vienen de la cuenta, pero se
+ * conservan los registros que solo existen en este teléfono (series hechas sin
+ * señal) y lo que ya se hizo hoy. */
+export function fusionarProgreso(local: Progreso, remoto: Progreso): Progreso {
+  const claves = new Set(remoto.logs.map(claveLog));
+  const soloLocales = local.logs.filter((l) => !claves.has(claveLog(l)));
+  return {
+    ...remoto,
+    logs: [...remoto.logs, ...soloLocales],
+    hechosHoy: local.hechosHoy,
+    reemplazosHoy: local.reemplazosHoy,
   };
 }
 
@@ -298,6 +316,7 @@ export function guardarLogRemoto(log: RegistroLog, onError?: () => void) {
         series: log.series,
         reps: log.reps,
         peso: log.peso,
+        rir: log.rir ?? null,
       })
       .then(({ error }) => {
         if (error) onError?.();

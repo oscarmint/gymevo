@@ -52,7 +52,7 @@ import {
 import { SelectorDiaRutina } from '@/components/SelectorDiaRutina';
 import { BannerRenovacion } from '@/components/BannerRenovacion';
 import CalentamientoGuiado, { DURACION_CALENTAMIENTO_MIN } from '@/components/CalentamientoGuiado';
-import { guardarLogRemoto, guardarProgresoRemoto, leerProgresoRemoto, sincronizarPerfilInicial } from '@/lib/supabase/sync';
+import { fusionarProgreso, guardarLogRemoto, guardarProgresoRemoto, leerProgresoRemoto, sincronizarPerfilInicial } from '@/lib/supabase/sync';
 
 /** Chips de esfuerzo (RIR, Repeticiones en Reserva) — solo Ruta Intermedio,
  * ver `sugerenciaPeso` en lib/routine.ts. 4 opciones (no 5) para que quepan
@@ -146,8 +146,9 @@ export default function PlanDelDiaPage() {
     sincronizarPerfilInicial(r).then(() => {
       leerProgresoRemoto().then((remoto) => {
         if (remoto) {
-          guardarProgreso(remoto);
-          setProgreso(remoto);
+          const fusionado = fusionarProgreso(leerProgreso(), remoto);
+          guardarProgreso(fusionado);
+          setProgreso(fusionado);
         }
       });
     });

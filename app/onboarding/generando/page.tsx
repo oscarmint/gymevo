@@ -83,6 +83,7 @@ export default function GenerandoPlanPage() {
             strokeWidth="9"
             strokeLinecap="round"
             strokeDasharray={circunferencia}
+            initial={{ strokeDashoffset: circunferencia }}
             animate={{ strokeDashoffset: circunferencia - (circunferencia * pct) / 100 }}
             transition={{ duration: reduce ? 0 : 0.5, ease: [0.16, 1, 0.3, 1] }}
           />
