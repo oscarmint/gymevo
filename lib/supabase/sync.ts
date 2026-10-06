@@ -5,6 +5,7 @@
 // en segundo plano, sin bloquear la interacción del usuario.
 
 import { crearClienteSupabase } from './client';
+import { escribirLocal, leerLocal } from '../almacen';
 import type { RespuestasOnboarding } from '../onboarding';
 import { diasDePlan, type Progreso, type RegistroLog } from '../routine';
 import { leerUTM } from '../utm';
@@ -66,13 +67,24 @@ export async function leerProgresoRemoto(): Promise<Progreso | null> {
     .maybeSingle();
   if (!perfil) return null;
 
-  const { data: logsRemotos } = await supabase
-    .from('workout_logs')
-    .select('fecha, ejercicio_id, peso, reps, series, rir')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: true });
+  // La API devuelve como máximo 1.000 filas por consulta: se pide por páginas
+  // para que quien lleva meses entrenando no pierda su historial.
+  const logsRemotos: { fecha: string; ejercicio_id: string; peso: unknown; reps: number; series: number; rir: number | null }[] = [];
+  for (let desde = 0; ; desde += 1000) {
+    const { data: pagina, error } = await supabase
+      .from('workout_logs')
+      .select('fecha, ejercicio_id, peso, reps, series, rir')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: true })
+      .order('id', { ascending: true })
+      .range(desde, desde + 999);
+    // Si falla la lectura NO se devuelve un historial incompleto: el local manda.
+    if (error || !pagina) return null;
+    logsRemotos.push(...pagina);
+    if (pagina.length < 1000) break;
+  }
 
-  const logs: RegistroLog[] = (logsRemotos ?? []).map((l) => ({
+  const logs: RegistroLog[] = logsRemotos.map((l) => ({
     fecha: l.fecha,
     ejercicioId: l.ejercicio_id,
     peso: Number(l.peso),
@@ -116,8 +128,19 @@ const claveLog = (l: RegistroLog) => `${l.fecha}|${l.ejercicioId}|${l.peso}|${l.
  * conservan los registros que solo existen en este teléfono (series hechas sin
  * señal) y lo que ya se hizo hoy. */
 export function fusionarProgreso(local: Progreso, remoto: Progreso): Progreso {
-  const claves = new Set(remoto.logs.map(claveLog));
-  const soloLocales = local.logs.filter((l) => !claves.has(claveLog(l)));
+  // Se cuenta por repetición: cuatro series iguales (10×60) son cuatro registros,
+  // y si la cuenta tiene dos, las otras dos siguen siendo "solo del teléfono".
+  const enNube = new Map<string, number>();
+  for (const l of remoto.logs) enNube.set(claveLog(l), (enNube.get(claveLog(l)) ?? 0) + 1);
+  const soloLocales = local.logs.filter((l) => {
+    const k = claveLog(l);
+    const restantes = enNube.get(k) ?? 0;
+    if (restantes > 0) {
+      enNube.set(k, restantes - 1);
+      return false;
+    }
+    return true;
+  });
   return {
     ...remoto,
     logs: [...remoto.logs, ...soloLocales],
@@ -302,24 +325,72 @@ export async function leerAvatarRemoto(): Promise<string | null> {
   return perfil?.avatar_url ?? null;
 }
 
-export function guardarLogRemoto(log: RegistroLog, onError?: () => void) {
-  const supabase = crearClienteSupabase();
-  supabase.auth.getUser().then(({ data }) => {
+const KEY_COLA_LOGS = 'gymevo_cola_logs';
+
+interface LogEnCola extends RegistroLog {
+  /** Id generado en el teléfono: si el envío se repite (se cayó la señal justo
+   * al responder), la base lo ignora en vez de duplicar la serie. */
+  id: string;
+}
+
+function leerCola(): LogEnCola[] {
+  try {
+    const crudo = leerLocal(KEY_COLA_LOGS);
+    const lista = crudo ? JSON.parse(crudo) : [];
+    return Array.isArray(lista) ? lista : [];
+  } catch {
+    return [];
+  }
+}
+
+let vaciando = false;
+
+/** Sube las series que quedaron pendientes (sin señal o con error). Quita de la
+ * cola solo las que la nube confirmó. Devuelve true si no queda nada pendiente. */
+export async function vaciarColaLogs(): Promise<boolean> {
+  if (vaciando) return false;
+  vaciando = true;
+  try {
+    const pendientes = leerCola();
+    if (pendientes.length === 0) return true;
+    const supabase = crearClienteSupabase();
+    const { data } = await supabase.auth.getUser();
     const user = data.user;
-    if (!user) return;
-    supabase
-      .from('workout_logs')
-      .insert({
+    if (!user) return false;
+    const { error } = await supabase.from('workout_logs').upsert(
+      pendientes.map((l) => ({
+        id: l.id,
         user_id: user.id,
-        ejercicio_id: log.ejercicioId,
-        fecha: log.fecha,
-        series: log.series,
-        reps: log.reps,
-        peso: log.peso,
-        rir: log.rir ?? null,
-      })
-      .then(({ error }) => {
-        if (error) onError?.();
-      });
+        ejercicio_id: l.ejercicioId,
+        fecha: l.fecha,
+        series: l.series,
+        reps: l.reps,
+        peso: l.peso,
+        rir: l.rir ?? null,
+      })),
+      { onConflict: 'id', ignoreDuplicates: true },
+    );
+    if (error) return false;
+    // Se re-lee la cola: pudo llegar otra serie mientras se enviaba.
+    const enviados = new Set(pendientes.map((l) => l.id));
+    escribirLocal(KEY_COLA_LOGS, JSON.stringify(leerCola().filter((l) => !enviados.has(l.id))));
+    return true;
+  } catch {
+    return false;
+  } finally {
+    vaciando = false;
+  }
+}
+
+/** La serie se anota primero en la cola del teléfono y luego se intenta subir:
+ * así una serie hecha sin señal (o con la app cerrada a medias) nunca se pierde
+ * y se sube sola al volver la conexión. `onError` avisa si quedó pendiente. */
+export function guardarLogRemoto(log: RegistroLog, onError?: () => void) {
+  const id = typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+  const cola = leerCola();
+  cola.push({ ...log, id });
+  escribirLocal(KEY_COLA_LOGS, JSON.stringify(cola));
+  vaciarColaLogs().then((ok) => {
+    if (!ok) onError?.();
   });
 }

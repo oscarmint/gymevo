@@ -52,7 +52,7 @@ import {
 import { SelectorDiaRutina } from '@/components/SelectorDiaRutina';
 import { BannerRenovacion } from '@/components/BannerRenovacion';
 import CalentamientoGuiado, { DURACION_CALENTAMIENTO_MIN } from '@/components/CalentamientoGuiado';
-import { fusionarProgreso, guardarLogRemoto, guardarProgresoRemoto, leerProgresoRemoto, sincronizarPerfilInicial } from '@/lib/supabase/sync';
+import { fusionarProgreso, guardarLogRemoto, guardarProgresoRemoto, leerProgresoRemoto, sincronizarPerfilInicial, vaciarColaLogs } from '@/lib/supabase/sync';
 
 /** Chips de esfuerzo (RIR, Repeticiones en Reserva) — solo Ruta Intermedio,
  * ver `sugerenciaPeso` en lib/routine.ts. 4 opciones (no 5) para que quepan
@@ -143,7 +143,10 @@ export default function PlanDelDiaPage() {
     // Si hay sesión de Supabase: crea el perfil remoto la primera vez (con las
     // respuestas del onboarding) y si ya existía progreso remoto, ese manda
     // sobre el local (es el que sobrevive a cambiar de celular).
-    sincronizarPerfilInicial(r).then(() => {
+    sincronizarPerfilInicial(r).then(async () => {
+      // Primero se suben las series que quedaron pendientes sin señal, para que
+      // lo que se lea de la cuenta ya las incluya.
+      await vaciarColaLogs();
       leerProgresoRemoto().then((remoto) => {
         if (remoto) {
           const fusionado = fusionarProgreso(leerProgreso(), remoto);
@@ -220,6 +223,15 @@ function PlanDelDia({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const piezasConfeti = useMemo(() => generarConfeti(28), [celebrarFin]);
   const [errorSync, setErrorSync] = useState(false);
+  useEffect(() => {
+    const alVolverLaSenal = () => {
+      vaciarColaLogs().then((ok) => {
+        if (ok) setErrorSync(false);
+      });
+    };
+    window.addEventListener('online', alVolverLaSenal);
+    return () => window.removeEventListener('online', alVolverLaSenal);
+  }, []);
   const [explicando, setExplicando] = useState<string | null>(null);
   // Cortar la rutina a medias (pedido explícito): hay momentos reales en que
   // la persona debe parar sin haber marcado todos los ejercicios — pide
@@ -791,13 +803,16 @@ function PlanDelDia({
       {errorSync && (
         <div className="mt-4 flex items-center justify-between gap-2 rounded-xl border border-[color-mix(in_oklab,var(--status-warning)_35%,transparent)] bg-[color-mix(in_oklab,var(--status-warning)_10%,transparent)] px-4 py-2.5 text-xs font-medium text-[var(--status-warning)]">
           <span className="flex items-center gap-2">
-            <WifiOff size={14} /> No pudimos guardar en la nube.
+            <WifiOff size={14} /> Sin conexión: tus series están guardadas en el teléfono y se subirán solas.
           </span>
           <button
             type="button"
             onClick={() => {
               setErrorSync(false);
               guardarProgresoRemoto(progreso, () => setErrorSync(true));
+              vaciarColaLogs().then((ok) => {
+                if (!ok) setErrorSync(true);
+              });
             }}
             className="underline underline-offset-2"
           >

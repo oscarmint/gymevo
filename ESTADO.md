@@ -1433,3 +1433,8 @@ Ninguna se declara lista. Se retoma la ronda 9 cuando el usuario apruebe corregi
 - Verificado: tsc ✓ · eslint 0 errores ✓ · build ✓ (un build falló una vez por caída interna de Turbopack en Windows; al repetir pasó). Sin prueba manual con sesión real todavía.
 - Pendiente: quedan 5 avisos de `npm audit` solo en herramientas de desarrollo (eslint-config-next), no afectan la app. Segundo bloque sin aprobar: cola de series sin señal, paginación de 1.000 registros, landing en servidor. Veredictos NO LISTA de landing/onboarding/paywall siguen pospuestos.
 - Subir a GitHub solo cuando el usuario diga "subir".
+
+## ⏸️ CHECKPOINT — Segundo bloque, parte 1 (05/10/2026)
+- Hecho: cola de series sin señal (`gymevo_cola_logs`, se sube sola al volver la conexión y al abrir /app, sin duplicar gracias a un id por serie) + lectura del historial por páginas de 1.000 (si falla la lectura no se pisa lo local) + fusión que cuenta repeticiones.
+- Verificado: tsc ✓ · eslint 0 errores ✓ · build ✓. Sin prueba manual con sesión real ni sin señal.
+- Pendiente: landing como componente de servidor (toca el A/B y las 4 pantallas del dinero; requiere revisor-visual), copy/legales, accesibilidad, panel admin.
