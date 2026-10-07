@@ -50,7 +50,6 @@ import {
   type Progreso,
 } from '@/lib/routine';
 import { SelectorDiaRutina } from '@/components/SelectorDiaRutina';
-import { AvisoCache } from '@/components/AvisoCache';
 import { BannerRenovacion } from '@/components/BannerRenovacion';
 import CalentamientoGuiado, { DURACION_CALENTAMIENTO_MIN } from '@/components/CalentamientoGuiado';
 import { fusionarProgreso, guardarLogRemoto, guardarProgresoRemoto, leerProgresoRemoto, sincronizarPerfilInicial, vaciarColaLogs } from '@/lib/supabase/sync';
@@ -823,7 +822,6 @@ function PlanDelDia({
       )}
 
       <BannerRenovacion />
-      <AvisoCache />
 
       {/* Calentamiento antes de los ejercicios principales — nunca es opcional
           (5-7 min, activa lo que vas a trabajar y protege articulaciones). */}

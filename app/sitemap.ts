@@ -7,7 +7,7 @@ const BASE = "https://www.gymevoapp.com";
 // Actualiza la fecha de una ruta solo cuando su contenido cambie de verdad.
 const PAGINAS: { ruta: string; modificada: string }[] = [
   { ruta: "", modificada: "2026-10-07" },
-  { ruta: "/privacidad", modificada: "2026-09-26" },
+  { ruta: "/privacidad", modificada: "2026-10-07" },
   { ruta: "/terminos", modificada: "2026-09-26" },
   { ruta: "/reembolsos", modificada: "2026-09-26" },
 ];

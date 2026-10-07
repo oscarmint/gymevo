@@ -105,6 +105,11 @@ export default function PrivacidadPage() {
             píxeles, por eso no te mostramos un aviso de cookies para aceptar o rechazar. Si algún día los
             agregamos, te pediremos permiso antes y actualizaremos esta política.
           </p>
+          <p className="mt-2">
+            También guardamos en la memoria de tu teléfono (caché) las ilustraciones y animaciones de los
+            ejercicios que abres, para que carguen rápido, sigan funcionando sin internet y gastes menos datos.
+            Solo se guarda lo que abres, nunca por adelantado, y no contiene datos personales.
+          </p>
         </section>
 
         <section>
