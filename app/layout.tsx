@@ -57,12 +57,48 @@ export const viewport: Viewport = {
   themeColor: "#12161c",
 };
 
+// Datos estructurados (schema.org): le dicen a Google, sin ambigüedad, que
+// "GymEvoApp" es el nombre propio de este sitio y de esta app — no un error de
+// escritura de "Gym Evo" / "Evo Gym" (otras marcas). Solo hechos verificables:
+// nada de valoraciones ni cifras de usuarios, que no existen todavía.
+const DATOS_ESTRUCTURADOS = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://www.gymevoapp.com/#sitio",
+      url: "https://www.gymevoapp.com/",
+      name: "GymEvoApp",
+      alternateName: ["GymEvo App", "Gymevoapp"],
+      inLanguage: "es",
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://www.gymevoapp.com/#app",
+      name: "GymEvoApp",
+      alternateName: ["GymEvo App", "Gymevoapp"],
+      url: "https://www.gymevoapp.com/",
+      applicationCategory: "HealthApplication",
+      operatingSystem: "Android, iOS (PWA)",
+      inLanguage: "es",
+      description:
+        "App de gimnasio que te dice qué entrenar hoy, con un Botón de Rescate para cuando la máquina está ocupada.",
+      isPartOf: { "@id": "https://www.gymevoapp.com/#sitio" },
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es" className={`${poppins.variable} h-full antialiased`}>
       <body className="min-h-dvh flex flex-col">
+        <script
+          type="application/ld+json"
+          // JSON fijo definido arriba (sin datos del usuario): inyección segura.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(DATOS_ESTRUCTURADOS) }}
+        />
         <RegistrarServiceWorker />
         {children}
       </body>
