@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
-import { AlertTriangle, Bell, BellOff, Camera, Check, ExternalLink, Eye, EyeOff, Flame, Loader2, LogOut, Pencil, ShieldCheck, Trash2, Volume2, VolumeX } from 'lucide-react';
+import { AlertTriangle, Bell, BellOff, Camera, Check, ChevronDown, ExternalLink, Eye, EyeOff, Flame, Loader2, LogOut, Pencil, ShieldCheck, Trash2, Volume2, VolumeX } from 'lucide-react';
 import { HORARIO_LABEL, META_LABEL, NIVEL_LABEL, SEXO_LABEL, leerRespuestas, type RespuestasOnboarding, type Sexo } from '@/lib/onboarding';
 import { calcularMacros } from '@/lib/macros';
 import { DIAS_MAX_PLAN, DURACIONES_DESCANSO, etiquetaDuracion, posicionEnCiclo, semanasSeguidas, aplicarReemplazos, cambiarDias, cambiarRuta, ejerciciosDeSesion, sesionActual, leerSesionElegida, guardarProgreso, leerProgreso, registrarMedidasIniciales, tituloRuta, type Progreso } from '@/lib/routine';
@@ -46,7 +46,7 @@ function describirPlan(
     if (vencimiento) {
       const dias = diasDesde(vencimiento);
       return dias > 0
-        ? { etiqueta: 'Premium', detalle: `Acceso hasta el ${fechaLarga(vencimiento)} · quedan ${textoDias(dias)}`, vigente: true, accion: null }
+        ? { etiqueta: 'Premium', detalle: `Acceso hasta el ${fechaLarga(vencimiento)} · quedan ${textoDias(dias)}`, vigente: true, accion: { texto: 'Renovar mi acceso', href: '/paywall?renovar=1' } }
         : { etiqueta: 'Premium vencido', detalle: `Tu acceso venció el ${fechaLarga(vencimiento)}`, vigente: false, accion: { texto: 'Renovar mi acceso', href: '/paywall?renovar=1' } };
     }
     // Cuenta con acceso pagado sin fecha propia (suscripción antigua o acceso manual).
@@ -661,43 +661,32 @@ export default function PerfilPage() {
 
       {membresia && (
         <div className="mt-4 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
+          {/* A la vista solo la etiqueta del plan; el tiempo restante o la fecha de
+              vencimiento y las opciones se abren con "Detalles". */}
           <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <p className="text-sm font-semibold text-[var(--text-primary)]">Tu plan</p>
-                <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                    estadoPlan.vigente
-                      ? 'bg-[var(--chip-bg)] text-[var(--accent)]'
-                      : 'bg-[color-mix(in_oklab,var(--status-warning)_14%,transparent)] text-[var(--text-primary)]'
-                  }`}
-                >
-                  {estadoPlan.etiqueta}
-                </span>
-              </div>
-              <p className="mt-1 text-sm text-[var(--text-secondary)]">{estadoPlan.detalle}</p>
-            </div>
-            {membresia.plan === 'pro' && (
-              <motion.button
-                type="button"
-                onClick={() => setMostrandoOpcionesPlan((v) => !v)}
-                whileTap={{ scale: 0.97 }}
-                aria-expanded={mostrandoOpcionesPlan}
-                className="superficie-3d flex h-9 shrink-0 items-center gap-1.5 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] px-3 text-xs font-semibold text-[var(--text-secondary)]"
+            <div className="flex min-w-0 items-center gap-2.5">
+              <p className="text-sm font-semibold text-[var(--text-primary)]">Tu plan</p>
+              <span
+                className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                  estadoPlan.vigente
+                    ? 'bg-[var(--chip-bg)] text-[var(--accent)]'
+                    : 'bg-[color-mix(in_oklab,var(--status-warning)_14%,transparent)] text-[var(--text-primary)]'
+                }`}
               >
-                <Pencil size={13} /> Editar
-              </motion.button>
-            )}
-          </div>
-
-          {estadoPlan.accion && (
-            <a
-              href={estadoPlan.accion.href}
-              className="boton-3d mt-4 flex h-11 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
+                {estadoPlan.etiqueta}
+              </span>
+            </div>
+            <motion.button
+              type="button"
+              onClick={() => setMostrandoOpcionesPlan((v) => !v)}
+              whileTap={{ scale: 0.97 }}
+              aria-expanded={mostrandoOpcionesPlan}
+              className="superficie-3d flex h-9 shrink-0 items-center gap-1.5 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] px-3 text-xs font-semibold text-[var(--text-secondary)]"
             >
-              {estadoPlan.accion.texto}
-            </a>
-          )}
+              Detalles
+              <ChevronDown size={14} className={`transition-transform duration-200 ${mostrandoOpcionesPlan ? 'rotate-180' : ''}`} />
+            </motion.button>
+          </div>
 
           <AnimatePresence>
             {mostrandoOpcionesPlan && (
@@ -707,20 +696,21 @@ export default function PerfilPage() {
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden"
               >
-                <div className="mt-4 flex flex-col gap-2 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4">
+                <div className="mt-4 flex flex-col gap-3 border-t border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] pt-4">
+                  <p className="text-sm text-[var(--text-secondary)]">{estadoPlan.detalle}</p>
                   {/* Pago único (21/09/2026): renovar = volver a pagar un plan.
                       Los meses nuevos se suman a los que ya le quedan. */}
-                  {vencimiento && (
+                  {estadoPlan.accion && (
                     <a
-                      href="/paywall?renovar=1"
+                      href={estadoPlan.accion.href}
                       className="boton-3d flex h-11 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
                     >
-                      Renovar mi acceso
+                      {estadoPlan.accion.texto}
                     </a>
                   )}
                   {/* Cuentas antiguas de suscripción (sin vencimiento propio): siguen
                       gestionándose en Hotmart. */}
-                  {!vencimiento && (
+                  {membresia.plan === 'pro' && !vencimiento && (
                     <a
                       href="https://consumer.hotmart.com"
                       target="_blank"
@@ -730,7 +720,7 @@ export default function PerfilPage() {
                       Cambiar de plan <ExternalLink size={13} />
                     </a>
                   )}
-                  {!vencimiento && membresia.estado !== 'cancelled' && (
+                  {membresia.plan === 'pro' && !vencimiento && membresia.estado !== 'cancelled' && (
                     <motion.button
                       type="button"
                       onClick={() => setPidiendoCancelarSuscripcion(true)}
