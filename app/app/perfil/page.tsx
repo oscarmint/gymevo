@@ -15,7 +15,7 @@ import type { Meta, Nivel } from '@/lib/onboarding';
 import { leerAvatarLocal, guardarAvatarLocal, leerNombreLocal, guardarNombreLocal } from '@/lib/perfil';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { activarAvisos, desactivarAvisos, estaSuscrito, pushSoportado } from '@/lib/push-client';
-import { esAdmin, guardarNombreRemoto, guardarProgresoRemoto, leerAvatarRemoto, leerCorreoRemoto, leerMembresiaRemota, leerNombreRemoto, leerVencimientoRemoto, subirAvatar } from '@/lib/supabase/sync';
+import { esAdmin, guardarNombreRemoto, guardarProgresoRemoto, leerAvatarRemoto, leerCorreoRemoto, leerEstadoAccesoRemoto, leerMembresiaRemota, leerNombreRemoto, leerVencimientoRemoto, subirAvatar } from '@/lib/supabase/sync';
 import { useConteo } from '@/lib/useConteo';
 import { limpiarDatosLocales } from '@/lib/datos-locales';
 
@@ -25,6 +25,50 @@ const ESTADO_MEMBRESIA_LABEL: Record<string, string> = {
   past_due: 'Pago pendiente',
   cancelled: 'Cancelada (activa hasta el fin del período)',
 };
+
+const DIA_MS = 86_400_000;
+const fechaLarga = (d: Date) => d.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' });
+const diasDesde = (d: Date) => Math.ceil((d.getTime() - Date.now()) / DIA_MS);
+const textoDias = (n: number) => `${n} ${n === 1 ? 'día' : 'días'}`;
+
+/** Qué mostrar en "Tu plan": etiqueta corta (prueba gratis / Premium / sin plan
+ * activo) y una línea con la fecha que importa. El periodo exacto contratado
+ * (1, 6 o 12 meses) no se guarda en la cuenta todavía: se muestra la fecha de
+ * vencimiento, que es lo que la persona necesita saber. */
+function describirPlan(
+  membresia: { plan: string; estado: string | null } | null,
+  vencimiento: Date | null,
+  finPrueba: Date | null
+): { etiqueta: string; detalle: string; vigente: boolean; accion: { texto: string; href: string } | null } {
+  if (!membresia) return { etiqueta: '', detalle: '', vigente: false, accion: null };
+
+  if (membresia.plan === 'pro') {
+    if (vencimiento) {
+      const dias = diasDesde(vencimiento);
+      return dias > 0
+        ? { etiqueta: 'Premium', detalle: `Acceso hasta el ${fechaLarga(vencimiento)} · quedan ${textoDias(dias)}`, vigente: true, accion: null }
+        : { etiqueta: 'Premium vencido', detalle: `Tu acceso venció el ${fechaLarga(vencimiento)}`, vigente: false, accion: { texto: 'Renovar mi acceso', href: '/paywall?renovar=1' } };
+    }
+    // Cuenta con acceso pagado sin fecha propia (suscripción antigua o acceso manual).
+    const estado = membresia.estado ? (ESTADO_MEMBRESIA_LABEL[membresia.estado] ?? membresia.estado) : 'Activo';
+    return { etiqueta: 'Premium', detalle: `${estado} · sin fecha de vencimiento`, vigente: membresia.estado !== 'past_due', accion: null };
+  }
+
+  if (finPrueba && diasDesde(finPrueba) > 0) {
+    return {
+      etiqueta: 'Prueba gratis',
+      detalle: `Te quedan ${textoDias(diasDesde(finPrueba))} · termina el ${fechaLarga(finPrueba)}`,
+      vigente: true,
+      accion: { texto: 'Ver planes', href: '/paywall' },
+    };
+  }
+  return {
+    etiqueta: 'Sin plan activo',
+    detalle: finPrueba ? `Tu prueba gratis terminó el ${fechaLarga(finPrueba)}` : 'Aún no tienes un plan pago',
+    vigente: false,
+    accion: { texto: 'Elegir un plan', href: finPrueba ? '/paywall?fin_prueba=1' : '/paywall' },
+  };
+}
 
 export default function PerfilPage() {
   const router = useRouter();
@@ -37,6 +81,8 @@ export default function PerfilPage() {
   const [borrador, setBorrador] = useState('');
   const [membresia, setMembresia] = useState<{ plan: string; estado: string | null } | null>(null);
   const [vencimiento, setVencimiento] = useState<Date | null>(null);
+  const [finPrueba, setFinPrueba] = useState<Date | null>(null);
+  const estadoPlan = describirPlan(membresia, vencimiento, finPrueba);
   const [pesoBorrador, setPesoBorrador] = useState('');
   const [errorMacros, setErrorMacros] = useState<string | null>(null);
   const [estaturaBorrador, setEstaturaBorrador] = useState('');
@@ -125,6 +171,7 @@ export default function PerfilPage() {
     });
     leerMembresiaRemota().then(setMembresia);
     leerVencimientoRemoto().then(setVencimiento);
+    leerEstadoAccesoRemoto().then((e) => setFinPrueba(e?.trialEndsAt ?? null));
     if (pushSoportado()) {
       estaSuscrito().then(setAvisosActivos);
     } else {
@@ -612,29 +659,45 @@ export default function PerfilPage() {
         </div>
       </div>
 
-      {membresia?.plan === 'pro' && (
+      {membresia && (
         <div className="mt-4 rounded-2xl border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5">
           <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-sm font-semibold text-[var(--text-primary)]">Tu plan</p>
-              <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                {vencimiento
-                  ? `Acceso hasta el ${vencimiento.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })}`
-                  : membresia.estado
-                    ? (ESTADO_MEMBRESIA_LABEL[membresia.estado] ?? membresia.estado)
-                    : 'Activo'}
-              </p>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-sm font-semibold text-[var(--text-primary)]">Tu plan</p>
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                    estadoPlan.vigente
+                      ? 'bg-[var(--chip-bg)] text-[var(--accent)]'
+                      : 'bg-[color-mix(in_oklab,var(--status-warning)_14%,transparent)] text-[var(--text-primary)]'
+                  }`}
+                >
+                  {estadoPlan.etiqueta}
+                </span>
+              </div>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">{estadoPlan.detalle}</p>
             </div>
-            <motion.button
-              type="button"
-              onClick={() => setMostrandoOpcionesPlan((v) => !v)}
-              whileTap={{ scale: 0.97 }}
-              aria-expanded={mostrandoOpcionesPlan}
-              className="superficie-3d flex h-9 shrink-0 items-center gap-1.5 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] px-3 text-xs font-semibold text-[var(--text-secondary)]"
-            >
-              <Pencil size={13} /> Editar
-            </motion.button>
+            {membresia.plan === 'pro' && (
+              <motion.button
+                type="button"
+                onClick={() => setMostrandoOpcionesPlan((v) => !v)}
+                whileTap={{ scale: 0.97 }}
+                aria-expanded={mostrandoOpcionesPlan}
+                className="superficie-3d flex h-9 shrink-0 items-center gap-1.5 rounded-xl border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] px-3 text-xs font-semibold text-[var(--text-secondary)]"
+              >
+                <Pencil size={13} /> Editar
+              </motion.button>
+            )}
           </div>
+
+          {estadoPlan.accion && (
+            <a
+              href={estadoPlan.accion.href}
+              className="boton-3d mt-4 flex h-11 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-semibold text-[var(--bg)]"
+            >
+              {estadoPlan.accion.texto}
+            </a>
+          )}
 
           <AnimatePresence>
             {mostrandoOpcionesPlan && (
